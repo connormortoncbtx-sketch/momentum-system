@@ -44,13 +44,12 @@ jobs:
 
           DATE=$(date +%Y-%m-%d)
 
-          git add reports/${DATE}.html
+          git add docs/
           git add data/universe.csv
           git add data/regime.json
           git add data/scores_final.csv
           git add data/signals.csv
           git add models/lgbm_model.pkl || true
-          git add docs/index.html   # may not exist first run
 
           # Only commit if there are changes
           git diff --cached --quiet || git commit -m "pipeline: ${DATE} run complete
@@ -65,5 +64,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: weekly-report-${{ github.run_id }}
-          path: reports/*.html
+          path: docs/reports/*.html
           retention-days: 90

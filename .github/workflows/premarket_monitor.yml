@@ -40,8 +40,7 @@ jobs:
           git config user.name  "momentum-bot"
           git config user.email "momentum-bot@users.noreply.github.com"
           DATE=$(date +%Y-%m-%d)
-          git add reports/${DATE}_premarket.html
+          git add docs/
           git add data/premarket_log.json
-          git add docs/index.html
           git diff --cached --quiet || git commit -m "premarket: ${DATE} final check complete"
           git push
