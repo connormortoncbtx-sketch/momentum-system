@@ -255,6 +255,65 @@ td{padding:7px 12px;white-space:nowrap;vertical-align:middle;}
 ::-webkit-scrollbar{width:5px;height:5px;}
 ::-webkit-scrollbar-track{background:var(--bg);}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+/* ── DECISION GUIDE ── */
+.guide-bar{
+  padding:8px 24px;
+  background:var(--bg2);
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  gap:12px;
+  cursor:pointer;
+  user-select:none;
+}
+.guide-bar:hover{background:var(--bg3);}
+.guide-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);}
+.guide-pills{display:flex;gap:6px;flex-wrap:wrap;}
+.gpill{padding:2px 8px;font-size:9px;font-weight:600;letter-spacing:.08em;border-radius:2px;cursor:pointer;}
+.gpill-go    {background:rgba(0,230,118,.12);color:var(--green);border:1px solid rgba(0,230,118,.3);}
+.gpill-caution{background:rgba(255,171,0,.10);color:var(--amber);border:1px solid rgba(255,171,0,.3);}
+.gpill-skip  {background:rgba(255,68,68,.12);color:var(--red);border:1px solid rgba(255,68,68,.3);}
+.gpill-wait  {background:rgba(255,171,0,.08);color:var(--amber);border:1px solid rgba(255,171,0,.2);}
+.guide-toggle{margin-left:auto;font-size:10px;color:var(--text3);}
+
+.guide-panel{
+  display:none;
+  background:var(--bg3);
+  border-bottom:2px solid var(--border2);
+  padding:16px 24px 20px;
+}
+.guide-panel.open{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+@media(max-width:600px){.guide-panel.open{grid-template-columns:1fr;}}
+
+.guide-section-title{
+  font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text3);margin-bottom:10px;padding-bottom:6px;
+  border-bottom:1px solid var(--border);
+}
+.guide-step{
+  display:flex;gap:10px;margin-bottom:8px;font-size:11px;line-height:1.5;
+}
+.guide-step-num{
+  flex-shrink:0;width:18px;height:18px;border-radius:50%;
+  background:var(--bg2);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;color:var(--text3);margin-top:1px;
+}
+.guide-step-body{color:var(--text2);}
+.guide-step-body strong{color:var(--text);font-weight:500;}
+.guide-rule{
+  font-size:10px;line-height:1.6;color:var(--text2);
+  padding:6px 10px;background:var(--bg2);border-radius:4px;
+  border-left:2px solid var(--border2);margin-bottom:6px;
+}
+.guide-rule.r-go    {border-left-color:var(--green);}
+.guide-rule.r-caution{border-left-color:var(--amber);}
+.guide-rule.r-skip  {border-left-color:var(--red);}
+.guide-rule .rl{font-weight:500;}
+.guide-rule .rl.go    {color:var(--green);}
+.guide-rule .rl.caution{color:var(--amber);}
+.guide-rule .rl.skip  {color:var(--red);}
 </style>
 </head>
 <body>
@@ -273,6 +332,114 @@ td{padding:7px 12px;white-space:nowrap;vertical-align:middle;}
 {% for c in check_labels %}
   <div class="check-pill {{ c.status }}">{{ c.label }}</div>
 {% endfor %}
+</div>
+
+<!-- DECISION GUIDE -->
+<div class="guide-bar" onclick="toggleGuide()">
+  <span class="guide-label">Entry decision guide</span>
+  <div class="guide-pills">
+    <span class="gpill gpill-go">GO = enter</span>
+    <span class="gpill gpill-caution">CAUTION = smaller / wait</span>
+    <span class="gpill gpill-wait">WAIT = Tuesday</span>
+    <span class="gpill gpill-skip">SKIP = pass entirely</span>
+  </div>
+  <span class="guide-toggle" id="guide-toggle-label">▼ expand</span>
+</div>
+
+<div class="guide-panel" id="guide-panel">
+
+  <div>
+    <div class="guide-section-title">Step-by-step entry procedure</div>
+
+    <div class="guide-step">
+      <div class="guide-step-num">1</div>
+      <div class="guide-step-body">
+        <strong>Check regime (index page).</strong><br>
+        Risk-on → bias Monday. Everything else → bias Tuesday unless overridden below.
+      </div>
+    </div>
+
+    <div class="guide-step">
+      <div class="guide-step-num">2</div>
+      <div class="guide-step-body">
+        <strong>Read the Action column first. It is binary.</strong><br>
+        SKIP or REVIEW-with-bad-news → do not enter, no exceptions.<br>
+        WAIT → defer to Tuesday, re-evaluate then.<br>
+        GO / CAUTION / WATCH → proceed to step 3.
+      </div>
+    </div>
+
+    <div class="guide-step">
+      <div class="guide-step-num">3</div>
+      <div class="guide-step-body">
+        <strong>Read Trend + Gap together.</strong> See rules →
+      </div>
+    </div>
+
+    <div class="guide-step">
+      <div class="guide-step-num">4</div>
+      <div class="guide-step-body">
+        <strong>Confirm with sparkline.</strong><br>
+        Last 2 checks both higher than prior 2 → ramping confirmed.<br>
+        Last 2 checks both lower → fading confirmed.<br>
+        Alternating → stable, use gap size rule.
+      </div>
+    </div>
+
+    <div class="guide-step">
+      <div class="guide-step-num">5</div>
+      <div class="guide-step-body">
+        <strong>If deferred to Tuesday:</strong> check Monday close vs Friday close.<br>
+        Monday closed above Friday → enter Tuesday open.<br>
+        Monday closed &gt;5% below Friday → check for news, skip if none found.<br>
+        Monday closed within 5% either direction → enter Tuesday open.
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="guide-section-title">Trend + gap decision rules</div>
+
+    <div class="guide-rule r-go">
+      <span class="rl go">GO — Monday open</span><br>
+      Gap &lt;10% + any trend · Gap &lt;25% + ramping (↑↑)
+    </div>
+
+    <div class="guide-rule r-go">
+      <span class="rl go">GO — Monday open</span><br>
+      Gap &lt;10% + stable (→)
+    </div>
+
+    <div class="guide-rule r-caution">
+      <span class="rl caution">TUESDAY — defer entry</span><br>
+      Gap 10-25% + stable (→) · Gap any + fading (↓) over 10%
+    </div>
+
+    <div class="guide-rule r-caution">
+      <span class="rl caution">CAUTION — enter smaller</span><br>
+      Gap 10-25% + ramping · reduce position size, not thesis
+    </div>
+
+    <div class="guide-rule r-skip">
+      <span class="rl skip">SKIP — pass entirely</span><br>
+      Gap &gt;25% + fading (↓↓) · move exhausted, revisit next week
+    </div>
+
+    <div class="guide-rule r-skip">
+      <span class="rl skip">REVIEW — check news first</span><br>
+      Gapping down &gt;5% + fading · specific neg catalyst = skip,
+      no news = treat as caution
+    </div>
+
+    <div class="guide-section-title" style="margin-top:14px">WATCH action</div>
+    <div class="guide-rule r-caution">
+      <span class="rl caution">WATCH = possible squeeze</span><br>
+      Gap &gt;25% still ramping. Do not chase at open.
+      Wait for first 5-min candle to close, enter on pullback only.
+      Set hard stop at pre-market low.
+    </div>
+  </div>
+
 </div>
 
 <table>
@@ -316,6 +483,14 @@ td{padding:7px 12px;white-space:nowrap;vertical-align:middle;}
   <span>MOMENTUM//ALPHA Pre-Market Monitor · {{ date }}</span>
   <span>Prices delayed · Not investment advice · Always verify with your broker</span>
 </div>
+<script>
+function toggleGuide() {
+  const panel  = document.getElementById('guide-panel');
+  const label  = document.getElementById('guide-toggle-label');
+  const isOpen = panel.classList.toggle('open');
+  label.textContent = isOpen ? '▲ collapse' : '▼ expand';
+}
+</script>
 </body>
 </html>"""
 
