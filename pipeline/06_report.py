@@ -30,7 +30,7 @@ from jinja2 import Template
 log = logging.getLogger(__name__)
 
 DATA_DIR   = Path("data")
-REPORTS    = Path("reports")
+REPORTS    = Path("docs/reports")
 FINAL_CSV  = DATA_DIR / "scores_final.csv"
 REGIME_JSON = DATA_DIR / "regime.json"
 
