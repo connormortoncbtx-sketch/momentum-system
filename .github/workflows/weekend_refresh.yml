@@ -1,0 +1,75 @@
+name: Weekend Catalyst Refresh
+ 
+on:
+  schedule:
+    # Sunday 8:00 PM Eastern (01:00 UTC Monday, accounts for EDT)
+    - cron: '0 1 * * 1'
+    # Monday 6:00 AM Eastern (11:00 UTC, accounts for EDT)
+    - cron: '0 11 * * 1'
+  workflow_dispatch:
+    inputs:
+      run_label:
+        description: 'Label for this refresh run'
+        required: false
+        default: 'manual_refresh'
+ 
+permissions:
+  contents: write
+ 
+jobs:
+  catalyst-refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+ 
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+ 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+ 
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+ 
+      - name: Determine run label
+        id: label
+        run: |
+          HOUR=$(date -u +%H)
+          DAY=$(date -u +%u)
+          if [ "$HOUR" = "01" ]; then
+            echo "label=sunday_night" >> $GITHUB_OUTPUT
+          elif [ "$HOUR" = "11" ]; then
+            echo "label=monday_morning" >> $GITHUB_OUTPUT
+          else
+            echo "label=${{ github.event.inputs.run_label || 'manual_refresh' }}" >> $GITHUB_OUTPUT
+          fi
+ 
+      - name: Run catalyst refresh
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python automation/weekend_refresh.py ${{ steps.label.outputs.label }}
+ 
+      - name: Commit updated report
+        run: |
+          git config user.name  "momentum-bot"
+          git config user.email "momentum-bot@users.noreply.github.com"
+ 
+          DATE=$(date +%Y-%m-%d)
+          LABEL="${{ steps.label.outputs.label }}"
+ 
+          git add docs/
+          git add data/signals.csv
+          git add data/scores_final.csv
+          git add data/refresh_log.json || true
+ 
+          git diff --cached --quiet || git commit -m "refresh: ${DATE} ${LABEL}
+ 
+          Top pick: $(python -c "import pandas as pd; df=pd.read_csv('data/scores_final.csv'); r=df.iloc[0]; print(r['symbol'], f'score={r[\"alpha_score\"]:.4f}')")
+          Regime: $(python -c "import json; d=json.load(open('data/regime.json')); print(d['regime'])")"
+ 
+          git push
