@@ -1,0 +1,65 @@
+{
+  "_meta": {
+    "description": "Signal weights and regime multipliers. This is the ONLY file the self-refinement pass may modify.",
+    "schema_version": "1.0",
+    "last_modified": "init",
+    "modified_by": "init"
+  },
+  "signal_weights": {
+    "momentum":     0.30,
+    "technicals":   0.15,
+    "catalyst":     0.25,
+    "fundamentals": 0.15,
+    "sentiment":    0.15
+  },
+  "regime_multipliers": {
+    "risk_on": {
+      "momentum":     1.20,
+      "technicals":   1.10,
+      "catalyst":     1.00,
+      "fundamentals": 0.80,
+      "sentiment":    1.00
+    },
+    "trending_mixed": {
+      "momentum":     1.00,
+      "technicals":   1.00,
+      "catalyst":     1.10,
+      "fundamentals": 1.00,
+      "sentiment":    1.00
+    },
+    "choppy_neutral": {
+      "momentum":     0.70,
+      "technicals":   0.80,
+      "catalyst":     1.20,
+      "fundamentals": 1.20,
+      "sentiment":    0.90
+    },
+    "risk_off_mild": {
+      "momentum":     0.50,
+      "technicals":   0.60,
+      "catalyst":     1.10,
+      "fundamentals": 1.40,
+      "sentiment":    0.80
+    },
+    "risk_off_severe": {
+      "momentum":     0.20,
+      "technicals":   0.40,
+      "catalyst":     0.80,
+      "fundamentals": 1.60,
+      "sentiment":    0.60
+    }
+  },
+  "gates": {
+    "min_composite_score":   0.0,
+    "min_momentum_score":   -1.0,
+    "min_fundamental_score": -1.0,
+    "require_positive_catalyst": false
+  },
+  "constraints": {
+    "signal_weight_min":      0.05,
+    "signal_weight_max":      0.60,
+    "signal_weights_must_sum_to": 1.0,
+    "regime_multiplier_min":  0.10,
+    "regime_multiplier_max":  2.00
+  }
+}
