@@ -1,0 +1,65 @@
+{
+  "regime": "risk_off_mild",
+  "description": "Defensive rotation underway. Favor quality/defensives. Reduce exposure.",
+  "composite": -0.3788,
+  "scores": {
+    "trend": -0.6018,
+    "breadth": -0.7647,
+    "sentiment": -0.6,
+    "rotation": 0.5695,
+    "safety": 0.2748
+  },
+  "weights": {
+    "trend": 0.3,
+    "breadth": 0.25,
+    "sentiment": 0.2,
+    "rotation": 0.15,
+    "safety": 0.1
+  },
+  "details": {
+    "trend": {
+      "spy_ret_20d": -0.0571,
+      "spy_ret_50d": -0.063,
+      "spy_above_sma50": false,
+      "spy_above_sma200": true,
+      "spy_drawdown": -0.0699
+    },
+    "breadth": {
+      "qqq_ret_20d": -0.054,
+      "iwm_ret_20d": -0.0518,
+      "iwm_vs_spy": 0.0053,
+      "iwm_above_sma50": false
+    },
+    "sentiment": {
+      "vix": 27.44,
+      "vix_ma20": 24.8,
+      "vix_trend": 2.64,
+      "hyg_vs_spy_20d": 0.0395
+    },
+    "rotation": {
+      "offensive_ret_20d": -0.0489,
+      "defensive_ret_20d": -0.0745,
+      "rotation_spread": 0.0256,
+      "xlk_slope": -0.001567,
+      "xlu_slope": -0.002377
+    },
+    "safety": {
+      "tlt_ret_20d": -0.0487,
+      "gld_ret_20d": -0.1718,
+      "tlt_vs_spy": 0.0083,
+      "gld_vs_spy": -0.1147
+    }
+  },
+  "context": {
+    "spy_realized_vol_20d": 0.1405,
+    "vix": 27.44,
+    "as_of": "2026-03-27"
+  },
+  "playbook": {
+    "momentum": 0.5,
+    "technicals": 0.6,
+    "catalyst": 1.1,
+    "fundamentals": 1.4,
+    "sentiment": 0.8
+  }
+}
