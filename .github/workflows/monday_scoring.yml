@@ -1,0 +1,59 @@
+name: Monday Scoring + Self-Refinement
+ 
+on:
+  schedule:
+    # Every Monday at 7:00 AM Eastern (12:00 UTC)
+    - cron: '0 12 * * 1'
+  workflow_dispatch:
+ 
+permissions:
+  contents: write
+ 
+jobs:
+  score-and-refine:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+ 
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+ 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+ 
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+ 
+      - name: Collect actual returns
+        run: python automation/collect_returns.py
+ 
+      - name: Run self-refinement
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python automation/self_refine.py
+ 
+      - name: Retrain model if enough data
+        run: python automation/retrain.py
+ 
+      - name: Commit results
+        run: |
+          git config user.name  "momentum-bot"
+          git config user.email "momentum-bot@users.noreply.github.com"
+ 
+          DATE=$(date +%Y-%m-%d)
+ 
+          git add data/performance_log.csv
+          git add config/weights.json
+          git add models/lgbm_model.pkl || true
+          git add refinements/ || true
+ 
+          git diff --cached --quiet || git commit -m "refinement: ${DATE}
+ 
+          $(cat refinements/${DATE}.md 2>/dev/null | head -3 || echo 'No refinement note')"
+ 
+          git push
