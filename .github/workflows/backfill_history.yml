@@ -1,0 +1,50 @@
+name: Backfill History
+ 
+on:
+  workflow_dispatch:
+    inputs:
+      weeks:
+        description: 'Weeks of history to backfill (default: 26, max: 52)'
+        required: false
+        default: '26'
+ 
+permissions:
+  contents: write
+ 
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+ 
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+ 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+ 
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+ 
+      - name: Run historical backfill
+        run: |
+          python automation/backfill_history.py \
+            --weeks ${{ github.event.inputs.weeks || '26' }}
+ 
+      - name: Commit results
+        run: |
+          git config user.name  "momentum-bot"
+          git config user.email "momentum-bot@users.noreply.github.com"
+ 
+          git add data/performance_log.csv
+          git add models/lgbm_model.pkl || true
+ 
+          git diff --cached --quiet || git commit -m "backfill: ${{ github.event.inputs.weeks || '26' }} weeks of historical return data + model retrain"
+ 
+          git pull --rebase origin main
+          git push
