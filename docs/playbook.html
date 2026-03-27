@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="PLAYBOOK">
+<meta name="theme-color" content="#080c0f">
+<title>TRADING PLAYBOOK // MOMENTUM ALPHA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#080c0f; --bg2:#0d1318; --bg3:#111820; --bg4:#0a1015;
+  --border:#1e2d38; --border2:#243545; --border3:#2d4255;
+  --text:#c8d8e4; --text2:#6a8a9f; --text3:#3d5a6b;
+  --accent:#00c8ff; --green:#00e676; --amber:#ffab00;
+  --red:#ff4444; --purple:#b388ff;
+  --mono:'IBM Plex Mono',monospace;
+  --sans:'IBM Plex Sans',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:13px;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;line-height:1.7;}
+
+.header{
+  padding:16px 24px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;
+}
+.logo{font-size:18px;font-weight:600;letter-spacing:.15em;color:var(--accent);font-family:var(--mono);}
+.logo span{color:var(--text3);font-weight:300;}
+.back-btn{
+  padding:6px 14px;border:1px solid var(--border2);background:transparent;
+  color:var(--text2);font-family:var(--mono);font-size:11px;
+  letter-spacing:.06em;cursor:pointer;border-radius:2px;
+  text-decoration:none;transition:all .15s;
+}
+.back-btn:hover{color:var(--accent);border-color:rgba(0,200,255,.3);}
+
+.content{max-width:800px;margin:0 auto;padding:32px 24px 48px;}
+
+/* ── SECTION ── */
+.section{margin-bottom:40px;}
+.section-num{
+  font-family:var(--mono);font-size:10px;color:var(--accent);
+  letter-spacing:.15em;text-transform:uppercase;margin-bottom:6px;
+}
+.section-title{
+  font-size:20px;font-weight:500;color:var(--text);
+  margin-bottom:16px;padding-bottom:10px;
+  border-bottom:1px solid var(--border);
+}
+.section-intro{
+  font-size:14px;color:var(--text2);margin-bottom:20px;line-height:1.7;
+}
+
+/* ── STEPS ── */
+.steps{display:flex;flex-direction:column;gap:16px;}
+.step{
+  display:flex;gap:16px;
+  padding:16px;background:var(--bg2);
+  border:1px solid var(--border);border-radius:6px;
+}
+.step-num{
+  flex-shrink:0;width:32px;height:32px;border-radius:50%;
+  background:var(--bg3);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:12px;font-weight:500;
+  color:var(--accent);
+}
+.step-body{flex:1;}
+.step-title{font-weight:500;color:var(--text);margin-bottom:6px;font-size:14px;}
+.step-desc{font-size:13px;color:var(--text2);line-height:1.65;}
+.step-desc strong{color:var(--text);font-weight:500;}
+
+/* ── RULES GRID ── */
+.rules-grid{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
+.rule{
+  padding:10px 14px;border-radius:4px;font-size:12px;
+  border-left:3px solid;line-height:1.6;font-family:var(--mono);
+}
+.rule.go    {background:rgba(0,230,118,.06);border-color:var(--green);color:var(--text2);}
+.rule.caution{background:rgba(255,171,0,.06);border-color:var(--amber);color:var(--text2);}
+.rule.skip  {background:rgba(255,68,68,.06);border-color:var(--red);color:var(--text2);}
+.rule .rl   {font-weight:600;display:inline-block;margin-right:8px;}
+.rule .rl.go     {color:var(--green);}
+.rule .rl.caution{color:var(--amber);}
+.rule .rl.skip   {color:var(--red);}
+
+/* ── INLINE BADGES ── */
+.badge{
+  display:inline-block;padding:1px 7px;font-size:10px;font-weight:600;
+  border-radius:2px;font-family:var(--mono);letter-spacing:.06em;
+  vertical-align:middle;margin:0 2px;
+}
+.badge.go     {background:rgba(0,230,118,.12);color:var(--green);border:1px solid rgba(0,230,118,.3);}
+.badge.caution{background:rgba(255,171,0,.10);color:var(--amber);border:1px solid rgba(255,171,0,.3);}
+.badge.wait   {background:rgba(255,171,0,.08);color:var(--amber);border:1px solid rgba(255,171,0,.2);}
+.badge.watch  {background:rgba(255,171,0,.10);color:var(--amber);border:1px solid rgba(255,171,0,.3);}
+.badge.skip   {background:rgba(255,68,68,.12);color:var(--red);border:1px solid rgba(255,68,68,.3);}
+.badge.review {background:rgba(255,68,68,.10);color:var(--red);border:1px solid rgba(255,68,68,.25);}
+.badge.accent {background:rgba(0,200,255,.10);color:var(--accent);border:1px solid rgba(0,200,255,.25);}
+.badge.purple {background:rgba(179,136,255,.10);color:var(--purple);border:1px solid rgba(179,136,255,.25);}
+
+/* ── REGIME TABLE ── */
+.regime-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:12px;}
+.regime-table th{
+  text-align:left;padding:7px 12px;font-size:10px;
+  letter-spacing:.08em;text-transform:uppercase;
+  color:var(--text3);border-bottom:1px solid var(--border2);
+  font-family:var(--mono);
+}
+.regime-table td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:top;}
+.regime-table tr:last-child td{border-bottom:none;}
+.regime-pill{
+  display:inline-block;padding:2px 8px;font-size:10px;font-weight:600;
+  border-radius:2px;font-family:var(--mono);letter-spacing:.06em;
+  white-space:nowrap;
+}
+.risk_on        {background:rgba(0,230,118,.12);color:var(--green);border:1px solid rgba(0,230,118,.3);}
+.trending_mixed {background:rgba(0,200,255,.10);color:var(--accent);border:1px solid rgba(0,200,255,.3);}
+.choppy_neutral {background:rgba(255,171,0,.10);color:var(--amber);border:1px solid rgba(255,171,0,.3);}
+.risk_off_mild  {background:rgba(255,100,0,.10);color:#ff8c42;border:1px solid rgba(255,100,0,.3);}
+.risk_off_severe{background:rgba(255,68,68,.12);color:var(--red);border:1px solid rgba(255,68,68,.3);}
+
+/* ── EXIT STRATEGY ── */
+.phase-box{
+  padding:14px 16px;border-radius:4px;margin-bottom:12px;
+  border:1px solid var(--border2);background:var(--bg2);
+}
+.phase-label{
+  font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text3);margin-bottom:8px;font-family:var(--mono);
+}
+.phase-title{font-size:14px;font-weight:500;color:var(--text);margin-bottom:6px;}
+.phase-desc{font-size:13px;color:var(--text2);}
+
+/* ── CALLOUT ── */
+.callout{
+  padding:14px 18px;border-radius:4px;
+  background:rgba(0,200,255,.05);border:1px solid rgba(0,200,255,.2);
+  font-size:13px;color:var(--text2);margin:16px 0;line-height:1.65;
+}
+.callout strong{color:var(--accent);}
+.callout.amber{background:rgba(255,171,0,.05);border-color:rgba(255,171,0,.2);}
+.callout.amber strong{color:var(--amber);}
+.callout.green{background:rgba(0,230,118,.05);border-color:rgba(0,230,118,.2);}
+.callout.green strong{color:var(--green);}
+
+/* ── DIVIDER ── */
+.divider{border:none;border-top:1px solid var(--border);margin:32px 0;}
+
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">TRADING<span>//</span>PLAYBOOK</div>
+  <a href="index.html" class="back-btn">← Back to Hub</a>
+</div>
+
+<div class="content">
+
+  <!-- ── OVERVIEW ── -->
+  <div class="section">
+    <div class="section-num">Overview</div>
+    <div class="section-title">How this system works</div>
+    <p class="section-intro">
+      This system scans the full NYSE + NASDAQ universe every Friday evening,
+      scores every ticker across four signal dimensions, and delivers a ranked
+      list with an AI-synthesized thesis per pick. The core philosophy:
+      <strong style="color:var(--text)">there are winners every single week in every market condition.</strong>
+      The regime tells you where they are, not whether they exist.
+    </p>
+    <div class="callout green">
+      <strong>Your job is not to predict the market.</strong> It's to find the specific tickers
+      that will decouple from the broad tape that week — driven by catalysts, rotation,
+      or structural setups — and enter them at the right time with the right exit plan.
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ── WEEKLY SCHEDULE ── -->
+  <div class="section">
+    <div class="section-num">Section 1</div>
+    <div class="section-title">Weekly schedule</div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num" style="color:var(--purple)">Fr</div>
+        <div class="step-body">
+          <div class="step-title">Friday evening — open the weekly report</div>
+          <div class="step-desc">
+            The pipeline runs automatically at <strong>6pm ET</strong>.
+            Open your home screen icon, tap <strong>Weekly Report</strong>.
+            Review the full ranked table. Filter to <span class="badge accent">very_high</span> and
+            <span class="badge accent">high</span> conviction. Read the theses.
+            Build your watchlist for the week — aim for 5-10 candidates.
+            Note the regime banner. It sets the context for everything below.
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num" style="color:var(--amber)">Su</div>
+        <div class="step-body">
+          <div class="step-title">Sunday evening — catalyst refresh</div>
+          <div class="step-desc">
+            The system automatically refreshes catalyst signals at <strong>8pm ET Sunday</strong>.
+            News breaks all weekend — FDA decisions, acquisitions, analyst notes.
+            The report updates automatically. Check back briefly to see if any
+            tickers moved significantly in rank since Friday.
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num" style="color:var(--accent)">Mo</div>
+        <div class="step-body">
+          <div class="step-title">Monday 6am ET — final catalyst refresh + pre-market monitor opens</div>
+          <div class="step-desc">
+            One more catalyst refresh before market open.
+            At <strong>7am ET</strong> the pre-market monitor begins checking gap prices
+            every 30 minutes until 9am. Open it at <strong>8:30am CT</strong>
+            (your local time). Read the Action column and decision guide carefully.
+            Do not enter trades before reviewing the monitor.
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num" style="color:var(--green)">Tu</div>
+        <div class="step-body">
+          <div class="step-title">Tuesday — default entry window</div>
+          <div class="step-desc">
+            Unless Monday morning signals are clearly favorable (see Entry Procedure below),
+            Tuesday is your default entry day. Weekend noise has settled.
+            Monday's move gives you confirmation. Enter at or shortly after Tuesday open.
+            Log the trade in the Trade Log immediately — ticker, entry price, stop configuration.
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num" style="color:var(--text2)">Fr</div>
+        <div class="step-body">
+          <div class="step-title">Friday — exit and reset</div>
+          <div class="step-desc">
+            Exit remaining open positions at or before Friday close
+            (unless a trailing stop already triggered during the week).
+            Log your exit in the Trade Log — exit price, high water mark,
+            exit phase, exit reason. New report drops at 6pm. Repeat.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ── READING THE REPORT ── -->
+  <div class="section">
+    <div class="section-num">Section 2</div>
+    <div class="section-title">Reading the weekly report</div>
+
+    <p class="section-intro">
+      The report ranks every ticker in the universe. Here is what each column means
+      and how to use it.
+    </p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Regime banner (top of page)</div>
+          <div class="step-desc">
+            Read this first, every time. The regime determines <strong>where</strong> winners are
+            hiding this week, not whether they exist.
+          </div>
+          <table class="regime-table" style="margin-top:12px">
+            <tr><th>Regime</th><th>What it means</th><th>Where to look</th></tr>
+            <tr>
+              <td><span class="regime-pill risk_on">RISK ON</span></td>
+              <td style="color:var(--text2)">Broad uptrend, risk assets leading</td>
+              <td style="color:var(--text2)">High RS, high beta, breakouts</td>
+            </tr>
+            <tr>
+              <td><span class="regime-pill trending_mixed">TRENDING / MIXED</span></td>
+              <td style="color:var(--text2)">Uptrend intact, mixed breadth</td>
+              <td style="color:var(--text2)">Catalyst + momentum combos</td>
+            </tr>
+            <tr>
+              <td><span class="regime-pill choppy_neutral">CHOPPY / NEUTRAL</span></td>
+              <td style="color:var(--text2)">No clear trend</td>
+              <td style="color:var(--text2)">Specific catalysts, quality names</td>
+            </tr>
+            <tr>
+              <td><span class="regime-pill risk_off_mild">RISK OFF — MILD</span></td>
+              <td style="color:var(--text2)">Defensive rotation underway</td>
+              <td style="color:var(--text2)">Defensives, idiosyncratic catalysts</td>
+            </tr>
+            <tr>
+              <td><span class="regime-pill risk_off_severe">RISK OFF — SEVERE</span></td>
+              <td style="color:var(--text2)">Market stress</td>
+              <td style="color:var(--text2)">Squeezes, FDA, M&amp;A, contra-trend</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Composite Rank vs Alpha Rank vs EV Rank</div>
+          <div class="step-desc">
+            <strong>Composite Rank</strong> — the default sort. Blends alpha score (direction confidence)
+            with EV score (expected value accounting for magnitude). This is your primary ranking.<br><br>
+            <strong>Alpha Score / Alpha Rank</strong> — model confidence that this ticker will be a weekly winner.
+            Currently compressed at the top due to bootstrap labels — use as a filter, not a differentiator.<br><br>
+            <strong>EV Score / EV Rank</strong> — expected value combining win probability and historical
+            magnitude. A ticker with 70% win probability and +8% avg win beats one with 90% probability
+            and +1.5% avg win. Sort by EV Score to surface high-magnitude setups.<br><br>
+            <strong>Avg Win / Weekly Vol</strong> — the ticker's typical weekly upside % and total volatility.
+            Useful for sizing — a ±12% weekly vol name needs a wider stop than a ±3% name.
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Conviction tier</div>
+          <div class="step-desc">
+            Based on percentile rank in the universe.<br>
+            <span class="badge go">very_high</span> top 7% &nbsp;
+            <span class="badge go" style="background:rgba(127,255,127,.08);color:#7fff7f;border-color:rgba(127,255,127,.2)">high</span> top 15% &nbsp;
+            <span class="badge caution">elevated</span> top 30% &nbsp;
+            <span class="badge accent">moderate</span> top 50%<br><br>
+            Start your watchlist from <span class="badge go">very_high</span> and <span class="badge go" style="background:rgba(127,255,127,.08);color:#7fff7f;border-color:rgba(127,255,127,.2)">high</span>.
+            Only go lower if those tiers are thin or the thesis is especially compelling.
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Thesis — click any row to expand</div>
+          <div class="step-desc">
+            Tickers with a <strong style="color:var(--accent)">●</strong> blue dot got the full LLM synthesis pass — 
+            specific, signal-referenced thesis. Others got rule-based theses.
+            A good thesis names the specific catalyst or signal combination. A generic one
+            ("strong momentum in current market") means the model is less confident about <em>why</em>.
+            Prioritize tickers with specific theses.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ── ENTRY PROCEDURE ── -->
+  <div class="section">
+    <div class="section-num">Section 3</div>
+    <div class="section-title">Entry decision procedure</div>
+    <p class="section-intro">
+      Follow these steps in order, every time. No exceptions, no vibes.
+    </p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Check regime → set entry day bias</div>
+          <div class="step-desc">
+            <span class="badge go">risk_on</span> → bias toward Monday entry<br>
+            All other regimes → bias toward Tuesday entry<br><br>
+            This is a bias, not a rule. The pre-market monitor can override it.
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Open pre-market monitor at 8:30am CT — read Action column first</div>
+          <div class="step-desc">
+            The Action column is binary. Act on it mechanically:
+          </div>
+          <div class="rules-grid" style="margin-top:10px">
+            <div class="rule skip"><span class="rl skip">SKIP</span> — do not enter. Full stop. No exceptions regardless of how good the thesis looks.</div>
+            <div class="rule skip"><span class="rl skip">REVIEW</span> — check for negative news. Specific bad catalyst (miss, rejection, downgrade) = skip. No news found = treat as CAUTION.</div>
+            <div class="rule caution"><span class="rl caution">WAIT</span> — do not enter Monday. Re-evaluate Tuesday morning at open.</div>
+            <div class="rule caution"><span class="rl caution">CAUTION</span> — proceed to step 3.</div>
+            <div class="rule caution"><span class="rl caution">WATCH</span> — proceed to step 3.</div>
+            <div class="rule go"><span class="rl go">GO</span> — proceed to step 3.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Read Trend + Gap together</div>
+          <div class="step-desc">Apply these rules mechanically:</div>
+          <div class="rules-grid" style="margin-top:10px">
+            <div class="rule go"><span class="rl go">MONDAY OPEN</span> — Gap &lt;10% any trend · Gap &lt;25% ramping (↑↑)</div>
+            <div class="rule go"><span class="rl go">MONDAY OPEN</span> — Gap &lt;10% stable (→)</div>
+            <div class="rule caution"><span class="rl caution">TUESDAY</span> — Gap 10-25% stable · Gap any + fading (↓) over 10%</div>
+            <div class="rule caution"><span class="rl caution">ENTER SMALLER</span> — Gap 10-25% ramping — reduce size, thesis intact</div>
+            <div class="rule skip"><span class="rl skip">SKIP</span> — Gap &gt;25% fading (↓↓) — move exhausted, revisit next week</div>
+            <div class="rule skip"><span class="rl skip">WATCH ONLY</span> — Gap &gt;25% ramping — possible squeeze, do not chase. Wait for first 5-min candle, enter on pullback only. Hard stop at pre-market low.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Confirm with sparkline</div>
+          <div class="step-desc">
+            The sparkline shows each 30-minute check: e.g. <code style="color:var(--accent)">+3.1%  +3.8%  +4.4%  +4.7%</code><br><br>
+            <strong>Last 2 checks both higher than prior 2</strong> → ramping confirmed<br>
+            <strong>Last 2 checks both lower than prior 2</strong> → fading confirmed<br>
+            <strong>Alternating up/down with no direction</strong> → stable, use gap size rule from step 3
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <div class="step-title">Tuesday re-evaluation (if deferred)</div>
+          <div class="step-desc">
+            Check Monday's closing price vs Friday's close:<br><br>
+            <strong>Monday closed above Friday</strong> → thesis intact, enter Tuesday open<br>
+            <strong>Monday closed &gt;5% below Friday</strong> → check for news. Bad news = skip. No news = enter<br>
+            <strong>Monday closed within 5% either direction</strong> → enter Tuesday open
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ── EXIT STRATEGY ── -->
+  <div class="section">
+    <div class="section-num">Section 4</div>
+    <div class="section-title">Exit strategy — two-phase approach</div>
+    <p class="section-intro">
+      Every trade opens with a hard stop. If it moves enough in your favor,
+      the hard stop is cancelled and replaced with a trailing stop.
+      Set both in your broker at entry. Log both in the Trade Log.
+    </p>
+
+    <div class="phase-box" style="border-color:var(--red);background:rgba(255,68,68,.03)">
+      <div class="phase-label" style="color:var(--red)">Phase 1 — active from entry</div>
+      <div class="phase-title">Hard stop loss (~7% from entry)</div>
+      <div class="phase-desc">
+        Protects capital if the thesis is wrong immediately. Set at entry, do not move it lower.
+        If this triggers, the trade never activated Phase 2 — log exit_phase as Phase 1.
+        A high Phase 1 rate means the model is sending you into bad setups — the system
+        will self-correct as real labels accumulate.
+      </div>
+    </div>
+
+    <div class="phase-box" style="border-color:var(--green);background:rgba(0,230,118,.03)">
+      <div class="phase-label" style="color:var(--green)">Phase 2 — activates at +10% gain</div>
+      <div class="phase-title">Cancel hard stop → set trailing stop (~3-4% from high)</div>
+      <div class="phase-desc">
+        Once the position reaches +10%, you've confirmed the thesis is working.
+        Cancel the hard stop in your broker. Set a trailing stop of 3-4% from the highest price reached.
+        This locks in gains while letting winners run. Log exit_phase as Phase 2 and
+        record the high water mark when you close.
+      </div>
+    </div>
+
+    <div class="callout amber">
+      <strong>The numbers are starting points, not rules.</strong>
+      7% hard stop and 10% activation threshold and 3-4% trail are reasonable defaults
+      for weekly momentum trades. They should evolve based on what the Trade Log tells you
+      over time — if your weekly vol column shows a stock typically moves ±15%, a 7% stop
+      will get triggered by noise. Size accordingly.
+    </div>
+
+    <div class="steps" style="margin-top:20px">
+      <div class="step">
+        <div class="step-num" style="color:var(--text2)">Fri</div>
+        <div class="step-body">
+          <div class="step-title">Default exit — Friday close</div>
+          <div class="step-desc">
+            If neither stop triggers during the week, exit at or before Friday close.
+            A new report drops Friday at 6pm. You want clean positions going into the weekend.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ── TRADE LOG ── -->
+  <div class="section">
+    <div class="section-num">Section 5</div>
+    <div class="section-title">Logging trades</div>
+    <p class="section-intro">
+      Log every trade — paper or live — immediately at entry and exit.
+      The Trade Log is how the system learns your specific decision quality
+      separate from its own scoring quality.
+    </p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">At entry</div>
+        <div class="step-body">
+          <div class="step-title">What to log</div>
+          <div class="step-desc">
+            Ticker · Entry date · Entry price · Hard stop % and calculated floor price ·
+            Phase 2 activation % · Trailing stop % · Alpha rank from the report ·
+            Entry signal reason · Regime at entry · Entry day (Monday vs Tuesday) · Notes
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">At exit</div>
+        <div class="step-body">
+          <div class="step-title">What to log</div>
+          <div class="step-desc">
+            Exit date · Exit price · <strong>High water mark</strong> (highest price the stock reached during your hold) ·
+            Exit phase (Phase 1 or Phase 2) · Exit reason (stop_loss / trail_stop / friday_close / manual)<br><br>
+            The high water mark is critical — it tells the analysis how much of the peak gain your
+            trailing stop captured vs left on the table.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ── PAPER TRADING PERIOD ── -->
+  <div class="section">
+    <div class="section-num">Section 6</div>
+    <div class="section-title">Paper trading period</div>
+
+    <div class="callout">
+      <strong>Recommended: paper trade for 4-6 weeks before going live.</strong>
+      The model is on bootstrap labels until real return data accumulates.
+      Use this period to validate the system, tune your stop parameters,
+      and build conviction before risking real capital.
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">Wk 1-2</div>
+        <div class="step-body">
+          <div class="step-title">Bootstrap phase</div>
+          <div class="step-desc">
+            Model uses heuristic labels. Scores bunched at top. Use conviction tier + thesis
+            to differentiate. Log paper trades. Watch how real outcomes compare to predictions.
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">Wk 3-5</div>
+        <div class="step-body">
+          <div class="step-title">Performance log building</div>
+          <div class="step-desc">
+            Monday scoring workflow collects real returns. Signal attribution analysis begins.
+            Self-refinement starts adjusting weights. Scores begin spreading out meaningfully.
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">Wk 6+</div>
+        <div class="step-body">
+          <div class="step-title">Model retrains on real labels</div>
+          <div class="step-desc">
+            LightGBM retrained on actual forward returns. Scores now have genuine predictive
+            meaning. Self-refinement has 6 weeks of signal IC data to work with.
+            Trade Log analysis has enough closed trades to show patterns.
+            This is when you consider going live.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
