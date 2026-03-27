@@ -104,7 +104,9 @@ def build_rows_json(df: pd.DataFrame) -> str:
                 return None
 
         rows.append({
-            "rank":       int(g("alpha_rank", 9999)),
+            "rank":       int(g("composite_rank", g("alpha_rank", 9999))),
+            "alpha_rank": int(g("alpha_rank", 9999)),
+            "ev_rank":    int(g("ev_rank", 9999)) if g("ev_rank", "") != "" else 9999,
             "symbol":     str(g("symbol")),
             "name":       str(g("name", "")),
             "sector":     str(g("sector", "Unknown")),
@@ -113,6 +115,11 @@ def build_rows_json(df: pd.DataFrame) -> str:
             "vol":        str(g("vol_fmt")),
             "score":      str(g("score_fmt")),
             "pct":        str(g("pct_fmt")),
+            "ev_score":   round(float(g("ev_score", 0) or 0), 4),
+            "avg_win":    round(float(g("avg_win_magnitude", 0) or 0), 2),
+            "avg_loss":   round(float(g("avg_loss_magnitude", 0) or 0), 2),
+            "weekly_vol": round(float(g("weekly_vol", 0) or 0), 2),
+            "ev_conviction": str(g("ev_conviction", "")),
             "conviction": str(g("conviction", "low")),
             "thesis":     str(g("thesis")),
             "risk_flag":  str(g("risk_flag")),
@@ -409,7 +416,7 @@ td { padding: 7px 12px; white-space: nowrap; vertical-align: middle; }
   border-top: 1px solid var(--border2);
   border-bottom: 2px solid var(--accent);
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: 20px;
 }
 .detail-thesis {
@@ -550,7 +557,10 @@ td { padding: 7px 12px; white-space: nowrap; vertical-align: middle; }
     <th onclick="sortTable('sector')">Sector</th>
     <th onclick="sortTable('price')">Price</th>
     <th onclick="sortTable('mcap')">Mkt Cap</th>
-    <th onclick="sortTable('score')">Score</th>
+    <th onclick="sortTable('score')">α Score</th>
+    <th onclick="sortTable('ev_score')">EV Score</th>
+    <th onclick="sortTable('avg_win')">Avg Win</th>
+    <th onclick="sortTable('weekly_vol')">Wk Vol</th>
     <th onclick="sortTable('pct')">Pct Rank</th>
     <th>Signals</th>
     <th onclick="sortTable('conviction')">Conviction</th>
@@ -645,6 +655,31 @@ function buildDetail(row) {
       <div class="label">${llmDot}Thesis${conf}${flag}</div>
       ${row.thesis || '<em style="color:var(--text3)">No thesis generated</em>'}
     </div>
+    <div class="detail-section">
+      <div class="section-title">Expected value breakdown</div>
+      <div class="sub-signal-grid">
+        <div class="sub-signal-row">
+          <span class="sub-label">EV Score</span>
+          <span class="sub-val" style="color:${row.ev_score>0?'var(--green)':'var(--red)'}">${row.ev_score>0?'+':''}${row.ev_score.toFixed(4)}</span>
+        </div>
+        <div class="sub-signal-row">
+          <span class="sub-label">α Rank → EV Rank</span>
+          <span class="sub-val" style="color:var(--text2)">#${row.alpha_rank} → #${row.ev_rank}</span>
+        </div>
+        <div class="sub-signal-row">
+          <span class="sub-label">Avg weekly win</span>
+          <span class="sub-val" style="color:var(--green)">${row.avg_win>0?'+'+row.avg_win.toFixed(1)+'%':'—'}</span>
+        </div>
+        <div class="sub-signal-row">
+          <span class="sub-label">Avg weekly loss</span>
+          <span class="sub-val" style="color:var(--red)">${row.avg_loss<0?row.avg_loss.toFixed(1)+'%':'—'}</span>
+        </div>
+        <div class="sub-signal-row">
+          <span class="sub-label">Weekly volatility</span>
+          <span class="sub-val" style="color:var(--text2)">${row.weekly_vol>0?'±'+row.weekly_vol.toFixed(1)+'%':'—'}</span>
+        </div>
+      </div>
+    </div>
     ${detailSection('Momentum', [
       ['RS Rank',    row.s_rs],
       ['Trend',      row.s_trd],
@@ -684,6 +719,9 @@ function renderTable() {
       <td class="price-cell">${row.price}</td>
       <td class="price-cell">${row.mcap}</td>
       <td class="score-cell">${row.score}</td>
+      <td class="score-cell" style="color:${row.ev_score>0?'var(--green)':row.ev_score<0?'var(--red)':'var(--text2)'}">${row.ev_score>0?'+':''}${row.ev_score.toFixed(4)}</td>
+      <td style="color:var(--green);font-size:11px">${row.avg_win>0?'+'+row.avg_win.toFixed(1)+'%':'—'}</td>
+      <td style="color:var(--text2);font-size:11px">${row.weekly_vol>0?'±'+row.weekly_vol.toFixed(1)+'%':'—'}</td>
       <td class="pct-cell">${row.pct}%</td>
       <td>${sparkBars(row)}</td>
       <td>${badge(row.conviction)}</td>
@@ -737,9 +775,9 @@ function applySort() {
   filtered.sort((a, b) => {
     let va = a[sortCol], vb = b[sortCol];
     if (sortCol === 'conviction') { va = CONV_ORDER[va]||0; vb = CONV_ORDER[vb]||0; }
-    else if (sortCol === 'pct' || sortCol === 'score') {
+    else if (['pct','score','ev_score','avg_win','avg_loss','weekly_vol'].includes(sortCol)) {
       va = parseFloat(va)||0; vb = parseFloat(vb)||0;
-    } else if (sortCol === 'rank') {
+    } else if (['rank','alpha_rank','ev_rank'].includes(sortCol)) {
       va = parseInt(va)||9999; vb = parseInt(vb)||9999;
     } else {
       va = String(va||'').toLowerCase(); vb = String(vb||'').toLowerCase();

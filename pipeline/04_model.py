@@ -203,10 +203,134 @@ def weighted_composite_score(df: pd.DataFrame, weights: dict, regime: str) -> pd
     return score
 
 
+# ── EXPECTED VALUE CALCULATOR ─────────────────────────────────────────────────
+
+def compute_weekly_ev(symbols: list[str], alpha_scores: pd.Series) -> pd.DataFrame:
+    """
+    Compute expected value score for each ticker using:
+        EV = alpha_score × avg_positive_weekly_return
+           - (1 - alpha_score) × abs(avg_negative_weekly_return)
+
+    Weekly return history pulled from yfinance (already in pipeline cache).
+    Falls back to volatility-based estimate if history unavailable.
+
+    Returns DataFrame with columns: symbol, ev_score, ev_rank,
+    avg_win_magnitude, avg_loss_magnitude, weekly_vol, ev_pct_rank
+    """
+    import yfinance as yf
+    from datetime import datetime, timedelta
+
+    log.info("Computing expected value scores...")
+    end   = datetime.today()
+    start = end - timedelta(weeks=16)   # 12-16 weeks of history
+
+    results = []
+    batch_size = 100
+
+    for i in range(0, len(symbols), batch_size):
+        batch = symbols[i:i+batch_size]
+        try:
+            raw = yf.download(
+                batch,
+                start=start.strftime("%Y-%m-%d"),
+                end=end.strftime("%Y-%m-%d"),
+                auto_adjust=True,
+                progress=False,
+                threads=True,
+            )["Close"]
+
+            for sym in batch:
+                try:
+                    prices = raw[sym].dropna() if len(batch) > 1 else raw.dropna()
+                    if len(prices) < 8:
+                        results.append({"symbol": sym, "_raw_wins": [], "_raw_losses": [], "_vol": None})
+                        continue
+
+                    # Resample to weekly returns (Friday to Friday)
+                    weekly = prices.resample("W-FRI").last().pct_change().dropna()
+
+                    wins   = weekly[weekly > 0].tolist()
+                    losses = weekly[weekly < 0].tolist()
+
+                    results.append({
+                        "symbol":    sym,
+                        "_raw_wins":   wins,
+                        "_raw_losses": losses,
+                        "_vol":        float(weekly.std()) if len(weekly) >= 4 else None,
+                    })
+                except Exception:
+                    results.append({"symbol": sym, "_raw_wins": [], "_raw_losses": [], "_vol": None})
+
+        except Exception as e:
+            log.warning(f"  EV batch error: {e}")
+            for sym in batch:
+                results.append({"symbol": sym, "_raw_wins": [], "_raw_losses": [], "_vol": None})
+
+    # Build EV scores
+    ev_rows = []
+    alpha_map = alpha_scores.to_dict() if hasattr(alpha_scores, 'to_dict') else {}
+
+    # Use index-based lookup if alpha_scores indexed by position
+    sym_to_alpha = {}
+    for sym, alpha in zip(symbols, alpha_scores.values):
+        sym_to_alpha[sym] = float(alpha)
+
+    for r in results:
+        sym   = r["symbol"]
+        alpha = sym_to_alpha.get(sym, 0.5)
+        wins  = r["_raw_wins"]
+        losses= r["_raw_losses"]
+        vol   = r["_vol"]
+
+        avg_win  = float(np.mean(wins))   if wins   else None
+        avg_loss = float(np.mean(losses)) if losses else None
+
+        # Fallback: use vol-based symmetric estimate
+        if avg_win is None and vol is not None:
+            avg_win  =  vol * 1.25   # typical positive weekly move ~ 1.25σ
+        if avg_loss is None and vol is not None:
+            avg_loss = -vol * 1.25
+
+        if avg_win is None:
+            avg_win  =  0.03   # universe fallback ~3%
+        if avg_loss is None:
+            avg_loss = -0.03
+
+        # EV formula
+        ev = alpha * avg_win + (1 - alpha) * avg_loss   # avg_loss is negative
+
+        ev_rows.append({
+            "symbol":            sym,
+            "ev_score":          round(float(ev), 6),
+            "avg_win_magnitude": round(avg_win * 100, 2),
+            "avg_loss_magnitude": round(avg_loss * 100, 2),
+            "weekly_vol":        round(vol * 100, 2) if vol else None,
+        })
+
+    ev_df = pd.DataFrame(ev_rows)
+    ev_df["ev_pct_rank"] = ev_df["ev_score"].rank(pct=True).round(4)
+    ev_df["ev_rank"]     = ev_df["ev_score"].rank(ascending=False, method="min").astype(int)
+
+    # EV conviction tier
+    p = ev_df["ev_pct_rank"]
+    ev_df["ev_conviction"] = pd.cut(
+        p,
+        bins=[0, 0.50, 0.70, 0.85, 0.93, 1.01],
+        labels=["low", "moderate", "elevated", "high", "very_high"],
+    )
+
+    log.info(f"  EV scores: mean={ev_df['ev_score'].mean():.4f}  "
+             f"std={ev_df['ev_score'].std():.4f}")
+    log.info(f"  Avg win magnitude: {ev_df['avg_win_magnitude'].mean():.2f}%  "
+             f"Avg loss magnitude: {ev_df['avg_loss_magnitude'].mean():.2f}%")
+
+    return ev_df
+
+
 # ── RANKING ───────────────────────────────────────────────────────────────────
 
 def build_output(df: pd.DataFrame, raw_scores: pd.Series,
-                 regime_data: dict) -> pd.DataFrame:
+                 regime_data: dict, ev_df: pd.DataFrame = None) -> pd.DataFrame:
     """
     Build final scored + ranked DataFrame.
     """
@@ -216,7 +340,31 @@ def build_output(df: pd.DataFrame, raw_scores: pd.Series,
     out["alpha_pct_rank"] = raw_scores.rank(pct=True).round(4)
     out["alpha_rank"]     = raw_scores.rank(ascending=False, method="min").astype(int)
 
-    # Conviction tier
+    # Merge EV scores if available
+    if ev_df is not None:
+        ev_cols = ["symbol", "ev_score", "ev_rank", "ev_pct_rank", "ev_conviction",
+                   "avg_win_magnitude", "avg_loss_magnitude", "weekly_vol"]
+        out = out.merge(ev_df[ev_cols], on="symbol", how="left")
+
+        # Composite rank: blend alpha rank and EV rank 50/50
+        # (adjustable as model matures — EV weight increases with real labels)
+        out["composite_rank_score"] = (
+            out["alpha_pct_rank"].fillna(0.5) * 0.50 +
+            out["ev_pct_rank"].fillna(0.5)    * 0.50
+        )
+        out["composite_rank"] = out["composite_rank_score"].rank(
+            ascending=False, method="min").astype(int)
+    else:
+        out["ev_score"]          = np.nan
+        out["ev_rank"]           = np.nan
+        out["ev_pct_rank"]       = np.nan
+        out["ev_conviction"]     = np.nan
+        out["avg_win_magnitude"] = np.nan
+        out["avg_loss_magnitude"]= np.nan
+        out["weekly_vol"]        = np.nan
+        out["composite_rank"]    = out["alpha_rank"]
+
+    # Conviction tier (based on alpha score)
     p = out["alpha_pct_rank"]
     out["conviction"] = pd.cut(
         p,
@@ -225,12 +373,12 @@ def build_output(df: pd.DataFrame, raw_scores: pd.Series,
     )
 
     # Regime context
-    out["regime"]          = regime_data["regime"]
+    out["regime"]           = regime_data["regime"]
     out["regime_composite"] = regime_data["composite"]
     out["scored_at"]        = datetime.today().strftime("%Y-%m-%d")
 
-    # Sort by rank
-    out = out.sort_values("alpha_rank").reset_index(drop=True)
+    # Default sort by composite rank
+    out = out.sort_values("composite_rank").reset_index(drop=True)
 
     return out
 
@@ -303,19 +451,29 @@ def run():
         raw_scores = weighted_composite_score(df, weights, regime)
 
     # ── BUILD OUTPUT ──────────────────────────────────────────────────────────
-    out = build_output(df, raw_scores, regime_data)
+    log.info("Computing expected value scores...")
+    try:
+        ev_df = compute_weekly_ev(df["symbol"].tolist(), raw_scores)
+    except Exception as e:
+        log.warning(f"  EV computation failed ({e}) — skipping EV scores")
+        ev_df = None
+
+    out = build_output(df, raw_scores, regime_data, ev_df)
 
     out.to_csv(OUTPUT, index=False)
 
     log.info(f"Scores written → {OUTPUT}  ({len(out):,} rows)")
     log.info(f"Mode: {mode}")
-    log.info("Top 10 by alpha score:")
-    top = out.head(10)[["alpha_rank", "symbol", "sector",
-                         "alpha_score", "alpha_pct_rank", "conviction"]]
+    log.info("Top 10 by COMPOSITE rank (alpha × EV blend):")
+    top = out.head(10)[["composite_rank", "alpha_rank", "symbol", "sector",
+                         "alpha_score", "ev_score", "avg_win_magnitude",
+                         "weekly_vol", "conviction"]]
     for _, row in top.iterrows():
-        log.info(f"  #{row['alpha_rank']:<4} {row['symbol']:<8} "
-                 f"{str(row['sector']):<25} "
-                 f"score={row['alpha_score']:.4f}  "
+        ev_str  = f"ev={row['ev_score']:.4f}" if pd.notna(row['ev_score']) else "ev=n/a"
+        win_str = f"avg_win={row['avg_win_magnitude']:.1f}%" if pd.notna(row['avg_win_magnitude']) else ""
+        log.info(f"  #{row['composite_rank']:<4} (α#{row['alpha_rank']:<4}) "
+                 f"{row['symbol']:<8} "
+                 f"score={row['alpha_score']:.4f}  {ev_str}  {win_str}  "
                  f"conviction={row['conviction']}")
 
     return out
