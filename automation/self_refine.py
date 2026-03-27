@@ -143,20 +143,28 @@ You will receive a structured performance analysis showing how each signal has p
 over the last several weeks. Your job is to output an updated weights.json that improves
 the system's forward alpha generation.
 
+CORE PHILOSOPHY: There are winners every single week in every market condition.
+The regime determines WHERE winners are found, not WHETHER they exist.
+Never reduce regime multipliers to near-zero — that would cause the system to
+miss the winners that always exist even in brutal markets. Instead, shift weight
+toward the signals that best identify winners in each specific regime.
+A risk_off_severe week with 44% average return in the top decile is not a week
+to sit out — it is a week where the RIGHT signals found extraordinary winners.
+
 HARD CONSTRAINTS (you must respect these exactly):
 - signal_weight values must sum to exactly 1.0
 - each signal_weight must be between 0.05 and 0.60
 - each regime_multiplier must be between 0.10 and 2.00
 - you may only change numeric values — do not add or remove keys
-- the _meta, constraints, and gates sections must be preserved unchanged except _meta.last_modified and _meta.modified_by
+- the _meta, constraints, gates, and note fields must be preserved
 
 GUIDANCE:
 - Increase weights for signals with IC > 0.05 and hit rate > 0.55 consistently
 - Decrease weights for signals with IC < 0.00 or hit rate < 0.45 consistently
-- Adjust regime multipliers based on which signals work in which regimes
+- In risk-off regimes, shift weight TO catalyst and sentiment (where winners hide)
+  rather than reducing overall multipliers
 - Make conservative changes — max 0.10 change per signal weight per week
-- If a signal performs poorly in a specific regime, reduce its multiplier for that regime
-- Do not chase single-week noise — look for patterns across multiple weeks and regimes
+- Do not chase single-week noise — look for patterns across multiple weeks
 
 Respond with ONLY the complete updated weights.json content.
 No explanation, no markdown fences, no preamble. Just the raw JSON."""

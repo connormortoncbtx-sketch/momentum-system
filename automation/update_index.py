@@ -1,0 +1,536 @@
+"""
+automation/update_index.py
+===========================
+Runs at the end of both the weekly pipeline and premarket monitor.
+Reads the latest report files and rewrites docs/index.html —
+the single permanent URL that never changes.
+
+GitHub Pages serves from /docs so the permanent link is:
+https://{username}.github.io/{repo}/
+"""
+
+import json
+import logging
+from pathlib import Path
+from datetime import datetime, date
+from jinja2 import Template
+
+log = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO,
+                    format="%(asctime)s  %(levelname)-7s  %(message)s",
+                    datefmt="%H:%M:%S")
+
+DATA_DIR  = Path("data")
+REPORTS   = Path("reports")
+DOCS      = Path("docs")           # GitHub Pages root
+
+
+def latest_report() -> dict | None:
+    """Find the most recent weekly report."""
+    htmls = sorted(REPORTS.glob("????-??-??.html"), reverse=True)
+    if not htmls:
+        return None
+    f = htmls[0]
+    return {
+        "filename": f.name,
+        "date":     f.stem,
+        "url":      f"reports/{f.name}",
+    }
+
+
+def latest_premarket() -> dict | None:
+    """Find today's pre-market report if it exists."""
+    today = date.today().strftime("%Y-%m-%d")
+    f     = REPORTS / f"{today}_premarket.html"
+    if f.exists():
+        return {
+            "filename": f.name,
+            "date":     today,
+            "url":      f"reports/{f.name}",
+        }
+    return None
+
+
+def load_regime() -> dict:
+    try:
+        with open(DATA_DIR / "regime.json") as f:
+            return json.load(f)
+    except Exception:
+        return {"regime": "unknown", "composite": 0,
+                "description": "Run pipeline to generate regime data."}
+
+
+def load_scores_summary() -> dict:
+    try:
+        import pandas as pd
+        df  = pd.read_csv(DATA_DIR / "scores_final.csv")
+        top = df.head(5)[["symbol","alpha_score","conviction","thesis"]].to_dict("records")
+        return {
+            "total":    len(df),
+            "top_five": top,
+            "scored_at": str(df["scored_at"].iloc[0]) if "scored_at" in df.columns else "—",
+        }
+    except Exception:
+        return {"total": 0, "top_five": [], "scored_at": "—"}
+
+
+HTML = r"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MOMENTUM">
+<meta name="theme-color" content="#080c0f">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23080c0f'/><text y='68' x='50' text-anchor='middle' font-size='52' font-family='monospace' fill='%2300c8ff'>M</text></svg>">
+<title>MOMENTUM // ALPHA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#080c0f; --bg2:#0d1318; --bg3:#111820;
+  --border:#1e2d38; --border2:#243545;
+  --text:#c8d8e4; --text2:#6a8a9f; --text3:#3d5a6b;
+  --accent:#00c8ff; --green:#00e676; --amber:#ffab00; --red:#ff4444;
+  --purple:#b388ff;
+  --mono:'IBM Plex Mono',monospace;
+  --sans:'IBM Plex Sans',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--mono);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+/* ── HEADER ── */
+.header{
+  padding:28px 24px 20px;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:12px;
+}
+.logo{
+  font-size:28px;
+  font-weight:600;
+  letter-spacing:.15em;
+  color:var(--accent);
+  line-height:1;
+}
+.logo span{color:var(--text3);font-weight:300;}
+.logo-sub{
+  font-size:11px;
+  color:var(--text3);
+  letter-spacing:.1em;
+  margin-top:4px;
+  font-family:var(--sans);
+}
+.updated{
+  font-size:10px;
+  color:var(--text3);
+  text-align:right;
+  line-height:1.6;
+}
+.updated span{color:var(--text2);}
+
+/* ── REGIME BANNER ── */
+.regime-banner{
+  padding:12px 24px;
+  display:flex;
+  align-items:center;
+  gap:16px;
+  border-bottom:1px solid var(--border);
+  flex-wrap:wrap;
+}
+.regime-banner.risk_on        {background:rgba(0,230,118,.06);}
+.regime-banner.trending_mixed {background:rgba(0,200,255,.05);}
+.regime-banner.choppy_neutral {background:rgba(255,171,0,.05);}
+.regime-banner.risk_off_mild  {background:rgba(255,100,0,.06);}
+.regime-banner.risk_off_severe{background:rgba(255,68,68,.07);}
+.regime-banner.unknown        {background:transparent;}
+
+.regime-pill{
+  padding:4px 12px;
+  border-radius:2px;
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+.risk_on         .regime-pill{background:rgba(0,230,118,.15);color:var(--green);border:1px solid rgba(0,230,118,.3);}
+.trending_mixed  .regime-pill{background:rgba(0,200,255,.12);color:var(--accent);border:1px solid rgba(0,200,255,.3);}
+.choppy_neutral  .regime-pill{background:rgba(255,171,0,.12);color:var(--amber);border:1px solid rgba(255,171,0,.3);}
+.risk_off_mild   .regime-pill{background:rgba(255,100,0,.12);color:#ff8c42;border:1px solid rgba(255,100,0,.3);}
+.risk_off_severe .regime-pill{background:rgba(255,68,68,.12);color:var(--red);border:1px solid rgba(255,68,68,.3);}
+.unknown         .regime-pill{background:var(--bg3);color:var(--text3);border:1px solid var(--border);}
+
+.regime-desc{color:var(--text2);font-size:11px;font-family:var(--sans);}
+.regime-composite{margin-left:auto;font-size:11px;color:var(--text2);}
+.regime-composite span{color:var(--text);}
+
+/* ── MAIN CARDS ── */
+.cards{
+  padding:20px 24px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+@media(max-width:600px){
+  .cards{grid-template-columns:1fr;}
+  .header{padding:20px 16px 16px;}
+  .cards{padding:16px;}
+}
+
+.card{
+  border:1px solid var(--border);
+  border-radius:8px;
+  overflow:hidden;
+  background:var(--bg2);
+  display:flex;
+  flex-direction:column;
+  transition:border-color .15s;
+}
+.card:hover{border-color:var(--border2);}
+.card.primary{border-color:var(--accent);background:rgba(0,200,255,.03);}
+.card.premarket{border-color:var(--amber);background:rgba(255,171,0,.03);}
+.card.disabled{opacity:.45;pointer-events:none;}
+
+.card-header{
+  padding:14px 16px 10px;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.card-icon{
+  font-size:18px;
+  width:28px;
+  text-align:center;
+}
+.card-title{
+  font-size:13px;
+  font-weight:500;
+  color:var(--text);
+  letter-spacing:.04em;
+}
+.card-badge{
+  margin-left:auto;
+  padding:2px 8px;
+  font-size:9px;
+  font-weight:600;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  border-radius:2px;
+}
+.badge-live{background:rgba(0,230,118,.12);color:var(--green);border:1px solid rgba(0,230,118,.3);}
+.badge-ready{background:rgba(0,200,255,.10);color:var(--accent);border:1px solid rgba(0,200,255,.25);}
+.badge-pending{background:var(--bg3);color:var(--text3);border:1px solid var(--border);}
+.badge-premarket{background:rgba(255,171,0,.10);color:var(--amber);border:1px solid rgba(255,171,0,.3);}
+
+.card-body{
+  padding:14px 16px;
+  flex:1;
+  font-family:var(--sans);
+}
+.card-meta{
+  font-size:11px;
+  color:var(--text2);
+  margin-bottom:10px;
+  font-family:var(--mono);
+  letter-spacing:.03em;
+}
+.card-desc{
+  font-size:13px;
+  color:var(--text);
+  line-height:1.55;
+  margin-bottom:14px;
+}
+
+/* Top 5 mini table */
+.top5{width:100%;border-collapse:collapse;font-size:11px;}
+.top5 tr{border-bottom:1px solid var(--border);}
+.top5 tr:last-child{border-bottom:none;}
+.top5 td{padding:5px 4px;vertical-align:top;}
+.top5 .sym{font-weight:600;color:var(--text);font-family:var(--mono);letter-spacing:.04em;width:52px;}
+.top5 .scr{color:var(--accent);font-family:var(--mono);width:52px;text-align:right;}
+.top5 .ths{color:var(--text2);line-height:1.35;}
+.badge-vh{display:inline-block;padding:1px 5px;font-size:9px;font-weight:600;background:rgba(0,230,118,.1);color:var(--green);border:1px solid rgba(0,230,118,.2);border-radius:2px;margin-right:4px;font-family:var(--mono);}
+.badge-hi{display:inline-block;padding:1px 5px;font-size:9px;font-weight:600;background:rgba(127,255,127,.07);color:#7fff7f;border:1px solid rgba(127,255,127,.18);border-radius:2px;margin-right:4px;font-family:var(--mono);}
+
+.card-footer{
+  padding:10px 16px;
+  border-top:1px solid var(--border);
+}
+.open-btn{
+  display:block;
+  width:100%;
+  padding:10px;
+  text-align:center;
+  text-decoration:none;
+  font-family:var(--mono);
+  font-size:12px;
+  font-weight:500;
+  letter-spacing:.06em;
+  border-radius:4px;
+  transition:all .15s;
+}
+.open-btn.primary{
+  background:rgba(0,200,255,.1);
+  color:var(--accent);
+  border:1px solid rgba(0,200,255,.3);
+}
+.open-btn.primary:hover{background:rgba(0,200,255,.18);border-color:var(--accent);}
+.open-btn.premarket{
+  background:rgba(255,171,0,.1);
+  color:var(--amber);
+  border:1px solid rgba(255,171,0,.3);
+}
+.open-btn.premarket:hover{background:rgba(255,171,0,.18);}
+.open-btn.disabled{
+  background:transparent;
+  color:var(--text3);
+  border:1px solid var(--border);
+  cursor:default;
+}
+
+/* ── ARCHIVE ── */
+.archive-section{
+  padding:0 24px 20px;
+  flex:1;
+}
+.section-label{
+  font-size:10px;
+  color:var(--text3);
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  margin-bottom:10px;
+  padding-bottom:6px;
+  border-bottom:1px solid var(--border);
+}
+.archive-list{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.archive-item{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:6px 0;
+  border-bottom:1px solid var(--border);
+  text-decoration:none;
+  color:var(--text2);
+  font-size:11px;
+  transition:color .1s;
+}
+.archive-item:hover{color:var(--text);}
+.archive-item:last-child{border-bottom:none;}
+.archive-date{font-family:var(--mono);color:var(--text);width:100px;}
+.archive-regime{width:130px;font-size:10px;}
+.archive-arrow{margin-left:auto;color:var(--text3);}
+
+/* ── FOOTER ── */
+.footer{
+  padding:12px 24px;
+  border-top:1px solid var(--border);
+  font-size:10px;
+  color:var(--text3);
+  display:flex;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:8px;
+  font-family:var(--mono);
+  letter-spacing:.04em;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="logo">MOMENTUM<span>//</span>ALPHA</div>
+    <div class="logo-sub">Weekly momentum ranking system</div>
+  </div>
+  <div class="updated">
+    last updated<br>
+    <span>{{ last_updated }}</span>
+  </div>
+</div>
+
+<div class="regime-banner {{ regime_class }}">
+  <div class="regime-pill">{{ regime_label }}</div>
+  <div class="regime-desc">{{ regime_desc }}</div>
+  <div class="regime-composite">
+    composite <span>{{ regime_composite }}</span>
+  </div>
+</div>
+
+<div class="cards">
+
+  <!-- WEEKLY REPORT CARD -->
+  <div class="card {% if weekly_report %}primary{% else %}disabled{% endif %}">
+    <div class="card-header">
+      <div class="card-icon" style="color:var(--accent)">▦</div>
+      <div class="card-title">Weekly Report</div>
+      {% if weekly_report %}
+        <span class="card-badge badge-ready">READY</span>
+      {% else %}
+        <span class="card-badge badge-pending">PENDING</span>
+      {% endif %}
+    </div>
+    <div class="card-body">
+      {% if weekly_report %}
+        <div class="card-meta">{{ weekly_report.date }} &nbsp;·&nbsp; {{ scores.total }} tickers ranked</div>
+        <table class="top5">
+          {% for t in scores.top_five %}
+          <tr>
+            <td class="sym">{{ t.symbol }}</td>
+            <td class="scr">{{ "%.4f"|format(t.alpha_score) }}</td>
+            <td class="ths">
+              {% if t.conviction == 'very_high' %}<span class="badge-vh">VH</span>{% elif t.conviction == 'high' %}<span class="badge-hi">HI</span>{% endif %}
+              {{ t.thesis[:80] }}{% if t.thesis|length > 80 %}…{% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
+      {% else %}
+        <div class="card-desc" style="color:var(--text3)">
+          No report yet. Pipeline runs every Friday at 6pm ET.
+        </div>
+      {% endif %}
+    </div>
+    <div class="card-footer">
+      {% if weekly_report %}
+        <a href="{{ weekly_report.url }}" class="open-btn primary">Open Full Report →</a>
+      {% else %}
+        <span class="open-btn disabled">Not available yet</span>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- PRE-MARKET CARD -->
+  <div class="card {% if premarket_report %}premarket{% else %}disabled{% endif %}">
+    <div class="card-header">
+      <div class="card-icon" style="color:var(--amber)">◈</div>
+      <div class="card-title">Pre-Market Monitor</div>
+      {% if premarket_report %}
+        <span class="card-badge badge-premarket">LIVE</span>
+      {% else %}
+        <span class="card-badge badge-pending">MONDAY ONLY</span>
+      {% endif %}
+    </div>
+    <div class="card-body">
+      {% if premarket_report %}
+        <div class="card-meta">{{ premarket_report.date }} &nbsp;·&nbsp; auto-refreshes every 5 min</div>
+        <div class="card-desc">
+          Pre-market gap analysis for your top picks.
+          Checks every 30 min from 7:00–9:00 AM ET.
+          Shows trending direction and GO/CAUTION/SKIP guidance.
+        </div>
+      {% else %}
+        <div class="card-desc" style="color:var(--text3)">
+          Available Monday mornings from 7:00–9:30 AM ET.
+          Checks pre-market prices every 30 minutes and flags
+          gap moves with trending direction.
+        </div>
+      {% endif %}
+    </div>
+    <div class="card-footer">
+      {% if premarket_report %}
+        <a href="{{ premarket_report.url }}" class="open-btn premarket">Open Pre-Market Monitor →</a>
+      {% else %}
+        <span class="open-btn disabled">Not available yet</span>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+
+{% if archive %}
+<div class="archive-section">
+  <div class="section-label">Report archive</div>
+  <div class="archive-list">
+    {% for item in archive %}
+    <a href="{{ item.url }}" class="archive-item">
+      <span class="archive-date">{{ item.date }}</span>
+      <span class="archive-regime" style="color:var(--text3)">{{ item.regime }}</span>
+      <span class="archive-arrow">→</span>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<div class="footer">
+  <span>MOMENTUM//ALPHA · All signals from free public data · Not investment advice</span>
+  <span>Add to home screen for quick access</span>
+</div>
+
+</body>
+</html>"""
+
+
+def build_archive(limit: int = 12) -> list[dict]:
+    """List recent weekly reports for the archive section."""
+    items = []
+    for f in sorted(REPORTS.glob("????-??-??.html"), reverse=True)[:limit]:
+        items.append({
+            "date":   f.stem,
+            "url":    f"reports/{f.name}",
+            "regime": "—",  # could parse from file but keep it simple
+        })
+    return items
+
+
+REGIME_LABELS = {
+    "risk_on":         "RISK ON",
+    "trending_mixed":  "TRENDING / MIXED",
+    "choppy_neutral":  "CHOPPY / NEUTRAL",
+    "risk_off_mild":   "RISK OFF — MILD",
+    "risk_off_severe": "RISK OFF — SEVERE",
+    "unknown":         "UNKNOWN",
+}
+
+
+def run():
+    DOCS.mkdir(parents=True, exist_ok=True)
+
+    regime  = load_regime()
+    scores  = load_scores_summary()
+    weekly  = latest_report()
+    premark = latest_premarket()
+    archive = build_archive()
+
+    regime_name = regime.get("regime", "unknown")
+
+    tmpl = Template(HTML)
+    html = tmpl.render(
+        last_updated    = datetime.now().strftime("%Y-%m-%d %H:%M ET"),
+        regime_class    = regime_name,
+        regime_label    = REGIME_LABELS.get(regime_name, regime_name.upper()),
+        regime_desc     = regime.get("description", ""),
+        regime_composite = f"{regime.get('composite', 0):+.3f}",
+        weekly_report   = weekly,
+        premarket_report = premark,
+        scores          = scores,
+        archive         = archive,
+    )
+
+    out = DOCS / "index.html"
+    with open(out, "w", encoding="utf-8") as f:
+        f.write(html)
+
+    log.info(f"Index updated → {out}")
+
+
+if __name__ == "__main__":
+    run()
