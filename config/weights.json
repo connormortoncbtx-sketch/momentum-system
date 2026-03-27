@@ -2,8 +2,9 @@
   "_meta": {
     "description": "Signal weights and regime multipliers. This is the ONLY file the self-refinement pass may modify.",
     "schema_version": "1.0",
-    "last_modified": "init",
-    "modified_by": "init"
+    "last_modified": "2026-03-28",
+    "modified_by": "init",
+    "philosophy": "There are always winners in any market. The regime determines WHERE they are, not WHETHER they exist. Never reduce to zero — redirect."
   },
   "signal_weights": {
     "momentum":     0.30,
@@ -18,41 +19,46 @@
       "technicals":   1.10,
       "catalyst":     1.00,
       "fundamentals": 0.80,
-      "sentiment":    1.00
+      "sentiment":    1.00,
+      "note": "Broad momentum works. High RS, high beta, breakouts. Winners are everywhere."
     },
     "trending_mixed": {
       "momentum":     1.00,
       "technicals":   1.00,
-      "catalyst":     1.10,
+      "catalyst":     1.20,
       "fundamentals": 1.00,
-      "sentiment":    1.00
+      "sentiment":    1.00,
+      "note": "Momentum still works but needs a reason. Catalyst + momentum combos lead."
     },
     "choppy_neutral": {
-      "momentum":     0.70,
-      "technicals":   0.80,
-      "catalyst":     1.20,
+      "momentum":     0.85,
+      "technicals":   0.90,
+      "catalyst":     1.40,
       "fundamentals": 1.20,
-      "sentiment":    0.90
+      "sentiment":    1.10,
+      "note": "Pure momentum fades. Winners have specific catalysts or strong fundamentals driving them independent of market."
     },
     "risk_off_mild": {
-      "momentum":     0.50,
-      "technicals":   0.60,
-      "catalyst":     1.10,
-      "fundamentals": 1.40,
-      "sentiment":    0.80
+      "momentum":     0.80,
+      "technicals":   0.80,
+      "catalyst":     1.50,
+      "fundamentals": 1.30,
+      "sentiment":    1.20,
+      "note": "Sector rotation is the game. Find what IS working — defensives, commodities, short squeezes, idiosyncratic catalysts. Winners exist, look harder."
     },
     "risk_off_severe": {
-      "momentum":     0.20,
-      "technicals":   0.40,
-      "catalyst":     0.80,
-      "fundamentals": 1.60,
-      "sentiment":    0.60
+      "momentum":     0.70,
+      "technicals":   0.70,
+      "catalyst":     1.60,
+      "fundamentals": 1.40,
+      "sentiment":    1.30,
+      "note": "The biggest weekly winners often happen in brutal markets. Short squeezes, FDA approvals, takeovers, contra-trend sector pops. Catalyst and sentiment signals lead — find them."
     }
   },
   "gates": {
-    "min_composite_score":   0.0,
-    "min_momentum_score":   -1.0,
-    "min_fundamental_score": -1.0,
+    "min_composite_score":       0.0,
+    "min_momentum_score":       -1.0,
+    "min_fundamental_score":    -1.0,
     "require_positive_catalyst": false
   },
   "constraints": {
