@@ -34,7 +34,7 @@ logging.basicConfig(level=logging.INFO,
                     datefmt="%H:%M:%S")
 
 DATA_DIR    = Path("data")
-REPORTS     = Path("reports")
+REPORTS     = Path("docs/reports")
 SCORES_CSV  = DATA_DIR / "scores_final.csv"
 PRELOG      = DATA_DIR / "premarket_log.json"
 

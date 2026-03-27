@@ -21,8 +21,8 @@ logging.basicConfig(level=logging.INFO,
                     datefmt="%H:%M:%S")
 
 DATA_DIR  = Path("data")
-REPORTS   = Path("reports")
-DOCS      = Path("docs")           # GitHub Pages root
+REPORTS   = Path("docs/reports")
+DOCS      = Path("docs")
 
 
 def latest_report() -> dict | None:
