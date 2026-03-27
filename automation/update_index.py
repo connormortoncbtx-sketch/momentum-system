@@ -453,6 +453,25 @@ body{
     </div>
   </div>
 
+  <!-- TRADE LOG CARD -->
+  <div class="card" style="border-color:var(--color-border-secondary);grid-column:1/-1;">
+    <div class="card-header">
+      <div class="card-icon" style="color:var(--purple)">▣</div>
+      <div class="card-title">Trade Log</div>
+      <span class="card-badge" style="background:rgba(179,136,255,.1);color:var(--purple);border:1px solid rgba(179,136,255,.25);">ALWAYS ON</span>
+    </div>
+    <div class="card-body" style="display:flex;gap:32px;flex-wrap:wrap;">
+      <div class="card-desc" style="max-width:400px">
+        Log paper and live trades with entry price, stop loss, and trailing stop.
+        Track actual captured returns vs theoretical holds.
+        Analyze win rate, exit reason breakdown, and regime performance over time.
+      </div>
+    </div>
+    <div class="card-footer">
+      <a href="trade_log.html" class="open-btn" style="background:rgba(179,136,255,.08);color:var(--purple);border:1px solid rgba(179,136,255,.25);">Open Trade Log →</a>
+    </div>
+  </div>
+
 </div>
 
 {% if archive %}
