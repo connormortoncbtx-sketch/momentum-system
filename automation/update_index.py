@@ -472,6 +472,24 @@ body{
     </div>
   </div>
 
+  <!-- PLAYBOOK CARD -->
+  <div class="card" style="border-color:var(--color-border-secondary);grid-column:1/-1;">
+    <div class="card-header">
+      <div class="card-icon" style="color:var(--text2)">≡</div>
+      <div class="card-title">Trading Playbook</div>
+      <span class="card-badge badge-ready">REFERENCE</span>
+    </div>
+    <div class="card-body">
+      <div class="card-desc">
+        Full procedure — weekly schedule, how to read the report, entry decision tree,
+        two-phase exit strategy, and trade logging guide. Review Sunday evening before Monday open.
+      </div>
+    </div>
+    <div class="card-footer">
+      <a href="playbook.html" class="open-btn primary">Open Playbook →</a>
+    </div>
+  </div>
+
 </div>
 
 {% if archive %}
