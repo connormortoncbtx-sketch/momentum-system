@@ -50,6 +50,24 @@ def last_friday(from_date=None) -> datetime:
         hour=0, minute=0, second=0, microsecond=0)
 
 
+def trading_days_since(from_date: datetime) -> int:
+    """
+    Count trading days (Mon-Fri, excluding weekends) between
+    from_date and today. Used to guard against collecting returns
+    before the week has actually played out.
+    """
+    today = datetime.today()
+    if from_date >= today:
+        return 0
+    days = 0
+    current = from_date + timedelta(days=1)
+    while current <= today:
+        if current.weekday() < 5:  # Mon-Fri
+            days += 1
+        current += timedelta(days=1)
+    return days
+
+
 def fetch_weekly_returns(symbols: list[str],
                          week_start: datetime,
                          week_end: datetime) -> pd.Series:
@@ -106,6 +124,27 @@ def run():
     today       = datetime.today()
     this_friday = last_friday(today)
     last_fri    = this_friday - timedelta(weeks=1)
+
+    # Guard: ensure at least 5 trading days have passed since the scores
+    # were generated. Prevents collecting returns before the week plays out.
+    scored_at = None
+    if "scored_at" in scores.columns:
+        try:
+            scored_at = datetime.strptime(str(scores["scored_at"].iloc[0]), "%Y-%m-%d")
+        except Exception:
+            pass
+
+    if scored_at:
+        elapsed = trading_days_since(scored_at)
+        log.info(f"Scores generated: {scored_at.date()}  |  Trading days elapsed: {elapsed}")
+        if elapsed < 5:
+            log.warning(
+                f"Only {elapsed} trading days since scores were generated "
+                f"(need 5). Skipping return collection — run again next Monday."
+            )
+            return
+    else:
+        log.warning("Could not determine score date — proceeding anyway")
 
     # Check if we already have this week's returns
     if PERF_LOG.exists():
