@@ -12,7 +12,7 @@ permissions:
 jobs:
   run-pipeline:
     runs-on: ubuntu-latest
-    timeout-minutes: 180   # 3 hours max — full universe takes time
+    timeout-minutes: 300   # 5 hours max — larger universe needs more time
 
     steps:
       - name: Checkout repo
@@ -58,7 +58,6 @@ jobs:
           Universe: $(python -c "import pandas as pd; print(len(pd.read_csv('data/universe.csv')), 'tickers')")
           Top pick: $(python -c "import pandas as pd; df=pd.read_csv('data/scores_final.csv'); r=df.iloc[0]; print(r['symbol'], f'score={r[\"alpha_score\"]:.4f}')")"
 
-          git pull --rebase origin main
           git push
 
       - name: Upload report artifact
