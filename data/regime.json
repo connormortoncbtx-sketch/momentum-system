@@ -1,12 +1,12 @@
 {
   "regime": "risk_off_mild",
   "description": "Defensive rotation underway. Favor quality/defensives. Reduce exposure.",
-  "composite": -0.3788,
+  "composite": -0.3619,
   "scores": {
     "trend": -0.6018,
     "breadth": -0.7647,
     "sentiment": -0.6,
-    "rotation": 0.5695,
+    "rotation": 0.6821,
     "safety": 0.2748
   },
   "weights": {
@@ -25,7 +25,7 @@
       "spy_drawdown": -0.0699
     },
     "breadth": {
-      "qqq_ret_20d": -0.054,
+      "qqq_ret_20d": -0.0552,
       "iwm_ret_20d": -0.0518,
       "iwm_vs_spy": 0.0053,
       "iwm_above_sma50": false
@@ -37,11 +37,11 @@
       "hyg_vs_spy_20d": 0.0395
     },
     "rotation": {
-      "offensive_ret_20d": -0.0489,
-      "defensive_ret_20d": -0.0745,
-      "rotation_spread": 0.0256,
-      "xlk_slope": -0.001567,
-      "xlu_slope": -0.002377
+      "offensive_ret_20d": -0.0501,
+      "defensive_ret_20d": -0.0797,
+      "rotation_spread": 0.0296,
+      "xlk_slope": -0.00163,
+      "xlu_slope": -0.002729
     },
     "safety": {
       "tlt_ret_20d": -0.0487,
