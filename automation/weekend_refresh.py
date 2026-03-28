@@ -63,18 +63,52 @@ def check_prerequisites() -> bool:
     return True
 
 
+# Top N tickers to re-run catalyst on — matches 03_signals.py tier size
+SLOW_SIGNAL_TIER = 600
+
+
 # ── CATALYST REFRESH ──────────────────────────────────────────────────────────
 
-def refresh_catalyst(universe: pd.DataFrame) -> pd.DataFrame:
-    """Re-run catalyst signal on full universe."""
+def refresh_catalyst(universe: pd.DataFrame, signals: pd.DataFrame) -> pd.DataFrame:
+    """
+    Re-run catalyst signal on top N tickers by existing momentum score.
+    Everything outside the tier keeps its existing catalyst signal values.
+    """
     from pipeline.signals.catalyst import score as catalyst_score
 
-    log.info(f"Re-running catalyst signal on {len(universe)} symbols...")
-    df = catalyst_score(universe)
+    n_total   = len(universe)
+    tier_size = min(SLOW_SIGNAL_TIER, n_total)
 
-    # Rename to avoid column collision when merging back
-    cat_cols = [c for c in df.columns if c.startswith("sig_catalyst")]
-    return df[["symbol"] + cat_cols]
+    # Determine tier 2 by existing momentum score
+    if "sig_momentum" in signals.columns:
+        ranked    = signals[["symbol","sig_momentum"]].copy()
+        ranked["_rank"] = ranked["sig_momentum"].rank(ascending=False, method="min")
+        tier2_syms = set(ranked[ranked["_rank"] <= tier_size]["symbol"].tolist())
+    else:
+        tier2_syms = set(universe["symbol"].tolist())
+
+    tier2 = universe[universe["symbol"].isin(tier2_syms)].copy()
+    tier3 = universe[~universe["symbol"].isin(tier2_syms)].copy()
+
+    log.info(f"  Catalyst refresh: {len(tier2):,} tier-2 symbols "
+             f"(+{len(tier3):,} keeping existing scores)")
+
+    # Run catalyst only on tier 2
+    fresh     = catalyst_score(tier2)
+    cat_cols  = [c for c in fresh.columns if c.startswith("sig_catalyst")]
+
+    # For tier 3, pull existing catalyst scores from signals
+    existing_cats = [c for c in cat_cols if c in signals.columns]
+    if existing_cats and len(tier3) > 0:
+        tier3_cats = signals[signals["symbol"].isin(tier3["symbol"])][
+            ["symbol"] + existing_cats].copy()
+    else:
+        tier3_cats = tier3[["symbol"]].copy()
+        for col in cat_cols:
+            tier3_cats[col] = float("nan")
+
+    result = pd.concat([fresh[["symbol"] + cat_cols], tier3_cats], ignore_index=True)
+    return result
 
 
 def merge_refreshed_signals(signals: pd.DataFrame,
@@ -267,7 +301,7 @@ def run(run_label: str = "weekend_refresh"):
     log.info(f"  {len(signals)} symbols  |  regime: {regime_data['regime']}")
 
     # Re-run catalyst signal
-    fresh_catalyst = refresh_catalyst(universe)
+    fresh_catalyst = refresh_catalyst(universe, signals)
     signals        = merge_refreshed_signals(signals, fresh_catalyst)
 
     # Save updated signals
