@@ -1,13 +1,13 @@
 {
-  "regime": "risk_off_mild",
-  "description": "Defensive rotation underway. Favor quality/defensives. Reduce exposure.",
-  "composite": -0.3619,
+  "regime": "risk_off_severe",
+  "description": "Market stress. Capital preservation mode. Cash is a position.",
+  "composite": -0.5525,
   "scores": {
-    "trend": -0.6018,
-    "breadth": -0.7647,
+    "trend": -0.6787,
+    "breadth": -0.8214,
     "sentiment": -0.6,
-    "rotation": 0.6821,
-    "safety": 0.2748
+    "rotation": -0.1304,
+    "safety": -0.0403
   },
   "weights": {
     "trend": 0.3,
@@ -18,49 +18,49 @@
   },
   "details": {
     "trend": {
-      "spy_ret_20d": -0.0571,
-      "spy_ret_50d": -0.063,
+      "spy_ret_20d": -0.0737,
+      "spy_ret_50d": -0.0815,
       "spy_above_sma50": false,
       "spy_above_sma200": true,
-      "spy_drawdown": -0.0699
+      "spy_drawdown": -0.0858
     },
     "breadth": {
-      "qqq_ret_20d": -0.0552,
-      "iwm_ret_20d": -0.0518,
-      "iwm_vs_spy": 0.0053,
+      "qqq_ret_20d": -0.0737,
+      "iwm_ret_20d": -0.0769,
+      "iwm_vs_spy": -0.0032,
       "iwm_above_sma50": false
     },
     "sentiment": {
-      "vix": 27.44,
-      "vix_ma20": 24.8,
-      "vix_trend": 2.64,
-      "hyg_vs_spy_20d": 0.0395
+      "vix": 31.05,
+      "vix_ma20": 25.36,
+      "vix_trend": 5.69,
+      "hyg_vs_spy_20d": 0.0542
     },
     "rotation": {
-      "offensive_ret_20d": -0.0501,
-      "defensive_ret_20d": -0.0797,
-      "rotation_spread": 0.0296,
-      "xlk_slope": -0.00163,
-      "xlu_slope": -0.002729
+      "offensive_ret_20d": -0.0707,
+      "defensive_ret_20d": -0.0655,
+      "rotation_spread": -0.0053,
+      "xlk_slope": -0.002384,
+      "xlu_slope": -0.002129
     },
     "safety": {
-      "tlt_ret_20d": -0.0487,
-      "gld_ret_20d": -0.1718,
-      "tlt_vs_spy": 0.0083,
-      "gld_vs_spy": -0.1147
+      "tlt_ret_20d": -0.0443,
+      "gld_ret_20d": -0.1537,
+      "tlt_vs_spy": 0.0294,
+      "gld_vs_spy": -0.08
     }
   },
   "context": {
-    "spy_realized_vol_20d": 0.1405,
-    "vix": 27.44,
-    "as_of": "2026-03-27"
+    "spy_realized_vol_20d": 0.1489,
+    "vix": 31.05,
+    "as_of": "2026-03-28"
   },
   "playbook": {
-    "momentum": 0.8,
-    "technicals": 0.8,
-    "catalyst": 1.5,
-    "fundamentals": 1.3,
-    "sentiment": 1.2,
-    "note": "Sector rotation is the game. Find what IS working \u2014 defensives, commodities, short squeezes, idiosyncratic catalysts. Winners exist, look harder."
+    "momentum": 0.7,
+    "technicals": 0.7,
+    "catalyst": 1.6,
+    "fundamentals": 1.4,
+    "sentiment": 1.3,
+    "note": "The biggest weekly winners often happen in brutal markets. Short squeezes, FDA approvals, takeovers, contra-trend sector pops. Catalyst and sentiment signals lead \u2014 find them."
   }
 }
