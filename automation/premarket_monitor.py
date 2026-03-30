@@ -100,7 +100,7 @@ def analyze_trend(symbol: str, checks: list[dict]) -> dict:
     checks: list of {time, gap_pct, premarket_price} ordered oldest first
     """
     if len(checks) < 2:
-        return {"trend": "initial", "velocity": 0.0, "label": "—", "arrow": "·"}
+        return {"trend": "initial", "velocity": 0.0, "label": "—", "arrow": "·", "sparkline": "—"}
 
     gaps = [c["gap_pct"] for c in checks]
 
