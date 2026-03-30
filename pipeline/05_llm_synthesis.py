@@ -265,7 +265,7 @@ def run():
     DATA_DIR.mkdir(parents=True, exist_ok=True)
 
     log.info("Loading scores...")
-    scores = pd.read_csv(SCORES_CSV)
+    scores = pd.read_csv(SCORES_CSV) if SCORES_CSV.exists() else pd.read_csv(FINAL_CSV)
     universe_size = len(scores)
     scores["universe_size"] = universe_size
     log.info(f"  {universe_size:,} tickers")
