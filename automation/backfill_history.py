@@ -34,11 +34,15 @@ label quality — not the attribution analysis.
 
 import argparse
 import logging
+import sys
 import numpy as np
 import pandas as pd
 import yfinance as yf
 from pathlib import Path
 from datetime import datetime, timedelta, date
+
+# Ensure repo root is on path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 log = logging.getLogger(__name__)
 logging.basicConfig(
