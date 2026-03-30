@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="refresh" content="300">
+<title>PRE-MARKET // 2026-03-30</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#080c0f; --bg2:#0d1318; --bg3:#111820;
+  --border:#1e2d38; --border2:#243545;
+  --text:#c8d8e4; --text2:#6a8a9f; --text3:#3d5a6b;
+  --accent:#00c8ff; --green:#00e676; --amber:#ffab00; --red:#ff4444;
+  --mono:'IBM Plex Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:13px;line-height:1.5;}
+.header{padding:14px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.logo{font-size:18px;font-weight:600;letter-spacing:.15em;color:var(--accent);}
+.logo span{color:var(--text3);font-weight:300;}
+.meta{font-size:11px;color:var(--text2);}
+.checks-strip{display:flex;gap:0;border-bottom:1px solid var(--border);}
+.check-pill{padding:8px 20px;font-size:10px;letter-spacing:.08em;border-right:1px solid var(--border);color:var(--text3);}
+.check-pill.done{color:var(--text2);}
+.check-pill.active{color:var(--accent);border-bottom:2px solid var(--accent);margin-bottom:-1px;}
+.check-pill.pending{color:var(--text3);}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+thead th{background:var(--bg2);padding:8px 12px;text-align:left;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text2);border-bottom:1px solid var(--border2);white-space:nowrap;}
+tbody tr{border-bottom:1px solid var(--border);}
+tbody tr:hover{background:var(--bg2);}
+td{padding:7px 12px;white-space:nowrap;vertical-align:middle;}
+.sym{font-weight:600;font-size:13px;letter-spacing:.04em;}
+.gap-pos{color:var(--green);}
+.gap-neg{color:var(--red);}
+.gap-warn{color:var(--amber);}
+.spark{color:var(--text2);font-size:10px;letter-spacing:.02em;}
+.trend-ramping{color:var(--green);}
+.trend-fading{color:var(--red);}
+.trend-stable{color:var(--text2);}
+.trend-initial{color:var(--text3);}
+.action{display:inline-block;padding:2px 8px;font-size:10px;font-weight:600;letter-spacing:.08em;border-radius:2px;}
+.action-GO{background:rgba(0,230,118,.12);color:var(--green);border:1px solid rgba(0,230,118,.3);}
+.action-CAUTION{background:rgba(255,171,0,.10);color:var(--amber);border:1px solid rgba(255,171,0,.3);}
+.action-WATCH{background:rgba(255,171,0,.10);color:var(--amber);border:1px solid rgba(255,171,0,.3);}
+.action-WAIT{background:rgba(255,171,0,.08);color:var(--amber);border:1px solid rgba(255,171,0,.2);}
+.action-SKIP{background:rgba(255,68,68,.12);color:var(--red);border:1px solid rgba(255,68,68,.3);}
+.action-REVIEW{background:rgba(255,68,68,.10);color:var(--red);border:1px solid rgba(255,68,68,.25);}
+.reason{color:var(--text2);font-size:10px;max-width:320px;white-space:normal;line-height:1.4;}
+.rank{color:var(--text3);font-size:11px;}
+.thesis{color:var(--text3);font-size:10px;max-width:200px;white-space:normal;line-height:1.4;}
+.footer{padding:10px 24px;border-top:1px solid var(--border);font-size:10px;color:var(--text3);display:flex;justify-content:space-between;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+/* ── DECISION GUIDE ── */
+.guide-bar{
+  padding:8px 24px;
+  background:var(--bg2);
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  gap:12px;
+  cursor:pointer;
+  user-select:none;
+}
+.guide-bar:hover{background:var(--bg3);}
+.guide-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);}
+.guide-pills{display:flex;gap:6px;flex-wrap:wrap;}
+.gpill{padding:2px 8px;font-size:9px;font-weight:600;letter-spacing:.08em;border-radius:2px;cursor:pointer;}
+.gpill-go    {background:rgba(0,230,118,.12);color:var(--green);border:1px solid rgba(0,230,118,.3);}
+.gpill-caution{background:rgba(255,171,0,.10);color:var(--amber);border:1px solid rgba(255,171,0,.3);}
+.gpill-skip  {background:rgba(255,68,68,.12);color:var(--red);border:1px solid rgba(255,68,68,.3);}
+.gpill-wait  {background:rgba(255,171,0,.08);color:var(--amber);border:1px solid rgba(255,171,0,.2);}
+.guide-toggle{margin-left:auto;font-size:10px;color:var(--text3);}
+
+.guide-panel{
+  display:none;
+  background:var(--bg3);
+  border-bottom:2px solid var(--border2);
+  padding:16px 24px 20px;
+}
+.guide-panel.open{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+@media(max-width:600px){.guide-panel.open{grid-template-columns:1fr;}}
+
+.guide-section-title{
+  font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text3);margin-bottom:10px;padding-bottom:6px;
+  border-bottom:1px solid var(--border);
+}
+.guide-step{
+  display:flex;gap:10px;margin-bottom:8px;font-size:11px;line-height:1.5;
+}
+.guide-step-num{
+  flex-shrink:0;width:18px;height:18px;border-radius:50%;
+  background:var(--bg2);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;color:var(--text3);margin-top:1px;
+}
+.guide-step-body{color:var(--text2);}
+.guide-step-body strong{color:var(--text);font-weight:500;}
+.guide-rule{
+  font-size:10px;line-height:1.6;color:var(--text2);
+  padding:6px 10px;background:var(--bg2);border-radius:4px;
+  border-left:2px solid var(--border2);margin-bottom:6px;
+}
+.guide-rule.r-go    {border-left-color:var(--green);}
+.guide-rule.r-caution{border-left-color:var(--amber);}
+.guide-rule.r-skip  {border-left-color:var(--red);}
+.guide-rule .rl{font-weight:500;}
+.guide-rule .rl.go    {color:var(--green);}
+.guide-rule .rl.caution{color:var(--amber);}
+.guide-rule .rl.skip  {color:var(--red);}
+</style>
+</head>
+<body>
+<div class="header">
+  <div>
+    <div class="logo">PRE-MARKET<span>//</span>MONITOR</div>
+    <div class="meta">2026-03-30 &nbsp;·&nbsp; top 30 tickers &nbsp;·&nbsp; auto-refreshes every 5 min</div>
+  </div>
+  <div class="meta" style="text-align:right">
+    last check: <span style="color:var(--accent)">15:50:04</span><br>
+    next check: <span style="color:var(--text2)">complete</span>
+  </div>
+</div>
+
+<div class="checks-strip">
+
+  <div class="check-pill done">7:00 AM</div>
+
+  <div class="check-pill done">7:30 AM</div>
+
+  <div class="check-pill done">8:00 AM</div>
+
+  <div class="check-pill done">8:30 AM</div>
+
+  <div class="check-pill done">9:00 AM</div>
+
+</div>
+
+<!-- DECISION GUIDE -->
+<div class="guide-bar" onclick="toggleGuide()">
+  <span class="guide-label">Entry decision guide</span>
+  <div class="guide-pills">
+    <span class="gpill gpill-go">GO = enter</span>
+    <span class="gpill gpill-caution">CAUTION = smaller / wait</span>
+    <span class="gpill gpill-wait">WAIT = Tuesday</span>
+    <span class="gpill gpill-skip">SKIP = pass entirely</span>
+  </div>
+  <span class="guide-toggle" id="guide-toggle-label">▼ expand</span>
+</div>
+
+<div class="guide-panel" id="guide-panel">
+
+  <div>
+    <div class="guide-section-title">Step-by-step entry procedure</div>
+
+    <div class="guide-step">
+      <div class="guide-step-num">1</div>
+      <div class="guide-step-body">
+        <strong>Check regime (index page).</strong><br>
+        Risk-on → bias Monday. Everything else → bias Tuesday unless overridden below.
+      </div>
+    </div>
+
+    <div class="guide-step">
+      <div class="guide-step-num">2</div>
+      <div class="guide-step-body">
+        <strong>Read the Action column first. It is binary.</strong><br>
+        SKIP or REVIEW-with-bad-news → do not enter, no exceptions.<br>
+        WAIT → defer to Tuesday, re-evaluate then.<br>
+        GO / CAUTION / WATCH → proceed to step 3.
+      </div>
+    </div>
+
+    <div class="guide-step">
+      <div class="guide-step-num">3</div>
+      <div class="guide-step-body">
+        <strong>Read Trend + Gap together.</strong> See rules →
+      </div>
+    </div>
+
+    <div class="guide-step">
+      <div class="guide-step-num">4</div>
+      <div class="guide-step-body">
+        <strong>Confirm with sparkline.</strong><br>
+        Last 2 checks both higher than prior 2 → ramping confirmed.<br>
+        Last 2 checks both lower → fading confirmed.<br>
+        Alternating → stable, use gap size rule.
+      </div>
+    </div>
+
+    <div class="guide-step">
+      <div class="guide-step-num">5</div>
+      <div class="guide-step-body">
+        <strong>If deferred to Tuesday:</strong> check Monday close vs Friday close.<br>
+        Monday closed above Friday → enter Tuesday open.<br>
+        Monday closed &gt;5% below Friday → check for news, skip if none found.<br>
+        Monday closed within 5% either direction → enter Tuesday open.
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="guide-section-title">Trend + gap decision rules</div>
+
+    <div class="guide-rule r-go">
+      <span class="rl go">GO — Monday open</span><br>
+      Gap &lt;10% + any trend · Gap &lt;25% + ramping (↑↑)
+    </div>
+
+    <div class="guide-rule r-go">
+      <span class="rl go">GO — Monday open</span><br>
+      Gap &lt;10% + stable (→)
+    </div>
+
+    <div class="guide-rule r-caution">
+      <span class="rl caution">TUESDAY — defer entry</span><br>
+      Gap 10-25% + stable (→) · Gap any + fading (↓) over 10%
+    </div>
+
+    <div class="guide-rule r-caution">
+      <span class="rl caution">CAUTION — enter smaller</span><br>
+      Gap 10-25% + ramping · reduce position size, not thesis
+    </div>
+
+    <div class="guide-rule r-skip">
+      <span class="rl skip">SKIP — pass entirely</span><br>
+      Gap &gt;25% + fading (↓↓) · move exhausted, revisit next week
+    </div>
+
+    <div class="guide-rule r-skip">
+      <span class="rl skip">REVIEW — check news first</span><br>
+      Gapping down &gt;5% + fading · specific neg catalyst = skip,
+      no news = treat as caution
+    </div>
+
+    <div class="guide-section-title" style="margin-top:14px">WATCH action</div>
+    <div class="guide-rule r-caution">
+      <span class="rl caution">WATCH = possible squeeze</span><br>
+      Gap &gt;25% still ramping. Do not chase at open.
+      Wait for first 5-min candle to close, enter on pullback only.
+      Set hard stop at pre-market low.
+    </div>
+  </div>
+
+</div>
+
+<table>
+<thead>
+  <tr>
+    <th>Rank</th>
+    <th>Symbol</th>
+    <th>Sector</th>
+    <th>Fri Close</th>
+    <th>Pre-Mkt</th>
+    <th>Gap</th>
+    <th>Trend</th>
+    <th>Checks</th>
+    <th>Action</th>
+    <th>Reason</th>
+    <th>Thesis</th>
+  </tr>
+</thead>
+<tbody>
+
+<tr>
+  <td class="rank">#13</td>
+  <td class="sym">SATL</td>
+  <td style="color:var(--text3);font-size:10px">nan</td>
+  <td style="text-align:right">$5.93</td>
+  <td style="text-align:right;color:var(--accent)">$5.22</td>
+  <td class="gap-neg" style="text-align:right;font-weight:500">
+    -12.1%
+  </td>
+  <td class="trend-stable">→ stable</td>
+  <td class="spark">-11.3%  -12.7%  -15.0%  -13.7%  -12.1%</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap -12.1% — thesis intact, proceed as planned.</td>
+  <td class="thesis">Volume surge catalyst with analyst upgrades accelerating amid defensive flight to quality</td>
+</tr>
+
+<tr>
+  <td class="rank">#15</td>
+  <td class="sym">ESLT</td>
+  <td style="color:var(--text3);font-size:10px">nan</td>
+  <td style="text-align:right">$869.82</td>
+  <td style="text-align:right;color:var(--accent)">$829.89</td>
+  <td class="gap-neg" style="text-align:right;font-weight:500">
+    -4.6%
+  </td>
+  <td class="trend-stable">→ stable</td>
+  <td class="spark">-2.7%  -4.2%  -3.7%  -4.3%  -4.6%</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap -4.6% — thesis intact, proceed as planned.</td>
+  <td class="thesis">Top-16 alpha rank with strong growth metrics and positive news tone in severe risk-off regime</td>
+</tr>
+
+<tr>
+  <td class="rank">#14</td>
+  <td class="sym">NVMI</td>
+  <td style="color:var(--text3);font-size:10px">nan</td>
+  <td style="text-align:right">$440.72</td>
+  <td style="text-align:right;color:var(--accent)">$424.07</td>
+  <td class="gap-neg" style="text-align:right;font-weight:500">
+    -3.8%
+  </td>
+  <td class="trend-stable">→ stable</td>
+  <td class="spark">-3.1%  -1.6%  -4.5%  -5.1%  -3.8%</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap -3.8% — thesis intact, proceed as planned.</td>
+  <td class="thesis">Top 15 alpha rank with strong fundamentals and analyst catalyst driving outperformance in risk-off conditions</td>
+</tr>
+
+<tr>
+  <td class="rank">#10</td>
+  <td class="sym">AMAT</td>
+  <td style="color:var(--text3);font-size:10px">nan</td>
+  <td style="text-align:right">$337.17</td>
+  <td style="text-align:right;color:var(--accent)">$325.69</td>
+  <td class="gap-neg" style="text-align:right;font-weight:500">
+    -3.4%
+  </td>
+  <td class="trend-stable">→ stable</td>
+  <td class="spark">-1.9%  -2.0%  -3.5%  -3.6%  -3.4%</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap -3.4% — thesis intact, proceed as planned.</td>
+  <td class="thesis">Top-10 alpha rank driven by analyst upgrades and strong fundamentals despite severe risk-off conditions</td>
+</tr>
+
+<tr>
+  <td class="rank">#21</td>
+  <td class="sym">ADEA</td>
+  <td style="color:var(--text3);font-size:10px">nan</td>
+  <td style="text-align:right">$24.19</td>
+  <td style="text-align:right;color:var(--accent)">$23.41</td>
+  <td class="gap-neg" style="text-align:right;font-weight:500">
+    -3.3%
+  </td>
+  <td class="trend-fading">↓ fading</td>
+  <td class="spark">-0.7%  -0.5%  -3.5%  -3.9%  -3.3%</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap -3.3% — thesis intact, proceed as planned.</td>
+  <td class="thesis">Top 1% alpha score with analyst upgrade catalyst and 75% growth fundamentals in risk-off flight to quality</td>
+</tr>
+
+<tr>
+  <td class="rank">#19</td>
+  <td class="sym">KLAC</td>
+  <td style="color:var(--text3);font-size:10px">nan</td>
+  <td style="text-align:right">$1443.21</td>
+  <td style="text-align:right;color:var(--accent)">$1399.84</td>
+  <td class="gap-neg" style="text-align:right;font-weight:500">
+    -3.0%
+  </td>
+  <td class="trend-stable">→ stable</td>
+  <td class="spark">-2.4%  -2.5%  -4.2%  -3.9%  -3.0%</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap -3.0% — thesis intact, proceed as planned.</td>
+  <td class="thesis">Top-14 alpha with analyst upgrade catalyst and strong fundamentals despite sector headwinds</td>
+</tr>
+
+<tr>
+  <td class="rank">#3</td>
+  <td class="sym">GCT</td>
+  <td style="color:var(--text3);font-size:10px">nan</td>
+  <td style="text-align:right">$41.59</td>
+  <td style="text-align:right;color:var(--accent)">$42.79</td>
+  <td class="gap-pos" style="text-align:right;font-weight:500">
+    +2.9%
+  </td>
+  <td class="trend-ramping">↑ ramping</td>
+  <td class="spark">-0.6%  -0.3%  +1.1%  +1.1%  +2.9%</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap +2.9% — thesis intact, proceed as planned.</td>
+  <td class="thesis">Rank #8 alpha with 94th percentile growth, analyst upgrade signal firing amid severe risk-off rotation.</td>
+</tr>
+
+<tr>
+  <td class="rank">#11</td>
+  <td class="sym">AKAM</td>
+  <td style="color:var(--text3);font-size:10px">nan</td>
+  <td style="text-align:right">$114.5</td>
+  <td style="text-align:right;color:var(--accent)">$111.32</td>
+  <td class="gap-neg" style="text-align:right;font-weight:500">
+    -2.8%
+  </td>
+  <td class="trend-fading">↓ fading</td>
+  <td class="spark">-0.8%  -1.1%  -2.9%  -3.4%  -2.8%</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap -2.8% — thesis intact, proceed as planned.</td>
+  <td class="thesis">Risk-off flight to quality into profitable tech infrastructure play with analyst upgrade momentum</td>
+</tr>
+
+<tr>
+  <td class="rank">#18</td>
+  <td class="sym">ALNT</td>
+  <td style="color:var(--text3);font-size:10px">nan</td>
+  <td style="text-align:right">$62.42</td>
+  <td style="text-align:right;color:var(--accent)">$60.69</td>
+  <td class="gap-neg" style="text-align:right;font-weight:500">
+    -2.8%
+  </td>
+  <td class="trend-stable">→ stable</td>
+  <td class="spark">-3.4%  -2.7%  -4.0%  -3.2%  -2.8%</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap -2.8% — thesis intact, proceed as planned.</td>
+  <td class="thesis">Top-20 alpha rank driven by strong fundamentals and analyst upgrades during risk-off flight to quality</td>
+</tr>
+
+<tr>
+  <td class="rank">#30</td>
+  <td class="sym">CRUS</td>
+  <td style="color:var(--text3);font-size:10px">nan</td>
+  <td style="text-align:right">$143.39</td>
+  <td style="text-align:right;color:var(--accent)">$139.95</td>
+  <td class="gap-neg" style="text-align:right;font-weight:500">
+    -2.4%
+  </td>
+  <td class="trend-stable">→ stable</td>
+  <td class="spark">-1.5%  -1.1%  -2.1%  -2.4%  -2.4%</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap -2.4% — thesis intact, proceed as planned.</td>
+  <td class="thesis">Defensive semiconductor play with 75th percentile breakout proximity amid severe risk-off rotation</td>
+</tr>
+
+<tr>
+  <td class="rank">#1</td>
+  <td class="sym">AEIS</td>
+  <td style="color:var(--text3);font-size:10px">nan</td>
+  <td style="text-align:right">$310.76</td>
+  <td style="text-align:right;color:var(--accent)">$303.72</td>
+  <td class="gap-neg" style="text-align:right;font-weight:500">
+    -2.3%
+  </td>
+  <td class="trend-fading">↓ fading</td>
+  <td class="spark">-1.5%  -0.7%  -2.9%  -4.4%  -2.3%</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap -2.3% — thesis intact, proceed as planned.</td>
+  <td class="thesis">Top-ranked alpha with strong analyst upgrades driving momentum despite severe risk-off conditions.</td>
+</tr>
+
+<tr>
+  <td class="rank">#26</td>
+  <td class="sym">BCRX</td>
+  <td style="color:var(--text3);font-size:10px">nan</td>
+  <td style="text-align:right">$9.33</td>
+  <td style="text-align:right;color:var(--accent)">$9.5</td>
+  <td class="gap-pos" style="text-align:right;font-weight:500">
+    +1.8%
+  </td>
+  <td class="trend-stable">→ stable</td>
+  <td class="spark">+1.6%  +1.5%  +1.3%  +0.8%  +1.8%</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap +1.8% — thesis intact, proceed as planned.</td>
+  <td class="thesis">Top-30 alpha rank with analyst upgrades driving breakout setup in defensive biotech rotation</td>
+</tr>
+
+<tr>
+  <td class="rank">#25</td>
+  <td class="sym">VMD</td>
+  <td style="color:var(--text3);font-size:10px">nan</td>
+  <td style="text-align:right">$9.25</td>
+  <td style="text-align:right;color:var(--accent)">$9.4</td>
+  <td class="gap-pos" style="text-align:right;font-weight:500">
+    +1.7%
+  </td>
+  <td class="trend-stable">→ stable</td>
+  <td class="spark">+0.9%  +1.3%  +1.4%  +1.9%  +1.7%</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap +1.7% — thesis intact, proceed as planned.</td>
+  <td class="thesis">Analyst upgrade catalyst driving breakout in high-growth name during defensive rotation</td>
+</tr>
+
+<tr>
+  <td class="rank">#17</td>
+  <td class="sym">APEI</td>
+  <td style="color:var(--text3);font-size:10px">nan</td>
+  <td style="text-align:right">$57.24</td>
+  <td style="text-align:right;color:var(--accent)">$56.38</td>
+  <td class="gap-neg" style="text-align:right;font-weight:500">
+    -1.5%
+  </td>
+  <td class="trend-stable">→ stable</td>
+  <td class="spark">-1.4%  -2.1%  -1.4%  -1.8%  -1.5%</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap -1.5% — thesis intact, proceed as planned.</td>
+  <td class="thesis">Top-20 alpha rank with 90% breakout proximity while market sells off educational services</td>
+</tr>
+
+<tr>
+  <td class="rank">#27</td>
+  <td class="sym">XENE</td>
+  <td style="color:var(--text3);font-size:10px">nan</td>
+  <td style="text-align:right">$54.48</td>
+  <td style="text-align:right;color:var(--accent)">$55.18</td>
+  <td class="gap-pos" style="text-align:right;font-weight:500">
+    +1.3%
+  </td>
+  <td class="trend-stable">→ stable</td>
+  <td class="spark">+0.9%  +0.6%  +0.9%  +1.0%  +1.3%</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap +1.3% — thesis intact, proceed as planned.</td>
+  <td class="thesis">Analyst upgrade cycle driving momentum with #31 alpha rank in severe risk-off market</td>
+</tr>
+
+<tr>
+  <td class="rank">#23</td>
+  <td class="sym">GILD</td>
+  <td style="color:var(--text3);font-size:10px">nan</td>
+  <td style="text-align:right">$134.25</td>
+  <td style="text-align:right;color:var(--accent)">$135.82</td>
+  <td class="gap-pos" style="text-align:right;font-weight:500">
+    +1.2%
+  </td>
+  <td class="trend-stable">→ stable</td>
+  <td class="spark">+0.8%  +0.6%  +1.1%  +0.8%  +1.2%</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap +1.2% — thesis intact, proceed as planned.</td>
+  <td class="thesis">Top 1% alpha score with analyst upgrades driving defensive biotech rotation in severe risk-off</td>
+</tr>
+
+<tr>
+  <td class="rank">#2</td>
+  <td class="sym">PBYI</td>
+  <td style="color:var(--text3);font-size:10px">nan</td>
+  <td style="text-align:right">$6.08</td>
+  <td style="text-align:right;color:var(--accent)">$6.14</td>
+  <td class="gap-pos" style="text-align:right;font-weight:500">
+    +1.0%
+  </td>
+  <td class="trend-stable">→ stable</td>
+  <td class="spark">+2.5%  +0.5%  +1.1%  +0.4%  +1.0%</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap +1.0% — thesis intact, proceed as planned.</td>
+  <td class="thesis">Volume surge driving #2 ranked alpha with strong fundamentals in severe risk-off conditions</td>
+</tr>
+
+<tr>
+  <td class="rank">#20</td>
+  <td class="sym">INVA</td>
+  <td style="color:var(--text3);font-size:10px">nan</td>
+  <td style="text-align:right">$22.66</td>
+  <td style="text-align:right;color:var(--accent)">$22.87</td>
+  <td class="gap-pos" style="text-align:right;font-weight:500">
+    +0.9%
+  </td>
+  <td class="trend-stable">→ stable</td>
+  <td class="spark">+0.6%  +0.8%  +1.0%  +1.1%  +0.9%</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap +0.9% — thesis intact, proceed as planned.</td>
+  <td class="thesis">Analyst upgrade catalyst with strong fundamentals in severe risk-off flight to quality</td>
+</tr>
+
+<tr>
+  <td class="rank">#12</td>
+  <td class="sym">SIRI</td>
+  <td style="color:var(--text3);font-size:10px">nan</td>
+  <td style="text-align:right">$22.84</td>
+  <td style="text-align:right;color:var(--accent)">$23.0</td>
+  <td class="gap-pos" style="text-align:right;font-weight:500">
+    +0.7%
+  </td>
+  <td class="trend-stable">→ stable</td>
+  <td class="spark">-0.1%  -0.1%  +0.0%  +0.6%  +0.7%</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap +0.7% — thesis intact, proceed as planned.</td>
+  <td class="thesis">Top 12 alpha rank with 75% breakout proximity while market flees to defensive media stocks</td>
+</tr>
+
+<tr>
+  <td class="rank">#6</td>
+  <td class="sym">SFNC</td>
+  <td style="color:var(--text3);font-size:10px">nan</td>
+  <td style="text-align:right">$18.96</td>
+  <td style="text-align:right;color:var(--accent)">$19.08</td>
+  <td class="gap-pos" style="text-align:right;font-weight:500">
+    +0.7%
+  </td>
+  <td class="trend-stable">→ stable</td>
+  <td class="spark">+0.0%  -0.2%  +0.0%  +0.5%  +0.7%</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap +0.7% — thesis intact, proceed as planned.</td>
+  <td class="thesis">Top-4 alpha score driven by 99th percentile analyst signal and strong growth metrics during defensive rotation</td>
+</tr>
+
+<tr>
+  <td class="rank">#8</td>
+  <td class="sym">ESCA</td>
+  <td style="color:var(--text3);font-size:10px">nan</td>
+  <td style="text-align:right">$17.35</td>
+  <td style="text-align:right;color:var(--accent)">$17.25</td>
+  <td class="gap-neg" style="text-align:right;font-weight:500">
+    -0.6%
+  </td>
+  <td class="trend-stable">→ stable</td>
+  <td class="spark">+1.0%  -1.4%  +0.5%  -0.6%  -0.6%</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap -0.6% — thesis intact, proceed as planned.</td>
+  <td class="thesis">Analyst upgrade catalyst drives #6 ranked alpha with strong profitability metrics in defensive flight-to-quality.</td>
+</tr>
+
+<tr>
+  <td class="rank">#29</td>
+  <td class="sym">LOCO</td>
+  <td style="color:var(--text3);font-size:10px">nan</td>
+  <td style="text-align:right">$13.81</td>
+  <td style="text-align:right;color:var(--accent)">$13.87</td>
+  <td class="gap-pos" style="text-align:right;font-weight:500">
+    +0.4%
+  </td>
+  <td class="trend-stable">→ stable</td>
+  <td class="spark">+0.2%  +0.2%  -0.3%  +0.3%  +0.4%</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap +0.4% — thesis intact, proceed as planned.</td>
+  <td class="thesis">Strong analyst upgrades driving breakout setup with solid growth fundamentals in defensive rotation</td>
+</tr>
+
+<tr>
+  <td class="rank">#28</td>
+  <td class="sym">FBIOP</td>
+  <td style="color:var(--text3);font-size:10px">nan</td>
+  <td style="text-align:right">$13.38</td>
+  <td style="text-align:right;color:var(--accent)">$13.42</td>
+  <td class="gap-pos" style="text-align:right;font-weight:500">
+    +0.3%
+  </td>
+  <td class="trend-stable">→ stable</td>
+  <td class="spark">-0.4%  +1.4%  -0.4%  +0.3%  +0.3%</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap +0.3% — thesis intact, proceed as planned.</td>
+  <td class="thesis">Top-decile alpha rank with strong momentum and positive news flow in severe risk-off environment</td>
+</tr>
+
+<tr>
+  <td class="rank">#24</td>
+  <td class="sym">PRDO</td>
+  <td style="color:var(--text3);font-size:10px">nan</td>
+  <td style="text-align:right">$37.23</td>
+  <td style="text-align:right;color:var(--accent)">$37.15</td>
+  <td class="gap-neg" style="text-align:right;font-weight:500">
+    -0.2%
+  </td>
+  <td class="trend-stable">→ stable</td>
+  <td class="spark">-0.2%  -1.2%  -0.2%  -0.3%  -0.2%</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap -0.2% — thesis intact, proceed as planned.</td>
+  <td class="thesis">Top-30 alpha with analyst upgrade catalyst driving volume surge into breakout zone</td>
+</tr>
+
+<tr>
+  <td class="rank">#9</td>
+  <td class="sym">LSTA</td>
+  <td style="color:var(--text3);font-size:10px">nan</td>
+  <td style="text-align:right">$5.02</td>
+  <td style="text-align:right;color:var(--accent)">$5.01</td>
+  <td class="gap-neg" style="text-align:right;font-weight:500">
+    -0.2%
+  </td>
+  <td class="trend-stable">→ stable</td>
+  <td class="spark">+0.0%  -0.2%  -0.2%  -0.2%  -0.2%</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap -0.2% — thesis intact, proceed as planned.</td>
+  <td class="thesis">Volume surge breakout with analyst upgrade catalyst drives #7 ranking despite severe risk-off.</td>
+</tr>
+
+<tr>
+  <td class="rank">#22</td>
+  <td class="sym">FDBC</td>
+  <td style="color:var(--text3);font-size:10px">nan</td>
+  <td style="text-align:right">$42.79</td>
+  <td style="text-align:right;color:var(--accent)">$42.87</td>
+  <td class="gap-pos" style="text-align:right;font-weight:500">
+    +0.2%
+  </td>
+  <td class="trend-stable">→ stable</td>
+  <td class="spark">+1.6%  -0.2%  -0.2%  +0.2%  +0.2%</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap +0.2% — thesis intact, proceed as planned.</td>
+  <td class="thesis">Top-24 alpha rank with 84% growth score and volume surge in severe risk-off environment</td>
+</tr>
+
+<tr>
+  <td class="rank">#7</td>
+  <td class="sym">LSAK</td>
+  <td style="color:var(--text3);font-size:10px">nan</td>
+  <td style="text-align:right">$4.9</td>
+  <td style="text-align:right;color:var(--accent)">$4.9</td>
+  <td class="gap-neg" style="text-align:right;font-weight:500">
+    +0.0%
+  </td>
+  <td class="trend-stable">→ stable</td>
+  <td class="spark">-0.1%  +0.1%  -0.4%  +0.6%  +0.0%</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap +0.0% — thesis intact, proceed as planned.</td>
+  <td class="thesis">Analyst upgrade catalyst with positive news flow drives #5 alpha rank in severe risk-off</td>
+</tr>
+
+<tr>
+  <td class="rank">#16</td>
+  <td class="sym">FSLY</td>
+  <td style="color:var(--text3);font-size:10px">nan</td>
+  <td style="text-align:right">$27.43</td>
+  <td style="text-align:right;color:var(--accent)">$25.89</td>
+  <td class="gap-neg" style="text-align:right;font-weight:500">
+    -5.6%
+  </td>
+  <td class="trend-fading">↓ fading</td>
+  <td class="spark">-2.9%  -3.1%  -6.3%  -8.7%  -5.6%</td>
+  <td><span class="action action-REVIEW">REVIEW</span></td>
+  <td class="reason">Gapping down -5.6% — check for negative news before entering.</td>
+  <td class="thesis">Top-20 alpha score with strong fundamentals and positive sentiment diverging from severe market stress</td>
+</tr>
+
+<tr>
+  <td class="rank">#5</td>
+  <td class="sym">LITE</td>
+  <td style="color:var(--text3);font-size:10px">nan</td>
+  <td style="text-align:right">$702.73</td>
+  <td style="text-align:right;color:var(--accent)">$664.55</td>
+  <td class="gap-neg" style="text-align:right;font-weight:500">
+    -5.4%
+  </td>
+  <td class="trend-fading">↓ fading</td>
+  <td class="spark">-4.0%  -4.4%  -6.8%  -7.6%  -5.4%</td>
+  <td><span class="action action-REVIEW">REVIEW</span></td>
+  <td class="reason">Gapping down -5.4% — check for negative news before entering.</td>
+  <td class="thesis">Rank #3 alpha with strong analyst upgrades driving momentum in severe risk-off conditions</td>
+</tr>
+
+<tr>
+  <td class="rank">#4</td>
+  <td class="sym">FORM</td>
+  <td style="color:var(--text3);font-size:10px">nan</td>
+  <td style="text-align:right">$97.93</td>
+  <td style="text-align:right;color:var(--accent)">$92.94</td>
+  <td class="gap-neg" style="text-align:right;font-weight:500">
+    -5.1%
+  </td>
+  <td class="trend-fading">↓ fading</td>
+  <td class="spark">-4.1%  -3.1%  -5.3%  -6.6%  -5.1%</td>
+  <td><span class="action action-REVIEW">REVIEW</span></td>
+  <td class="reason">Gapping down -5.1% — check for negative news before entering.</td>
+  <td class="thesis">Top-decile alpha with 90th percentile growth metrics defying severe risk-off conditions.</td>
+</tr>
+
+</tbody>
+</table>
+
+<div class="footer">
+  <span>MOMENTUM//ALPHA Pre-Market Monitor · 2026-03-30</span>
+  <span>Prices delayed · Not investment advice · Always verify with your broker</span>
+</div>
+<script>
+function toggleGuide() {
+  const panel  = document.getElementById('guide-panel');
+  const label  = document.getElementById('guide-toggle-label');
+  const isOpen = panel.classList.toggle('open');
+  label.textContent = isOpen ? '▲ collapse' : '▼ expand';
+}
+</script>
+</body>
+</html>
