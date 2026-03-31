@@ -49,9 +49,18 @@ def run_stage(module_path: str, label: str) -> bool:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--from",  dest="from_stage", default="01")
-    parser.add_argument("--only",  dest="only_stage", default=None)
+    parser.add_argument("--from",     dest="from_stage", default="01")
+    parser.add_argument("--only",     dest="only_stage", default=None)
+    parser.add_argument("--no-holiday-check", dest="skip_holiday", action="store_true",
+                        help="Skip the holiday week check (for manual runs)")
     args = parser.parse_args()
+
+    # Holiday check — skip if not a full 5-day trading week
+    # Bypass with --no-holiday-check for manual mid-week runs
+    if not args.skip_holiday:
+        from automation.tz_utils import assert_normal_week
+        if not assert_normal_week("weekly_pipeline"):
+            sys.exit(0)
 
     log.info("=" * 60)
     log.info("  MOMENTUM SYSTEM — Weekly Pipeline")
