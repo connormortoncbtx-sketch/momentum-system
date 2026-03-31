@@ -2,7 +2,10 @@ name: Weekly Pipeline
 
 on:
   schedule:
-    # Every Friday at 6:00 PM Eastern (23:00 UTC, accounts for EDT)
+    # Every Friday at 5:00 PM CT
+    # CDT (Mar-Nov): UTC-5 → 22:00 UTC
+    - cron: '0 22 * * 5'
+    # CST (Nov-Mar): UTC-6 → 23:00 UTC
     - cron: '0 23 * * 5'
   workflow_dispatch:   # allow manual trigger from GitHub UI
 

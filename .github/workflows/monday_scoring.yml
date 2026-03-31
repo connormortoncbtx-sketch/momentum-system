@@ -2,9 +2,10 @@ name: Monday Scoring + Self-Refinement
 
 on:
   schedule:
-    # Every Monday at 5:00 PM Eastern (22:00 UTC, accounts for EDT)
-    # Fires after market close — collects full week of actual returns
-    # from the PREVIOUS Friday's pipeline run
+    # Every Monday at 4:00 PM CT
+    # CDT (Mar-Nov): UTC-5 → 21:00 UTC
+    - cron: '0 21 * * 1'
+    # CST (Nov-Mar): UTC-6 → 22:00 UTC
     - cron: '0 22 * * 1'
   workflow_dispatch:
 
