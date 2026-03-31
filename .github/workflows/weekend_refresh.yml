@@ -74,10 +74,12 @@ jobs:
           git add data/signals.csv
           git add data/scores_final.csv
           git add data/refresh_log.json || true
+          git add data/.refresh_lock || true
 
           git diff --cached --quiet || git commit -m "refresh: ${DATE} ${LABEL}
 
           Top pick: $(python -c "import pandas as pd; df=pd.read_csv('data/scores_final.csv'); r=df.iloc[0]; print(r['symbol'], f'score={r[\"alpha_score\"]:.4f}')")
           Regime: $(python -c "import json; d=json.load(open('data/regime.json')); print(d['regime'])")"
 
+          git pull --rebase origin main
           git push

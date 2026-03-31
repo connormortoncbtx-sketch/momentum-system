@@ -54,9 +54,11 @@ jobs:
           git add config/weights.json
           git add models/lgbm_model.pkl || true
           git add refinements/ || true
+          git add data/.collect_lock || true
 
           git diff --cached --quiet || git commit -m "refinement: ${DATE}
 
           $(cat refinements/${DATE}.md 2>/dev/null | head -3 || echo 'No refinement note')"
 
+          git pull --rebase origin main
           git push
