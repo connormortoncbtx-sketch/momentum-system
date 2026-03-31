@@ -117,6 +117,11 @@ def fetch_weekly_returns(symbols: list[str],
 def run():
     DATA_DIR.mkdir(parents=True, exist_ok=True)
 
+    # Holiday check — skip if not a full 5-day trading week
+    from automation.tz_utils import assert_normal_week
+    if not assert_normal_week("collect_returns"):
+        return
+
     # Idempotency guard — prevent double-run from dual DST crons
     today_ct   = now_ct().strftime("%Y-%m-%d")
     lock_file  = DATA_DIR / ".collect_lock"

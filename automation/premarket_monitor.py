@@ -579,6 +579,11 @@ def run():
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     REPORTS.mkdir(parents=True, exist_ok=True)
 
+    # Holiday check — skip if not a full 5-day trading week
+    from automation.tz_utils import assert_normal_week
+    if not assert_normal_week("premarket_monitor"):
+        return
+
     date_str   = datetime.date.today().strftime("%Y-%m-%d")
     day_name   = datetime.date.today().strftime("%A").upper()  # MONDAY or TUESDAY
     report_out = REPORTS / f"{date_str}_premarket.html"

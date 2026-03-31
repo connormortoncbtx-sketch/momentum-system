@@ -288,6 +288,11 @@ def log_notable_changes(scores: pd.DataFrame, run_label: str):
 def run(run_label: str = "weekend_refresh"):
     DATA_DIR.mkdir(parents=True, exist_ok=True)
 
+    # Holiday check — skip if not a full 5-day trading week
+    from automation.tz_utils import assert_normal_week
+    if not assert_normal_week(run_label):
+        return
+
     # Idempotency guard — prevent double-run when both CDT and CST crons fire
     today    = now_ct().strftime("%Y-%m-%d")
     lock_key = f"{today}_{run_label}"
