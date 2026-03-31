@@ -38,6 +38,8 @@ from datetime import datetime
 # Ensure repo root is on path so pipeline modules are importable
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from automation.tz_utils import now_ct, format_ct, is_dst
+
 log = logging.getLogger(__name__)
 logging.basicConfig(
     level=logging.INFO,
@@ -285,6 +287,19 @@ def log_notable_changes(scores: pd.DataFrame, run_label: str):
 
 def run(run_label: str = "weekend_refresh"):
     DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+    # Idempotency guard — prevent double-run when both CDT and CST crons fire
+    today    = now_ct().strftime("%Y-%m-%d")
+    lock_key = f"{today}_{run_label}"
+    lock_file = DATA_DIR / ".refresh_lock"
+
+    if lock_file.exists():
+        last_run = lock_file.read_text().strip()
+        if last_run == lock_key:
+            log.info(f"Already ran {run_label} today ({today}) — skipping duplicate cron trigger")
+            return
+
+    lock_file.write_text(lock_key)
 
     log.info("=" * 60)
     log.info(f"WEEKEND REFRESH — {run_label.upper()}")

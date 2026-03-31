@@ -49,43 +49,91 @@ GAP_SKIP_PCT        = 0.25  # strong skip signal if gap > 25%
 
 def fetch_premarket_prices(symbols: list[str]) -> dict[str, dict]:
     """
-    Fetch current pre-market price and Friday close for each symbol.
-    Returns {symbol: {premarket_price, friday_close, gap_pct, volume}}
+    Fetch current pre-market price and most recent prior session close.
+    Works for both Monday (uses Friday close) and Tuesday (uses Monday close).
+    Returns {symbol: {premarket_price, prior_close, gap_pct, volume}}
     """
     results = {}
     end     = datetime.date.today()
-    start   = end - datetime.timedelta(days=5)
+    start   = end - datetime.timedelta(days=7)  # enough to catch Mon or Fri close
 
-    for sym in symbols:
-        try:
-            t = yf.Ticker(sym)
-
-            # Pre-market price via fast_info
-            fi = t.fast_info
-            premarket = getattr(fi, "pre_market_price", None)
-            if premarket is None:
-                premarket = getattr(fi, "last_price", None)
-
-            # Friday close from recent history
-            hist = t.history(start=str(start), end=str(end), auto_adjust=True)
-            if hist.empty or premarket is None:
+    # Get prior session closes via regular history (reliable)
+    try:
+        closes_raw = yf.download(
+            symbols,
+            start=str(start),
+            end=str(end),
+            auto_adjust=True,
+            progress=False,
+            threads=True,
+        )["Close"]
+        prior_closes = {}
+        for sym in symbols:
+            try:
+                col = closes_raw[sym] if len(symbols) > 1 else closes_raw
+                prior_closes[sym] = float(col.dropna().iloc[-1])
+            except Exception:
                 continue
+    except Exception as e:
+        log.warning(f"  Prior close batch failed: {e}")
+        prior_closes = {}
 
-            friday_close = float(hist["Close"].iloc[-1])
-            gap_pct      = (premarket / friday_close) - 1
+    # Get pre-market prices via 1m data with prepost=True
+    batch_size = 10
+    for i in range(0, len(symbols), batch_size):
+        batch = symbols[i:i+batch_size]
+        try:
+            pm_raw = yf.download(
+                batch,
+                period="1d",
+                interval="1m",
+                prepost=True,
+                auto_adjust=True,
+                progress=False,
+                threads=True,
+            )["Close"]
 
-            # Pre-market volume proxy
-            pm_vol = getattr(fi, "three_month_average_volume", 0) or 0
+            for sym in batch:
+                try:
+                    prior_close = prior_closes.get(sym)
+                    if prior_close is None:
+                        continue
+                    col = pm_raw[sym] if len(batch) > 1 else pm_raw
+                    col = col.dropna()
+                    if col.empty:
+                        continue
+                    premarket = float(col.iloc[-1])
+                    gap_pct   = (premarket / prior_close) - 1
+                    results[sym] = {
+                        "premarket_price": round(premarket, 2),
+                        "prior_close":     round(prior_close, 2),
+                        "gap_pct":         round(gap_pct, 4),
+                        "pm_volume":       0,
+                    }
+                except Exception as e:
+                    log.debug(f"  {sym}: {e}")
+                    continue
 
-            results[sym] = {
-                "premarket_price": round(float(premarket), 2),
-                "friday_close":    round(friday_close, 2),
-                "gap_pct":         round(gap_pct, 4),
-                "pm_volume":       int(pm_vol),
-            }
         except Exception as e:
-            log.debug(f"  {sym}: {e}")
-            continue
+            log.warning(f"  Pre-market batch {i//batch_size+1} failed: {e}")
+            for sym in batch:
+                try:
+                    prior_close = prior_closes.get(sym)
+                    if prior_close is None:
+                        continue
+                    fi = yf.Ticker(sym).fast_info
+                    premarket = getattr(fi, "pre_market_price", None) or \
+                                getattr(fi, "last_price", None)
+                    if premarket is None:
+                        continue
+                    results[sym] = {
+                        "premarket_price": round(float(premarket), 2),
+                        "prior_close":     round(prior_close, 2),
+                        "gap_pct":         round((float(premarket)/prior_close)-1, 4),
+                        "pm_volume":       0,
+                    }
+                except Exception:
+                    continue
 
     return results
 
@@ -206,7 +254,7 @@ HTML = r"""<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="refresh" content="300">
-<title>PRE-MARKET // {{ date }}</title>
+<title>PRE-MARKET // {{ day_name }} {{ date }}</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -319,7 +367,7 @@ td{padding:7px 12px;white-space:nowrap;vertical-align:middle;}
 <body>
 <div class="header">
   <div>
-    <div class="logo">PRE-MARKET<span>//</span>MONITOR</div>
+    <div class="logo">PRE-MARKET<span>//</span>{{ day_name }}</div>
     <div class="meta">{{ date }} &nbsp;·&nbsp; top {{ n_tickers }} tickers &nbsp;·&nbsp; auto-refreshes every 5 min</div>
   </div>
   <div class="meta" style="text-align:right">
@@ -362,11 +410,8 @@ td{padding:7px 12px;white-space:nowrap;vertical-align:middle;}
     <div class="guide-step">
       <div class="guide-step-num">2</div>
       <div class="guide-step-body">
-        <strong>Read the Action column first. It is binary.</strong><br>
-        SKIP or REVIEW-with-bad-news → do not enter, no exceptions.<br>
-        WAIT → defer to Tuesday, re-evaluate then.<br>
-        GO / CAUTION / WATCH → proceed to step 3.
-      </div>
+        <strong>Open pre-market monitor at 7:30am CT.</strong><br>
+        Read the Action column. It is binary.</div>
     </div>
 
     <div class="guide-step">
@@ -448,7 +493,7 @@ td{padding:7px 12px;white-space:nowrap;vertical-align:middle;}
     <th>Rank</th>
     <th>Symbol</th>
     <th>Sector</th>
-    <th>Fri Close</th>
+    <th>Prior Close</th>
     <th>Pre-Mkt</th>
     <th>Gap</th>
     <th>Trend</th>
@@ -464,7 +509,7 @@ td{padding:7px 12px;white-space:nowrap;vertical-align:middle;}
   <td class="rank">#{{ row.rank }}</td>
   <td class="sym">{{ row.symbol }}</td>
   <td style="color:var(--text3);font-size:10px">{{ row.sector }}</td>
-  <td style="text-align:right">${{ row.friday_close }}</td>
+  <td style="text-align:right">${{ row.prior_close }}</td>
   <td style="text-align:right;color:var(--accent)">${{ row.premarket_price }}</td>
   <td class="{% if row.gap_pct > 0.10 %}gap-warn{% elif row.gap_pct > 0 %}gap-pos{% else %}gap-neg{% endif %}" style="text-align:right;font-weight:500">
     {{ row.gap_str }}
@@ -500,8 +545,9 @@ def render_report(
     checks_done: int,
     date_str: str,
     last_check_time: str,
+    day_name: str = "MONDAY",
 ) -> str:
-    check_names = ["7:00 AM", "7:30 AM", "8:00 AM", "8:30 AM", "9:00 AM"]
+    check_names = ["6:00 AM CT", "6:30 AM CT", "7:00 AM CT", "7:30 AM CT", "8:00 AM CT"]
     check_labels = []
     for i, name in enumerate(check_names):
         if i < checks_done:
@@ -518,6 +564,7 @@ def render_report(
     tmpl = Template(HTML)
     return tmpl.render(
         date=date_str,
+        day_name=day_name,
         n_tickers=len(rows),
         last_check_time=last_check_time,
         next_check_time=next_time,
@@ -533,6 +580,7 @@ def run():
     REPORTS.mkdir(parents=True, exist_ok=True)
 
     date_str   = datetime.date.today().strftime("%Y-%m-%d")
+    day_name   = datetime.date.today().strftime("%A").upper()  # MONDAY or TUESDAY
     report_out = REPORTS / f"{date_str}_premarket.html"
 
     # Load Friday's top tickers
@@ -565,7 +613,7 @@ def run():
 
     for check_idx, wait_minutes in enumerate(remaining):
         absolute_check = checks_done + check_idx
-        check_name     = ["7:00","7:30","8:00","8:30","9:00"][absolute_check]
+        check_name     = ["6:00","6:30","7:00","7:30","8:00"][absolute_check]
 
         # Sleep until this check window
         if check_idx > 0:
@@ -620,7 +668,7 @@ def run():
                 "rank":           int(ticker_row.get("alpha_rank", 0)),
                 "symbol":         sym,
                 "sector":         str(ticker_row.get("sector", ""))[:20],
-                "friday_close":   latest["friday_close"],
+                "prior_close":   latest["friday_close"],
                 "premarket_price": latest["premarket_price"],
                 "gap_pct":        gap_pct,
                 "gap_str":        f"{gap_pct*100:+.1f}%",
@@ -636,7 +684,7 @@ def run():
         action_order = {"SKIP":5,"REVIEW":4,"WATCH":1,"CAUTION":2,"WAIT":3,"GO":0}
         rows.sort(key=lambda r: (action_order.get(r["action"],0), -abs(r["gap_pct"])))
 
-        html = render_report(rows, absolute_check + 1, date_str, now_str)
+        html = render_report(rows, absolute_check + 1, date_str, now_str, day_name)
         with open(report_out, "w", encoding="utf-8") as f:
             f.write(html)
 

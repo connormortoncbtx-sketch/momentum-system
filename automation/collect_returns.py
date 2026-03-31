@@ -27,11 +27,15 @@ Columns written:
 """
 
 import logging
+import sys
 import pandas as pd
 import numpy as np
 import yfinance as yf
 from pathlib import Path
 from datetime import datetime, timedelta
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from automation.tz_utils import now_ct
 
 log = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO,
@@ -112,6 +116,14 @@ def fetch_weekly_returns(symbols: list[str],
 
 def run():
     DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+    # Idempotency guard — prevent double-run from dual DST crons
+    today_ct   = now_ct().strftime("%Y-%m-%d")
+    lock_file  = DATA_DIR / ".collect_lock"
+    if lock_file.exists() and lock_file.read_text().strip() == today_ct:
+        log.info(f"collect_returns already ran today ({today_ct}) — skipping duplicate")
+        return
+    lock_file.write_text(today_ct)
 
     # Load last Friday's scores
     if not SCORES.exists():
