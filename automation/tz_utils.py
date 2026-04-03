@@ -169,24 +169,34 @@ def is_trading_day(d: date = None) -> bool:
 
 def is_normal_trading_week(ref_date: date = None) -> bool:
     """
-    Return True if the current week (Mon-Fri) has all 5 full trading days.
-    A week with any holiday is considered disrupted and should be skipped.
+    Return True if this week is safe to trade and collect data.
 
-    This enforces the system's core principle: consistent repeatable cadence.
-    Holiday weeks produce non-comparable data that degrades model quality.
+    Disruption logic:
+        Monday holiday    → SKIP  (shifts entry window, no valid entry day)
+        Tue/Wed/Thu holiday → SKIP  (irregular hold period, contaminates data)
+        Friday holiday    → OK    (week just ends Thursday, data still valid)
+        No holiday        → OK
+
+    This reflects the asymmetric impact of holidays on the weekly cadence.
+    A Friday holiday barely affects the week — prices are ~99% of where
+    they'd be anyway and the Tuesday entry window is unaffected.
     """
     if ref_date is None:
         ref_date = now_ct().date()
 
-    # Find Monday of this week
-    monday = ref_date - timedelta(days=ref_date.weekday())
-    week_days = [monday + timedelta(days=i) for i in range(5)]  # Mon-Fri
-
+    monday   = ref_date - timedelta(days=ref_date.weekday())
     holidays = _nyse_holidays(ref_date.year)
-    for d in week_days:
+
+    for i, day_name in enumerate(["Monday","Tuesday","Wednesday","Thursday","Friday"]):
+        d = monday + timedelta(days=i)
         if d in holidays:
-            log.info(f"Holiday week detected: {d.strftime('%A %Y-%m-%d')} is a market holiday")
-            return False
+            if i < 4:   # Mon-Thu holiday — skip week
+                log.info(f"Disruptive holiday detected: {day_name} {d} is a market holiday — skipping week")
+                return False
+            else:        # Friday holiday — run normally
+                log.info(f"Friday holiday detected: {d} — treating as normal week (Thursday close used as baseline)")
+                return True
+
     return True
 
 
