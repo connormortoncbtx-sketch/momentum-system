@@ -125,10 +125,11 @@ def run():
     # Idempotency guard — prevent double-run from dual DST crons
     today_ct   = now_ct().strftime("%Y-%m-%d")
     lock_file  = DATA_DIR / ".collect_lock"
-    if lock_file.exists() and lock_file.read_text().strip() == today_ct:
+    lock_key   = f"friday_learning_{today_ct}"
+    if lock_file.exists() and lock_file.read_text().strip() == lock_key:
         log.info(f"collect_returns already ran today ({today_ct}) — skipping duplicate")
         return
-    lock_file.write_text(today_ct)
+    lock_file.write_text(lock_key)
 
     # Load last Friday's scores
     if not SCORES.exists():
