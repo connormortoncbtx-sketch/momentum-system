@@ -1,0 +1,65 @@
+name: Friday Learning Loop
+
+on:
+  schedule:
+    # Friday 6:00 PM CT — collect returns, self-refine, retrain
+    # Runs BEFORE the pipeline so fresh model/weights are ready
+    # CDT (Mar-Nov): UTC-5 → 23:00 UTC Friday
+    - cron: '0 23 * * 5'
+    # CST (Nov-Mar): UTC-6 → 00:00 UTC Saturday
+    - cron: '0 0 * * 6'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  learn-and-refine:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Collect actual returns
+        run: python automation/collect_returns.py
+
+      - name: Run self-refinement
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python automation/self_refine.py
+
+      - name: Retrain model if enough data
+        run: python automation/retrain.py
+
+      - name: Commit results
+        run: |
+          git config user.name  "momentum-bot"
+          git config user.email "momentum-bot@users.noreply.github.com"
+
+          DATE=$(date +%Y-%m-%d)
+
+          git add data/performance_log.csv
+          git add config/weights.json
+          git add models/lgbm_model.pkl || true
+          git add refinements/ || true
+          git add data/.collect_lock || true
+
+          git diff --cached --quiet || git commit -m "learning: ${DATE} returns collected + weights refined
+
+          $(cat refinements/${DATE}.md 2>/dev/null | head -3 || echo 'No refinement note')"
+
+          git pull --rebase origin main
+          git push
