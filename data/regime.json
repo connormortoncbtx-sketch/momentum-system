@@ -1,13 +1,13 @@
 {
   "regime": "risk_off_severe",
   "description": "Market stress. Capital preservation mode. Cash is a position.",
-  "composite": -0.5525,
+  "composite": NaN,
   "scores": {
-    "trend": -0.6787,
-    "breadth": -0.8214,
-    "sentiment": -0.6,
-    "rotation": -0.1304,
-    "safety": -0.0403
+    "trend": NaN,
+    "breadth": NaN,
+    "sentiment": NaN,
+    "rotation": NaN,
+    "safety": NaN
   },
   "weights": {
     "trend": 0.3,
@@ -18,42 +18,42 @@
   },
   "details": {
     "trend": {
-      "spy_ret_20d": -0.0737,
-      "spy_ret_50d": -0.0815,
+      "spy_ret_20d": NaN,
+      "spy_ret_50d": NaN,
       "spy_above_sma50": false,
       "spy_above_sma200": true,
-      "spy_drawdown": -0.0858
+      "spy_drawdown": NaN
     },
     "breadth": {
-      "qqq_ret_20d": -0.0737,
-      "iwm_ret_20d": -0.0769,
-      "iwm_vs_spy": -0.0032,
+      "qqq_ret_20d": NaN,
+      "iwm_ret_20d": NaN,
+      "iwm_vs_spy": NaN,
       "iwm_above_sma50": false
     },
     "sentiment": {
-      "vix": 31.05,
-      "vix_ma20": 25.36,
-      "vix_trend": 5.69,
-      "hyg_vs_spy_20d": 0.0542
+      "vix": NaN,
+      "vix_ma20": NaN,
+      "vix_trend": NaN,
+      "hyg_vs_spy_20d": NaN
     },
     "rotation": {
-      "offensive_ret_20d": -0.0707,
-      "defensive_ret_20d": -0.0655,
-      "rotation_spread": -0.0053,
-      "xlk_slope": -0.002384,
-      "xlu_slope": -0.002129
+      "offensive_ret_20d": NaN,
+      "defensive_ret_20d": NaN,
+      "rotation_spread": NaN,
+      "xlk_slope": NaN,
+      "xlu_slope": NaN
     },
     "safety": {
-      "tlt_ret_20d": -0.0443,
-      "gld_ret_20d": -0.1537,
-      "tlt_vs_spy": 0.0294,
-      "gld_vs_spy": -0.08
+      "tlt_ret_20d": NaN,
+      "gld_ret_20d": NaN,
+      "tlt_vs_spy": NaN,
+      "gld_vs_spy": NaN
     }
   },
   "context": {
-    "spy_realized_vol_20d": 0.1489,
-    "vix": 31.05,
-    "as_of": "2026-03-28"
+    "spy_realized_vol_20d": 0.1875,
+    "vix": NaN,
+    "as_of": "2026-04-04"
   },
   "playbook": {
     "momentum": 0.7,
