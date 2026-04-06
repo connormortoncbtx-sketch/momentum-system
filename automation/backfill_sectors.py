@@ -33,7 +33,7 @@ logging.basicConfig(
 
 DATA_DIR = Path("data")
 UNIVERSE = DATA_DIR / "universe.csv"
-SLEEP_PER_TICKER = 0.5   # seconds between API calls to avoid rate limiting
+SLEEP_PER_TICKER = 1.0   # seconds between API calls — 0.5s caused rate limiting at scale
 BATCH_SIZE       = 50    # commit progress every N tickers
 
 

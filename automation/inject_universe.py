@@ -160,14 +160,24 @@ def apply_quality_filters(df: pd.DataFrame, source_df: pd.DataFrame) -> pd.DataF
             log.info(f"  Removed {removed} financially distressed/delinquent symbols")
         before = len(df)
 
-    # Symbol-based filters — remove warrants, units, rights, preferreds
+    # Symbol-based filters — remove warrants, units, rights, preferreds, debt instruments
     bad_suffix = (
         df["symbol"].str.endswith("W")  |   # warrants
         df["symbol"].str.endswith("U")  |   # units
         df["symbol"].str.endswith("R")  |   # rights
         df["symbol"].str.contains(r"\.", regex=True) |  # BRK.B style
         df["symbol"].str.contains("-", regex=False)  |  # preferred shares
-        df["symbol"].str.startswith("ZZ")
+        df["symbol"].str.startswith("ZZ") |
+        # Debt instruments — 5+ char symbols ending in note/preferred suffixes
+        ((df["symbol"].str.len() >= 5) & (
+            df["symbol"].str.endswith("L") |
+            df["symbol"].str.endswith("Z") |
+            df["symbol"].str.endswith("I") |
+            df["symbol"].str.endswith("G") |
+            df["symbol"].str.endswith("H") |
+            df["symbol"].str.endswith("M") |
+            df["symbol"].str.endswith("P")
+        ))
     )
     df = df[~bad_suffix].copy()
     removed = before - len(df)
