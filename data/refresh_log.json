@@ -30,5 +30,37 @@
         "alpha_rank": 5
       }
     ]
+  },
+  {
+    "run_label": "monday_morning",
+    "timestamp": "2026-04-06T11:10:20.657637",
+    "regime": "choppy_neutral",
+    "top_5": [
+      {
+        "symbol": "CBIO",
+        "alpha_score": 0.9848944443609512,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "HFBL",
+        "alpha_score": 0.9803567599191445,
+        "alpha_rank": 2
+      },
+      {
+        "symbol": "AACG",
+        "alpha_score": 0.9802758647990998,
+        "alpha_rank": 3
+      },
+      {
+        "symbol": "MB",
+        "alpha_score": 0.9794689306071672,
+        "alpha_rank": 4
+      },
+      {
+        "symbol": "CNCK",
+        "alpha_score": 0.9756635395821127,
+        "alpha_rank": 5
+      }
+    ]
   }
 ]
