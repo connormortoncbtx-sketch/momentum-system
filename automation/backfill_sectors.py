@@ -65,6 +65,12 @@ def run(limit: int = None):
         return
 
     universe = pd.read_csv(UNIVERSE)
+
+    # Ensure sector/industry are string columns — pandas may infer float64
+    # when all values are NaN, which breaks string assignment
+    universe["sector"]   = universe["sector"].astype(str).replace("nan", "")
+    universe["industry"] = universe["industry"].astype(str).replace("nan", "")
+
     log.info(f"Universe: {len(universe):,} symbols")
 
     # Find symbols with missing sector data
