@@ -230,14 +230,22 @@ def compute_weekly_ev(symbols: list[str], alpha_scores: pd.Series) -> pd.DataFra
     for i in range(0, len(symbols), batch_size):
         batch = symbols[i:i+batch_size]
         try:
-            raw = yf.download(
+            raw_dl = yf.download(
                 batch,
                 start=start.strftime("%Y-%m-%d"),
                 end=end.strftime("%Y-%m-%d"),
                 auto_adjust=True,
                 progress=False,
                 threads=True,
-            )["Close"]
+            )
+
+            # Handle yfinance MultiIndex columns
+            if isinstance(raw_dl.columns, pd.MultiIndex):
+                raw = raw_dl["Close"]
+            elif "Close" in raw_dl.columns:
+                raw = raw_dl["Close"]
+            else:
+                raw = raw_dl
 
             for sym in batch:
                 try:

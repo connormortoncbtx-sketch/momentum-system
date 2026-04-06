@@ -186,13 +186,48 @@ def run_liquidity_gate(symbols):
     return pd.DataFrame(passed)
 
 def fetch_market_caps(symbols):
+    """
+    Fetch market caps using a reliable fallback chain:
+    1. fast_info.market_cap (fast but unreliable)
+    2. fast_info.shares * fast_info.last_price (calculated, more reliable)
+    3. info["marketCap"] (slow but most reliable)
+    """
     caps={}
+    need_fallback=[]
+
+    # Tier 1: fast_info.market_cap
     for i,sym in enumerate(symbols):
-        if i%100==0 and i>0: log.info(f"    Mcap: {i}/{len(symbols)}")
+        if i%100==0 and i>0:
+            time.sleep(0.5)
         try:
-            info=yf.Ticker(sym).fast_info
-            caps[sym]=getattr(info,"market_cap",0) or 0
-        except Exception: caps[sym]=0
+            fi=yf.Ticker(sym).fast_info
+            cap=getattr(fi,"market_cap",None)
+            if cap and cap > 1_000_000:   # valid if > $1M
+                caps[sym]=int(cap)
+            else:
+                # Try calculated: shares * price
+                shares=getattr(fi,"shares",None)
+                price=getattr(fi,"last_price",None) or getattr(fi,"previous_close",None)
+                if shares and price and shares > 0 and price > 0:
+                    caps[sym]=int(shares*price)
+                else:
+                    need_fallback.append(sym)
+        except Exception:
+            need_fallback.append(sym)
+
+    # Tier 2: full info dict for anything that failed tier 1
+    if need_fallback:
+        log.info(f"    Falling back to full info for {len(need_fallback)} symbols...")
+        for i,sym in enumerate(need_fallback):
+            if i%50==0 and i>0:
+                time.sleep(1.0)
+            try:
+                info=yf.Ticker(sym).info
+                cap=info.get("marketCap",0) or 0
+                caps[sym]=int(cap) if cap > 0 else 0
+            except Exception:
+                caps[sym]=0
+
     return caps
 
 def enrich_sectors(symbols):
@@ -230,13 +265,22 @@ def update_existing(master):
             master.loc[idx,"avg_vol_20d"]=vals["avg_vol_20d"]
 
     # Refresh missing or zero market caps
+    # Coerce to numeric first — injected symbols may have NaN stored as string
+    master["market_cap"] = pd.to_numeric(master["market_cap"], errors="coerce")
     missing_cap=master[master["market_cap"].isna()|(master["market_cap"]==0)]["symbol"].tolist()
     if missing_cap:
         log.info(f"  Refreshing {len(missing_cap):,} missing market caps...")
-        caps=fetch_market_caps(missing_cap)
-        for sym,cap in caps.items():
-            idx=master[master["symbol"]==sym].index
-            if len(idx): master.loc[idx,"market_cap"]=cap
+        # Process in chunks to avoid rate limiting
+        chunk_size = 500
+        for chunk_start in range(0, len(missing_cap), chunk_size):
+            chunk = missing_cap[chunk_start:chunk_start+chunk_size]
+            caps=fetch_market_caps(chunk)
+            for sym,cap in caps.items():
+                idx=master[master["symbol"]==sym].index
+                if len(idx): master.loc[idx,"market_cap"]=cap
+            if chunk_start + chunk_size < len(missing_cap):
+                log.info(f"  Market cap chunk {chunk_start//chunk_size+1} done, continuing...")
+                time.sleep(2.0)
 
     # Backfill missing sector data — fetch in small batches to avoid rate limits
     missing_sector=master[
