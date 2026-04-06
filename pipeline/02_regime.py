@@ -317,9 +317,16 @@ def classify(df: pd.DataFrame) -> dict:
     scores  = {}
     details = {}
     for name, fn in scorers.items():
-        s, d = fn(df)
-        scores[name]  = s
-        details[name] = d
+        try:
+            s, d = fn(df)
+            scores[name]  = s
+            details[name] = d
+        except Exception as e:
+            log.warning(f"  Scorer '{name}' failed: {e}")
+            import traceback
+            log.warning(traceback.format_exc())
+            scores[name]  = float("nan")
+            details[name] = {}
 
     composite = sum(scores[k] * DIMENSION_WEIGHTS[k] for k in scores)
     composite = float(np.clip(composite, -1, 1))
