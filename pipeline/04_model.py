@@ -413,15 +413,29 @@ def run():
             log.warning(f"  Could not load performance log: {e}")
 
     # ── TRAIN OR LOAD MODEL ───────────────────────────────────────────────────
-    features = [f for f in SIGNAL_FEATURES if f in df.columns]
+    FEATURES_COMPOSITE = [
+        "sig_momentum", "sig_catalyst", "sig_fundamentals", "sig_sentiment",
+    ]
+    features_full      = [f for f in SIGNAL_FEATURES if f in df.columns]
+    features_composite = [f for f in FEATURES_COMPOSITE if f in df.columns]
 
     if MODEL_FILE.exists():
         log.info(f"Loading existing model from {MODEL_FILE}...")
         with open(MODEL_FILE, "rb") as f:
             model = pickle.load(f)
+
+        # Match feature set to what model was trained on
+        n_expected = getattr(model, "n_features_in_", len(features_full))
+        if n_expected <= 4:
+            features = features_composite
+            log.info(f"  Model expects {n_expected} features — using composite signals")
+        else:
+            features = features_full
+            log.info(f"  Model expects {n_expected} features — using sub-signals")
         mode = "score"
     else:
         log.info("No model found — bootstrapping initial model...")
+        features = features_full
 
         # Prefer real labels if enough history exists
         labels = build_real_labels(df, perf_log)

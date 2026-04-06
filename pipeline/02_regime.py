@@ -57,15 +57,44 @@ def fetch_prices(lookback: int = LOOKBACK_DAYS) -> pd.DataFrame:
     end   = datetime.date.today()
     start = end - datetime.timedelta(days=lookback + 15)  # buffer for weekends
 
-    syms = list(TICKERS.values())
-    raw  = yf.download(syms, start=str(start), end=str(end),
-                       auto_adjust=True, progress=False)["Close"]
+    syms    = list(TICKERS.values())
+    max_attempts = 4
+    wait_seconds = [0, 30, 60, 120]  # backoff: immediate, 30s, 1min, 2min
 
-    # Normalize column names back to our keys
-    inv = {v: k for k, v in TICKERS.items()}
-    raw.columns = [inv.get(c, c) for c in raw.columns]
+    for attempt, wait in enumerate(wait_seconds, 1):
+        if wait > 0:
+            log.info(f"  Retrying price fetch in {wait}s (attempt {attempt}/{max_attempts})...")
+            time.sleep(wait)
+        try:
+            raw = yf.download(syms, start=str(start), end=str(end),
+                              auto_adjust=True, progress=False)["Close"]
 
-    return raw.dropna(how="all").tail(lookback)
+            # Normalize column names back to our keys
+            inv = {v: k for k, v in TICKERS.items()}
+            raw.columns = [inv.get(c, c) for c in raw.columns]
+
+            df = raw.dropna(how="all").tail(lookback)
+
+            # Validate we got meaningful data — at least SPY and VIX
+            if "SPY" not in df.columns or df["SPY"].dropna().empty:
+                log.warning(f"  Attempt {attempt}: SPY data missing — retrying")
+                continue
+
+            if len(df) < 20:
+                log.warning(f"  Attempt {attempt}: Only {len(df)} rows — retrying")
+                continue
+
+            log.info(f"  Price data fetched: {len(df)} days × {len(df.columns)} assets")
+            return df
+
+        except Exception as e:
+            log.warning(f"  Attempt {attempt}: fetch failed — {e}")
+            if attempt == max_attempts:
+                log.error("All retry attempts exhausted — regime classifier will use fallback")
+                raise
+
+    # Should not reach here but return empty frame as safety
+    return pd.DataFrame()
 
 
 # ── SIGNAL PRIMITIVES ─────────────────────────────────────────────────────────
@@ -327,7 +356,31 @@ def run():
     DATA_DIR.mkdir(parents=True, exist_ok=True)
 
     log.info("Fetching cross-asset price data...")
-    df = fetch_prices()
+    try:
+        df = fetch_prices()
+    except Exception as e:
+        log.error(f"Price fetch failed after all retries: {e}")
+        # Fall back to last known regime if available
+        if OUTPUT.exists():
+            log.warning("Using last known regime from previous run")
+            with open(OUTPUT) as f:
+                result = json.load(f)
+            result["stale"] = True
+            log.info(f"  Using cached regime: {result['regime']} (stale — data fetch failed)")
+            return result
+        else:
+            log.error("No cached regime available — using risk_off_severe as safe default")
+            result = {
+                "regime": "risk_off_severe",
+                "description": "Data fetch failed — defaulting to most defensive regime",
+                "composite": -1.0,
+                "scores": {"trend":-1.0,"breadth":-1.0,"sentiment":-1.0,"rotation":-1.0,"safety":1.0},
+                "stale": True,
+                "context": {"vix": None, "as_of": str(datetime.date.today())},
+            }
+            with open(OUTPUT, "w") as f:
+                json.dump(result, f, indent=2)
+            return result
 
     log.info("Running regime classifier...")
     result = classify(df)

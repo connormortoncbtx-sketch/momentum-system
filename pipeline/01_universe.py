@@ -125,10 +125,24 @@ def combine_and_clean(nasdaq, nyse):
     df["symbol"]=df["symbol"].str.strip().str.upper()
     df=df[df["symbol"].str.len()>0]
     bad=(
-        df["symbol"].str.endswith("W")|df["symbol"].str.endswith("U")|
-        df["symbol"].str.endswith("R")|df["symbol"].str.contains(r"\.",regex=True)|
-        df["symbol"].str.contains("-",regex=False)|df["symbol"].str.startswith("ZZ")|
-        df["symbol"].str.contains("FILE",regex=False)
+        df["symbol"].str.endswith("W") |   # warrants
+        df["symbol"].str.endswith("U") |   # units
+        df["symbol"].str.endswith("R") |   # rights
+        df["symbol"].str.contains(r"\.", regex=True) |  # BRK.B style
+        df["symbol"].str.contains("-",  regex=False) |  # preferred shares
+        df["symbol"].str.startswith("ZZ") |
+        df["symbol"].str.contains("FILE", regex=False) |
+        # Debt instruments and baby bonds — typically end in L, Z, or are
+        # 5+ char symbols ending in specific patterns
+        (df["symbol"].str.len() >= 5) & (
+            df["symbol"].str.endswith("L") |   # notes/preferreds (RILYN, RILYL etc)
+            df["symbol"].str.endswith("Z") |   # notes (RILYZ, ATLCZ etc)
+            df["symbol"].str.endswith("I") |   # notes (TRINI, INBKZ etc)
+            df["symbol"].str.endswith("G") |   # notes (RWAYZ, DCOMG etc)
+            df["symbol"].str.endswith("H") |   # notes
+            df["symbol"].str.endswith("M") |   # notes (BPOPM etc)
+            df["symbol"].str.endswith("P")     # preferred (BANFP etc)
+        )
     )
     df=df[~bad].drop_duplicates(subset="symbol",keep="first").reset_index(drop=True)
     log.info(f"  Combined: {len(df):,} after dedup+filter")
