@@ -160,8 +160,14 @@ def score_breadth(df: pd.DataFrame) -> tuple[float, dict]:
 
 def score_sentiment(df: pd.DataFrame) -> tuple[float, dict]:
     """Fear vs greed: VIX level + credit spread proxy."""
-    vix = float(df["VIX"].iloc[-1])
-    vix_ma = float(df["VIX"].rolling(20).mean().iloc[-1])
+    # Use last available VIX value — handles holidays where VIX has no close
+    vix_series = df["VIX"].dropna()
+    if vix_series.empty:
+        log.warning("VIX data unavailable — using neutral sentiment score")
+        return 0.0, {"vix": None, "vix_ma20": None, "vix_trend": 0, "hyg_vs_spy_20d": 0}
+
+    vix    = float(vix_series.iloc[-1])
+    vix_ma = float(vix_series.rolling(20).mean().iloc[-1]) if len(vix_series) >= 20 else vix
     vix_trend = vix - vix_ma          # rising VIX = fear growing
 
     # HYG vs SPY relative performance = credit risk appetite
@@ -297,7 +303,7 @@ def classify(df: pd.DataFrame) -> dict:
         "details": details,
         "context": {
             "spy_realized_vol_20d": round(spy_vol, 4),
-            "vix":  round(float(df["VIX"].iloc[-1]), 2),
+            "vix":  round(float(df["VIX"].dropna().iloc[-1]), 2) if not df["VIX"].dropna().empty else None,
             "as_of": str(datetime.date.today()),
         },
     }

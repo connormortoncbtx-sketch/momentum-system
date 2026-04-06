@@ -214,13 +214,35 @@ def update_existing(master):
         if len(idx):
             master.loc[idx,"last_price"]=vals["last_price"]
             master.loc[idx,"avg_vol_20d"]=vals["avg_vol_20d"]
-    missing=master[master["market_cap"].isna()|(master["market_cap"]==0)]["symbol"].tolist()
-    if missing:
-        log.info(f"  Refreshing {len(missing)} missing market caps...")
-        caps=fetch_market_caps(missing)
+
+    # Refresh missing or zero market caps
+    missing_cap=master[master["market_cap"].isna()|(master["market_cap"]==0)]["symbol"].tolist()
+    if missing_cap:
+        log.info(f"  Refreshing {len(missing_cap):,} missing market caps...")
+        caps=fetch_market_caps(missing_cap)
         for sym,cap in caps.items():
             idx=master[master["symbol"]==sym].index
             if len(idx): master.loc[idx,"market_cap"]=cap
+
+    # Backfill missing sector data — fetch in small batches to avoid rate limits
+    missing_sector=master[
+        master["sector"].isna() | (master["sector"]=="") | (master["sector"]=="Unknown")
+    ]["symbol"].tolist()
+    if missing_sector:
+        log.info(f"  Backfilling sectors for {len(missing_sector):,} symbols...")
+        # Process in chunks of 200 to avoid timing out Stage 1
+        chunk_size = 200
+        chunk = missing_sector[:chunk_size]
+        if len(missing_sector) > chunk_size:
+            log.info(f"  (processing first {chunk_size} this run, remainder next week)")
+        sectors=enrich_sectors(chunk)
+        for sym,data in sectors.items():
+            if data.get("sector"):
+                idx=master[master["symbol"]==sym].index
+                if len(idx):
+                    master.loc[idx,"sector"]=data["sector"]
+                    master.loc[idx,"industry"]=data.get("industry","")
+
     return master
 
 def check_gate_failures(master):

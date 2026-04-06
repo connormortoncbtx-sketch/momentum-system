@@ -160,7 +160,7 @@ def compute_kpis(df: pd.DataFrame, regime: dict) -> dict:
         "avg_score":   round(float(df["alpha_score"].mean()), 4),
         "regime":      regime["regime"],
         "composite":   regime["composite"],
-        "vix":         regime.get("context", {}).get("vix", "—"),
+        "vix":         regime.get("context", {}).get("vix") or "—",
         "description": regime.get("description", ""),
     }
 
