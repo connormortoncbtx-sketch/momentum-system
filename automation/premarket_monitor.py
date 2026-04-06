@@ -20,6 +20,7 @@ when you open it. Open it once at 8:30 CT and refresh at 9:00.
 
 import json
 import time
+import sys
 import logging
 import datetime
 import numpy as np
@@ -27,6 +28,9 @@ import pandas as pd
 import yfinance as yf
 from pathlib import Path
 from jinja2 import Template
+
+# Ensure repo root is on path so automation modules are importable
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 log = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO,
