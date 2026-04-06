@@ -1,13 +1,13 @@
 {
-  "regime": "risk_off_severe",
-  "description": "Market stress. Capital preservation mode. Cash is a position.",
-  "composite": NaN,
+  "regime": "choppy_neutral",
+  "description": "No clear trend. Inconsistent breadth. Raise the bar, reduce size.",
+  "composite": -0.1287,
   "scores": {
-    "trend": NaN,
-    "breadth": NaN,
-    "sentiment": NaN,
-    "rotation": NaN,
-    "safety": NaN
+    "trend": -0.4272,
+    "breadth": -0.2799,
+    "sentiment": 0.4361,
+    "rotation": -0.3152,
+    "safety": 0.2952
   },
   "weights": {
     "trend": 0.3,
@@ -18,49 +18,49 @@
   },
   "details": {
     "trend": {
-      "spy_ret_20d": NaN,
-      "spy_ret_50d": NaN,
+      "spy_ret_20d": -0.0304,
+      "spy_ret_50d": -0.0459,
       "spy_above_sma50": false,
       "spy_above_sma200": true,
-      "spy_drawdown": NaN
+      "spy_drawdown": -0.0544
     },
     "breadth": {
-      "qqq_ret_20d": NaN,
-      "iwm_ret_20d": NaN,
-      "iwm_vs_spy": NaN,
+      "qqq_ret_20d": -0.0363,
+      "iwm_ret_20d": -0.0074,
+      "iwm_vs_spy": 0.023,
       "iwm_above_sma50": false
     },
     "sentiment": {
-      "vix": NaN,
-      "vix_ma20": NaN,
-      "vix_trend": NaN,
-      "hyg_vs_spy_20d": NaN
+      "vix": 23.87,
+      "vix_ma20": 25.8,
+      "vix_trend": -1.93,
+      "hyg_vs_spy_20d": 0.0276
     },
     "rotation": {
-      "offensive_ret_20d": NaN,
-      "defensive_ret_20d": NaN,
-      "rotation_spread": NaN,
-      "xlk_slope": NaN,
-      "xlu_slope": NaN
+      "offensive_ret_20d": -0.031,
+      "defensive_ret_20d": -0.0301,
+      "rotation_spread": -0.0009,
+      "xlk_slope": -0.002809,
+      "xlu_slope": -0.000658
     },
     "safety": {
-      "tlt_ret_20d": NaN,
-      "gld_ret_20d": NaN,
-      "tlt_vs_spy": NaN,
-      "gld_vs_spy": NaN
+      "tlt_ret_20d": -0.0235,
+      "gld_ret_20d": -0.0913,
+      "tlt_vs_spy": 0.007,
+      "gld_vs_spy": -0.0608
     }
   },
   "context": {
-    "spy_realized_vol_20d": 0.1875,
-    "vix": NaN,
-    "as_of": "2026-04-04"
+    "spy_realized_vol_20d": 0.1826,
+    "vix": 23.87,
+    "as_of": "2026-04-06"
   },
   "playbook": {
-    "momentum": 0.7,
-    "technicals": 0.7,
-    "catalyst": 1.6,
-    "fundamentals": 1.4,
-    "sentiment": 1.3,
-    "note": "The biggest weekly winners often happen in brutal markets. Short squeezes, FDA approvals, takeovers, contra-trend sector pops. Catalyst and sentiment signals lead \u2014 find them."
+    "momentum": 0.85,
+    "technicals": 0.9,
+    "catalyst": 1.4,
+    "fundamentals": 1.2,
+    "sentiment": 1.1,
+    "note": "Pure momentum fades. Winners have specific catalysts or strong fundamentals driving them independent of market."
   }
 }
