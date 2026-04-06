@@ -1,0 +1,52 @@
+name: Backfill Sectors
+
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: 'Only process first N missing symbols (leave blank for all)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  backfill-sectors:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360   # 6 hours — 2800 symbols at 0.5s each = ~25 min but giving plenty of room
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run sector backfill
+        run: |
+          if [ -n "${{ github.event.inputs.limit }}" ]; then
+            python automation/backfill_sectors.py --limit ${{ github.event.inputs.limit }}
+          else
+            python automation/backfill_sectors.py
+          fi
+
+      - name: Commit updated universe
+        run: |
+          git config user.name  "momentum-bot"
+          git config user.email "momentum-bot@users.noreply.github.com"
+
+          git add data/universe.csv
+
+          git diff --cached --quiet || git commit -m "sectors: backfill complete"
+
+          git pull --rebase origin main
+          git push
