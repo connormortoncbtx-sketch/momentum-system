@@ -161,7 +161,13 @@ def rescore(signals: pd.DataFrame) -> pd.DataFrame:
         log.warning("No model found — using weighted fallback for rescoring")
         return weighted_rescore(signals)
 
-    FEATURES = [
+    with open(model_file, "rb") as f:
+        model = pickle.load(f)
+
+    # Detect how many features the model expects and use matching feature set
+    n_expected = model.n_features_in_
+
+    FEATURES_FULL = [
         "sig_momentum_rs", "sig_momentum_trend", "sig_momentum_vol_surge",
         "sig_momentum_breakout", "sig_catalyst_earnings", "sig_catalyst_insider",
         "sig_catalyst_analyst", "sig_fund_growth", "sig_fund_quality",
@@ -170,11 +176,24 @@ def rescore(signals: pd.DataFrame) -> pd.DataFrame:
         "sig_momentum_adj", "sig_catalyst_adj", "sig_fundamentals_adj",
         "sig_sentiment_adj",
     ]
+    FEATURES_COMPOSITE = [
+        "sig_momentum", "sig_catalyst", "sig_fundamentals", "sig_sentiment",
+    ]
 
-    features = [f for f in FEATURES if f in signals.columns]
+    # Pick feature set that matches model expectation
+    if n_expected <= 4:
+        feature_candidates = FEATURES_COMPOSITE
+        log.info(f"  Model expects {n_expected} features — using composite signals")
+    else:
+        feature_candidates = FEATURES_FULL
+        log.info(f"  Model expects {n_expected} features — using sub-signals")
 
-    with open(model_file, "rb") as f:
-        model = pickle.load(f)
+    features = [f for f in feature_candidates if f in signals.columns]
+
+    if len(features) < n_expected:
+        log.warning(f"  Only {len(features)} of {n_expected} expected features available "
+                    f"— falling back to weighted rescore")
+        return weighted_rescore(signals)
 
     X      = signals[features].fillna(0.5).values
     scores = pd.Series(model.predict_proba(X)[:, 1], index=signals.index)
