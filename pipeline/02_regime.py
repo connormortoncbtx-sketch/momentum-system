@@ -81,9 +81,12 @@ def fetch_prices(lookback: int = LOOKBACK_DAYS) -> pd.DataFrame:
             inv = {v: k for k, v in TICKERS.items()}
             raw.columns = [inv.get(str(c), str(c)) for c in raw.columns]
 
-            df = raw.dropna(how="all").tail(lookback)
+            df = raw.dropna(how="all").ffill().tail(lookback)
 
             log.info(f"  Columns mapped: {list(df.columns)}")
+            nan_cols = [c for c in df.columns if df[c].isna().any()]
+            if nan_cols:
+                log.warning(f"  Columns with NaN after ffill: {nan_cols}")
 
             # Validate we got meaningful data — at least SPY and VIX
             if "SPY" not in df.columns or df["SPY"].dropna().empty:
