@@ -67,13 +67,23 @@ def fetch_prices(lookback: int = LOOKBACK_DAYS) -> pd.DataFrame:
             time.sleep(wait)
         try:
             raw = yf.download(syms, start=str(start), end=str(end),
-                              auto_adjust=True, progress=False)["Close"]
+                              auto_adjust=True, progress=False)
 
-            # Normalize column names back to our keys
+            # Handle yfinance MultiIndex columns (newer versions return
+            # MultiIndex like ('Close', 'SPY') instead of just 'SPY')
+            if isinstance(raw.columns, pd.MultiIndex):
+                raw = raw["Close"]
+            elif "Close" in raw.columns:
+                raw = raw["Close"]
+            # else raw is already a flat Close DataFrame
+
+            # Normalize column names back to our keys (^VIX → VIX etc.)
             inv = {v: k for k, v in TICKERS.items()}
-            raw.columns = [inv.get(c, c) for c in raw.columns]
+            raw.columns = [inv.get(str(c), str(c)) for c in raw.columns]
 
             df = raw.dropna(how="all").tail(lookback)
+
+            log.info(f"  Columns mapped: {list(df.columns)}")
 
             # Validate we got meaningful data — at least SPY and VIX
             if "SPY" not in df.columns or df["SPY"].dropna().empty:
