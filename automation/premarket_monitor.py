@@ -677,7 +677,7 @@ def run():
                 "rank":           int(ticker_row.get("alpha_rank", 0)),
                 "symbol":         sym,
                 "sector":         str(ticker_row.get("sector", ""))[:20],
-                "prior_close":   latest["friday_close"],
+                "prior_close":   latest["prior_close"],
                 "premarket_price": latest["premarket_price"],
                 "gap_pct":        gap_pct,
                 "gap_str":        f"{gap_pct*100:+.1f}%",
