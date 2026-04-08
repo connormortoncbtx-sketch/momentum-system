@@ -478,6 +478,7 @@ td{padding:8px 16px;white-space:nowrap;vertical-align:middle;}
 <div class="modal-overlay" id="close-modal">
   <div class="modal">
     <div class="modal-title">Close position — <span id="modal-ticker"></span></div>
+
     <div class="field-grid" style="margin-bottom:12px">
       <div class="field">
         <label>Exit date</label>
@@ -488,31 +489,44 @@ td{padding:8px 16px;white-space:nowrap;vertical-align:middle;}
         <input type="number" id="modal-exit-price" step="0.01" placeholder="0.00">
       </div>
     </div>
-    <div class="field-grid" style="margin-bottom:12px">
-      <div class="field">
-        <label>High water mark ($) <span style="color:var(--text3);font-size:9px">— highest price reached</span></label>
-        <input type="number" id="modal-hwm" step="0.01" placeholder="0.00">
-      </div>
-      <div class="field">
-        <label>Exit phase</label>
-        <select id="modal-exit-phase">
-          <option value="phase1">Phase 1 — never hit +10% threshold</option>
-          <option value="phase2">Phase 2 — trail was active</option>
-        </select>
-      </div>
-    </div>
+
     <div class="field" style="margin-bottom:12px">
       <label>Exit reason</label>
-      <select id="modal-exit-reason">
-        <option value="friday_close">Friday close (planned hold)</option>
+      <select id="modal-exit-reason" onchange="recalcModal()">
+        <option value="friday_close">Friday close — planned hold</option>
+        <option value="manual">Manual exit</option>
         <option value="trail_stop">Trailing stop triggered (Phase 2)</option>
         <option value="stop_loss">Hard stop loss hit (Phase 1)</option>
-        <option value="manual">Manual exit</option>
       </select>
     </div>
-    <div class="calc-display" id="modal-calc" style="margin-bottom:0">
-      Return: <span id="modal-return-display" style="color:var(--text)">—</span>
+
+    <!-- Derived values — computed automatically, no manual input needed -->
+    <div style="padding:10px 12px;background:var(--bg4);border:1px solid var(--border);border-radius:2px;font-size:11px;margin-bottom:12px">
+      <div style="font-size:9px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px">Derived values</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+        <div>
+          <div style="color:var(--text3);font-size:9px;margin-bottom:2px">Return</div>
+          <div id="modal-return-display" style="color:var(--text);font-weight:500">—</div>
+        </div>
+        <div>
+          <div style="color:var(--text3);font-size:9px;margin-bottom:2px">Exit phase</div>
+          <div id="modal-phase-display" style="color:var(--text2)">—</div>
+        </div>
+        <div>
+          <div style="color:var(--text3);font-size:9px;margin-bottom:2px">Inferred peak price</div>
+          <div id="modal-hwm-display" style="color:var(--amber)">—</div>
+        </div>
+        <div>
+          <div style="color:var(--text3);font-size:9px;margin-bottom:2px">Peak gain</div>
+          <div id="modal-peak-display" style="color:var(--amber)">—</div>
+        </div>
+        <div style="grid-column:1/-1">
+          <div style="color:var(--text3);font-size:9px;margin-bottom:2px">Captured % of peak</div>
+          <div id="modal-captured-display" style="color:var(--green)">—</div>
+        </div>
+      </div>
     </div>
+
     <div class="modal-actions">
       <button class="modal-btn cancel" onclick="closeModal()">Cancel</button>
       <button class="modal-btn confirm" onclick="confirmClose()">Close Position</button>
@@ -750,35 +764,90 @@ function renderPositions() {
 function openCloseModal(id) {
   closingId = id;
   const t = trades.find(t => t.id === id);
-  document.getElementById('modal-ticker').textContent = t.ticker;
-  document.getElementById('modal-exit-date').value    = new Date().toISOString().split('T')[0];
-  document.getElementById('modal-exit-price').value   = '';
-  document.getElementById('modal-return-display').textContent = '—';
-  document.getElementById('modal-exit-reason').value  = 'friday_close';
+  document.getElementById('modal-ticker').textContent  = t.ticker;
+  document.getElementById('modal-exit-date').value     = new Date().toISOString().split('T')[0];
+  document.getElementById('modal-exit-price').value    = '';
+  document.getElementById('modal-exit-reason').value   = 'friday_close';
+  document.getElementById('modal-return-display').textContent   = '—';
+  document.getElementById('modal-phase-display').textContent    = '—';
+  document.getElementById('modal-hwm-display').textContent      = '—';
+  document.getElementById('modal-peak-display').textContent     = '—';
+  document.getElementById('modal-captured-display').textContent = '—';
   document.getElementById('close-modal').classList.add('open');
 
-  document.getElementById('modal-exit-price').oninput = function() {
-    const ep = parseFloat(this.value);
-    if (!isNaN(ep) && ep > 0 && t.entry_price) {
-      const ret = (ep / t.entry_price - 1) * 100;
-      const el  = document.getElementById('modal-return-display');
-      el.textContent = `${ret > 0 ? '+' : ''}${ret.toFixed(2)}%`;
-      el.style.color = ret > 0 ? 'var(--green)' : ret < 0 ? 'var(--red)' : 'var(--text2)';
-    }
-  };
+  document.getElementById('modal-exit-price').oninput = recalcModal;
+  document.getElementById('modal-exit-reason').oninput = recalcModal;
+}
+
+function recalcModal() {
+  const t          = trades.find(t => t.id === closingId);
+  if (!t) return;
+  const ep         = parseFloat(document.getElementById('modal-exit-price').value);
+  const reason     = document.getElementById('modal-exit-reason').value;
+  if (isNaN(ep) || ep <= 0 || !t.entry_price) return;
+
+  const entry      = t.entry_price;
+  const trailPct   = t.trail_stop_pct / 100;
+  const retPct     = (ep / entry - 1) * 100;
+
+  // Return
+  const retEl = document.getElementById('modal-return-display');
+  retEl.textContent = `${retPct >= 0 ? '+' : ''}${retPct.toFixed(2)}%`;
+  retEl.style.color = retPct > 0 ? 'var(--green)' : retPct < 0 ? 'var(--red)' : 'var(--text2)';
+
+  // Infer phase and peak based on exit reason
+  let phase, hwm, peakGain, captured;
+
+  if (reason === 'trail_stop') {
+    // Phase 2 — trail triggered: exit_price = hwm × (1 - trail%)
+    phase   = 'Phase 2 — trail was active';
+    hwm     = ep / (1 - trailPct);
+    peakGain = (hwm / entry - 1) * 100;
+    captured = retPct / peakGain * 100;
+  } else if (reason === 'stop_loss') {
+    // Phase 1 — hard stop hit, never activated trail
+    phase    = 'Phase 1 — hard stop hit';
+    hwm      = entry;   // never exceeded entry meaningfully
+    peakGain = 0;
+    captured = null;
+  } else {
+    // friday_close or manual — you chose exit, exit price IS the peak
+    phase    = reason === 'friday_close' ? 'Planned Friday close' : 'Manual exit';
+    hwm      = ep;
+    peakGain = retPct;
+    captured = 100;
+  }
+
+  document.getElementById('modal-phase-display').textContent =
+    phase;
+  document.getElementById('modal-hwm-display').textContent =
+    hwm ? `$${hwm.toFixed(2)} (+${((hwm/entry-1)*100).toFixed(1)}%)` : '—';
+  document.getElementById('modal-peak-display').textContent =
+    peakGain != null ? `${peakGain >= 0 ? '+' : ''}${peakGain.toFixed(2)}%` : '—';
+
+  const capEl = document.getElementById('modal-captured-display');
+  if (captured != null) {
+    capEl.textContent = `${captured.toFixed(1)}% of peak captured`;
+    capEl.style.color = captured >= 70 ? 'var(--green)' : captured >= 40 ? 'var(--amber)' : 'var(--red)';
+  } else {
+    capEl.textContent = '— (Phase 1 exit)';
+    capEl.style.color = 'var(--text3)';
+  }
+
+  // Store computed values for confirmClose
+  window._modalComputed = { phase, hwm, peakGain, captured, retPct };
 }
 
 function closeModal() {
   document.getElementById('close-modal').classList.remove('open');
   closingId = null;
+  window._modalComputed = null;
 }
 
 function confirmClose() {
   const exitPrice  = parseFloat(document.getElementById('modal-exit-price').value);
   const exitDate   = document.getElementById('modal-exit-date').value;
   const exitReason = document.getElementById('modal-exit-reason').value;
-  const exitPhase  = document.getElementById('modal-exit-phase').value;
-  const hwm        = parseFloat(document.getElementById('modal-hwm').value) || null;
 
   if (!exitDate || isNaN(exitPrice) || exitPrice <= 0) {
     alert('Please enter exit date and price.'); return;
@@ -787,9 +856,12 @@ function confirmClose() {
   const idx = trades.findIndex(t => t.id === closingId);
   if (idx === -1) return;
 
-  const t      = trades[idx];
-  const retPct = (exitPrice / t.entry_price - 1) * 100;
-  const maxPct = hwm ? (hwm / t.entry_price - 1) * 100 : null;
+  const computed = window._modalComputed || {};
+  const t        = trades[idx];
+
+  // Derive exit phase from reason
+  const exitPhase = (exitReason === 'trail_stop') ? 'phase2' :
+                    (exitReason === 'stop_loss')  ? 'phase1' : 'phase2';
 
   trades[idx] = {
     ...t,
@@ -797,9 +869,10 @@ function confirmClose() {
     exit_price:       exitPrice,
     exit_reason:      exitReason,
     exit_phase:       exitPhase,
-    high_water_mark:  hwm,
-    max_gain_pct:     maxPct ? parseFloat(maxPct.toFixed(4)) : null,
-    return_pct:       parseFloat(retPct.toFixed(4)),
+    high_water_mark:  computed.hwm    ? parseFloat(computed.hwm.toFixed(2))    : null,
+    max_gain_pct:     computed.peakGain != null ? parseFloat(computed.peakGain.toFixed(4)) : null,
+    captured_pct:     computed.captured != null ? parseFloat(computed.captured.toFixed(2)) : null,
+    return_pct:       parseFloat((computed.retPct || 0).toFixed(4)),
   };
 
   saveTrades(trades);
