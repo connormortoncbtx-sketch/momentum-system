@@ -370,8 +370,8 @@ td{padding:8px 16px;white-space:nowrap;vertical-align:middle;}
     <div class="form-section-title">Context</div>
     <div class="field-grid">
       <div class="field">
-        <label>Alpha rank (from report)</label>
-        <input type="number" id="f-alpha-rank" placeholder="1">
+        <label>Composite rank (from report)</label>
+        <input type="number" id="f-composite-rank" placeholder="1">
       </div>
       <div class="field">
         <label>Entry signal</label>
@@ -651,7 +651,7 @@ function submitTrade() {
     high_water_mark:      c.hwm     != null ? parseFloat(c.hwm.toFixed(2))     : null,
     max_gain_pct:         c.peakGain!= null ? parseFloat(c.peakGain.toFixed(4)): null,
     captured_pct:         c.captured!= null ? parseFloat(c.captured.toFixed(2)): null,
-    alpha_rank:           parseInt(document.getElementById('f-alpha-rank').value) || null,
+    composite_rank:        parseInt(document.getElementById('f-composite-rank').value) || null,
     entry_signal:         document.getElementById('f-entry-signal').value,
     regime:               document.getElementById('f-regime').value,
     entry_day:            document.getElementById('f-entry-day').value,
@@ -663,7 +663,7 @@ function submitTrade() {
   saveTrades(trades);
 
   // Reset form
-  ['f-ticker','f-entry-date','f-entry-price','f-exit-date','f-exit-price','f-alpha-rank','f-notes']
+  ['f-ticker','f-entry-date','f-entry-price','f-exit-date','f-exit-price','f-composite-rank','f-notes']
     .forEach(id => document.getElementById(id).value = '');
   document.getElementById('outcome-panel').style.display = 'none';
   window._computed = null;
@@ -904,7 +904,7 @@ function exportCSV() {
   const cols = ['ticker','paper','entry_date','entry_price','stop_loss_pct',
     'stop_loss_price','trail_activate_pct','trail_activate_price','trail_stop_pct',
     'exit_date','exit_price','high_water_mark','max_gain_pct','return_pct',
-    'exit_reason','exit_phase','regime','entry_day','entry_signal','alpha_rank','notes'];
+    'exit_reason','exit_phase','regime','entry_day','entry_signal','composite_rank','notes'];
   const header = cols.join(',');
   const rows   = trades.map(t =>
     cols.map(c => {
