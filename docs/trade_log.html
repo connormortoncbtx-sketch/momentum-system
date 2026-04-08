@@ -267,12 +267,8 @@ td{padding:8px 16px;white-space:nowrap;vertical-align:middle;}
   <div class="form-section">
     <div class="form-section-title">Trade type</div>
     <div class="paper-toggle" onclick="togglePaper()" id="paper-toggle">
-      <div class="toggle-track" id="paper-track">
-        <div class="toggle-knob"></div>
-      </div>
-      <div class="paper-label" id="paper-label">
-        <strong>PAPER</strong> trade — not real money
-      </div>
+      <div class="toggle-track" id="paper-track"><div class="toggle-knob"></div></div>
+      <div class="paper-label" id="paper-label"><strong>PAPER</strong> trade — not real money</div>
     </div>
   </div>
 
@@ -281,7 +277,7 @@ td{padding:8px 16px;white-space:nowrap;vertical-align:middle;}
     <div class="field-grid three">
       <div class="field">
         <label>Ticker</label>
-        <input type="text" id="f-ticker" placeholder="AAPL" oninput="this.value=this.value.toUpperCase()" onchange="calcStops()">
+        <input type="text" id="f-ticker" placeholder="AAPL" oninput="this.value=this.value.toUpperCase()" onchange="calcAll()">
       </div>
       <div class="field">
         <label>Entry date</label>
@@ -289,54 +285,84 @@ td{padding:8px 16px;white-space:nowrap;vertical-align:middle;}
       </div>
       <div class="field">
         <label>Entry price ($)</label>
-        <input type="number" id="f-entry-price" step="0.01" placeholder="0.00" onchange="calcStops()">
+        <input type="number" id="f-entry-price" step="0.01" placeholder="0.00" onchange="calcAll()">
       </div>
     </div>
   </div>
 
   <div class="form-section">
-    <div class="form-section-title">Exit strategy</div>
-    <div style="font-size:10px;color:var(--text3);margin-bottom:10px;line-height:1.6">
-      Phase 1 — hard stop active from entry &nbsp;·&nbsp;
-      Phase 2 — trail activates if gain exceeds threshold
+    <div class="form-section-title">Exit</div>
+    <div class="field-grid three">
+      <div class="field">
+        <label>Exit date</label>
+        <input type="date" id="f-exit-date">
+      </div>
+      <div class="field">
+        <label>Exit price ($)</label>
+        <input type="number" id="f-exit-price" step="0.01" placeholder="0.00" oninput="calcAll()">
+      </div>
+      <div class="field">
+        <label>Exit reason</label>
+        <select id="f-exit-reason" onchange="calcAll()">
+          <option value="friday_close">Friday close</option>
+          <option value="manual">Manual exit</option>
+          <option value="trail_stop">Trailing stop (Phase 2)</option>
+          <option value="stop_loss">Hard stop loss (Phase 1)</option>
+        </select>
+      </div>
     </div>
+  </div>
 
+  <div class="form-section">
+    <div class="form-section-title">Stop configuration</div>
     <div style="padding:10px 12px;background:var(--bg4);border:1px solid var(--border);border-radius:2px;margin-bottom:12px;">
-      <div style="font-size:9px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px">Phase 1 — Initial hard stop</div>
+      <div style="font-size:9px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px">Phase 1 — Hard stop</div>
       <div class="field-grid">
         <div class="field">
-          <label>Hard stop loss (%)</label>
-          <input type="number" id="f-stop-pct" step="0.1" value="7" placeholder="7" onchange="calcStops()">
+          <label>Hard stop (%)</label>
+          <input type="number" id="f-stop-pct" step="0.1" value="7" placeholder="7" onchange="calcAll()">
         </div>
         <div class="field">
-          <label>Stop price (calculated)</label>
+          <label>Stop price</label>
           <input type="text" id="f-stop-price-display" placeholder="—" readonly style="color:var(--red);cursor:default">
         </div>
       </div>
     </div>
-
     <div style="padding:10px 12px;background:var(--bg4);border:1px solid var(--border);border-radius:2px;">
-      <div style="font-size:9px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px">Phase 2 — Trail activation (cancels hard stop)</div>
-      <div class="field-grid three">
+      <div style="font-size:9px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px">Phase 2 — Trail</div>
+      <div class="field-grid">
         <div class="field">
-          <label>Activate trail at gain (%)</label>
-          <input type="number" id="f-trail-activate-pct" step="0.1" value="10" placeholder="10" onchange="calcStops()">
+          <label>Activate at gain (%)</label>
+          <input type="number" id="f-trail-activate-pct" step="0.1" value="10" placeholder="10" onchange="calcAll()">
         </div>
         <div class="field">
           <label>Trail stop (%)</label>
-          <input type="number" id="f-trail-pct" step="0.1" value="3.5" placeholder="3.5" onchange="calcStops()">
-        </div>
-        <div class="field">
-          <label>Activate price (calculated)</label>
-          <input type="text" id="f-trail-activate-display" placeholder="—" readonly style="color:var(--green);cursor:default">
+          <input type="number" id="f-trail-pct" step="0.1" value="3.5" placeholder="3.5" onchange="calcAll()">
         </div>
       </div>
     </div>
+  </div>
 
-    <div class="calc-display" id="calc-display" style="display:none;margin-top:8px">
-      <div class="calc-item neg">Phase 1 stop: <span id="calc-stop">—</span></div>
-      <div class="calc-item">→ Phase 2 if above: <span id="calc-activate">—</span></div>
-      <div class="calc-item pos">Trail from peak, exit if −<span id="calc-trail-pct">—</span>%</div>
+  <!-- Derived outcome — computed from exit price + reason + trail % -->
+  <div id="outcome-panel" style="display:none;padding:12px 14px;background:var(--bg4);border:1px solid var(--border2);border-radius:4px;margin-bottom:16px;">
+    <div style="font-size:9px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px">Computed outcome</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+      <div>
+        <div style="font-size:9px;color:var(--text3);margin-bottom:3px">Return</div>
+        <div id="out-return" style="font-weight:500;font-size:13px">—</div>
+      </div>
+      <div>
+        <div style="font-size:9px;color:var(--text3);margin-bottom:3px">Phase</div>
+        <div id="out-phase" style="color:var(--text2);font-size:11px">—</div>
+      </div>
+      <div>
+        <div style="font-size:9px;color:var(--text3);margin-bottom:3px">Inferred peak</div>
+        <div id="out-peak" style="color:var(--amber);font-size:11px">—</div>
+      </div>
+      <div style="grid-column:1/-1">
+        <div style="font-size:9px;color:var(--text3);margin-bottom:3px">Captured % of peak</div>
+        <div id="out-captured" style="font-weight:500;font-size:13px">—</div>
+      </div>
     </div>
   </div>
 
@@ -381,12 +407,12 @@ td{padding:8px 16px;white-space:nowrap;vertical-align:middle;}
     <div class="field-grid one" style="margin-top:8px">
       <div class="field">
         <label>Notes (optional)</label>
-        <textarea id="f-notes" placeholder="Why this ticker, what you saw..."></textarea>
+        <textarea id="f-notes" placeholder="Thesis, what you saw, why you entered..."></textarea>
       </div>
     </div>
   </div>
 
-  <button class="submit-btn" onclick="submitTrade()">LOG TRADE →</button>
+  <button class="submit-btn" onclick="submitTrade()">LOG COMPLETED TRADE →</button>
 </div>
 </div>
 
@@ -474,66 +500,6 @@ td{padding:8px 16px;white-space:nowrap;vertical-align:middle;}
 </div>
 </div>
 
-<!-- ── CLOSE MODAL ── -->
-<div class="modal-overlay" id="close-modal">
-  <div class="modal">
-    <div class="modal-title">Close position — <span id="modal-ticker"></span></div>
-
-    <div class="field-grid" style="margin-bottom:12px">
-      <div class="field">
-        <label>Exit date</label>
-        <input type="date" id="modal-exit-date">
-      </div>
-      <div class="field">
-        <label>Exit price ($)</label>
-        <input type="number" id="modal-exit-price" step="0.01" placeholder="0.00">
-      </div>
-    </div>
-
-    <div class="field" style="margin-bottom:12px">
-      <label>Exit reason</label>
-      <select id="modal-exit-reason" onchange="recalcModal()">
-        <option value="friday_close">Friday close — planned hold</option>
-        <option value="manual">Manual exit</option>
-        <option value="trail_stop">Trailing stop triggered (Phase 2)</option>
-        <option value="stop_loss">Hard stop loss hit (Phase 1)</option>
-      </select>
-    </div>
-
-    <!-- Derived values — computed automatically, no manual input needed -->
-    <div style="padding:10px 12px;background:var(--bg4);border:1px solid var(--border);border-radius:2px;font-size:11px;margin-bottom:12px">
-      <div style="font-size:9px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px">Derived values</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
-        <div>
-          <div style="color:var(--text3);font-size:9px;margin-bottom:2px">Return</div>
-          <div id="modal-return-display" style="color:var(--text);font-weight:500">—</div>
-        </div>
-        <div>
-          <div style="color:var(--text3);font-size:9px;margin-bottom:2px">Exit phase</div>
-          <div id="modal-phase-display" style="color:var(--text2)">—</div>
-        </div>
-        <div>
-          <div style="color:var(--text3);font-size:9px;margin-bottom:2px">Inferred peak price</div>
-          <div id="modal-hwm-display" style="color:var(--amber)">—</div>
-        </div>
-        <div>
-          <div style="color:var(--text3);font-size:9px;margin-bottom:2px">Peak gain</div>
-          <div id="modal-peak-display" style="color:var(--amber)">—</div>
-        </div>
-        <div style="grid-column:1/-1">
-          <div style="color:var(--text3);font-size:9px;margin-bottom:2px">Captured % of peak</div>
-          <div id="modal-captured-display" style="color:var(--green)">—</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="modal-actions">
-      <button class="modal-btn cancel" onclick="closeModal()">Cancel</button>
-      <button class="modal-btn confirm" onclick="confirmClose()">Close Position</button>
-    </div>
-  </div>
-</div>
-
 <script>
 // ── STORAGE ──────────────────────────────────────────────────────────────────
 const STORE_KEY = 'momentum_trade_log_v1';
@@ -557,7 +523,6 @@ let isPaper     = true;
 let filterMode  = 'all';
 let sortCol     = 'entry_date';
 let sortDir     = 'desc';
-let closingId   = null;
 
 // ── TABS ──────────────────────────────────────────────────────────────────────
 function showTab(name) {
@@ -581,48 +546,91 @@ function togglePaper() {
 }
 
 // ── STOP CALCULATOR ───────────────────────────────────────────────────────────
-function calcStops() {
-  const price          = parseFloat(document.getElementById('f-entry-price').value);
-  const stopPct        = parseFloat(document.getElementById('f-stop-pct').value) / 100;
-  const trailActivePct = parseFloat(document.getElementById('f-trail-activate-pct').value) / 100;
-  const trailPct       = parseFloat(document.getElementById('f-trail-pct').value);
-  const disp           = document.getElementById('calc-display');
+function calcAll() {
+  const entry      = parseFloat(document.getElementById('f-entry-price').value);
+  const exitPrice  = parseFloat(document.getElementById('f-exit-price').value);
+  const stopPct    = parseFloat(document.getElementById('f-stop-pct').value) / 100;
+  const trailAct   = parseFloat(document.getElementById('f-trail-activate-pct').value) / 100;
+  const trailPct   = parseFloat(document.getElementById('f-trail-pct').value) / 100;
+  const reason     = document.getElementById('f-exit-reason').value;
 
-  if (!price || isNaN(price)) {
-    disp.style.display = 'none';
-    document.getElementById('f-stop-price-display').value = '—';
-    document.getElementById('f-trail-activate-display').value = '—';
-    return;
+  // Stop price display
+  if (entry && !isNaN(entry)) {
+    document.getElementById('f-stop-price-display').value = `$${(entry*(1-stopPct)).toFixed(2)}`;
   }
 
-  const stopPrice     = price * (1 - stopPct);
-  const activatePrice = price * (1 + trailActivePct);
+  // Outcome panel
+  const panel = document.getElementById('outcome-panel');
+  if (!entry || !exitPrice || isNaN(entry) || isNaN(exitPrice)) {
+    panel.style.display = 'none';
+    return;
+  }
+  panel.style.display = 'block';
 
-  document.getElementById('f-stop-price-display').value    = `$${stopPrice.toFixed(2)}`;
-  document.getElementById('f-trail-activate-display').value = `$${activatePrice.toFixed(2)}`;
+  const retPct = (exitPrice / entry - 1) * 100;
 
-  disp.style.display = 'flex';
-  document.getElementById('calc-stop').textContent      = `$${stopPrice.toFixed(2)}`;
-  document.getElementById('calc-activate').textContent  = `$${activatePrice.toFixed(2)}  (+${(trailActivePct*100).toFixed(1)}%)`;
-  document.getElementById('calc-trail-pct').textContent = trailPct;
+  // Infer peak from exit reason + trail %
+  let hwm, peakGain, captured, phase;
+  if (reason === 'trail_stop') {
+    hwm       = exitPrice / (1 - trailPct);
+    peakGain  = (hwm / entry - 1) * 100;
+    captured  = retPct / peakGain * 100;
+    phase     = 'Phase 2 — trail triggered';
+  } else if (reason === 'stop_loss') {
+    hwm       = entry;
+    peakGain  = 0;
+    captured  = null;
+    phase     = 'Phase 1 — hard stop hit';
+  } else {
+    hwm       = exitPrice;
+    peakGain  = retPct;
+    captured  = 100;
+    phase     = reason === 'friday_close' ? 'Friday close' : 'Manual exit';
+  }
+
+  const retEl = document.getElementById('out-return');
+  retEl.textContent = `${retPct >= 0 ? '+' : ''}${retPct.toFixed(2)}%`;
+  retEl.style.color = retPct > 0 ? 'var(--green)' : retPct < 0 ? 'var(--red)' : 'var(--text2)';
+
+  document.getElementById('out-phase').textContent = phase;
+  document.getElementById('out-peak').textContent  =
+    hwm ? `$${hwm.toFixed(2)}  (+${((hwm/entry-1)*100).toFixed(1)}%)` : '—';
+
+  const capEl = document.getElementById('out-captured');
+  if (captured != null) {
+    capEl.textContent = `${captured.toFixed(1)}%`;
+    capEl.style.color = captured >= 70 ? 'var(--green)' : captured >= 40 ? 'var(--amber)' : 'var(--red)';
+  } else {
+    capEl.textContent = '— (Phase 1 exit)';
+    capEl.style.color = 'var(--text3)';
+  }
+
+  // Store for submit
+  window._computed = { retPct, hwm, peakGain, captured, phase };
 }
 
 // ── SUBMIT TRADE ──────────────────────────────────────────────────────────────
 function submitTrade() {
-  const ticker    = document.getElementById('f-ticker').value.trim().toUpperCase();
-  const entryDate = document.getElementById('f-entry-date').value;
-  const entryPrice = parseFloat(document.getElementById('f-entry-price').value);
+  const ticker         = document.getElementById('f-ticker').value.trim().toUpperCase();
+  const entryDate      = document.getElementById('f-entry-date').value;
+  const entryPrice     = parseFloat(document.getElementById('f-entry-price').value);
+  const exitDate       = document.getElementById('f-exit-date').value;
+  const exitPrice      = parseFloat(document.getElementById('f-exit-price').value);
+  const exitReason     = document.getElementById('f-exit-reason').value;
   const stopPct        = parseFloat(document.getElementById('f-stop-pct').value);
   const trailActivePct = parseFloat(document.getElementById('f-trail-activate-pct').value);
   const trailPct       = parseFloat(document.getElementById('f-trail-pct').value);
 
   if (!ticker || !entryDate || isNaN(entryPrice) || entryPrice <= 0) {
-    alert('Please fill in ticker, entry date, and entry price.');
-    return;
+    alert('Please fill in ticker, entry date, and entry price.'); return;
+  }
+  if (!exitDate || isNaN(exitPrice) || exitPrice <= 0) {
+    alert('Please fill in exit date and exit price.'); return;
   }
 
-  const stopPrice     = entryPrice * (1 - stopPct/100);
-  const activatePrice = entryPrice * (1 + trailActivePct/100);
+  const c = window._computed || {};
+  const exitPhase = (exitReason === 'trail_stop') ? 'phase2' :
+                    (exitReason === 'stop_loss')  ? 'phase1' : 'phase2';
 
   const trade = {
     id:                   genId(),
@@ -631,21 +639,23 @@ function submitTrade() {
     entry_date:           entryDate,
     entry_price:          entryPrice,
     stop_loss_pct:        stopPct,
-    stop_loss_price:      parseFloat(stopPrice.toFixed(2)),
+    stop_loss_price:      parseFloat((entryPrice * (1 - stopPct/100)).toFixed(2)),
     trail_activate_pct:   trailActivePct,
-    trail_activate_price: parseFloat(activatePrice.toFixed(2)),
+    trail_activate_price: parseFloat((entryPrice * (1 + trailActivePct/100)).toFixed(2)),
     trail_stop_pct:       trailPct,
+    exit_date:            exitDate,
+    exit_price:           exitPrice,
+    exit_reason:          exitReason,
+    exit_phase:           exitPhase,
+    return_pct:           c.retPct  != null ? parseFloat(c.retPct.toFixed(4))  : parseFloat(((exitPrice/entryPrice-1)*100).toFixed(4)),
+    high_water_mark:      c.hwm     != null ? parseFloat(c.hwm.toFixed(2))     : null,
+    max_gain_pct:         c.peakGain!= null ? parseFloat(c.peakGain.toFixed(4)): null,
+    captured_pct:         c.captured!= null ? parseFloat(c.captured.toFixed(2)): null,
     alpha_rank:           parseInt(document.getElementById('f-alpha-rank').value) || null,
     entry_signal:         document.getElementById('f-entry-signal').value,
     regime:               document.getElementById('f-regime').value,
     entry_day:            document.getElementById('f-entry-day').value,
     notes:                document.getElementById('f-notes').value.trim(),
-    exit_date:            null,
-    exit_price:           null,
-    exit_reason:          'open',
-    exit_phase:           null,
-    high_water_mark:      null,
-    return_pct:           null,
     logged_at:            new Date().toISOString(),
   };
 
@@ -653,11 +663,12 @@ function submitTrade() {
   saveTrades(trades);
 
   // Reset form
-  ['f-ticker','f-entry-date','f-entry-price','f-alpha-rank','f-notes']
+  ['f-ticker','f-entry-date','f-entry-price','f-exit-date','f-exit-price','f-alpha-rank','f-notes']
     .forEach(id => document.getElementById(id).value = '');
-  document.getElementById('calc-display').style.display = 'none';
+  document.getElementById('outcome-panel').style.display = 'none';
+  window._computed = null;
 
-  alert(`✓ ${ticker} logged as ${isPaper ? 'PAPER' : 'LIVE'} trade`);
+  alert(`✓ ${ticker} logged — ${trade.return_pct >= 0 ? '+' : ''}${trade.return_pct.toFixed(2)}%`);
   showTab('positions');
   document.querySelectorAll('.tab-btn')[1].classList.add('active');
   document.querySelectorAll('.tab-btn')[0].classList.remove('active');
@@ -673,10 +684,8 @@ function setFilter(mode, btn) {
 
 function filteredTrades() {
   return trades.filter(t => {
-    if (filterMode === 'open')   return t.exit_reason === 'open';
-    if (filterMode === 'closed') return t.exit_reason !== 'open';
-    if (filterMode === 'paper')  return t.paper;
-    if (filterMode === 'live')   return !t.paper;
+    if (filterMode === 'paper') return t.paper;
+    if (filterMode === 'live')  return !t.paper;
     return true;
   });
 }
@@ -705,14 +714,13 @@ function renderPositions() {
     return sortDir === 'asc' ? va - vb : vb - va;
   });
 
-  const closed = trades.filter(t => t.exit_reason !== 'open');
-  const winners = closed.filter(t => (t.return_pct || 0) > 0);
-  const rets    = closed.map(t => t.return_pct || 0);
+  const winners = trades.filter(t => (t.return_pct || 0) > 0);
+  const rets    = trades.map(t => t.return_pct || 0);
 
-  document.getElementById('kpi-open').textContent   = trades.filter(t=>t.exit_reason==='open').length;
-  document.getElementById('kpi-closed').textContent = closed.length;
+  document.getElementById('kpi-open').textContent   = trades.length;
+  document.getElementById('kpi-closed').textContent = trades.length;
   document.getElementById('kpi-winrate').textContent =
-    closed.length ? `${(winners.length/closed.length*100).toFixed(0)}%` : '—';
+    trades.length ? `${(winners.length/trades.length*100).toFixed(0)}%` : '—';
   document.getElementById('kpi-avgret').textContent =
     rets.length ? `${(rets.reduce((a,b)=>a+b,0)/rets.length).toFixed(2)}%` : '—';
   document.getElementById('kpi-best').textContent =
@@ -731,15 +739,11 @@ function renderPositions() {
   empty.style.display = 'none';
 
   tbody.innerHTML = list.map(t => {
-    const isOpen    = t.exit_reason === 'open';
     const badge     = t.paper
       ? '<span class="paper-badge">PAPER</span>'
       : '<span class="live-badge">LIVE</span>';
     const exitBadge = `<span class="exit-badge exit-${t.exit_reason}">${t.exit_reason.replace('_',' ')}</span>`;
-    const actions   = isOpen
-      ? `<button class="action-btn close-btn" onclick="openCloseModal('${t.id}')">close</button>
-         <button class="action-btn del-btn" onclick="deleteTrade('${t.id}')">×</button>`
-      : `<button class="action-btn del-btn" onclick="deleteTrade('${t.id}')">×</button>`;
+    const actions   = `<button class="action-btn del-btn" onclick="deleteTrade('${t.id}')">×</button>`;
 
     return `<tr>
       <td class="sym-cell">${t.ticker}${badge}</td>
@@ -760,126 +764,6 @@ function renderPositions() {
   }).join('');
 }
 
-// ── CLOSE MODAL ───────────────────────────────────────────────────────────────
-function openCloseModal(id) {
-  closingId = id;
-  const t = trades.find(t => t.id === id);
-  document.getElementById('modal-ticker').textContent  = t.ticker;
-  document.getElementById('modal-exit-date').value     = new Date().toISOString().split('T')[0];
-  document.getElementById('modal-exit-price').value    = '';
-  document.getElementById('modal-exit-reason').value   = 'friday_close';
-  document.getElementById('modal-return-display').textContent   = '—';
-  document.getElementById('modal-phase-display').textContent    = '—';
-  document.getElementById('modal-hwm-display').textContent      = '—';
-  document.getElementById('modal-peak-display').textContent     = '—';
-  document.getElementById('modal-captured-display').textContent = '—';
-  document.getElementById('close-modal').classList.add('open');
-
-  document.getElementById('modal-exit-price').oninput = recalcModal;
-  document.getElementById('modal-exit-reason').oninput = recalcModal;
-}
-
-function recalcModal() {
-  const t          = trades.find(t => t.id === closingId);
-  if (!t) return;
-  const ep         = parseFloat(document.getElementById('modal-exit-price').value);
-  const reason     = document.getElementById('modal-exit-reason').value;
-  if (isNaN(ep) || ep <= 0 || !t.entry_price) return;
-
-  const entry      = t.entry_price;
-  const trailPct   = t.trail_stop_pct / 100;
-  const retPct     = (ep / entry - 1) * 100;
-
-  // Return
-  const retEl = document.getElementById('modal-return-display');
-  retEl.textContent = `${retPct >= 0 ? '+' : ''}${retPct.toFixed(2)}%`;
-  retEl.style.color = retPct > 0 ? 'var(--green)' : retPct < 0 ? 'var(--red)' : 'var(--text2)';
-
-  // Infer phase and peak based on exit reason
-  let phase, hwm, peakGain, captured;
-
-  if (reason === 'trail_stop') {
-    // Phase 2 — trail triggered: exit_price = hwm × (1 - trail%)
-    phase   = 'Phase 2 — trail was active';
-    hwm     = ep / (1 - trailPct);
-    peakGain = (hwm / entry - 1) * 100;
-    captured = retPct / peakGain * 100;
-  } else if (reason === 'stop_loss') {
-    // Phase 1 — hard stop hit, never activated trail
-    phase    = 'Phase 1 — hard stop hit';
-    hwm      = entry;   // never exceeded entry meaningfully
-    peakGain = 0;
-    captured = null;
-  } else {
-    // friday_close or manual — you chose exit, exit price IS the peak
-    phase    = reason === 'friday_close' ? 'Planned Friday close' : 'Manual exit';
-    hwm      = ep;
-    peakGain = retPct;
-    captured = 100;
-  }
-
-  document.getElementById('modal-phase-display').textContent =
-    phase;
-  document.getElementById('modal-hwm-display').textContent =
-    hwm ? `$${hwm.toFixed(2)} (+${((hwm/entry-1)*100).toFixed(1)}%)` : '—';
-  document.getElementById('modal-peak-display').textContent =
-    peakGain != null ? `${peakGain >= 0 ? '+' : ''}${peakGain.toFixed(2)}%` : '—';
-
-  const capEl = document.getElementById('modal-captured-display');
-  if (captured != null) {
-    capEl.textContent = `${captured.toFixed(1)}% of peak captured`;
-    capEl.style.color = captured >= 70 ? 'var(--green)' : captured >= 40 ? 'var(--amber)' : 'var(--red)';
-  } else {
-    capEl.textContent = '— (Phase 1 exit)';
-    capEl.style.color = 'var(--text3)';
-  }
-
-  // Store computed values for confirmClose
-  window._modalComputed = { phase, hwm, peakGain, captured, retPct };
-}
-
-function closeModal() {
-  document.getElementById('close-modal').classList.remove('open');
-  closingId = null;
-  window._modalComputed = null;
-}
-
-function confirmClose() {
-  const exitPrice  = parseFloat(document.getElementById('modal-exit-price').value);
-  const exitDate   = document.getElementById('modal-exit-date').value;
-  const exitReason = document.getElementById('modal-exit-reason').value;
-
-  if (!exitDate || isNaN(exitPrice) || exitPrice <= 0) {
-    alert('Please enter exit date and price.'); return;
-  }
-
-  const idx = trades.findIndex(t => t.id === closingId);
-  if (idx === -1) return;
-
-  const computed = window._modalComputed || {};
-  const t        = trades[idx];
-
-  // Derive exit phase from reason
-  const exitPhase = (exitReason === 'trail_stop') ? 'phase2' :
-                    (exitReason === 'stop_loss')  ? 'phase1' : 'phase2';
-
-  trades[idx] = {
-    ...t,
-    exit_date:        exitDate,
-    exit_price:       exitPrice,
-    exit_reason:      exitReason,
-    exit_phase:       exitPhase,
-    high_water_mark:  computed.hwm    ? parseFloat(computed.hwm.toFixed(2))    : null,
-    max_gain_pct:     computed.peakGain != null ? parseFloat(computed.peakGain.toFixed(4)) : null,
-    captured_pct:     computed.captured != null ? parseFloat(computed.captured.toFixed(2)) : null,
-    return_pct:       parseFloat((computed.retPct || 0).toFixed(4)),
-  };
-
-  saveTrades(trades);
-  closeModal();
-  renderPositions();
-}
-
 function deleteTrade(id) {
   if (!confirm('Delete this trade from the log?')) return;
   trades = trades.filter(t => t.id !== id);
@@ -889,7 +773,7 @@ function deleteTrade(id) {
 
 // ── ANALYSIS ─────────────────────────────────────────────────────────────────
 function renderAnalysis() {
-  const closed = trades.filter(t => t.exit_reason !== 'open' && t.return_pct !== null);
+  const closed = trades.filter(t => t.return_pct !== null);
   const el     = document.getElementById('empty-analysis');
   const statsEl = document.getElementById('analysis-stats');
 
