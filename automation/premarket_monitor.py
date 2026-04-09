@@ -370,9 +370,12 @@ td{padding:7px 12px;white-space:nowrap;vertical-align:middle;}
 </head>
 <body>
 <div class="header">
-  <div>
-    <div class="logo">PRE-MARKET<span>//</span>{{ day_name }}</div>
-    <div class="meta">{{ date }} &nbsp;·&nbsp; top {{ n_tickers }} tickers &nbsp;·&nbsp; auto-refreshes every 5 min</div>
+  <div style="display:flex;align-items:center;gap:16px">
+    <a href="../index.html" style="font-size:10px;color:var(--text3);text-decoration:none;letter-spacing:.08em;border:1px solid var(--border);padding:4px 10px;border-radius:2px">← HUB</a>
+    <div>
+      <div class="logo">PRE-MARKET<span>//</span>{{ day_name }}</div>
+      <div class="meta">{{ date }} &nbsp;·&nbsp; top {{ n_tickers }} tickers &nbsp;·&nbsp; auto-refreshes every 5 min</div>
+    </div>
   </div>
   <div class="meta" style="text-align:right">
     last check: <span style="color:var(--accent)">{{ last_check_time }}</span><br>

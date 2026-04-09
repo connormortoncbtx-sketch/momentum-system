@@ -538,6 +538,36 @@ REGIME_LABELS = {
 }
 
 
+def inject_github_token():
+    """
+    Replace {{ GITHUB_TOKEN }} placeholder in trade_log.html with the
+    actual token from the GH_TOKEN environment variable.
+    This allows the trade log to save directly to the repo without
+    prompting the user for a token each session.
+    """
+    import os
+    token     = os.environ.get("GH_TOKEN", "")
+    trade_log = DOCS / "trade_log.html"
+
+    if not trade_log.exists():
+        log.warning("trade_log.html not found — skipping token injection")
+        return
+
+    content = trade_log.read_text(encoding="utf-8")
+
+    if "{{ GITHUB_TOKEN }}" not in content and token:
+        log.info("trade_log.html already has token injected")
+        return
+
+    if not token:
+        log.warning("GH_TOKEN not set — trade log will prompt for token manually")
+        return
+
+    injected = content.replace("{{ GITHUB_TOKEN }}", token)
+    trade_log.write_text(injected, encoding="utf-8")
+    log.info("GitHub token injected into trade_log.html")
+
+
 def run():
     DOCS.mkdir(parents=True, exist_ok=True)
 
@@ -567,6 +597,9 @@ def run():
         f.write(html)
 
     log.info(f"Index updated → {out}")
+
+    # Inject GitHub token into trade log for seamless storage
+    inject_github_token()
 
 
 if __name__ == "__main__":
