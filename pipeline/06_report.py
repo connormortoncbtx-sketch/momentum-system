@@ -105,15 +105,23 @@ def build_rows_json(df: pd.DataFrame) -> str:
 
         def suggested_stops(avg_win, weekly_vol):
             """
-            Compute suggested Phase 2 activation % and trail % from signal data.
+            Compute suggested stop parameters from signal data.
+            hard_stop  = based on weekly vol tier (wider for volatile names)
             activation = 0.75 × avg_win  (switch to trail in winning territory)
             trail      = 0.50 × weekly_vol, capped at 15%
             """
             if not avg_win or not weekly_vol or avg_win <= 0 or weekly_vol <= 0:
-                return None, None
+                return None, None, None
+            # Hard stop flexes with volatility
+            if weekly_vol < 10:
+                hard_stop = 7.0
+            elif weekly_vol < 20:
+                hard_stop = 10.0
+            else:
+                hard_stop = round(min(weekly_vol * 0.50, 15.0), 1)
             activation = round(avg_win * 0.75, 1)
             trail      = round(min(weekly_vol * 0.50, 15.0), 1)
-            return activation, trail
+            return hard_stop, activation, trail
 
         rows.append({
             "rank":       int(g("composite_rank", g("alpha_rank", 9999))),
@@ -139,7 +147,7 @@ def build_rows_json(df: pd.DataFrame) -> str:
             "confidence": str(g("confidence", "")),
             # Suggested stop parameters — computed from avg_win and weekly_vol
             **dict(zip(
-                ["suggested_activation_pct", "suggested_trail_pct"],
+                ["suggested_hard_stop_pct", "suggested_activation_pct", "suggested_trail_pct"],
                 suggested_stops(
                     round(float(g("avg_win_magnitude", 0) or 0), 2),
                     round(float(g("weekly_vol", 0) or 0), 2)
@@ -581,6 +589,7 @@ td { padding: 7px 12px; white-space: nowrap; vertical-align: middle; }
     <th onclick="sortTable('ev_score')">EV Score</th>
     <th onclick="sortTable('avg_win')">Avg Win</th>
     <th onclick="sortTable('weekly_vol')">Wk Vol</th>
+    <th onclick="sortTable('suggested_hard_stop_pct')" title="Suggested hard stop % based on weekly volatility">Hard Stop</th>
     <th onclick="sortTable('suggested_activation_pct')" title="Suggested Phase 2 activation % = 0.75 × avg win">P2 Activate</th>
     <th onclick="sortTable('suggested_trail_pct')" title="Suggested trailing stop % = 0.5 × weekly vol, max 15%">Trail %</th>
     <th onclick="sortTable('pct')">Pct Rank</th>
@@ -701,6 +710,10 @@ function buildDetail(row) {
           <span class="sub-val" style="color:var(--text2)">${row.weekly_vol>0?'±'+row.weekly_vol.toFixed(1)+'%':'—'}</span>
         </div>
         <div class="sub-signal-row">
+          <span class="sub-label">Suggested hard stop</span>
+          <span class="sub-val" style="color:var(--red);font-weight:500">${row.suggested_hard_stop_pct!=null?'-'+row.suggested_hard_stop_pct.toFixed(1)+'%':'—'}</span>
+        </div>
+        <div class="sub-signal-row">
           <span class="sub-label">Suggested P2 activation</span>
           <span class="sub-val" style="color:var(--amber);font-weight:500">${row.suggested_activation_pct!=null?'+'+row.suggested_activation_pct.toFixed(1)+'%':'—'}</span>
         </div>
@@ -752,6 +765,7 @@ function renderTable() {
       <td class="score-cell" style="color:${row.ev_score>0?'var(--green)':row.ev_score<0?'var(--red)':'var(--text2)'}">${row.ev_score>0?'+':''}${row.ev_score.toFixed(4)}</td>
       <td style="color:var(--green);font-size:11px">${row.avg_win>0?'+'+row.avg_win.toFixed(1)+'%':'—'}</td>
       <td style="color:var(--text2);font-size:11px">${row.weekly_vol>0?'±'+row.weekly_vol.toFixed(1)+'%':'—'}</td>
+      <td style="color:var(--red);font-size:11px;font-weight:500" title="Suggested hard stop % based on weekly volatility">${row.suggested_hard_stop_pct!=null?'-'+row.suggested_hard_stop_pct.toFixed(1)+'%':'—'}</td>
       <td style="color:var(--amber);font-size:11px;font-weight:500" title="Suggested Phase 2 activation: cancel hard stop, set trail">${row.suggested_activation_pct!=null?'+'+row.suggested_activation_pct.toFixed(1)+'%':'—'}</td>
       <td style="color:var(--purple);font-size:11px;font-weight:500" title="Suggested trailing stop % from high water mark">${row.suggested_trail_pct!=null?row.suggested_trail_pct.toFixed(1)+'%':'—'}</td>
       <td class="pct-cell">${row.pct}%</td>
