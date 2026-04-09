@@ -252,11 +252,17 @@ td{padding:8px 16px;white-space:nowrap;vertical-align:middle;}
 <body>
 
 <div class="header">
-  <div class="logo">TRADE<span>//</span>LOG</div>
-  <div class="header-right">
-    <button class="tab-btn active" onclick="showTab('log')">Log Trade</button>
-    <button class="tab-btn" onclick="showTab('positions')">Positions</button>
-    <button class="tab-btn" onclick="showTab('analysis')">Analysis</button>
+  <div style="display:flex;align-items:center;gap:16px">
+    <a href="index.html" style="font-size:10px;color:var(--text3);text-decoration:none;letter-spacing:.08em;border:1px solid var(--border);padding:4px 10px;border-radius:2px;transition:all .15s" onmouseover="this.style.color='var(--text)';this.style.borderColor='var(--border2)'" onmouseout="this.style.color='var(--text3)';this.style.borderColor='var(--border)'">← HUB</a>
+    <div class="logo">TRADE<span>//</span>LOG</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:16px">
+    <span id="save-status" style="font-size:9px;color:var(--text3);letter-spacing:.06em"></span>
+    <div class="header-right">
+      <button class="tab-btn active" onclick="showTab('log')">Log Trade</button>
+      <button class="tab-btn" onclick="showTab('positions')">Positions</button>
+      <button class="tab-btn" onclick="showTab('analysis')">Analysis</button>
+    </div>
   </div>
 </div>
 
@@ -501,16 +507,113 @@ td{padding:8px 16px;white-space:nowrap;vertical-align:middle;}
 </div>
 
 <script>
-// ── STORAGE ──────────────────────────────────────────────────────────────────
-const STORE_KEY = 'momentum_trade_log_v1';
+// ── GITHUB STORAGE ────────────────────────────────────────────────────────────
+// Trades persist to data/trades.json in the repo via GitHub API.
+// GITHUB_TOKEN is injected at build time by the pipeline into the HTML.
+// Raw reads use the public GitHub raw URL (no auth needed for public repos).
 
-function loadTrades() {
-  try { return JSON.parse(localStorage.getItem(STORE_KEY) || '[]'); }
-  catch { return []; }
+const GITHUB_OWNER = 'connormortoncbtx-sketch';
+const GITHUB_REPO  = 'momentum-system';
+const TRADES_PATH  = 'data/trades.json';
+const RAW_URL      = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${TRADES_PATH}`;
+const API_URL      = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${TRADES_PATH}`;
+
+// Token injected by pipeline — falls back to prompt if missing
+let GH_TOKEN = '{{ GITHUB_TOKEN }}';
+let _fileSha = null;  // GitHub requires SHA to update existing files
+
+async function loadTradesFromGitHub() {
+  try {
+    showStatus('loading', 'Loading trades...');
+    const res  = await fetch(RAW_URL + '?t=' + Date.now());
+    if (res.status === 404) {
+      showStatus('ok', 'No trades yet');
+      return [];
+    }
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    showStatus('ok', `${data.length} trades loaded`);
+    return Array.isArray(data) ? data : [];
+  } catch (e) {
+    // Fall back to localStorage as offline cache
+    console.warn('GitHub load failed, using localStorage cache:', e);
+    showStatus('warn', 'Using cached data (offline?)');
+    try { return JSON.parse(localStorage.getItem('momentum_trades_cache') || '[]'); }
+    catch { return []; }
+  }
 }
 
-function saveTrades(trades) {
-  localStorage.setItem(STORE_KEY, JSON.stringify(trades));
+async function saveTradestoGitHub(tradesData) {
+  if (!GH_TOKEN || GH_TOKEN === '{{ GITHUB_TOKEN }}') {
+    // No token — prompt user to enter it once per session
+    GH_TOKEN = prompt('Enter your GitHub Personal Access Token to save trades:');
+    if (!GH_TOKEN) {
+      alert('Trade not saved to GitHub — no token provided. Saved to local cache only.');
+      localStorage.setItem('momentum_trades_cache', JSON.stringify(tradesData));
+      return false;
+    }
+  }
+
+  try {
+    showStatus('saving', 'Saving...');
+
+    // Get current SHA if we don't have it
+    if (!_fileSha) {
+      const meta = await fetch(API_URL, {
+        headers: { Authorization: `token ${GH_TOKEN}`, Accept: 'application/vnd.github.v3+json' }
+      });
+      if (meta.ok) {
+        const metaData = await meta.json();
+        _fileSha = metaData.sha;
+      }
+    }
+
+    const content  = btoa(unescape(encodeURIComponent(JSON.stringify(tradesData, null, 2))));
+    const body     = {
+      message: `trades: update ${new Date().toISOString().split('T')[0]}`,
+      content,
+      ..._fileSha ? { sha: _fileSha } : {}
+    };
+
+    const res = await fetch(API_URL, {
+      method:  'PUT',
+      headers: {
+        Authorization:  `token ${GH_TOKEN}`,
+        Accept:         'application/vnd.github.v3+json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message || `HTTP ${res.status}`);
+    }
+
+    const result = await res.json();
+    _fileSha = result.content.sha;  // update SHA for next save
+
+    // Keep localStorage as offline cache
+    localStorage.setItem('momentum_trades_cache', JSON.stringify(tradesData));
+    showStatus('ok', `Saved — ${tradesData.length} trades`);
+    return true;
+
+  } catch (e) {
+    console.error('GitHub save failed:', e);
+    // Still save to localStorage so data isn't lost
+    localStorage.setItem('momentum_trades_cache', JSON.stringify(tradesData));
+    showStatus('error', `Save failed: ${e.message}`);
+    alert(`Could not save to GitHub: ${e.message}\n\nTrades saved to local cache as backup.`);
+    return false;
+  }
+}
+
+function showStatus(type, msg) {
+  const el = document.getElementById('save-status');
+  if (!el) return;
+  const colors = { loading:'var(--text3)', saving:'var(--amber)', ok:'var(--green)', warn:'var(--amber)', error:'var(--red)' };
+  el.textContent = msg;
+  el.style.color = colors[type] || 'var(--text3)';
 }
 
 function genId() {
@@ -518,11 +621,18 @@ function genId() {
 }
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
-let trades      = loadTrades();
+let trades      = [];
 let isPaper     = true;
 let filterMode  = 'all';
 let sortCol     = 'entry_date';
 let sortDir     = 'desc';
+
+// Load trades async on startup
+(async () => {
+  initToggle();
+  trades = await loadTradesFromGitHub();
+  renderPositions();
+})();
 
 // ── TABS ──────────────────────────────────────────────────────────────────────
 function showTab(name) {
@@ -537,6 +647,15 @@ function showTab(name) {
 // ── PAPER TOGGLE ──────────────────────────────────────────────────────────────
 function togglePaper() {
   isPaper = !isPaper;
+  const track = document.getElementById('paper-track');
+  const label = document.getElementById('paper-label');
+  track.classList.toggle('on', isPaper);
+  label.innerHTML = isPaper
+    ? '<strong>PAPER</strong> trade — not real money'
+    : '<strong>LIVE</strong> trade — real money';
+}
+
+function initToggle() {
   const track = document.getElementById('paper-track');
   const label = document.getElementById('paper-label');
   track.classList.toggle('on', isPaper);
@@ -660,7 +779,7 @@ function submitTrade() {
   };
 
   trades.unshift(trade);
-  saveTrades(trades);
+  saveTradestoGitHub(trades);
 
   // Reset form
   ['f-ticker','f-entry-date','f-entry-price','f-exit-date','f-exit-price','f-composite-rank','f-notes']
@@ -767,7 +886,7 @@ function renderPositions() {
 function deleteTrade(id) {
   if (!confirm('Delete this trade from the log?')) return;
   trades = trades.filter(t => t.id !== id);
-  saveTrades(trades);
+  saveTradestoGitHub(trades);
   renderPositions();
 }
 
