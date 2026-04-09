@@ -1,0 +1,58 @@
+name: Pre-Market Monitor
+
+on:
+  schedule:
+    # Monday 6:00 AM CT
+    # CDT (Mar-Nov): UTC-5 → 11:00 UTC
+    - cron: '0 11 * * 1'
+    # CST (Nov-Mar): UTC-6 → 12:00 UTC
+    - cron: '0 12 * * 1'
+    # Tuesday 6:00 AM CT
+    # CDT (Mar-Nov): UTC-5 → 11:00 UTC
+    - cron: '0 11 * * 2'
+    # CST (Nov-Mar): UTC-6 → 12:00 UTC
+    - cron: '0 12 * * 2'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  premarket-monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150   # 2.5 hours covers 7:00-9:30 AM window
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run pre-market monitor loop
+        run: python automation/premarket_monitor.py
+
+      - name: Update index
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: python automation/update_index.py
+
+      - name: Commit updated report
+        run: |
+          git config user.name  "momentum-bot"
+          git config user.email "momentum-bot@users.noreply.github.com"
+          DATE=$(date +%Y-%m-%d)
+          DAY=$(date +%A | tr '[:upper:]' '[:lower:]')
+          git add docs/
+          git add data/premarket_log.json
+          git diff --cached --quiet || git commit -m "premarket: ${DATE} ${DAY} final check complete"
+          git pull --rebase origin main
+          git push
