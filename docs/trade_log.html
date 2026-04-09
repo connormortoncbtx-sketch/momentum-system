@@ -509,7 +509,7 @@ td{padding:8px 16px;white-space:nowrap;vertical-align:middle;}
 <script>
 // ── GITHUB STORAGE ────────────────────────────────────────────────────────────
 // Trades persist to data/trades.json in the repo via GitHub API.
-// GITHUB_TOKEN is injected at build time by the pipeline into the HTML.
+// Token is stored in sessionStorage only — never committed to the repo.
 // Raw reads use the public GitHub raw URL (no auth needed for public repos).
 
 const GITHUB_OWNER = 'connormortoncbtx-sketch';
@@ -517,10 +517,37 @@ const GITHUB_REPO  = 'momentum-system';
 const TRADES_PATH  = 'data/trades.json';
 const RAW_URL      = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${TRADES_PATH}`;
 const API_URL      = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${TRADES_PATH}`;
+const TOKEN_KEY    = 'momentum_gh_token';
 
-// Token injected by pipeline — falls back to prompt if missing
-let GH_TOKEN = '{{ GITHUB_TOKEN }}';
-let _fileSha = null;  // GitHub requires SHA to update existing files
+let _fileSha = null;
+
+function getToken() {
+  return sessionStorage.getItem(TOKEN_KEY) || '';
+}
+
+function setToken(token) {
+  sessionStorage.setItem(TOKEN_KEY, token);
+}
+
+function promptForToken() {
+  // Show inline token entry instead of browser prompt
+  const existing = getToken();
+  if (existing) return existing;
+
+  const token = window.prompt(
+    'Enter your GitHub Personal Access Token (repo scope).\n' +
+    'This is stored in sessionStorage only — never saved to the repo.\n' +
+    'You will need to re-enter it if you close this tab.'
+  );
+  if (token && token.startsWith('ghp_')) {
+    setToken(token);
+    return token;
+  } else if (token) {
+    setToken(token);  // accept non-standard format too
+    return token;
+  }
+  return null;
+}
 
 async function loadTradesFromGitHub() {
   try {
@@ -535,7 +562,6 @@ async function loadTradesFromGitHub() {
     showStatus('ok', `${data.length} trades loaded`);
     return Array.isArray(data) ? data : [];
   } catch (e) {
-    // Fall back to localStorage as offline cache
     console.warn('GitHub load failed, using localStorage cache:', e);
     showStatus('warn', 'Using cached data (offline?)');
     try { return JSON.parse(localStorage.getItem('momentum_trades_cache') || '[]'); }
@@ -544,12 +570,12 @@ async function loadTradesFromGitHub() {
 }
 
 async function saveTradestoGitHub(tradesData) {
-  if (!GH_TOKEN || GH_TOKEN === '{{ GITHUB_TOKEN }}') {
-    // No token — prompt user to enter it once per session
-    GH_TOKEN = prompt('Enter your GitHub Personal Access Token to save trades:');
-    if (!GH_TOKEN) {
-      alert('Trade not saved to GitHub — no token provided. Saved to local cache only.');
+  let token = getToken();
+  if (!token) {
+    token = promptForToken();
+    if (!token) {
       localStorage.setItem('momentum_trades_cache', JSON.stringify(tradesData));
+      showStatus('warn', 'Saved locally only — no token');
       return false;
     }
   }
@@ -560,7 +586,7 @@ async function saveTradestoGitHub(tradesData) {
     // Get current SHA if we don't have it
     if (!_fileSha) {
       const meta = await fetch(API_URL, {
-        headers: { Authorization: `token ${GH_TOKEN}`, Accept: 'application/vnd.github.v3+json' }
+        headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
       });
       if (meta.ok) {
         const metaData = await meta.json();
@@ -568,8 +594,8 @@ async function saveTradestoGitHub(tradesData) {
       }
     }
 
-    const content  = btoa(unescape(encodeURIComponent(JSON.stringify(tradesData, null, 2))));
-    const body     = {
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(tradesData, null, 2))));
+    const body    = {
       message: `trades: update ${new Date().toISOString().split('T')[0]}`,
       content,
       ..._fileSha ? { sha: _fileSha } : {}
@@ -578,12 +604,20 @@ async function saveTradestoGitHub(tradesData) {
     const res = await fetch(API_URL, {
       method:  'PUT',
       headers: {
-        Authorization:  `token ${GH_TOKEN}`,
+        Authorization:  `token ${token}`,
         Accept:         'application/vnd.github.v3+json',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
     });
+
+    if (res.status === 401) {
+      // Token rejected — clear it and prompt again next save
+      sessionStorage.removeItem(TOKEN_KEY);
+      showStatus('error', 'Token invalid — re-enter on next save');
+      localStorage.setItem('momentum_trades_cache', JSON.stringify(tradesData));
+      return false;
+    }
 
     if (!res.ok) {
       const err = await res.json();
@@ -591,19 +625,15 @@ async function saveTradestoGitHub(tradesData) {
     }
 
     const result = await res.json();
-    _fileSha = result.content.sha;  // update SHA for next save
-
-    // Keep localStorage as offline cache
+    _fileSha = result.content.sha;
     localStorage.setItem('momentum_trades_cache', JSON.stringify(tradesData));
     showStatus('ok', `Saved — ${tradesData.length} trades`);
     return true;
 
   } catch (e) {
     console.error('GitHub save failed:', e);
-    // Still save to localStorage so data isn't lost
     localStorage.setItem('momentum_trades_cache', JSON.stringify(tradesData));
     showStatus('error', `Save failed: ${e.message}`);
-    alert(`Could not save to GitHub: ${e.message}\n\nTrades saved to local cache as backup.`);
     return false;
   }
 }
