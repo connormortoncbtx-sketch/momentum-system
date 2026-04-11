@@ -1,4 +1,4 @@
-# “””
+“””
 automation/self_refine.py
 
 Runs every Monday after collect_returns.py.
