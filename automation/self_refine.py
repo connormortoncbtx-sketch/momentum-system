@@ -215,17 +215,23 @@ def diff_weights(old, new):
     changes = []
     for sig, old_v in old.get("signal_weights", {}).items():
         new_v = new.get("signal_weights", {}).get(sig, old_v)
-        if abs(float(new_v) - float(old_v)) > 0.001:
-            arrow = "up" if float(new_v) > float(old_v) else "down"
-            changes.append("  signal_weights.%s: %.3f -> %.3f %s" % (
-                sig, float(old_v), float(new_v), arrow))
+        try:
+            if abs(float(new_v) - float(old_v)) > 0.001:
+                arrow = "up" if float(new_v) > float(old_v) else "down"
+                changes.append("  signal_weights.%s: %.3f -> %.3f %s" % (
+                    sig, float(old_v), float(new_v), arrow))
+        except (TypeError, ValueError):
+            pass
     for regime in old.get("regime_multipliers", {}):
         for sig, old_v in old["regime_multipliers"][regime].items():
             new_v = new.get("regime_multipliers", {}).get(regime, {}).get(sig, old_v)
-            if abs(float(new_v) - float(old_v)) > 0.01:
-                arrow = "up" if float(new_v) > float(old_v) else "down"
-                changes.append("  regime_multipliers.%s.%s: %.2f -> %.2f %s" % (
-                    regime, sig, float(old_v), float(new_v), arrow))
+            try:
+                if abs(float(new_v) - float(old_v)) > 0.01:
+                    arrow = "up" if float(new_v) > float(old_v) else "down"
+                    changes.append("  regime_multipliers.%s.%s: %.2f -> %.2f %s" % (
+                        regime, sig, float(old_v), float(new_v), arrow))
+            except (TypeError, ValueError):
+                pass
     return changes
 
 
