@@ -512,9 +512,12 @@ td { padding: 7px 12px; white-space: nowrap; vertical-align: middle; }
 
 <!-- HEADER -->
 <div class="header">
-  <div>
-    <div class="logo">MOMENTUM<span>//</span>ALPHA</div>
-    <div class="datestamp">WEEK OF {{ date }} &nbsp;·&nbsp; {{ total }} TICKERS RANKED</div>
+  <div style="display:flex;align-items:center;gap:16px">
+    <a href="../index.html" style="font-size:10px;color:var(--text3);text-decoration:none;letter-spacing:.08em;border:1px solid var(--border);padding:4px 10px;border-radius:2px;white-space:nowrap">← HUB</a>
+    <div>
+      <div class="logo">MOMENTUM<span>//</span>ALPHA</div>
+      <div class="datestamp">WEEK OF {{ date }} &nbsp;·&nbsp; {{ total }} TICKERS RANKED</div>
+    </div>
   </div>
 </div>
 
@@ -571,6 +574,7 @@ td { padding: 7px 12px; white-space: nowrap; vertical-align: middle; }
 
   <div class="controls-right">
     <div class="count-badge">showing <span id="showing-count">—</span> tickers</div>
+    <button onclick="exportCSV()" style="padding:4px 12px;border:1px solid var(--border2);background:transparent;color:var(--text2);font-family:var(--mono);font-size:10px;letter-spacing:.06em;cursor:pointer;border-radius:2px;transition:all .15s" onmouseover="this.style.color='var(--accent)';this.style.borderColor='rgba(0,200,255,.3)'" onmouseout="this.style.color='var(--text2)';this.style.borderColor='var(--border2)'">Export CSV</button>
   </div>
 </div>
 
@@ -860,6 +864,74 @@ function setFilter(type, val, btn) {
 function filterTable() {
   filters.search = document.getElementById('search').value;
   applyFilters();
+}
+
+// ── EXPORT CSV ────────────────────────────────────────────────────────────────
+function exportCSV() {
+  const cols = [
+    ['rank',                    'Composite Rank'],
+    ['alpha_rank',              'Alpha Rank'],
+    ['ev_rank',                 'EV Rank'],
+    ['symbol',                  'Symbol'],
+    ['name',                    'Name'],
+    ['sector',                  'Sector'],
+    ['price',                   'Price'],
+    ['mcap',                    'Market Cap'],
+    ['vol',                     'Avg Volume'],
+    ['conviction',              'Conviction'],
+    ['score',                   'Alpha Score'],
+    ['ev_score',                'EV Score'],
+    ['avg_win',                 'Avg Win %'],
+    ['avg_loss',                'Avg Loss %'],
+    ['weekly_vol',              'Weekly Vol %'],
+    ['suggested_hard_stop_pct', 'Hard Stop %'],
+    ['suggested_activation_pct','P2 Activation %'],
+    ['suggested_trail_pct',     'Trail %'],
+    ['s_mom',                   'Momentum'],
+    ['s_cat',                   'Catalyst'],
+    ['s_fund',                  'Fundamentals'],
+    ['s_sent',                  'Sentiment'],
+    ['s_rs',                    'RS Rank'],
+    ['s_trd',                   'Trend'],
+    ['s_vol',                   'Vol Surge'],
+    ['s_brk',                   'Breakout'],
+    ['s_earn',                  'Earnings'],
+    ['s_ins',                   'Insider'],
+    ['s_anal',                  'Analyst (Catalyst)'],
+    ['s_grow',                  'Growth'],
+    ['s_qual',                  'Quality'],
+    ['s_prof',                  'Profitability'],
+    ['s_news',                  'News Tone'],
+    ['s_snt_anal',              'Analyst Trend'],
+    ['s_short',                 'Short Interest'],
+    ['thesis_src',              'Thesis Source'],
+    ['thesis',                  'Thesis'],
+    ['risk_flag',               'Risk Flag'],
+  ];
+
+  const header = cols.map(([, label]) => label).join(',');
+
+  const rows = filtered.map(row =>
+    cols.map(([key]) => {
+      let v = row[key];
+      if (v === null || v === undefined) v = '';
+      v = String(v).replace(/\r?\n/g, ' ');
+      if (v.includes(',') || v.includes('"') || v.includes("'")) {
+        v = '"' + v.replace(/"/g, '""') + '"';
+      }
+      return v;
+    }).join(',')
+  );
+
+  const csv  = [header, ...rows].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  const date = document.title.replace('MOMENTUM // ', '') || 'report';
+  a.href = url;
+  a.download = 'momentum_alpha_' + date + '.csv';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 // ── SECTOR CHIPS ──────────────────────────────────────────────────────────────
