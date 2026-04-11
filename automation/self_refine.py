@@ -185,14 +185,21 @@ def validate_weights(new_w, current_w):
             if not (w_min <= v <= w_max):
                 return False, "signal_weight %s=%s outside [%s,%s]" % (k, v, w_min, w_max)
 
-        # Coerce regime multipliers to float too
+        # Coerce regime multipliers to float -- skip non-numeric fields like notes
         for regime, mults in new_w.get("regime_multipliers", {}).items():
-            coerced = {sig: float(v) for sig, v in mults.items()}
-            new_w["regime_multipliers"][regime] = coerced
-            for sig, v in coerced.items():
-                if not (m_min <= v <= m_max):
+            if not isinstance(mults, dict):
+                continue
+            coerced = {}
+            for sig, v in mults.items():
+                try:
+                    coerced[sig] = float(v)
+                except (TypeError, ValueError):
+                    coerced[sig] = v  # preserve non-numeric fields as-is
+                    continue
+                if not (m_min <= coerced[sig] <= m_max):
                     return False, "regime_multiplier %s.%s=%s outside [%s,%s]" % (
                         regime, sig, v, m_min, m_max)
+            new_w["regime_multipliers"][regime] = coerced
 
         current_sigs = set(current_w["signal_weights"].keys())
         new_sigs     = set(sw.keys())
