@@ -700,8 +700,29 @@ def run():
         with open(report_out, "w", encoding="utf-8") as f:
             f.write(html)
 
-        log.info(f"  Report updated → {report_out}")
+        log.info(f"  Report updated -> {report_out}")
 
+        # Commit after each check so the page updates in real time
+        try:
+            import subprocess
+            subprocess.run(["git", "config", "user.name", "momentum-bot"], check=False)
+            subprocess.run(["git", "config", "user.email", "momentum-bot@users.noreply.github.com"], check=False)
+            subprocess.run(["git", "add", "docs/", "data/premarket_log.json"], check=False)
+            result = subprocess.run(
+                ["git", "diff", "--cached", "--quiet"],
+                capture_output=True
+            )
+            if result.returncode != 0:
+                subprocess.run(
+                    ["git", "commit", "-m",
+                     f"premarket: {date_str} check {absolute_check + 1}/5 ({check_name} AM)"],
+                    check=False
+                )
+                subprocess.run(["git", "pull", "--rebase", "origin", "main"], check=False)
+                subprocess.run(["git", "push"], check=False)
+                log.info(f"  Committed check {absolute_check + 1}/5")
+        except Exception as e:
+            log.warning(f"  Git commit failed: {e}")
         # Log summary
         skips   = sum(1 for r in rows if r["action"] == "SKIP")
         caution = sum(1 for r in rows if r["action"] in ("CAUTION","WATCH","WAIT"))
