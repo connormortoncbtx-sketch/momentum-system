@@ -394,10 +394,16 @@ def run(run_label: str = "weekend_refresh"):
     synth = importlib.import_module("pipeline.05_llm_synthesis")
     synth.run()
 
-    # Regenerate report
+    # Regenerate report -- write back to last Friday's file, not today's date
     log.info("Regenerating report...")
+    from datetime import date as _date, timedelta as _timedelta
+    _today = _date.today()
+    _days_since_friday = (_today.weekday() - 4) % 7
+    _last_friday = _today - _timedelta(days=_days_since_friday if _days_since_friday > 0 else 7)
+    _friday_str = _last_friday.strftime("%Y-%m-%d")
+    log.info(f"  Writing to Friday report: {_friday_str}.html")
     report = importlib.import_module("pipeline.06_report")
-    report.run()
+    report.run(date_override=_friday_str)
 
     # Update index
     log.info("Updating index...")
