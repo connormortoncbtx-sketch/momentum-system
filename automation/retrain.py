@@ -76,7 +76,7 @@ def run():
         log.info("No performance log — skipping retrain")
         return
 
-    log_df  = pd.read_csv(PERF_LOG, parse_dates=["week_of"])
+    log_df  = pd.read_csv(PERF_LOG, low_memory=False, parse_dates=["week_of"])
     n_weeks = log_df["week_of"].nunique()
     n_rows  = log_df["forward_return_1w"].notna().sum()
 
