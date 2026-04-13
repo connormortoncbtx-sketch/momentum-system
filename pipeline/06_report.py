@@ -999,7 +999,7 @@ def render(df: pd.DataFrame, regime: dict, date_str: str) -> str:
 
 # ── MAIN ──────────────────────────────────────────────────────────────────────
 
-def run():
+def run(date_override: str = None):
     REPORTS.mkdir(parents=True, exist_ok=True)
 
     log.info("Loading final scores...")
@@ -1011,7 +1011,9 @@ def run():
         regime = json.load(f)
 
     df, regime = load_and_prep()
-    date_str   = datetime.today().strftime("%Y-%m-%d")
+    # date_override allows weekend refresh to write back to the Friday report
+    # rather than creating a new file dated today
+    date_str   = date_override if date_override else datetime.today().strftime("%Y-%m-%d")
     out_path   = REPORTS / f"{date_str}.html"
 
     log.info("Rendering HTML report...")
@@ -1021,7 +1023,7 @@ def run():
         f.write(html)
 
     size_kb = out_path.stat().st_size / 1024
-    log.info(f"Report → {out_path}  ({size_kb:.0f} KB)")
+    log.info(f"Report -> {out_path}  ({size_kb:.0f} KB)")
 
     return str(out_path)
 
