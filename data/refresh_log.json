@@ -94,5 +94,37 @@
         "alpha_rank": 5
       }
     ]
+  },
+  {
+    "run_label": "manual_refresh",
+    "timestamp": "2026-04-13T04:43:40.768675",
+    "regime": "risk_on",
+    "top_5": [
+      {
+        "symbol": "HCAI",
+        "alpha_score": 0.9866089682544572,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "GURE",
+        "alpha_score": 0.9635282080919055,
+        "alpha_rank": 2
+      },
+      {
+        "symbol": "AEBI",
+        "alpha_score": 0.9631633386355714,
+        "alpha_rank": 3
+      },
+      {
+        "symbol": "WEYS",
+        "alpha_score": 0.9508394138038188,
+        "alpha_rank": 4
+      },
+      {
+        "symbol": "NTHI",
+        "alpha_score": 0.9485225518031893,
+        "alpha_rank": 5
+      }
+    ]
   }
 ]
