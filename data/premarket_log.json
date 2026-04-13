@@ -333,6 +333,145 @@
           "pm_volume": 0
         }
       }
+    },
+    {
+      "check_num": 4,
+      "check_name": "7:30",
+      "timestamp": "13:29:29",
+      "prices": {
+        "FOX": {
+          "premarket_price": 55.0,
+          "prior_close": 54.92,
+          "gap_pct": 0.0014,
+          "pm_volume": 0
+        },
+        "XRAY": {
+          "premarket_price": 11.63,
+          "prior_close": 11.71,
+          "gap_pct": -0.0068,
+          "pm_volume": 0
+        },
+        "RSSS": {
+          "premarket_price": 2.47,
+          "prior_close": 2.41,
+          "gap_pct": 0.0249,
+          "pm_volume": 0
+        },
+        "CMPS": {
+          "premarket_price": 5.5,
+          "prior_close": 5.53,
+          "gap_pct": -0.0046,
+          "pm_volume": 0
+        },
+        "AEVA": {
+          "premarket_price": 13.25,
+          "prior_close": 13.35,
+          "gap_pct": -0.0075,
+          "pm_volume": 0
+        },
+        "PCT": {
+          "premarket_price": 5.89,
+          "prior_close": 5.94,
+          "gap_pct": -0.0084,
+          "pm_volume": 0
+        },
+        "AIRS": {
+          "premarket_price": 2.6,
+          "prior_close": 2.64,
+          "gap_pct": -0.0152,
+          "pm_volume": 0
+        },
+        "SENEA": {
+          "premarket_price": 163.98,
+          "prior_close": 167.32,
+          "gap_pct": -0.02,
+          "pm_volume": 0
+        },
+        "TOYO": {
+          "premarket_price": 11.56,
+          "prior_close": 11.35,
+          "gap_pct": 0.0185,
+          "pm_volume": 0
+        },
+        "DJCO": {
+          "premarket_price": 527.68,
+          "prior_close": 528.7,
+          "gap_pct": -0.0019,
+          "pm_volume": 0
+        },
+        "KINS": {
+          "premarket_price": 15.13,
+          "prior_close": 15.08,
+          "gap_pct": 0.0033,
+          "pm_volume": 0
+        },
+        "IVA": {
+          "premarket_price": 5.18,
+          "prior_close": 5.26,
+          "gap_pct": -0.0152,
+          "pm_volume": 0
+        },
+        "GT": {
+          "premarket_price": 7.04,
+          "prior_close": 7.1,
+          "gap_pct": -0.0085,
+          "pm_volume": 0
+        },
+        "BTM": {
+          "premarket_price": 2.63,
+          "prior_close": 2.63,
+          "gap_pct": -0.0,
+          "pm_volume": 0
+        },
+        "UPST": {
+          "premarket_price": 26.74,
+          "prior_close": 27.26,
+          "gap_pct": -0.0191,
+          "pm_volume": 0
+        },
+        "AISP": {
+          "premarket_price": 2.07,
+          "prior_close": 2.07,
+          "gap_pct": 0.0,
+          "pm_volume": 0
+        },
+        "OVBC": {
+          "premarket_price": 45.99,
+          "prior_close": 45.59,
+          "gap_pct": 0.0088,
+          "pm_volume": 0
+        },
+        "CTKB": {
+          "premarket_price": 4.75,
+          "prior_close": 4.53,
+          "gap_pct": 0.0486,
+          "pm_volume": 0
+        },
+        "NKSH": {
+          "premarket_price": 37.1,
+          "prior_close": 37.23,
+          "gap_pct": -0.0035,
+          "pm_volume": 0
+        },
+        "GMAB": {
+          "premarket_price": 28.11,
+          "prior_close": 28.25,
+          "gap_pct": -0.005,
+          "pm_volume": 0
+        },
+        "WLAC": {
+          "premarket_price": 11.78,
+          "prior_close": 11.38,
+          "gap_pct": 0.0348,
+          "pm_volume": 0
+        },
+        "ELVN": {
+          "premarket_price": 44.16,
+          "prior_close": 45.32,
+          "gap_pct": -0.0257,
+          "pm_volume": 0
+        }
+      }
     }
   ]
 }
