@@ -126,5 +126,37 @@
         "alpha_rank": 5
       }
     ]
+  },
+  {
+    "run_label": "monday_morning",
+    "timestamp": "2026-04-13T11:36:12.063566",
+    "regime": "risk_on",
+    "top_5": [
+      {
+        "symbol": "FOX",
+        "alpha_score": 0.9866089682544572,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "XRAY",
+        "alpha_score": 0.967714822660304,
+        "alpha_rank": 2
+      },
+      {
+        "symbol": "BHFAN",
+        "alpha_score": 0.9635282080919055,
+        "alpha_rank": 3
+      },
+      {
+        "symbol": "RSSS",
+        "alpha_score": 0.9631633386355714,
+        "alpha_rank": 4
+      },
+      {
+        "symbol": "ISBA",
+        "alpha_score": 0.9508394138038188,
+        "alpha_rank": 5
+      }
+    ]
   }
 ]
