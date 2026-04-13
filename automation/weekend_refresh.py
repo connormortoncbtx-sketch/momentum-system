@@ -234,8 +234,18 @@ def rebuild_scores(signals: pd.DataFrame, raw_scores: pd.Series,
     Preserves non-signal columns from previous run (name, sector, etc.)
     """
     # Start from previous scores, update the alpha columns
+    # Preserve EV columns and composite rank -- these are not recomputed by weekend refresh
     meta_cols = ["symbol", "name", "exchange", "sector", "industry",
-                 "last_price", "avg_vol_20d", "market_cap"]
+                 "last_price", "avg_vol_20d", "market_cap",
+                 "ev_score", "ev_rank", "ev_pct_rank", "ev_conviction",
+                 "avg_win_magnitude", "avg_loss_magnitude", "weekly_vol",
+                 "composite_rank",
+                 "sig_momentum_rs", "sig_momentum_trend", "sig_momentum_vol_surge",
+                 "sig_momentum_breakout", "sig_catalyst_analyst",
+                 "sig_fund_growth", "sig_fund_quality", "sig_fund_profitability",
+                 "sig_fund_value", "sig_sentiment_news", "sig_sentiment_analyst",
+                 "sig_sentiment_short", "sig_sentiment_articles",
+                 "sig_momentum_adj", "sig_fundamentals_adj", "sig_sentiment_adj"]
     available_meta = [c for c in meta_cols if c in previous_scores.columns]
 
     out = previous_scores[available_meta].copy()
@@ -273,6 +283,16 @@ def rebuild_scores(signals: pd.DataFrame, raw_scores: pd.Series,
         out["rank_change"] = 0
 
     out = out.sort_values("alpha_rank").reset_index(drop=True)
+
+    # Recompute composite rank if EV data is available (blends updated alpha rank with preserved EV rank)
+    if "ev_pct_rank" in out.columns and out["ev_pct_rank"].notna().any():
+        out["alpha_pct_rank_tmp"] = out["alpha_score"].rank(pct=True).round(4)
+        out["composite_rank"] = (
+            out["alpha_pct_rank_tmp"].fillna(0.5) * 0.50 +
+            out["ev_pct_rank"].fillna(0.5) * 0.50
+        ).rank(ascending=False, method="min").astype(int)
+        out = out.drop(columns=["alpha_pct_rank_tmp"])
+
     return out
 
 
