@@ -586,9 +586,16 @@ def run():
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     REPORTS.mkdir(parents=True, exist_ok=True)
 
-    # Holiday check — skip if not a full 5-day trading week
-    from automation.tz_utils import assert_normal_week
+    # Holiday check -- skip if not a full 5-day trading week
+    from automation.tz_utils import assert_normal_week, now_ct
     if not assert_normal_week("premarket_monitor"):
+        return
+
+    # DST guard -- both CDT and CST crons are scheduled, only run at 6:00 AM CT
+    # Whichever fires at the wrong hour exits immediately to prevent double-running
+    _now_ct = now_ct()
+    if _now_ct.hour != 6:
+        log.info(f"DST guard: current CT hour is {_now_ct.hour}, expected 6 -- skipping")
         return
 
     date_str   = datetime.date.today().strftime("%Y-%m-%d")
@@ -702,6 +709,14 @@ def run():
 
         log.info(f"  Report updated -> {report_out}")
 
+        # Update hub index so premarket link is accessible from main page
+        try:
+            import importlib
+            idx = importlib.import_module("automation.update_index")
+            idx.run()
+        except Exception as e:
+            log.warning(f"  Index update failed: {e}")
+
         # Commit after each check so the page updates in real time
         try:
             import subprocess
@@ -723,6 +738,7 @@ def run():
                 log.info(f"  Committed check {absolute_check + 1}/5")
         except Exception as e:
             log.warning(f"  Git commit failed: {e}")
+
         # Log summary
         skips   = sum(1 for r in rows if r["action"] == "SKIP")
         caution = sum(1 for r in rows if r["action"] in ("CAUTION","WATCH","WAIT"))
