@@ -404,8 +404,12 @@ td{padding:8px 16px;white-space:nowrap;vertical-align:middle;}
       <div class="field">
         <label>Entry day</label>
         <select id="f-entry-day">
-          <option value="monday">Monday</option>
-          <option value="tuesday" selected>Tuesday</option>
+          <option value="monday_open">Monday open</option>
+          <option value="monday_close">Monday close</option>
+          <option value="tuesday_open" selected>Tuesday open</option>
+          <option value="tuesday_close">Tuesday close</option>
+          <option value="other">Other</option>
+        </select>
           <option value="other">Other</option>
         </select>
       </div>
@@ -1028,19 +1032,32 @@ function renderAnalysis() {
       </tr>`;
     }).join('');
 
-  // Entry day breakdown
+  // Entry day breakdown — ordered by timing
+  const dayOrder = ['monday_open','monday_close','tuesday_open','tuesday_close','monday','tuesday','other'];
   const dayGroups = {};
   closed.forEach(t => {
-    if (!dayGroups[t.entry_day]) dayGroups[t.entry_day] = [];
-    dayGroups[t.entry_day].push(t.return_pct);
+    const key = t.entry_day || 'other';
+    if (!dayGroups[key]) dayGroups[key] = [];
+    dayGroups[key].push(t.return_pct);
   });
+  const dayLabel = {
+    monday_open:   'Monday open',
+    monday_close:  'Monday close',
+    tuesday_open:  'Tuesday open',
+    tuesday_close: 'Tuesday close',
+    monday:        'Monday (legacy)',
+    tuesday:       'Tuesday (legacy)',
+    other:         'Other',
+  };
+  const sortedDays = dayOrder.filter(d => dayGroups[d]);
   document.getElementById('day-breakdown').innerHTML = `
-    <tr><th>Entry day</th><th>Trades</th><th>Avg return</th><th>Win rate</th></tr>` +
-    Object.entries(dayGroups).map(([day, rets]) => {
+    <tr><th>Entry timing</th><th>Trades</th><th>Avg return</th><th>Win rate</th></tr>` +
+    sortedDays.map(day => {
+      const rets = dayGroups[day];
       const avg = rets.reduce((a,b)=>a+b,0)/rets.length;
       const wr  = rets.filter(r=>r>0).length/rets.length;
       return `<tr>
-        <td style="color:var(--text2)">${day}</td>
+        <td style="color:var(--text2)">${dayLabel[day] || day}</td>
         <td style="color:var(--text2)">${rets.length}</td>
         <td class="${avg>=0?'ret-pos':'ret-neg'}">${avg>=0?'+':''}${avg.toFixed(2)}%</td>
         <td style="color:var(--text2)">${(wr*100).toFixed(0)}%</td>
