@@ -77,22 +77,95 @@ def fetch_nasdaq_ftp():
 
 def fetch_nyse_ftp(retries=3, timeout=25):
     import urllib.request
-    url="https://ftp.nasdaqtrader.com/dynamic/SymDir/otherlisted.txt"
+
+    # Primary: GitHub-hosted NYSE listings CSV (same pattern as NASDAQ fetch)
+    # This avoids the unreliable NASDAQ FTP server for NYSE data
+    github_urls = [
+        "https://raw.githubusercontent.com/rreichel3/US-Stock-Symbols/main/nyse/nyse_full_tickers.json",
+        "https://raw.githubusercontent.com/datasets/nyse-listings/master/data/nyse-listed-symbols.csv",
+    ]
+
+    # Try GitHub CSV first
+    for github_url in github_urls:
+        try:
+            req = urllib.request.Request(
+                github_url,
+                headers={"User-Agent": "momentum-system/1.0"}
+            )
+            with urllib.request.urlopen(req, timeout=15) as r:
+                raw = r.read().decode("utf-8")
+
+            if github_url.endswith(".json"):
+                import json
+                data = json.loads(raw)
+                # rreichel3 format: list of {ticker, name, exchange}
+                rows = []
+                items = data if isinstance(data, list) else list(data.values())
+                for item in items:
+                    if isinstance(item, dict):
+                        sym = item.get("ticker") or item.get("symbol") or ""
+                    else:
+                        sym = str(item)
+                    if sym:
+                        rows.append({
+                            "symbol": sym.strip(),
+                            "name": item.get("name", "") if isinstance(item, dict) else "",
+                            "exchange": "NYSE",
+                            "sector": "",
+                            "industry": "",
+                        })
+            else:
+                # CSV format
+                import io
+                df = pd.read_csv(io.StringIO(raw))
+                # Detect symbol column
+                sym_col = next((c for c in df.columns if c.lower() in
+                               ["symbol", "ticker", "act symbol"]), df.columns[0])
+                name_col = next((c for c in df.columns if "name" in c.lower()), None)
+                rows = []
+                for _, row in df.iterrows():
+                    sym = str(row[sym_col]).strip()
+                    name = str(row[name_col]).strip() if name_col else ""
+                    if sym and sym != "nan":
+                        rows.append({
+                            "symbol": sym,
+                            "name": name,
+                            "exchange": "NYSE",
+                            "sector": "",
+                            "industry": "",
+                        })
+
+            if rows:
+                log.info(f"  NYSE (GitHub): {len(rows):,}")
+                return pd.DataFrame(rows)
+        except Exception as e:
+            log.debug(f"  NYSE GitHub source failed: {e}")
+
+    # Fallback: NASDAQ FTP (unreliable but worth trying)
+    url = "https://ftp.nasdaqtrader.com/dynamic/SymDir/otherlisted.txt"
     for attempt in range(1, retries+1):
         try:
             log.info(f"  NYSE FTP attempt {attempt}/{retries}...")
             with urllib.request.urlopen(url, timeout=timeout) as r:
-                raw=r.read().decode("utf-8")
-            rows=[]
+                raw = r.read().decode("utf-8")
+            rows = []
             for line in raw.strip().split("\n")[1:]:
-                parts=line.split("|")
-                if len(parts)<3 or parts[0]=="File Creation Time": continue
-                rows.append({"symbol":parts[0].strip(),"name":parts[1].strip(),"exchange":parts[2].strip(),"sector":"","industry":""})
+                parts = line.split("|")
+                if len(parts) < 3 or parts[0] == "File Creation Time":
+                    continue
+                rows.append({
+                    "symbol":   parts[0].strip(),
+                    "name":     parts[1].strip(),
+                    "exchange": parts[2].strip(),
+                    "sector":   "",
+                    "industry": "",
+                })
             log.info(f"  NYSE/other (FTP): {len(rows):,}")
             return pd.DataFrame(rows)
         except Exception as e:
             log.warning(f"  NYSE attempt {attempt} failed: {e}")
-            if attempt < retries: time.sleep(3)
+            if attempt < retries:
+                time.sleep(3)
     log.warning("  NYSE FTP failed — using Wikipedia fallback")
     return fetch_wikipedia_fallback()
 
