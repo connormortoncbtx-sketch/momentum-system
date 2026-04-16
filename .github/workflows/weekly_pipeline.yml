@@ -1,69 +1,54 @@
 name: Weekly Pipeline
-
 on:
   schedule:
-    # Friday 7:00 PM CT — fires AFTER friday_learning completes
-    # CDT (Mar-Nov): UTC-5 → 00:00 UTC Saturday
-    - cron: '0 0 * * 6'
-    # CST (Nov-Mar): UTC-6 → 01:00 UTC Saturday
+    # Friday 8:00 PM CT — fires AFTER friday_learning completes
+    # CDT (Mar-Nov): UTC-5 -> 01:00 UTC Saturday
     - cron: '0 1 * * 6'
+    # CST (Nov-Mar): UTC-6 -> 02:00 UTC Saturday
+    - cron: '0 2 * * 6'
   workflow_dispatch:   # allow manual trigger from GitHub UI
-
 permissions:
   contents: write
-
 jobs:
   run-pipeline:
     runs-on: ubuntu-latest
-    timeout-minutes: 300   # 5 hours max — larger universe needs more time
-
+    timeout-minutes: 360   # 6 hours max -- expanded universe needs more time
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
           fetch-depth: 0   # full history so git log works
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: 'pip'
-
       - name: Install dependencies
         run: pip install -r requirements.txt
-
       - name: Run pipeline
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: python run_pipeline.py
-
       - name: Update index
         run: python automation/update_index.py
-
       - name: Commit results
         run: |
           git config user.name  "momentum-bot"
           git config user.email "momentum-bot@users.noreply.github.com"
-
           DATE=$(date +%Y-%m-%d)
-
           git add docs/
           git add data/universe.csv
           git add data/regime.json
           git add data/scores_final.csv
           git add data/signals.csv
           git add models/lgbm_model.pkl || true
-
           # Only commit if there are changes
           git diff --cached --quiet || git commit -m "pipeline: ${DATE} run complete
-
           Regime: $(python -c "import json; d=json.load(open('data/regime.json')); print(d['regime'])")
           Universe: $(python -c "import pandas as pd; print(len(pd.read_csv('data/universe.csv')), 'tickers')")
           Top pick: $(python -c "import pandas as pd; df=pd.read_csv('data/scores_final.csv'); r=df.iloc[0]; print(r['symbol'], f'score={r[\"alpha_score\"]:.4f}')")"
-
           git pull --rebase origin main
           git push
-
       - name: Upload report artifact
         uses: actions/upload-artifact@v4
         with:
