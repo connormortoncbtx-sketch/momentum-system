@@ -40,7 +40,7 @@ logging.basicConfig(
 
 # ── CONFIGURATION ─────────────────────────────────────────────────────────────
 
-PAPER_MODE = True   # FLIP TO FALSE ONLY WHEN READY FOR LIVE TRADING
+PAPER_MODE = os.environ.get("ALPACA_PAPER", "true").lower() != "false"
 
 PAPER_BASE_URL = "https://paper-api.alpaca.markets"
 LIVE_BASE_URL  = "https://api.alpaca.markets"
