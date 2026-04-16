@@ -31,6 +31,8 @@ jobs:
 
       - name: Install dependencies
         run: pip install -r requirements.txt
+      - name: Install Alpaca SDK
+        run: pip install "alpaca-trade-api>=3.0.0" "aiohttp>=3.9.0"
 
       - name: Run exit orders
         env:
