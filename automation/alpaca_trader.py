@@ -186,15 +186,21 @@ def compute_positions(scores: pd.DataFrame, portfolio_value: float) -> list[dict
         log.warning("No qualifying tickers after liquidity filter")
         return []
 
-    # Final position count: minimum of capital-constrained max and qualified names
+    # Target position count: minimum of capital-constrained max and qualified names
     n_positions = min(max_by_capital, len(df))
-    df = df.head(n_positions)
 
-    log.info(f"Position sizing: {n_positions} positions from {len(scores)} universe")
+    # Build extended candidate pool -- 2x target count for fallback coverage
+    # If primary candidates fail (untradable, halted, etc.) fallbacks ensure
+    # capital stays fully deployed rather than sitting idle
+    n_candidates = min(n_positions * 2, len(df))
+    df_candidates = df.head(n_candidates)
+
+    log.info(f"Position sizing: target={n_positions} positions, "
+             f"candidates={n_candidates} (fallback pool)")
     log.info(f"  Capital: ${portfolio_value:,.0f}  "
              f"Per position: ${portfolio_value/n_positions:,.0f}")
 
-    # Equal weight
+    # Equal weight based on target count (not candidate count)
     position_size = portfolio_value / n_positions
 
     # Apply max position cap
@@ -205,7 +211,7 @@ def compute_positions(scores: pd.DataFrame, portfolio_value: float) -> list[dict
         position_size = max_position
 
     positions = []
-    for _, row in df.iterrows():
+    for _, row in df_candidates.iterrows():
         price = float(row.get("last_price", 0))
         if price <= 0:
             continue
@@ -293,27 +299,43 @@ def run_entry():
         log.warning("No positions to enter")
         return
 
-    # Place orders
+    # Separate primary candidates (first half) from fallbacks (second half)
+    # compute_positions returns 2x target count -- first n are primaries
+    n_target  = len(positions) // 2 or len(positions)
+    primaries = positions[:n_target]
+    fallbacks = positions[n_target:]
+
+    log.info(f"Entry plan: {n_target} primary targets + {len(fallbacks)} fallbacks")
+
+    # Place orders -- use fallbacks if primaries fail
     filled    = []
     failed    = []
+    skipped   = []
     state     = load_state()
     state["entry_date"]       = datetime.date.today().isoformat()
     state["week_open_value"]  = portfolio_value
     state["positions"]        = {}
 
-    for p in positions:
+    candidates_queue = primaries + fallbacks
+
+    for p in candidates_queue:
+        if len(filled) >= n_target:
+            break  # reached target -- stop even if fallbacks remain
+
         sym    = p["symbol"]
         shares = p["shares"]
+        is_fallback = p in fallbacks
+
         try:
-            # Market-on-close order for Monday close entry
             order = api.submit_order(
-                symbol      = sym,
-                qty         = shares,
-                side        = "buy",
-                type        = "market",
-                time_in_force = "cls",   # market-on-close
+                symbol        = sym,
+                qty           = shares,
+                side          = "buy",
+                type          = "market",
+                time_in_force = "cls",
             )
-            log.info(f"  ORDER {sym:<8} {shares:>4} shares @ ~${p['price']:.2f}  "
+            tag = " [FALLBACK]" if is_fallback else ""
+            log.info(f"  ORDER{tag} {sym:<8} {shares:>4} shares @ ~${p['price']:.2f}  "
                      f"(${p['dollar_size']:,.0f})  "
                      f"rank={p['composite_rank']}  {p['conviction']}")
             filled.append(sym)
@@ -325,6 +347,8 @@ def run_entry():
                 "trail_pct":            p["suggested_trail_pct"],
                 "alpha_score":          p.get("alpha_score", 0.75),
                 "weekly_vol":           p.get("weekly_vol", 0.20),
+                "composite_rank":       p.get("composite_rank"),
+                "is_fallback":          is_fallback,
                 "phase":                1,
                 "high_water_mark":      p["price"],
                 "order_id":             order.id,
@@ -332,15 +356,24 @@ def run_entry():
         except Exception as e:
             log.error(f"  FAILED {sym}: {e}")
             failed.append(sym)
+            if is_fallback:
+                log.warning(f"  Fallback {sym} also failed -- continuing to next")
+
+    # Log any unused fallbacks
+    unused = [p["symbol"] for p in fallbacks if p["symbol"] not in filled and p["symbol"] not in failed]
+    if unused:
+        skipped = unused
+        log.info(f"  Unused fallbacks (not needed): {skipped}")
 
     save_state(state)
 
-    log.info(f"Entry complete: {len(filled)} filled, {len(failed)} failed")
+    log.info(f"Entry complete: {len(filled)} filled, {len(failed)} failed, "
+             f"{len(skipped)} fallbacks unused")
+    fallback_used = [s for s in filled if state["positions"][s].get("is_fallback")]
+    if fallback_used:
+        log.info(f"  Fallbacks used: {fallback_used}")
     if failed:
-        log.warning(f"Failed: {failed}")
-
-    log.info("Hard stops and trailing stops should be set manually until")
-    log.info("bracket order logic is added in a future update.")
+        log.warning(f"  Failed: {failed}")
 
 
 # ── EXIT (FRIDAY 2:30 PM CT) ──────────────────────────────────────────────────
