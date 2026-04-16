@@ -165,38 +165,33 @@ def run(duration_minutes: int = 180):
     while datetime.datetime.now() < end_time:
         poll_count += 1
         try:
-            state = load_state()
+            state   = load_state()
             tracked = state.get("positions", {})
-
-            if not tracked:
-                log.debug("No tracked positions -- waiting")
-                time.sleep(POLL_INTERVAL_SECS)
-                continue
 
             # Get live positions from Alpaca
             live_positions = {p.symbol: p for p in api.list_positions()}
 
             if not live_positions:
-                log.info("No open positions in Alpaca account")
+                log.info(f"Poll {poll_count}: No open positions in Alpaca account")
                 time.sleep(POLL_INTERVAL_SECS)
                 continue
 
-            # Fetch current prices via snapshots
-            symbols   = list(live_positions.keys())
-            snapshots = api.get_snapshots(symbols)
+            if not tracked:
+                log.info(f"Poll {poll_count}: {len(live_positions)} Alpaca positions "
+                         f"but no state file entries -- waiting for entry workflow")
+                time.sleep(POLL_INTERVAL_SECS)
+                continue
 
             changed = False
-            for symbol in symbols:
-                if symbol not in snapshots:
-                    continue
+            for symbol, pos in live_positions.items():
                 try:
-                    current_price = float(snapshots[symbol].latest_trade.price)
+                    # Use current_price from position object -- no extra API call needed
+                    current_price = float(pos.current_price)
                     upgraded = check_and_upgrade(api, symbol, current_price, state)
                     if upgraded:
                         upgrades += 1
                         changed = True
                     elif poll_count % 5 == 0:
-                        # Log status every 5 polls
                         pos_state = state.get("positions", {}).get(symbol, {})
                         phase     = pos_state.get("phase", 1)
                         entry     = pos_state.get("entry_price_est", 0)
@@ -207,16 +202,19 @@ def run(duration_minutes: int = 180):
                                  f"hwm=${hwm:.2f}  "
                                  f"phase={phase}")
                 except Exception as e:
-                    log.debug(f"  {symbol}: {e}")
+                    log.warning(f"  {symbol}: price check error: {e}")
 
             if changed:
                 save_state(state)
 
-        except Exception as e:
-            log.error(f"Poll error: {e}")
+            if poll_count % 5 == 0:
+                remaining = (end_time - datetime.datetime.now()).total_seconds() / 60
+                log.info(f"Poll {poll_count} -- {remaining:.0f} min remaining  "
+                         f"{len(live_positions)} positions  {upgrades} upgrades")
 
-        remaining = (end_time - datetime.datetime.now()).total_seconds() / 60
-        log.debug(f"Poll {poll_count} complete -- {remaining:.0f} min remaining")
+        except Exception as e:
+            log.error(f"Poll {poll_count} error: {e}")
+
         time.sleep(POLL_INTERVAL_SECS)
 
     log.info(f"Monitor complete -- {poll_count} polls, {upgrades} Phase 2 upgrades")
