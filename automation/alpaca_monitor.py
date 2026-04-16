@@ -105,9 +105,40 @@ def check_and_upgrade(api, symbol: str, current_price: float, state: dict) -> bo
     return False
 
 
+def compute_partial_sell_pct(alpha_score: float, weekly_vol: float) -> float:
+    """
+    Calculate what fraction of the position to sell at Phase 2 activation.
+    Higher alpha score (model confidence) = sell less, let more run.
+    Higher weekly volatility = sell more, lock in more gains.
+
+    Formula:
+      base = 0.75 - (alpha_score * 0.50)
+      At alpha=0.50 -> sell 50%
+      At alpha=0.75 -> sell 37.5%
+      At alpha=0.90 -> sell 30%
+      At alpha=1.00 -> sell 25%
+
+    Vol adjustment:
+      vol above 25% weekly adds to sell pct
+      (weekly_vol - 0.25) * 0.50
+
+    Result clamped to [0.25, 0.75]
+    """
+    alpha = max(0.0, min(1.0, float(alpha_score or 0.75)))
+    base  = 0.75 - (alpha * 0.50)
+    vol   = float(weekly_vol or 0.0)
+    vol_adj = max(0.0, (vol - 0.25) * 0.50)
+    pct = base + vol_adj
+    return max(0.25, min(0.75, round(pct, 4)))
+
+
 def upgrade_to_phase2(api, symbol: str, current_price: float,
                       trail_pct: float, state: dict) -> bool:
     try:
+        pos_state   = state.get("positions", {}).get(symbol, {})
+        alpha_score = pos_state.get("alpha_score", 0.75)
+        weekly_vol  = pos_state.get("weekly_vol", 0.20)
+
         # Cancel existing hard stop orders
         orders = api.list_orders(status="open")
         for order in orders:
@@ -120,29 +151,69 @@ def upgrade_to_phase2(api, symbol: str, current_price: float,
         # Get current position qty
         try:
             pos = api.get_position(symbol)
-            qty = int(float(pos.qty))
+            total_qty = int(float(pos.qty))
         except Exception:
             log.error(f"  Could not get position for {symbol} -- skipping")
             return False
 
-        # Submit trailing stop
-        order = api.submit_order(
+        # Compute partial sell split
+        sell_pct   = compute_partial_sell_pct(alpha_score, weekly_vol)
+        sell_qty   = int(total_qty * sell_pct)   # floor to whole shares
+        trail_qty  = total_qty - sell_qty
+
+        log.info(f"  Partial sell calc: alpha={alpha_score:.3f} "
+                 f"weekly_vol={weekly_vol:.3f} "
+                 f"sell_pct={sell_pct*100:.1f}% "
+                 f"-> sell={sell_qty} trail={trail_qty} "
+                 f"(total={total_qty})")
+
+        # Guard: need at least 1 share on each side to split
+        if sell_qty < 1 or trail_qty < 1:
+            log.info(f"  Cannot split {total_qty} shares -- placing full trailing stop")
+            sell_qty  = 0
+            trail_qty = total_qty
+
+        # Place partial market sell
+        partial_order_id = None
+        if sell_qty > 0:
+            partial_order = api.submit_order(
+                symbol        = symbol,
+                qty           = sell_qty,
+                side          = "sell",
+                type          = "market",
+                time_in_force = "day",
+            )
+            partial_order_id = partial_order.id
+            log.info(f"  Partial sell: {symbol} {sell_qty} shares @ market "
+                     f"(~${current_price:.2f})  order_id={partial_order.id}")
+
+        # Place trailing stop on remaining shares
+        trail_order = api.submit_order(
             symbol        = symbol,
-            qty           = qty,
+            qty           = trail_qty,
             side          = "sell",
             type          = "trailing_stop",
             time_in_force = "gtc",
             trail_percent = str(trail_pct),
         )
-        log.info(f"  Trailing stop placed: {symbol} {qty} shares "
-                 f"trail={trail_pct}% order_id={order.id}")
+        log.info(f"  Trailing stop: {symbol} {trail_qty} shares "
+                 f"trail={trail_pct}% order_id={trail_order.id}")
 
         # Update state
-        state["positions"][symbol]["phase"]               = 2
-        state["positions"][symbol]["trail_order_id"]      = order.id
-        state["positions"][symbol]["phase2_activated_at"] = current_price
+        state["positions"][symbol]["phase"]                = 2
+        state["positions"][symbol]["trail_order_id"]       = trail_order.id
+        state["positions"][symbol]["partial_order_id"]     = partial_order_id
+        state["positions"][symbol]["phase2_activated_at"]  = current_price
+        state["positions"][symbol]["partial_sell_qty"]     = sell_qty
+        state["positions"][symbol]["trail_qty"]            = trail_qty
+        state["positions"][symbol]["partial_sell_pct_actual"] = round(
+            sell_qty / total_qty, 4) if total_qty > 0 else 0
         save_state(state)
         return True
+
+    except Exception as e:
+        log.error(f"Phase 2 upgrade failed for {symbol}: {e}")
+        return False
 
     except Exception as e:
         log.error(f"Phase 2 upgrade failed for {symbol}: {e}")
