@@ -262,6 +262,7 @@ td{padding:8px 16px;white-space:nowrap;vertical-align:middle;}
       <button class="tab-btn active" onclick="showTab('log')">Log Trade</button>
       <button class="tab-btn" onclick="showTab('positions')">Positions</button>
       <button class="tab-btn" onclick="showTab('analysis')">Analysis</button>
+      <button class="tab-btn" onclick="showTab('scaling')">Scaling</button>
     </div>
   </div>
 </div>
@@ -510,7 +511,53 @@ td{padding:8px 16px;white-space:nowrap;vertical-align:middle;}
 </div>
 </div>
 
-<script>
+<!-- ── TAB: SCALING METRICS ── -->
+<div id="tab-scaling" class="tab-content">
+<div class="analysis-wrap">
+
+  <!-- Summary cards -->
+  <div class="analysis-grid" id="scaling-stats"></div>
+
+  <!-- Alpha concentration -->
+  <div style="margin:20px 0 12px;font-size:10px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;padding-bottom:6px;border-bottom:1px solid var(--border)">
+    Alpha concentration by week
+    <span style="font-size:9px;color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0"> — % of total basket return from top 1 and top 2 names</span>
+  </div>
+  <table class="breakdown-table" id="concentration-breakdown"></table>
+
+  <!-- Signal quality by rank -->
+  <div style="margin:20px 0 12px;font-size:10px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;padding-bottom:6px;border-bottom:1px solid var(--border)">
+    Signal quality by composite rank bucket
+    <span style="font-size:9px;color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0"> — avg return per rank tier across all weeks</span>
+  </div>
+  <table class="breakdown-table" id="rank-quality-breakdown"></table>
+
+  <!-- Entry timing -->
+  <div style="margin:20px 0 12px;font-size:10px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;padding-bottom:6px;border-bottom:1px solid var(--border)">
+    Entry timing comparison
+    <span style="font-size:9px;color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0"> — avg return by entry day across all weeks</span>
+  </div>
+  <table class="breakdown-table" id="timing-breakdown"></table>
+
+  <!-- Slippage -->
+  <div style="margin:20px 0 12px;font-size:10px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;padding-bottom:6px;border-bottom:1px solid var(--border)">
+    Slippage &amp; liquidity
+    <span style="font-size:9px;color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0"> — avg entry/exit slippage and ADV utilization (populates once Alpaca is live)</span>
+  </div>
+  <table class="breakdown-table" id="slippage-breakdown"></table>
+
+  <!-- Phase transition alerts -->
+  <div style="margin:20px 0 12px;font-size:10px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;padding-bottom:6px;border-bottom:1px solid var(--border)">
+    Scaling phase indicators
+  </div>
+  <div id="scaling-alerts" style="font-size:12px;color:var(--text2);line-height:1.8"></div>
+
+  <div id="empty-scaling" class="empty-state" style="display:none">
+    <strong>No closed trades yet</strong>
+    Scaling metrics populate once you close your first position.
+  </div>
+</div>
+</div>
 // ── GITHUB STORAGE ────────────────────────────────────────────────────────────
 // Trades persist to data/trades.json in the repo via GitHub API.
 // Token is stored in sessionStorage only — never committed to the repo.
@@ -676,6 +723,7 @@ function showTab(name) {
   event.target.classList.add('active');
   if (name === 'positions') renderPositions();
   if (name === 'analysis')  renderAnalysis();
+  if (name === 'scaling')   renderScaling();
 }
 
 // ── PAPER TOGGLE ──────────────────────────────────────────────────────────────
@@ -1063,6 +1111,188 @@ function renderAnalysis() {
         <td style="color:var(--text2)">${(wr*100).toFixed(0)}%</td>
       </tr>`;
     }).join('');
+}
+
+// ── SCALING METRICS ───────────────────────────────────────────────────────────
+function renderScaling() {
+  const closed = trades.filter(t => t.exit_date);
+  const el = id => document.getElementById(id);
+
+  if (closed.length === 0) {
+    document.getElementById('empty-scaling').style.display = 'block';
+    return;
+  }
+  document.getElementById('empty-scaling').style.display = 'none';
+
+  // Group by week (entry_date rounded to Monday)
+  function weekKey(dateStr) {
+    if (!dateStr) return 'unknown';
+    const d = new Date(dateStr);
+    const day = d.getDay();
+    const diff = day === 0 ? -6 : 1 - day;
+    const mon = new Date(d);
+    mon.setDate(d.getDate() + diff);
+    return mon.toISOString().slice(0, 10);
+  }
+
+  const weeks = {};
+  closed.forEach(t => {
+    const wk = weekKey(t.entry_date);
+    if (!weeks[wk]) weeks[wk] = [];
+    weeks[wk].push(t);
+  });
+
+  // ── Summary cards ──
+  const allReturns = closed.map(t => t.return_pct || 0);
+  const avgRet     = allReturns.reduce((a,b)=>a+b,0)/allReturns.length;
+  const nWeeks     = Object.keys(weeks).length;
+
+  // Alpha concentration across all weeks
+  let totalConc1 = 0, countConc = 0;
+  Object.values(weeks).forEach(wk => {
+    const rets  = wk.map(t => t.return_pct || 0);
+    const total = rets.reduce((a,b)=>a+b,0);
+    const top1  = Math.max(...rets);
+    if (total !== 0) { totalConc1 += top1/total; countConc++; }
+  });
+  const avgConc1 = countConc > 0 ? totalConc1/countConc : 0;
+
+  el('scaling-stats').innerHTML = [
+    {label:'Weeks tracked', value: nWeeks},
+    {label:'Avg basket return', value: (avgRet>=0?'+':'')+avgRet.toFixed(2)+'%',
+     cls: avgRet>=0?'ret-pos':'ret-neg'},
+    {label:'Avg alpha concentration', value: (avgConc1*100).toFixed(1)+'%',
+     cls: avgConc1 > 0.6 ? 'ret-neg' : 'ret-pos'},
+    {label:'Total positions', value: closed.length},
+  ].map(c=>`<div class="stat-card">
+    <div class="stat-label">${c.label}</div>
+    <div class="stat-value ${c.cls||''}">${c.value}</div>
+  </div>`).join('');
+
+  // ── Alpha concentration by week ──
+  const sortedWeeks = Object.keys(weeks).sort();
+  el('concentration-breakdown').innerHTML =
+    `<tr><th>Week</th><th>Positions</th><th>Basket avg</th><th>Top 1 contrib</th><th>Top 2 contrib</th><th>Top contributor</th></tr>` +
+    sortedWeeks.map(wk => {
+      const wkTrades = weeks[wk];
+      const rets  = wkTrades.map(t => t.return_pct || 0);
+      const total = rets.reduce((a,b)=>a+b,0);
+      const avg   = total / rets.length;
+      const sorted = [...wkTrades].sort((a,b)=>(b.return_pct||0)-(a.return_pct||0));
+      const top1ret = sorted[0]?.return_pct || 0;
+      const top2ret = (sorted[0]?.return_pct||0) + (sorted[1]?.return_pct||0);
+      const conc1 = total !== 0 ? (top1ret/total)*100 : 0;
+      const conc2 = total !== 0 ? (top2ret/total)*100 : 0;
+      const topSym = sorted[0]?.ticker || '--';
+      const warn1  = Math.abs(conc1) > 60;
+      return `<tr>
+        <td style="color:var(--text2)">${wk}</td>
+        <td style="color:var(--text2)">${rets.length}</td>
+        <td class="${avg>=0?'ret-pos':'ret-neg'}">${avg>=0?'+':''}${avg.toFixed(2)}%</td>
+        <td class="${warn1?'ret-neg':'ret-pos'}" title="${warn1?'High concentration warning':''}">${conc1.toFixed(1)}%${warn1?' ⚠':''}
+        </td>
+        <td style="color:var(--text2)">${conc2.toFixed(1)}%</td>
+        <td style="color:var(--text2)">${topSym} (+${top1ret.toFixed(1)}%)</td>
+      </tr>`;
+    }).join('');
+
+  // ── Signal quality by rank bucket ──
+  const rankBuckets = [
+    {label:'Rank 1-3',   min:1,  max:3},
+    {label:'Rank 4-6',   min:4,  max:6},
+    {label:'Rank 7-10',  min:7,  max:10},
+    {label:'Rank 11-15', min:11, max:15},
+    {label:'Rank 16-20', min:16, max:20},
+    {label:'Rank 21+',   min:21, max:9999},
+  ];
+  el('rank-quality-breakdown').innerHTML =
+    `<tr><th>Rank bucket</th><th>Trades</th><th>Avg return</th><th>Win rate</th></tr>` +
+    rankBuckets.map(b => {
+      const subset = closed.filter(t => {
+        const r = parseInt(t.composite_rank || 9999);
+        return r >= b.min && r <= b.max;
+      });
+      if (subset.length === 0) return '';
+      const rets = subset.map(t => t.return_pct || 0);
+      const avg  = rets.reduce((a,v)=>a+v,0)/rets.length;
+      const wr   = rets.filter(r=>r>0).length/rets.length;
+      return `<tr>
+        <td style="color:var(--text2)">${b.label}</td>
+        <td style="color:var(--text2)">${rets.length}</td>
+        <td class="${avg>=0?'ret-pos':'ret-neg'}">${avg>=0?'+':''}${avg.toFixed(2)}%</td>
+        <td style="color:var(--text2)">${(wr*100).toFixed(0)}%</td>
+      </tr>`;
+    }).join('');
+
+  // ── Entry timing ──
+  const timingOrder = ['monday_open','monday_close','tuesday_open','tuesday_close','monday','tuesday','other'];
+  const timingLabel = {
+    monday_open:'Monday open', monday_close:'Monday close',
+    tuesday_open:'Tuesday open', tuesday_close:'Tuesday close',
+    monday:'Monday (legacy)', tuesday:'Tuesday (legacy)', other:'Other'
+  };
+  const timingGroups = {};
+  closed.forEach(t => {
+    const k = t.entry_day || 'other';
+    if (!timingGroups[k]) timingGroups[k] = [];
+    timingGroups[k].push(t.return_pct || 0);
+  });
+  el('timing-breakdown').innerHTML =
+    `<tr><th>Entry timing</th><th>Trades</th><th>Avg return</th><th>Win rate</th></tr>` +
+    timingOrder.filter(k=>timingGroups[k]).map(k => {
+      const rets = timingGroups[k];
+      const avg  = rets.reduce((a,v)=>a+v,0)/rets.length;
+      const wr   = rets.filter(r=>r>0).length/rets.length;
+      return `<tr>
+        <td style="color:var(--text2)">${timingLabel[k]||k}</td>
+        <td style="color:var(--text2)">${rets.length}</td>
+        <td class="${avg>=0?'ret-pos':'ret-neg'}">${avg>=0?'+':''}${avg.toFixed(2)}%</td>
+        <td style="color:var(--text2)">${(wr*100).toFixed(0)}%</td>
+      </tr>`;
+    }).join('');
+
+  // ── Slippage (placeholder until Alpaca data flows in) ──
+  el('slippage-breakdown').innerHTML =
+    `<tr><th>Metric</th><th>Current</th><th>Alert threshold</th><th>Status</th></tr>
+    <tr>
+      <td style="color:var(--text2)">Avg entry slippage</td>
+      <td style="color:var(--text2)">--</td>
+      <td style="color:var(--text2)">&gt; 0.5%</td>
+      <td style="color:var(--text3)">Populates once Alpaca live</td>
+    </tr>
+    <tr>
+      <td style="color:var(--text2)">Max ADV utilization</td>
+      <td style="color:var(--text2)">--</td>
+      <td style="color:var(--text2)">&gt; 3%</td>
+      <td style="color:var(--text3)">Populates once Alpaca live</td>
+    </tr>`;
+
+  // ── Phase transition alerts ──
+  const alerts = [];
+
+  if (avgConc1 > 0.6) {
+    alerts.push(`⚠ High alpha concentration: avg ${(avgConc1*100).toFixed(1)}% of weekly return from top 1 name (threshold 60%). Consider expanding to more positions.`);
+  }
+
+  const r1_3 = (() => {
+    const s = closed.filter(t=>parseInt(t.composite_rank||9999)<=3).map(t=>t.return_pct||0);
+    return s.length ? s.reduce((a,v)=>a+v,0)/s.length : null;
+  })();
+  const r7_10 = (() => {
+    const s = closed.filter(t=>{const r=parseInt(t.composite_rank||9999);return r>=7&&r<=10;}).map(t=>t.return_pct||0);
+    return s.length ? s.reduce((a,v)=>a+v,0)/s.length : null;
+  })();
+  if (r1_3 && r7_10 && r1_3 > 0 && r7_10/r1_3 < 0.5) {
+    alerts.push(`⚠ Signal quality dropoff: rank 7-10 avg ${r7_10.toFixed(2)}% vs rank 1-3 avg ${r1_3.toFixed(2)}%. Positions 7-10 returning less than 50% of top-3. Consider tightening to 6 positions.`);
+  }
+
+  if (nWeeks >= 4 && avgConc1 < 0.4) {
+    alerts.push(`✓ Alpha concentration healthy (${(avgConc1*100).toFixed(1)}%). Basket generating distributed returns — no single name dependency.`);
+  }
+
+  el('scaling-alerts').innerHTML = alerts.length
+    ? alerts.map(a => `<div style="margin-bottom:8px;padding:8px 12px;border-radius:6px;background:var(--bg3);border-left:3px solid ${a.startsWith('⚠')?'var(--neg)':'var(--pos)'}">${a}</div>`).join('')
+    : `<div style="color:var(--text3);font-size:12px">Accumulating data — alerts appear after ${Math.max(0,4-nWeeks)} more weeks of trades.</div>`;
 }
 
 // ── EXPORT CSV ────────────────────────────────────────────────────────────────
