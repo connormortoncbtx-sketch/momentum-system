@@ -1,11 +1,11 @@
 name: Friday Learning Loop
 on:
   schedule:
-    # Friday 6:00 PM CT — collect returns, self-refine, retrain
+    # Friday 6:00 PM CT -- collect returns, self-refine, retrain
     # Runs BEFORE the pipeline so fresh model/weights are ready
-    # CDT (Mar-Nov): UTC-5 → 23:00 UTC Friday
+    # CDT (Mar-Nov): UTC-5 -> 23:00 UTC Friday
     - cron: '0 23 * * 5'
-    # CST (Nov-Mar): UTC-6 → 00:00 UTC Saturday
+    # CST (Nov-Mar): UTC-6 -> 00:00 UTC Saturday
     - cron: '0 0 * * 6'
   workflow_dispatch:
 permissions:
@@ -28,6 +28,12 @@ jobs:
         run: pip install -r requirements.txt
       - name: Collect actual returns
         run: python automation/collect_returns.py
+      - name: Track execution metrics
+        env:
+          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+          ALPACA_PAPER: ${{ secrets.ALPACA_PAPER || 'true' }}
+        run: python automation/execution_tracker.py
       - name: Analyze weekly winners
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -44,6 +50,8 @@ jobs:
           git config user.email "momentum-bot@users.noreply.github.com"
           DATE=$(date +%Y-%m-%d)
           git add data/performance_log.csv
+          git add data/execution_log.csv || true
+          git add data/basket_metrics_log.csv || true
           git add config/weights.json
           git add models/lgbm_model.pkl || true
           git add refinements/ || true
