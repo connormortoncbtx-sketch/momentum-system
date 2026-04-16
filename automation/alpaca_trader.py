@@ -266,6 +266,19 @@ def run_entry():
     cash            = float(account.cash)
     log.info(f"Portfolio: ${portfolio_value:,.2f}  Cash: ${cash:,.2f}")
 
+    # MARGIN GUARD -- always deploy cash only, never margin
+    # Cash < portfolio_value means margin is available but we never touch it
+    deployable = cash
+    if cash <= 0:
+        log.warning("No settled cash available -- skipping entry")
+        return
+    if cash < portfolio_value * 0.45:
+        # Sanity check -- if cash is less than 45% of portfolio value something is wrong
+        log.warning(f"Cash ${cash:,.2f} is unusually low vs portfolio ${portfolio_value:,.2f} "
+                    f"-- possible unsettled trades or margin usage. Skipping entry.")
+        return
+    log.info(f"Deployable (cash only, no margin): ${deployable:,.2f}")
+
     # Check for existing positions -- don't double-enter
     existing = {p.symbol for p in api.list_positions()}
     if existing:
@@ -273,8 +286,6 @@ def run_entry():
         log.warning("Skipping entry -- close existing positions first")
         return
 
-    # Compute position list
-    deployable = min(cash, portfolio_value)
     positions  = compute_positions(scores, deployable)
 
     if not positions:
