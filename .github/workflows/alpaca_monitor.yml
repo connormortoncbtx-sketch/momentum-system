@@ -1,0 +1,82 @@
+name: Alpaca Intraday Monitor
+
+on:
+  schedule:
+    # Job 1 -- 8:30 AM CT (market open) Mon-Fri
+    # CDT (Mar-Nov): UTC-5 -> 13:30 UTC
+    - cron: '30 13 * * 1-5'
+    # CST (Nov-Mar): UTC-6 -> 14:30 UTC
+    - cron: '30 14 * * 1-5'
+
+    # Job 2 -- 11:15 AM CT Mon-Fri
+    # CDT (Mar-Nov): UTC-5 -> 16:15 UTC
+    - cron: '15 16 * * 1-5'
+    # CST (Nov-Mar): UTC-6 -> 17:15 UTC
+    - cron: '15 17 * * 1-5'
+
+    # Job 3 -- 2:00 PM CT Mon-Fri (short run to close)
+    # CDT (Mar-Nov): UTC-5 -> 19:00 UTC
+    - cron: '0 19 * * 1-5'
+    # CST (Nov-Mar): UTC-6 -> 20:00 UTC
+    - cron: '0 20 * * 1-5'
+
+  workflow_dispatch:
+    inputs:
+      duration:
+        description: 'Duration in minutes'
+        required: false
+        default: '180'
+
+permissions:
+  contents: write
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 200
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Determine duration
+        id: duration
+        run: |
+          HOUR=$(TZ='America/Chicago' date +%H)
+          MINUTE=$(TZ='America/Chicago' date +%M)
+          TOTAL_MINS=$((HOUR * 60 + MINUTE))
+          CLOSE_MINS=$((15 * 60))  # 3:00 PM CT in minutes
+          REMAINING=$((CLOSE_MINS - TOTAL_MINS + 10))
+          # Cap at 185 minutes, floor at 10 minutes
+          if [ $REMAINING -gt 185 ]; then REMAINING=185; fi
+          if [ $REMAINING -lt 10 ]; then REMAINING=10; fi
+          echo "duration=$REMAINING" >> $GITHUB_OUTPUT
+          echo "Running monitor for $REMAINING minutes"
+
+      - name: Run intraday monitor
+        env:
+          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+          ALPACA_PAPER: "true"
+        run: |
+          python automation/alpaca_monitor.py --duration ${{ steps.duration.outputs.duration }}
+
+      - name: Commit state updates
+        run: |
+          git config user.name  "momentum-bot"
+          git config user.email "momentum-bot@users.noreply.github.com"
+          git add data/alpaca_state.json || true
+          git diff --cached --quiet || git commit -m "alpaca: monitor state update $(date +%Y-%m-%d-%H%M)"
+          git pull --rebase origin main
+          git push || true
