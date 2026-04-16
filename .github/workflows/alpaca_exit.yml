@@ -38,6 +38,7 @@ jobs:
         env:
           ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
           ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+          ALPACA_PAPER: ${{ secrets.ALPACA_PAPER || 'true' }}
           ALPACA_WITHDRAWAL_ENABLED: ${{ secrets.ALPACA_WITHDRAWAL_ENABLED }}
           ALPACA_WITHDRAWAL_AMOUNT: ${{ secrets.ALPACA_WITHDRAWAL_AMOUNT }}
           ALPACA_WITHDRAWAL_PCT: ${{ secrets.ALPACA_WITHDRAWAL_PCT }}

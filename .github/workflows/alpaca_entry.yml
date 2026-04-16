@@ -38,6 +38,7 @@ jobs:
         env:
           ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
           ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+          ALPACA_PAPER: ${{ secrets.ALPACA_PAPER || 'true' }}
         run: python automation/alpaca_trader.py entry
 
       - name: Commit state
