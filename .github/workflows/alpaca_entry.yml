@@ -1,0 +1,48 @@
+name: Alpaca Entry (Monday Close)
+
+on:
+  schedule:
+    # Monday 2:30 PM CT
+    # CDT (Mar-Nov): UTC-5 -> 19:30 UTC
+    - cron: '30 19 * * 1'
+    # CST (Nov-Mar): UTC-6 -> 20:30 UTC
+    - cron: '30 20 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  alpaca-entry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run entry orders
+        env:
+          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+        run: python automation/alpaca_trader.py entry
+
+      - name: Commit state
+        run: |
+          git config user.name  "momentum-bot"
+          git config user.email "momentum-bot@users.noreply.github.com"
+          git add data/alpaca_state.json || true
+          git diff --cached --quiet || git commit -m "alpaca: $(date +%Y-%m-%d) entry orders placed"
+          git pull --rebase origin main
+          git push
