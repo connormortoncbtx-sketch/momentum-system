@@ -60,15 +60,15 @@ jobs:
             echo "duration=$INPUT_DURATION" >> $GITHUB_OUTPUT
             echo "Using manual input: $INPUT_DURATION minutes"
           else
-            HOUR=$(TZ='America/Chicago' date +%H)
-            MINUTE=$(TZ='America/Chicago' date +%M)
-            TOTAL_MINS=$((HOUR * 60 + MINUTE))
-            CLOSE_MINS=$((15 * 60))
-            REMAINING=$((CLOSE_MINS - TOTAL_MINS + 10))
+            HOUR=$(TZ='America/Chicago' date +%-H)
+            MINUTE=$(TZ='America/Chicago' date +%-M)
+            TOTAL_MINS=$(( HOUR * 60 + MINUTE ))
+            CLOSE_MINS=$(( 15 * 60 ))
+            REMAINING=$(( CLOSE_MINS - TOTAL_MINS + 10 ))
             if [ $REMAINING -gt 185 ]; then REMAINING=185; fi
             if [ $REMAINING -lt 10 ]; then REMAINING=10; fi
             echo "duration=$REMAINING" >> $GITHUB_OUTPUT
-            echo "Running monitor for $REMAINING minutes"
+            echo "CT time: ${HOUR}:$(printf '%02d' $MINUTE) -- Running monitor for $REMAINING minutes"
           fi
 
       - name: Run intraday monitor
