@@ -17,10 +17,19 @@ on:
 permissions:
   contents: write
 
+# The DST dual-cron setup means CDT and CST triggers can both fire on a DST
+# boundary day. Serialize to prevent double-monitoring; the in-script DST
+# guard exits whichever ran at the wrong hour.
+concurrency:
+  group: premarket-monitor-${{ github.event.schedule || github.run_id }}
+  cancel-in-progress: false
+
 jobs:
   premarket-monitor:
     runs-on: ubuntu-latest
     timeout-minutes: 150   # 2.5 hours covers 7:00-9:30 AM window
+    env:
+      NTFY_CHANNEL: ${{ secrets.NTFY_CHANNEL }}
 
     steps:
       - name: Checkout repo
@@ -51,6 +60,7 @@ jobs:
           DAY=$(date +%A | tr '[:upper:]' '[:lower:]')
           git add docs/
           git add data/premarket_log.json
+          git add data/system_log.jsonl || true
           git diff --cached --quiet || git commit -m "premarket: ${DATE} ${DAY} final check complete"
           git pull --rebase origin main
           git push

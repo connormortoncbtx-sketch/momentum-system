@@ -12,6 +12,12 @@ on:
 permissions:
   contents: write
 
+# Serialize scheduled run with any manual dispatch -- read_logs/notify calls
+# should not race with each other on the same jsonl file.
+concurrency:
+  group: weekly-health-check
+  cancel-in-progress: false
+
 jobs:
   health-check:
     runs-on: ubuntu-latest

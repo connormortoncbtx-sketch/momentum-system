@@ -9,10 +9,17 @@ on:
   workflow_dispatch:   # allow manual trigger from GitHub UI
 permissions:
   contents: write
+# Serialize scheduled cron and any manual dispatch -- pipeline writes to
+# scores_final.csv and two concurrent runs would corrupt state.
+concurrency:
+  group: weekly-pipeline
+  cancel-in-progress: false
 jobs:
   run-pipeline:
     runs-on: ubuntu-latest
     timeout-minutes: 360   # 6 hours max -- expanded universe needs more time
+    env:
+      NTFY_CHANNEL: ${{ secrets.NTFY_CHANNEL }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -41,12 +48,19 @@ jobs:
           git add data/regime.json
           git add data/scores_final.csv
           git add data/signals.csv
+          git add data/system_log.jsonl || true
           git add models/lgbm_model.pkl || true
+          # Commit-message interpolations now have `|| echo "unknown"` fallbacks
+          # so that a corrupted regime.json or scores_final.csv doesn't crash
+          # the commit step (which would block all later state from being saved).
+          REGIME=$(python -c "import json; d=json.load(open('data/regime.json')); print(d['regime'])" 2>/dev/null || echo "unknown")
+          UNIVERSE_COUNT=$(python -c "import pandas as pd; print(len(pd.read_csv('data/universe.csv')), 'tickers')" 2>/dev/null || echo "unknown")
+          TOP_PICK=$(python -c "import pandas as pd; df=pd.read_csv('data/scores_final.csv'); r=df.iloc[0]; print(r['symbol'], f'score={r[\"alpha_score\"]:.4f}')" 2>/dev/null || echo "unknown")
           # Only commit if there are changes
           git diff --cached --quiet || git commit -m "pipeline: ${DATE} run complete
-          Regime: $(python -c "import json; d=json.load(open('data/regime.json')); print(d['regime'])")
-          Universe: $(python -c "import pandas as pd; print(len(pd.read_csv('data/universe.csv')), 'tickers')")
-          Top pick: $(python -c "import pandas as pd; df=pd.read_csv('data/scores_final.csv'); r=df.iloc[0]; print(r['symbol'], f'score={r[\"alpha_score\"]:.4f}')")"
+          Regime: ${REGIME}
+          Universe: ${UNIVERSE_COUNT}
+          Top pick: ${TOP_PICK}"
           git pull --rebase origin main
           git push
       - name: Upload report artifact

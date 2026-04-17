@@ -10,10 +10,18 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+# Prevent overlap between scheduled run and manual dispatch (common cause of
+# commit collisions on the performance_log).
+concurrency:
+  group: friday-learning
+  cancel-in-progress: false
 jobs:
   learn-and-refine:
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    env:
+      # Notifier channel for push alerts -- available to every step.
+      NTFY_CHANNEL: ${{ secrets.NTFY_CHANNEL }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -26,23 +34,32 @@ jobs:
           cache: 'pip'
       - name: Install dependencies
         run: pip install -r requirements.txt
+      # Each learning step uses continue-on-error so one failure doesn't kill the
+      # remaining steps. Historically a bad collect_returns run meant no
+      # self_refine, no retrain, no analyze_winners for the week. Now each runs
+      # independently and its own log_event/notify_error surfaces problems.
       - name: Collect actual returns
+        continue-on-error: true
         run: python automation/collect_returns.py
       - name: Track execution metrics
+        continue-on-error: true
         env:
           ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
           ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
           ALPACA_PAPER: ${{ secrets.ALPACA_PAPER || 'true' }}
         run: python automation/execution_tracker.py
       - name: Analyze weekly winners
+        continue-on-error: true
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: python automation/analyze_winners.py
       - name: Run self-refinement
+        continue-on-error: true
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: python automation/self_refine.py
       - name: Retrain model if enough data
+        continue-on-error: true
         run: python automation/retrain.py
       - name: Commit results
         run: |
@@ -57,6 +74,9 @@ jobs:
           git add refinements/ || true
           git add insights/ || true
           git add data/.collect_lock || true
+          git add data/system_log.jsonl || true
+          # Use || true fallbacks on the refinement-note cat so a missing
+          # note file can't break the commit.
           git diff --cached --quiet || git commit -m "learning: ${DATE} returns collected + weights refined
           $(cat refinements/${DATE}.md 2>/dev/null | head -3 || echo 'No refinement note')"
           git pull --rebase origin main
