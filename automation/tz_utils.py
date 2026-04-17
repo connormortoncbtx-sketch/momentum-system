@@ -117,7 +117,20 @@ def _nyse_holidays(year: int) -> set[date]:
         return d
 
     # New Year's Day
+    # When Jan 1 falls on Saturday, NYSE observes the holiday on Friday Dec 31.
+    # That Friday Dec 31 belongs to the PRIOR calendar year, so we have to add
+    # BOTH this year's Jan 1 observance AND the observance for next year's Jan 1
+    # when it rolls back into December. Previously the Friday-Dec-31 observance
+    # was stored under the wrong year (e.g. Dec 31 2021 was added to the 2022
+    # holiday set, but is_trading_day(date(2021,12,31)) asked for the 2021 set
+    # and got a False-negative — i.e., the system treated it as a normal
+    # trading day and would have tried to run the pipeline).
     holidays.add(nearest_weekday(date(year, 1, 1)))
+    next_nye_obs = nearest_weekday(date(year + 1, 1, 1))
+    if next_nye_obs.year == year:
+        # E.g., year=2021: date(2022,1,1) is Saturday → observed Fri Dec 31 2021
+        # That Dec 31 belongs to 2021's holiday set.
+        holidays.add(next_nye_obs)
     # MLK Day — 3rd Monday in January
     holidays.add(nth_weekday(year, 1, 3, 0))
     # Presidents Day — 3rd Monday in February

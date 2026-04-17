@@ -176,6 +176,22 @@ def build_rows(scores, ohlcv_data, week_start_friday):
     dates = get_week_dates(week_start_friday)
     rows  = []
 
+    # Sub-signals needed for retrain.py to train the full 18-feature model.
+    # Previously only the 4 coarse composites + 4 _adj composites were pulled;
+    # retrain.py lists 18 RETRAIN_FEATURES but build_training_data() only used
+    # the 4 coarse ones, producing a feature-shape mismatch with stage 4's
+    # model. Now we carry every sub-signal through. Missing columns in scores
+    # (e.g. from pre-fix runs) resolve to None via sr.get(), which retrain
+    # will then drop via the notna() mask.
+    SUB_SIGNAL_COLS = [
+        "sig_momentum_rs", "sig_momentum_trend", "sig_momentum_vol_surge",
+        "sig_momentum_breakout",
+        "sig_catalyst_earnings", "sig_catalyst_insider", "sig_catalyst_analyst",
+        "sig_fund_growth", "sig_fund_quality", "sig_fund_profitability",
+        "sig_fund_value",
+        "sig_sentiment_news", "sig_sentiment_analyst", "sig_sentiment_short",
+    ]
+
     for _, sr in scores.iterrows():
         sym   = sr["symbol"]
         ohlcv = ohlcv_data.get(sym)
@@ -191,7 +207,7 @@ def build_rows(scores, ohlcv_data, week_start_friday):
 
         rets = compute_returns(prior_close, day_prices)
 
-        rows.append({
+        row = {
             "week_of":              week_start_friday.strftime("%Y-%m-%d"),
             "symbol":               sym,
             "sector":               sr.get("sector"),
@@ -239,7 +255,17 @@ def build_rows(scores, ohlcv_data, week_start_friday):
             "return_mon_peak":      rets.get("return_mon_peak"),
             "return_tue_peak":      rets.get("return_tue_peak"),
             "label":                np.nan,
-        })
+        }
+
+        # Preserve the sub-signals that fed the model's prediction for this
+        # week. These are what retrain.py feeds back in with real forward
+        # returns as labels. sr.get() returns None if the column is missing,
+        # which is the correct behavior for pre-fix rows (retrain drops them
+        # via the notna mask).
+        for col in SUB_SIGNAL_COLS:
+            row[col] = sr.get(col)
+
+        rows.append(row)
 
     df = pd.DataFrame(rows)
 

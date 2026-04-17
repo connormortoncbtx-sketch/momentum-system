@@ -55,23 +55,68 @@ def build_training_data(log_df: pd.DataFrame,
     """
     Join historical signal data to forward returns.
     Label = 1 if forward_return_1w is in top quintile that week.
+
+    Feature selection (C1 fix): prefers the full 18-feature sub-signal set
+    (RETRAIN_FEATURES) that matches the production model's shape. Falls back
+    to the 4 coarse composites for old perf_log rows written before
+    collect_returns was taught to preserve sub-signals. Mixed is NOT allowed
+    -- if the run doesn't have all 18 but has all 4 composites, we use the
+    4-composite set and warn. The pipeline's stage 4 has a matching fallback
+    in pipeline/04_model.py (lines 484-495) that routes to composite features
+    when the saved model has n_features_in_ <= 4, so feature-shape stays
+    consistent end-to-end.
+
+    Mask before fillna (C2 fix): previously X got fillna(0.5) first, then
+    X.notna().all(axis=1) was used in the mask -- which was vacuous because
+    there were no NaNs left to check. Rows with missing sub-signals silently
+    trained as synthetic 'neutral at 0.5 across every feature' samples,
+    injecting a point mass at the training distribution's center. Now we
+    drop rows missing any feature OR the label first, then fill any residual
+    NaN on the kept rows (defensive -- shouldn't remain).
     """
-    # Build weekly labels
+    FALLBACK_FEATURES = ["sig_momentum", "sig_catalyst",
+                         "sig_fundamentals", "sig_sentiment"]
+
+    # Build weekly labels from real forward returns
     log_df = log_df.copy()
     log_df["label"] = log_df.groupby("week_of")["forward_return_1w"].transform(
         lambda x: (x >= x.quantile(0.80)).astype(int)
     )
 
-    # For signal features, use the composite scores stored in the log
-    # (full sub-signal history would require archiving signals.csv each week)
-    feature_cols = ["sig_momentum", "sig_catalyst", "sig_fundamentals", "sig_sentiment"]
-    available    = [c for c in feature_cols if c in log_df.columns]
+    # C1: prefer 18-feature sub-signal set; fall back to 4 composites.
+    full_present = all(c in log_df.columns for c in RETRAIN_FEATURES)
+    if full_present:
+        features = RETRAIN_FEATURES
+        log.info(f"  Training on full {len(features)}-feature sub-signal set")
+    elif all(c in log_df.columns for c in FALLBACK_FEATURES):
+        features = FALLBACK_FEATURES
+        missing = [c for c in RETRAIN_FEATURES if c not in log_df.columns]
+        log.warning(
+            f"  Sub-signals missing from perf_log ({len(missing)} cols); "
+            f"falling back to {len(features)} coarse composites. "
+            f"Sub-signals will become available in perf_log after "
+            f"collect_returns runs for N weeks with the post-Tier-4 build."
+        )
+    else:
+        # No usable feature set. Return empty frames so run() skips cleanly.
+        missing = [c for c in FALLBACK_FEATURES if c not in log_df.columns]
+        log.error(f"  No usable feature set -- both RETRAIN_FEATURES and "
+                  f"FALLBACK_FEATURES are missing. Absent composites: {missing}")
+        return pd.DataFrame(), pd.Series(dtype=int)
 
-    X = log_df[available].fillna(0.5)
+    # C2: mask BEFORE fillna -- drop rows with any missing feature or label
     y = log_df["label"]
+    X_raw = log_df[features]
+    mask  = y.notna() & X_raw.notna().all(axis=1)
 
-    mask = y.notna() & X.notna().all(axis=1)
-    return X[mask], y[mask]
+    # Apply mask first, then defensively fill (shouldn't find any NaN post-mask)
+    X = X_raw[mask].fillna(0.5)
+    y = y[mask].astype(int)
+
+    log.info(f"  Training data: {len(X):,} rows after masking "
+             f"({(~mask).sum():,} dropped for missing features/label)")
+
+    return X, y
 
 
 def run():
@@ -104,6 +149,23 @@ def run():
 
         log.info("Building training data...")
         X, y = build_training_data(log_df, None)
+
+        # C2 side-effect: if masking drops every row (e.g., old perf_log rows
+        # all had some NaN), skip cleanly instead of crashing in model.fit.
+        if len(X) == 0 or len(y) == 0:
+            log.warning("No usable training rows after masking -- skipping retrain")
+            log_event("retrain", LogStatus.WARNING,
+                      "Skipped: no training rows passed feature/label mask",
+                      metrics={"weeks": int(n_weeks), "raw_rows": int(n_rows)})
+            return
+
+        if len(X) < MIN_ROWS:
+            log.info(f"After masking, only {len(X)} rows (need {MIN_ROWS}) -- skipping")
+            log_event("retrain", LogStatus.INFO,
+                      f"Skipped: {len(X)} rows after masking (need {MIN_ROWS})",
+                      metrics={"rows_after_mask": int(len(X))})
+            return
+
         log.info(f"  {len(X)} training samples, {y.mean()*100:.1f}% positive")
 
         log.info("Training LightGBM...")

@@ -77,11 +77,23 @@ def get_alpaca_fills(week_start: str, week_end: str) -> dict:
                     else "https://api.alpaca.markets")
         api = tradeapi.REST(key, secret, base_url, api_version="v2")
 
+        # H2 fix: Alpaca's list_orders `until` param is exclusive -- until="YYYY-MM-DD"
+        # means "before midnight UTC of that date", which EXCLUDES same-day fills.
+        # The Friday-close MOC sell orders fill at 20:00-21:00 UTC on Friday, so
+        # passing week_end=last_fri.isoformat() dropped every exit fill. Add one
+        # calendar day so the until-boundary lands on Saturday 00:00 UTC,
+        # inclusively capturing everything on Friday.
+        from datetime import date as _date, timedelta as _td
+        try:
+            until_inclusive = (_date.fromisoformat(week_end) + _td(days=1)).isoformat()
+        except Exception:
+            until_inclusive = week_end  # fall back if week_end isn't a pure date
+
         # Fetch orders in the week window
         orders = api.list_orders(
             status="filled",
             after=week_start,
-            until=week_end,
+            until=until_inclusive,
             limit=500,
         )
 
@@ -323,8 +335,14 @@ def log_scaling_alerts(basket: dict):
     if r1 and r2 and r1 > 0:
         quality_ratio = r2 / r1
         if quality_ratio < RANK_QUALITY_WARN:
-            alerts.append(f"SIGNAL QUALITY ALERT: rank 7-10 returns {r2:.2f}% "
-                          f"vs rank 1-3 {r1:.2f}% "
+            # H1 fix: r1 and r2 are stored as fractions (0.025 = 2.5%) because
+            # they come from bucket_avg() which returns the mean of
+            # forward_return_1w (already a fraction per collect_returns). Prior
+            # format string {r1:.2f}% displayed the fraction verbatim, so an
+            # actual 2.5% return was rendered as "0.02%". Multiply by 100 here
+            # to match every other percent display in this module.
+            alerts.append(f"SIGNAL QUALITY ALERT: rank 7-10 returns {r2*100:.2f}% "
+                          f"vs rank 1-3 {r1*100:.2f}% "
                           f"(ratio {quality_ratio:.2f} < {RANK_QUALITY_WARN}) "
                           f"-- consider tightening position count")
 
