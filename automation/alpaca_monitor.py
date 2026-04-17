@@ -76,6 +76,91 @@ def save_state(state: dict):
 
 # ── PHASE 2 UPGRADE ───────────────────────────────────────────────────────────
 
+def ensure_phase1_stop(api, symbol: str, state: dict) -> bool:
+    """
+    Ensure a Phase 1 position has a hard stop order on file.
+
+    Called each poll. On first poll after the Monday MOC entry fills, this submits
+    the stop order using the ACTUAL filled average price (not the pre-close estimate),
+    so the stop is aligned with the realized entry.
+
+    Why this lives in the monitor rather than alpaca_trader's run_entry:
+    - alpaca_trader submits buy orders at 2:30pm CT with time_in_force="cls" -- they fill
+      at 3:00pm CT market close. An inline stop submitted at 2:30pm would risk firing
+      before the buy fills, creating a short position. Waiting until after fill is safer.
+    - Monitor's first poll runs 8:30am CT Tuesday. The fill has been confirmed overnight.
+      Accepting this Mon-overnight-Tue-open gap as a known risk for paper mode; will
+      reassess for live.
+
+    Returns True if a stop was placed this call, False otherwise.
+    """
+    pos_state = state.get("positions", {}).get(symbol, {})
+    if not pos_state:
+        return False
+
+    # Only Phase 1 positions need a hard stop. Phase 2 uses the trailing stop instead.
+    if pos_state.get("phase", 1) != 1:
+        return False
+
+    # Already placed? state records the order id
+    if pos_state.get("hard_stop_order_id"):
+        return False
+
+    hard_stop_pct = pos_state.get("hard_stop_pct")
+    if not hard_stop_pct or hard_stop_pct <= 0:
+        log.warning(f"  {symbol}: no hard_stop_pct in state -- cannot place stop")
+        return False
+
+    # Check Alpaca for an existing stop order on this symbol. If one exists (e.g., placed
+    # manually or by a previous run that didn't persist the id), adopt it rather than
+    # creating a duplicate.
+    try:
+        open_orders = api.list_orders(status="open")
+        for order in open_orders:
+            if (order.symbol == symbol and
+                    order.order_type in ("stop", "stop_limit") and
+                    order.side == "sell"):
+                log.info(f"  {symbol}: found existing stop {order.id} -- adopting")
+                state["positions"][symbol]["hard_stop_order_id"] = order.id
+                return True
+    except Exception as e:
+        log.warning(f"  {symbol}: list_orders check failed: {e} -- proceeding to submit")
+
+    # Need the actual fill price. Use the live position's avg_entry_price -- this
+    # reflects what Alpaca actually paid, including any slippage on the MOC fill.
+    try:
+        pos = api.get_position(symbol)
+        actual_entry = float(pos.avg_entry_price)
+        shares       = int(float(pos.qty))
+    except Exception as e:
+        log.warning(f"  {symbol}: get_position failed: {e} -- stop not placed this poll")
+        return False
+
+    if actual_entry <= 0 or shares < 1:
+        return False
+
+    stop_price = round(actual_entry * (1 - hard_stop_pct / 100), 2)
+
+    try:
+        order = api.submit_order(
+            symbol        = symbol,
+            qty           = shares,
+            side          = "sell",
+            type          = "stop",
+            stop_price    = stop_price,
+            time_in_force = "gtc",
+        )
+        log.info(f"  HARD STOP {symbol}: {shares} shares @ stop=${stop_price:.2f} "
+                 f"(entry=${actual_entry:.2f} -{hard_stop_pct:.1f}%)  order_id={order.id}")
+        state["positions"][symbol]["hard_stop_order_id"] = order.id
+        state["positions"][symbol]["hard_stop_price"]    = stop_price
+        state["positions"][symbol]["entry_price_actual"] = actual_entry
+        return True
+    except Exception as e:
+        log.error(f"  {symbol}: stop order submission failed: {e}")
+        return False
+
+
 def check_and_upgrade(api, symbol: str, current_price: float, state: dict) -> bool:
     pos_state = state.get("positions", {}).get(symbol)
     if not pos_state:
@@ -215,10 +300,6 @@ def upgrade_to_phase2(api, symbol: str, current_price: float,
         log.error(f"Phase 2 upgrade failed for {symbol}: {e}")
         return False
 
-    except Exception as e:
-        log.error(f"Phase 2 upgrade failed for {symbol}: {e}")
-        return False
-
 
 # ── MAIN POLL LOOP ────────────────────────────────────────────────────────────
 
@@ -269,6 +350,13 @@ def run(duration_minutes: int = 180):
                 try:
                     # Use current_price from position object -- no extra API call needed
                     current_price = float(pos.current_price)
+
+                    # Ensure Phase 1 positions have their hard stop placed. On first poll
+                    # after entry, this submits the stop using the actual fill price. Called
+                    # before check_and_upgrade because Phase 2 upgrade cancels the hard stop.
+                    if ensure_phase1_stop(api, symbol, state):
+                        changed = True
+
                     upgraded = check_and_upgrade(api, symbol, current_price, state)
                     if upgraded:
                         upgrades += 1

@@ -238,21 +238,56 @@ def rebuild_scores(signals: pd.DataFrame, raw_scores: pd.Series,
     # scored_at is preserved to reflect the original Friday scoring date (not the refresh date).
     # This is critical for collect_returns.py's 5-trading-day guard -- if we overwrote scored_at
     # to Sunday/Monday, the Friday learning loop would see elapsed<5 days and skip every week.
+    #
+    # Column-ratchet fix: if a column is missing from previous_scores (because a prior broken
+    # refresh dropped it), fall back to pulling from signals.csv. This keeps sub-signal columns
+    # from silently disappearing across weekend refreshes.
     meta_cols = ["symbol", "name", "exchange", "sector", "industry",
                  "last_price", "avg_vol_20d", "market_cap",
+                 # EV / risk metadata
                  "ev_score", "ev_rank", "ev_pct_rank", "ev_conviction",
                  "avg_win_magnitude", "avg_loss_magnitude", "weekly_vol",
                  "composite_rank",
+                 # Stop parameters — persisted by stage 4 so alpaca_trader can read them.
+                 # Must be preserved across refreshes or alpaca_trader falls back to None
+                 # and never places hard stops.
+                 "suggested_hard_stop_pct", "suggested_activation_pct", "suggested_trail_pct",
+                 # Timestamp metadata
                  "scored_at",
+                 # Momentum sub-signals
                  "sig_momentum_rs", "sig_momentum_trend", "sig_momentum_vol_surge",
-                 "sig_momentum_breakout", "sig_catalyst_analyst",
+                 "sig_momentum_breakout",
+                 # Catalyst sub-signals (including the ones previously omitted, causing
+                 # asymmetric preservation where fundamentals/sentiment had _adj but catalyst didn't)
+                 "sig_catalyst_earnings", "sig_catalyst_insider", "sig_catalyst_analyst",
+                 "sig_catalyst_adj",
+                 # Fundamentals sub-signals
                  "sig_fund_growth", "sig_fund_quality", "sig_fund_profitability",
-                 "sig_fund_value", "sig_sentiment_news", "sig_sentiment_analyst",
+                 "sig_fund_value",
+                 # Sentiment sub-signals
+                 "sig_sentiment_news", "sig_sentiment_analyst",
                  "sig_sentiment_short", "sig_sentiment_articles",
+                 # Regime-adjusted composites
                  "sig_momentum_adj", "sig_fundamentals_adj", "sig_sentiment_adj"]
-    available_meta = [c for c in meta_cols if c in previous_scores.columns]
 
-    out = previous_scores[available_meta].copy()
+    # Build out from previous_scores; for any meta_col missing there, try signals.csv.
+    # This prevents column ratchet (columns silently disappearing across refreshes).
+    out = previous_scores[[c for c in meta_cols if c in previous_scores.columns]].copy()
+    if "symbol" not in out.columns:
+        out.insert(0, "symbol", previous_scores["symbol"].values)
+
+    signals_indexed = signals.set_index("symbol") if "symbol" in signals.columns else None
+    recovered_from_signals = []
+    for col in meta_cols:
+        if col in out.columns or col == "symbol":
+            continue
+        if signals_indexed is not None and col in signals_indexed.columns:
+            out[col] = signals_indexed[col].reindex(out["symbol"]).values
+            recovered_from_signals.append(col)
+
+    if recovered_from_signals:
+        log.info(f"  Recovered {len(recovered_from_signals)} columns from signals.csv "
+                 f"(previous scores was missing them): {recovered_from_signals}")
 
     # Merge updated signal composites
     sig_cols = ["sig_momentum","sig_catalyst","sig_fundamentals","sig_sentiment"]

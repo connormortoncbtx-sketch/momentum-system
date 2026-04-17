@@ -151,9 +151,20 @@ def compute_positions(scores: pd.DataFrame, portfolio_value: float) -> list[dict
     if "avg_vol_20d" in df.columns:
         df = df[df["avg_vol_20d"].notna() & (df["avg_vol_20d"] >= MIN_AVG_VOLUME)]
 
-    # Signal quality gate -- must be in top 30% by composite rank percentile
-    if "alpha_pct_rank" in df.columns:
+    # Signal quality gate -- must be in top (1 - MIN_COMPOSITE_PERCENTILE) by composite rank.
+    # We use composite_rank (ties alpha + EV 50/50) when available, falling back to alpha_pct_rank
+    # only for legacy scores files that predate composite rank persistence.
+    # The cutoff uses the FULL scored universe size (from scores), not the filtered df, because
+    # composite_rank values reference the original universe-wide ranking.
+    if "composite_rank" in df.columns and df["composite_rank"].notna().any():
+        n_total     = int(pd.to_numeric(scores["composite_rank"], errors="coerce").max())
+        cutoff_rank = max(1, int(n_total * (1.0 - MIN_COMPOSITE_PERCENTILE)))
+        df = df[df["composite_rank"].notna() & (df["composite_rank"] <= cutoff_rank)]
+        log.info(f"  Composite gate: keeping top {cutoff_rank} of {n_total} "
+                 f"({(1-MIN_COMPOSITE_PERCENTILE)*100:.0f}%)")
+    elif "alpha_pct_rank" in df.columns:
         df = df[df["alpha_pct_rank"] >= MIN_COMPOSITE_PERCENTILE]
+        log.warning("  composite_rank missing from scores -- falling back to alpha_pct_rank gate")
 
     # Conviction gate -- very_high and high only
     if "conviction" in df.columns:
@@ -189,9 +200,14 @@ def compute_positions(scores: pd.DataFrame, portfolio_value: float) -> list[dict
     # Target position count: minimum of capital-constrained max and qualified names
     n_positions = min(max_by_capital, len(df))
 
-    # Build extended candidate pool -- 2x target count for fallback coverage
-    # If primary candidates fail (untradable, halted, etc.) fallbacks ensure
-    # capital stays fully deployed rather than sitting idle
+    # Build extended candidate pool -- up to 2x target count for fallback coverage.
+    # If primary candidates fail (untradable, halted, etc.) fallbacks ensure capital
+    # stays fully deployed rather than sitting idle.
+    #
+    # Each position is tagged is_primary/is_fallback in-place so run_entry doesn't
+    # have to re-derive the target count from the returned list length. Previously
+    # run_entry did `n_target = len(positions) // 2 or len(positions)` which under-
+    # counted when the qualifying pool was <2x target.
     n_candidates = min(n_positions * 2, len(df))
     df_candidates = df.head(n_candidates)
 
@@ -211,7 +227,7 @@ def compute_positions(scores: pd.DataFrame, portfolio_value: float) -> list[dict
         position_size = max_position
 
     positions = []
-    for _, row in df_candidates.iterrows():
+    for idx, (_, row) in enumerate(df_candidates.iterrows()):
         price = float(row.get("last_price", 0))
         if price <= 0:
             continue
@@ -232,6 +248,9 @@ def compute_positions(scores: pd.DataFrame, portfolio_value: float) -> list[dict
             "suggested_hard_stop_pct":   row.get("suggested_hard_stop_pct"),
             "suggested_activation_pct":  row.get("suggested_activation_pct"),
             "suggested_trail_pct":       row.get("suggested_trail_pct"),
+            # Primary / fallback flag. First n_positions are primaries; remainder are fallbacks.
+            "is_primary":  idx < n_positions,
+            "is_fallback": idx >= n_positions,
         })
 
     total_deployed = sum(p["dollar_size"] for p in positions)
@@ -299,11 +318,13 @@ def run_entry():
         log.warning("No positions to enter")
         return
 
-    # Separate primary candidates (first half) from fallbacks (second half)
-    # compute_positions returns 2x target count -- first n are primaries
-    n_target  = len(positions) // 2 or len(positions)
-    primaries = positions[:n_target]
-    fallbacks = positions[n_target:]
+    # Partition positions using the is_primary/is_fallback tags set by compute_positions.
+    # Do not re-derive n_target from len(positions)//2 -- that silently under-counts when
+    # the qualifying pool was smaller than 2x target (which is common on narrow universes
+    # or after restrictive gates).
+    primaries = [p for p in positions if p.get("is_primary")]
+    fallbacks = [p for p in positions if p.get("is_fallback")]
+    n_target  = len(primaries) if primaries else len(positions)
 
     log.info(f"Entry plan: {n_target} primary targets + {len(fallbacks)} fallbacks")
 
@@ -324,7 +345,7 @@ def run_entry():
 
         sym    = p["symbol"]
         shares = p["shares"]
-        is_fallback = p in fallbacks
+        is_fallback = p.get("is_fallback", False)
 
         try:
             order = api.submit_order(
