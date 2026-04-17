@@ -217,6 +217,88 @@ def assert_normal_week(script_name: str = "") -> bool:
     return True
 
 
+def get_entry_day(ref_date: date = None) -> str:
+    """
+    Return the correct Alpaca entry day for this week.
+
+    Rules:
+        Monday is a trading day  → "monday"   (normal)
+        Monday is a holiday      → "tuesday"  (bump forward)
+        Both Mon and Tue holiday → "skip"     (extremely rare, e.g. consecutive holidays)
+
+    This is separate from assert_normal_week() -- the pipeline and learning loop
+    still skip on Monday holidays, but Alpaca entry bumps to Tuesday instead.
+    """
+    if ref_date is None:
+        ref_date = now_ct().date()
+
+    monday  = ref_date - timedelta(days=ref_date.weekday())
+    tuesday = monday + timedelta(days=1)
+
+    if is_trading_day(monday):
+        return "monday"
+    elif is_trading_day(tuesday):
+        log.info(f"Monday {monday} is a market holiday -- bumping entry to Tuesday {tuesday}")
+        return "tuesday"
+    else:
+        log.warning(f"Both Monday {monday} and Tuesday {tuesday} are holidays -- skipping entry")
+        return "skip"
+
+
+def get_exit_day(ref_date: date = None) -> str:
+    """
+    Return the correct Alpaca exit day for this week.
+
+    Rules:
+        Friday is a trading day   → "friday"    (normal)
+        Friday is a holiday       → "thursday"  (bump back)
+        Both Fri and Thu holiday  → "skip"      (extremely rare)
+    """
+    if ref_date is None:
+        ref_date = now_ct().date()
+
+    monday   = ref_date - timedelta(days=ref_date.weekday())
+    friday   = monday + timedelta(days=4)
+    thursday = monday + timedelta(days=3)
+
+    if is_trading_day(friday):
+        return "friday"
+    elif is_trading_day(thursday):
+        log.info(f"Friday {friday} is a market holiday -- bumping exit to Thursday {thursday}")
+        return "thursday"
+    else:
+        log.warning(f"Both Friday {friday} and Thursday {thursday} are holidays -- skipping exit")
+        return "skip"
+
+
+def is_entry_day(ref_date: date = None) -> bool:
+    """
+    Return True if today is the correct entry day for this week.
+    Accounts for Monday holidays bumping to Tuesday.
+    """
+    if ref_date is None:
+        ref_date = now_ct().date()
+    entry_day = get_entry_day(ref_date)
+    weekday   = ref_date.weekday()  # 0=Mon, 1=Tue
+    if entry_day == "monday"  and weekday == 0: return True
+    if entry_day == "tuesday" and weekday == 1: return True
+    return False
+
+
+def is_exit_day(ref_date: date = None) -> bool:
+    """
+    Return True if today is the correct exit day for this week.
+    Accounts for Friday holidays bumping to Thursday.
+    """
+    if ref_date is None:
+        ref_date = now_ct().date()
+    exit_day = get_exit_day(ref_date)
+    weekday  = ref_date.weekday()  # 3=Thu, 4=Fri
+    if exit_day == "friday"   and weekday == 4: return True
+    if exit_day == "thursday" and weekday == 3: return True
+    return False
+
+
 if __name__ == "__main__":
     print(f"Current CT:       {format_ct()}")
     print(f"CT offset:        UTC{ct_offset()}")

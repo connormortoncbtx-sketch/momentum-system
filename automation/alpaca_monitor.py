@@ -228,6 +228,17 @@ def run(duration_minutes: int = 180):
     log.info(f"Mode: {'PAPER' if PAPER_MODE else '*** LIVE ***'}")
     log.info("=" * 60)
 
+    # Holiday check -- no point monitoring on a closed market
+    try:
+        from automation.tz_utils import is_trading_day
+        import datetime as dt
+        today = dt.date.today()
+        if not is_trading_day(today):
+            log.info(f"Market holiday ({today}) -- monitor exiting cleanly")
+            return
+    except Exception as e:
+        log.debug(f"Holiday check unavailable: {e} -- proceeding")
+
     api        = get_alpaca()
     end_time   = datetime.datetime.now() + datetime.timedelta(minutes=duration_minutes)
     poll_count = 0

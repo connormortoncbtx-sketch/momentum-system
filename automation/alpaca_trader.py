@@ -573,17 +573,44 @@ def run_circuit_breaker_check():
 # ── MAIN ──────────────────────────────────────────────────────────────────────
 
 def run(mode: str = "entry"):
-    from automation.tz_utils import now_ct
-    ct = now_ct()
+    from automation.tz_utils import now_ct, is_entry_day, is_exit_day, get_entry_day, get_exit_day, is_trading_day
+    ct      = now_ct()
+    today   = ct.date()
     log.info(f"Alpaca trader running at {ct.strftime('%A %Y-%m-%d %H:%M CT')}")
     log.info(f"Mode: {mode}")
 
     if mode == "entry":
+        # Check if today is the correct entry day accounting for holidays
+        entry_day = get_entry_day(today)
+        if entry_day == "skip":
+            log.info("Both Monday and Tuesday are holidays -- skipping entry this week")
+            return
+        if not is_entry_day(today):
+            log.info(f"Today is not the entry day for this week "
+                     f"(expected {entry_day}) -- skipping")
+            return
+        log.info(f"Entry day confirmed: {entry_day}")
         run_entry()
+
     elif mode == "exit":
+        # Check if today is the correct exit day accounting for holidays
+        exit_day = get_exit_day(today)
+        if exit_day == "skip":
+            log.info("Both Friday and Thursday are holidays -- skipping exit this week")
+            return
+        if not is_exit_day(today):
+            log.info(f"Today is not the exit day for this week "
+                     f"(expected {exit_day}) -- skipping")
+            return
+        log.info(f"Exit day confirmed: {exit_day}")
         run_exit()
+
     elif mode == "circuit_breaker":
+        if not is_trading_day(today):
+            log.info("Market holiday -- skipping circuit breaker check")
+            return
         run_circuit_breaker_check()
+
     else:
         log.error(f"Unknown mode: {mode}. Use 'entry', 'exit', or 'circuit_breaker'")
 
