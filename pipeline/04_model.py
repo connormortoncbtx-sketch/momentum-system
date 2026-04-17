@@ -68,6 +68,51 @@ META_COLS = ["symbol", "name", "exchange", "sector", "industry",
              "last_price", "avg_vol_20d", "market_cap"]
 
 
+def compute_suggested_stops(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Compute per-symbol suggested stop parameters from avg_win_magnitude and weekly_vol.
+    Adds three columns in-place: suggested_hard_stop_pct, suggested_activation_pct,
+    suggested_trail_pct.
+
+    Logic (vectorized mirror of the original report-time computation):
+      hard_stop  = 7 if vol<10 else 10 if vol<20 else min(vol*0.5, 15)
+      activation = avg_win * 0.75
+      trail      = min(vol*0.5, 15)
+
+    Rows missing avg_win or vol (or where either is <= 0) get NaN for all three.
+    These parameters are PERSISTED here so downstream consumers — weekend_refresh,
+    alpaca_trader, HTML report — can all read consistent stop values from one source.
+    Previously they were computed only at HTML-render time in stage 6, which meant
+    alpaca_trader saw them as None via row.get() and never placed hard stops.
+    """
+    if "avg_win_magnitude" not in df.columns or "weekly_vol" not in df.columns:
+        df["suggested_hard_stop_pct"]   = np.nan
+        df["suggested_activation_pct"]  = np.nan
+        df["suggested_trail_pct"]       = np.nan
+        return df
+
+    avg_win = pd.to_numeric(df["avg_win_magnitude"], errors="coerce")
+    vol     = pd.to_numeric(df["weekly_vol"],         errors="coerce")
+    valid   = avg_win.gt(0) & vol.gt(0)
+
+    # Hard stop tier from weekly vol
+    hard = pd.Series(np.nan, index=df.index, dtype="float64")
+    hard[valid & vol.lt(10)]                  = 7.0
+    hard[valid & vol.ge(10) & vol.lt(20)]     = 10.0
+    hard[valid & vol.ge(20)]                  = (vol * 0.50).clip(upper=15.0).round(1)
+
+    activation = (avg_win * 0.75).round(1)
+    activation[~valid] = np.nan
+
+    trail = (vol * 0.50).clip(upper=15.0).round(1)
+    trail[~valid] = np.nan
+
+    df["suggested_hard_stop_pct"]   = hard
+    df["suggested_activation_pct"]  = activation
+    df["suggested_trail_pct"]       = trail
+    return df
+
+
 # ── MODEL TRAINING ────────────────────────────────────────────────────────────
 
 def build_bootstrap_labels(df: pd.DataFrame) -> pd.Series:
@@ -384,6 +429,10 @@ def build_output(df: pd.DataFrame, raw_scores: pd.Series,
     out["regime"]           = regime_data["regime"]
     out["regime_composite"] = regime_data["composite"]
     out["scored_at"]        = datetime.today().strftime("%Y-%m-%d")
+
+    # Suggested stop parameters — persisted here so alpaca_trader and weekend_refresh
+    # can read them. Previously only computed in stage 6 for HTML, never written to CSV.
+    out = compute_suggested_stops(out)
 
     # Default sort by composite rank
     out = out.sort_values("composite_rank").reset_index(drop=True)

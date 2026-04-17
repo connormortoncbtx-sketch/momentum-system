@@ -145,14 +145,28 @@ def build_rows_json(df: pd.DataFrame) -> str:
             "risk_flag":  str(g("risk_flag")),
             "thesis_src": str(g("thesis_source", "rule_based")),
             "confidence": str(g("confidence", "")),
-            # Suggested stop parameters — computed from avg_win and weekly_vol
-            **dict(zip(
-                ["suggested_hard_stop_pct", "suggested_activation_pct", "suggested_trail_pct"],
-                suggested_stops(
-                    round(float(g("avg_win_magnitude", 0) or 0), 2),
-                    round(float(g("weekly_vol", 0) or 0), 2)
+            # Suggested stop parameters — prefer persisted values from stage 4 (single
+            # source of truth). Fall back to local compute for backward compat with old
+            # scores CSVs that predate the stop-param persistence.
+            **(
+                {
+                    "suggested_hard_stop_pct":   float(g("suggested_hard_stop_pct")),
+                    "suggested_activation_pct":  float(g("suggested_activation_pct")),
+                    "suggested_trail_pct":       float(g("suggested_trail_pct")),
+                }
+                if (
+                    g("suggested_hard_stop_pct") not in (None, "")
+                    and not (isinstance(g("suggested_hard_stop_pct"), float)
+                             and pd.isna(g("suggested_hard_stop_pct")))
                 )
-            )),
+                else dict(zip(
+                    ["suggested_hard_stop_pct", "suggested_activation_pct", "suggested_trail_pct"],
+                    suggested_stops(
+                        round(float(g("avg_win_magnitude", 0) or 0), 2),
+                        round(float(g("weekly_vol", 0) or 0), 2)
+                    )
+                ))
+            ),
             # Signal composites
             "s_mom":  gf("sig_momentum"),
             "s_cat":  gf("sig_catalyst"),
