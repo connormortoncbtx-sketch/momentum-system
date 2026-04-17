@@ -2,11 +2,16 @@ name: Alpaca Exit (Friday Close)
 
 on:
   schedule:
-    # Friday 2:30 PM CT
+    # Friday 2:30 PM CT -- normal exit day
     # CDT (Mar-Nov): UTC-5 -> 19:30 UTC
     - cron: '30 19 * * 5'
     # CST (Nov-Mar): UTC-6 -> 20:30 UTC
     - cron: '30 20 * * 5'
+    # Thursday 2:30 PM CT -- fallback when Friday is a holiday
+    # CDT (Mar-Nov): UTC-5 -> 19:30 UTC
+    - cron: '30 19 * * 4'
+    # CST (Nov-Mar): UTC-6 -> 20:30 UTC
+    - cron: '30 20 * * 4'
   workflow_dispatch:
 
 permissions:

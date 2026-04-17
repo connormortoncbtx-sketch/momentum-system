@@ -2,11 +2,16 @@ name: Alpaca Entry (Monday Close)
 
 on:
   schedule:
-    # Monday 2:30 PM CT
+    # Monday 2:30 PM CT -- normal entry day
     # CDT (Mar-Nov): UTC-5 -> 19:30 UTC
     - cron: '30 19 * * 1'
     # CST (Nov-Mar): UTC-6 -> 20:30 UTC
     - cron: '30 20 * * 1'
+    # Tuesday 2:30 PM CT -- fallback when Monday is a holiday
+    # CDT (Mar-Nov): UTC-5 -> 19:30 UTC
+    - cron: '30 19 * * 2'
+    # CST (Nov-Mar): UTC-6 -> 20:30 UTC
+    - cron: '30 20 * * 2'
   workflow_dispatch:
 
 permissions:
