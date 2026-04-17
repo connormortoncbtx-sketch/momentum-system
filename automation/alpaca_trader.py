@@ -439,62 +439,97 @@ def run_exit():
 
 
 # ── WITHDRAWAL ────────────────────────────────────────────────────────────────
+#
+# Four modes controlled by GitHub secrets:
+#
+#   ALPACA_WITHDRAWAL_MODE = "off"    -- pure compounding, no withdrawals (default)
+#   ALPACA_WITHDRAWAL_MODE = "debt"   -- withdraw 100% of weekly gains for debt payoff
+#   ALPACA_WITHDRAWAL_MODE = "income" -- withdraw ALPACA_WITHDRAWAL_PCT of weekly gains
+#
+#   ALPACA_LUMP_SUM_AMOUNT = "5000"   -- one-time pull regardless of mode
+#                                        clear this secret manually after it fires
+#
+# Floor: WITHDRAWAL_FLOOR = $10,000 -- never withdraw below this portfolio value
+# Income pct: ALPACA_WITHDRAWAL_PCT = "0.25" for 25% of weekly gains
 
-def run_withdrawal(api, portfolio_value: float, week_return: float, week_open: float):
-    enabled = os.environ.get("ALPACA_WITHDRAWAL_ENABLED", "false").lower() == "true"
-    if not enabled:
-        log.info("Withdrawal: disabled (set ALPACA_WITHDRAWAL_ENABLED=true to activate)")
-        return
-
-    # Determine withdrawal amount
-    flat_amount = os.environ.get("ALPACA_WITHDRAWAL_AMOUNT")
-    pct_amount  = os.environ.get("ALPACA_WITHDRAWAL_PCT")
-
-    withdrawal = None
-
-    if flat_amount:
-        withdrawal = float(flat_amount)
-        log.info(f"Withdrawal: flat ${withdrawal:,.0f}")
-    elif pct_amount and week_return > 0:
-        gains      = portfolio_value - week_open
-        withdrawal = gains * float(pct_amount)
-        log.info(f"Withdrawal: {float(pct_amount)*100:.0f}% of "
-                 f"${gains:,.0f} gains = ${withdrawal:,.0f}")
-    else:
-        log.info("Withdrawal: no positive gains this week -- skipping")
-        return
-
-    if withdrawal is None or withdrawal <= 0:
-        return
-
-    # Floor check -- never withdraw below minimum portfolio value
-    post_withdrawal = portfolio_value - withdrawal
-    if post_withdrawal < WITHDRAWAL_FLOOR:
-        adjusted = portfolio_value - WITHDRAWAL_FLOOR
-        if adjusted <= 0:
-            log.warning(f"Withdrawal skipped -- portfolio ${portfolio_value:,.0f} "
-                        f"at or below floor ${WITHDRAWAL_FLOOR:,.0f}")
-            return
-        log.warning(f"Withdrawal adjusted from ${withdrawal:,.0f} to "
-                    f"${adjusted:,.0f} to protect floor")
-        withdrawal = adjusted
-
-    # Initiate ACH transfer via Alpaca
+def execute_ach(api, amount: float, reason: str):
+    """Execute ACH transfer to linked bank account."""
     try:
-        # Note: ACH transfers require a linked bank account set up in Alpaca dashboard
-        # api.transfer_funds() varies by Alpaca API version
-        # This is a placeholder -- implement when bank account is linked
-        log.info(f"WITHDRAWAL: ${withdrawal:,.0f} -> linked bank account")
-        log.info("  (ACH transfer API call goes here once bank account is linked)")
+        log.info(f"WITHDRAWAL [{reason}]: ${amount:,.2f} -> linked bank account")
+        log.info("  (ACH transfer API call placeholder -- uncomment when bank linked)")
         # Uncomment when ready:
         # api.initiate_transfer(
         #     transfer_type="ach",
         #     direction="outgoing",
         #     timing="immediate",
-        #     amount=str(round(withdrawal, 2)),
+        #     amount=str(round(amount, 2)),
         # )
     except Exception as e:
-        log.error(f"Withdrawal failed: {e}")
+        log.error(f"ACH transfer failed: {e}")
+
+
+def apply_floor(amount: float, portfolio_value: float, reason: str) -> float:
+    """Enforce portfolio floor -- never withdraw below WITHDRAWAL_FLOOR."""
+    post = portfolio_value - amount
+    if post < WITHDRAWAL_FLOOR:
+        adjusted = portfolio_value - WITHDRAWAL_FLOOR
+        if adjusted <= 0:
+            log.warning(f"{reason}: skipped -- portfolio ${portfolio_value:,.0f} "
+                        f"at or below floor ${WITHDRAWAL_FLOOR:,.0f}")
+            return 0
+        log.warning(f"{reason}: adjusted from ${amount:,.0f} to ${adjusted:,.0f} "
+                    f"to protect ${WITHDRAWAL_FLOOR:,.0f} floor")
+        return adjusted
+    return amount
+
+
+def run_withdrawal(api, portfolio_value: float, week_return: float, week_open: float):
+    week_gains = portfolio_value - week_open
+
+    # ── LUMP SUM (fires regardless of mode, one-time) ──────────────────────
+    lump_str = os.environ.get("ALPACA_LUMP_SUM_AMOUNT", "").strip()
+    if lump_str and float(lump_str) > 0:
+        lump = apply_floor(float(lump_str), portfolio_value, "Lump sum")
+        if lump > 0:
+            execute_ach(api, lump, "lump sum")
+            log.info("  Clear ALPACA_LUMP_SUM_AMOUNT secret manually to prevent re-firing")
+            portfolio_value -= lump  # update for subsequent floor checks
+    else:
+        log.info("Lump sum: not set")
+
+    # ── WEEKLY MODE ────────────────────────────────────────────────────────
+    mode = os.environ.get("ALPACA_WITHDRAWAL_MODE", "off").lower().strip()
+    log.info(f"Withdrawal mode: {mode}")
+
+    if mode == "off":
+        log.info("  Pure compounding -- no weekly withdrawal")
+        return
+
+    elif mode == "debt":
+        if week_gains <= 0:
+            log.info("  Debt mode: no gains this week -- skipping")
+            return
+        amount = apply_floor(week_gains, portfolio_value, "Debt payoff")
+        if amount > 0:
+            log.info(f"  Debt mode: withdrawing 100% of gains ${week_gains:,.0f}")
+            execute_ach(api, amount, "debt payoff")
+
+    elif mode == "income":
+        pct_str = os.environ.get("ALPACA_WITHDRAWAL_PCT", "0.25").strip()
+        pct = float(pct_str)
+        if week_gains <= 0:
+            log.info(f"  Income mode ({pct*100:.0f}%): no gains this week -- skipping")
+            return
+        raw = week_gains * pct
+        amount = apply_floor(raw, portfolio_value, f"Income ({pct*100:.0f}%)")
+        if amount > 0:
+            log.info(f"  Income mode: withdrawing {pct*100:.0f}% of "
+                     f"${week_gains:,.0f} gains = ${amount:,.0f}")
+            execute_ach(api, amount, f"income {pct*100:.0f}%")
+
+    else:
+        log.warning(f"  Unknown withdrawal mode '{mode}' -- no withdrawal")
+        log.warning("  Valid modes: off, debt, income")
 
 
 # ── CIRCUIT BREAKER (MID-WEEK CHECK) ─────────────────────────────────────────
