@@ -1,0 +1,49 @@
+name: Weekly Health Check
+
+on:
+  schedule:
+    # Friday 4:30 PM CT -- after Alpaca exit, before learning loop
+    # CDT (Mar-Nov): UTC-5 -> 21:30 UTC
+    - cron: '30 21 * * 5'
+    # CST (Nov-Mar): UTC-6 -> 22:30 UTC
+    - cron: '30 22 * * 5'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run health check
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          NTFY_CHANNEL: ${{ secrets.NTFY_CHANNEL }}
+        run: python automation/health_check.py
+
+      - name: Commit health log
+        run: |
+          git config user.name  "momentum-bot"
+          git config user.email "momentum-bot@users.noreply.github.com"
+          git add data/system_log.jsonl || true
+          git add data/health_check_log.jsonl || true
+          git diff --cached --quiet || git commit -m "health: $(date +%Y-%m-%d) weekly check complete"
+          git pull --rebase origin main
+          git push || true
