@@ -29,7 +29,7 @@ from bs4 import BeautifulSoup
 log = logging.getLogger(__name__)
 
 HEADERS = {
-    "User-Agent": "momentum-research-system contact@example.com",
+    "User-Agent": "Momentum Alpha connormortoncbtx@gmail.com",
     "Accept-Encoding": "gzip, deflate",
 }
 EDGAR_BASE  = "https://efts.sec.gov/LATEST/search-index?q=%22{symbol}%22&dateRange=custom&startdt={start}&enddt={end}&forms=4"
