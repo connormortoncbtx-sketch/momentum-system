@@ -940,26 +940,45 @@ function renderPositions() {
   empty.style.display = 'none';
 
   tbody.innerHTML = list.map(t => {
+    // H1 XSS fix: trades.json is treated as user-authored content -- it comes
+    // from the form which accepts <textarea> and free text, and it's committed
+    // via a public GitHub PAT. Escape every string field before injecting into
+    // innerHTML. Numeric fields (toFixed output) are safe; only string fields
+    // need escaping. Badges are constructed from trusted constants.
+    const esc = (v) => (v == null ? '' : String(v)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;'));
+
+    const safeTicker   = esc(t.ticker);
+    const safeEntryDt  = esc(t.entry_date);
+    const safeExitDt   = esc(t.exit_date);
+    const safeReason   = esc(t.exit_reason);
+    const safeRegime   = esc(t.regime);
+    const safeId       = esc(t.id);
+
     const badge     = t.paper
       ? '<span class="paper-badge">PAPER</span>'
       : '<span class="live-badge">LIVE</span>';
-    const exitBadge = `<span class="exit-badge exit-${t.exit_reason}">${t.exit_reason.replace('_',' ')}</span>`;
-    const actions   = `<button class="action-btn del-btn" onclick="deleteTrade('${t.id}')">×</button>`;
+    const exitBadge = `<span class="exit-badge exit-${safeReason}">${safeReason.replace(/_/g, ' ')}</span>`;
+    const actions   = `<button class="action-btn del-btn" onclick="deleteTrade('${safeId}')">×</button>`;
 
     return `<tr>
-      <td class="sym-cell">${t.ticker}${badge}</td>
-      <td>${t.entry_date}</td>
+      <td class="sym-cell">${safeTicker}${badge}</td>
+      <td>${safeEntryDt}</td>
       <td>$${t.entry_price.toFixed(2)}</td>
       <td style="color:var(--red);font-size:10px">$${t.stop_loss_price?.toFixed(2) || '—'}</td>
       <td style="color:var(--green);font-size:10px">$${t.trail_activate_price?.toFixed(2) || '—'}</td>
       <td style="color:var(--text2);font-size:10px">${t.trail_stop_pct}%</td>
-      <td style="color:var(--text2)">${t.exit_date || '—'}</td>
+      <td style="color:var(--text2)">${safeExitDt || '—'}</td>
       <td style="color:var(--text2)">${t.exit_price ? '$'+t.exit_price.toFixed(2) : '—'}</td>
       <td style="color:var(--amber);font-size:10px">${t.max_gain_pct != null ? (t.max_gain_pct >= 0 ? '+' : '') + t.max_gain_pct.toFixed(2) + '%' : '—'}</td>
       <td>${fmtRet(t.return_pct)}</td>
       <td>${exitBadge}</td>
       <td style="font-size:9px;color:var(--text3)">${t.exit_phase === 'phase1' ? 'P1' : t.exit_phase === 'phase2' ? 'P2' : '—'}</td>
-      <td style="font-size:10px;color:var(--text3)">${t.regime || '—'}</td>
+      <td style="font-size:10px;color:var(--text3)">${safeRegime || '—'}</td>
       <td><div class="action-cell">${actions}</div></td>
     </tr>`;
   }).join('');
