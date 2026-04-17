@@ -18,16 +18,31 @@ import yfinance as yf
 from datetime import datetime, timedelta
 
 
-LOOKBACK = 252   # trading days of history to fetch
+LOOKBACK = 252   # TARGET trading days of history -- must cover 12-1 month calc
+# Calendar window needed: 252 trading days ≈ 252 × 7/5 = 353 calendar days.
+# Plus a 30-day weekend/holiday buffer = 383. Previously we did `days + 30`
+# literally (282 calendar days ≈ 201 trading days) and the 12-1 month return
+# branch was UNREACHABLE because it requires len(close) >= 252. Result: r_12_1
+# was always 0.0 for every ticker, weighted 40% in rs_return. That's the single
+# strongest momentum horizon in the academic literature silently disabled.
+_CAL_PER_TRADING_DAY = 7 / 5
+_CAL_LOOKBACK_DAYS   = int(LOOKBACK * _CAL_PER_TRADING_DAY) + 30
 
 
 def fetch_history(symbols: list[str], days: int = LOOKBACK) -> dict[str, pd.DataFrame]:
     """
     Download full OHLCV history for all symbols in batches.
     Returns {symbol: DataFrame(open,high,low,close,volume)}.
+
+    `days` param retained as trading-day target for back-compat; internally
+    converts to a sufficient calendar window.
     """
     end   = datetime.today()
-    start = end - timedelta(days=days + 30)
+    # Convert requested trading days -> calendar window. If caller passed the
+    # default (LOOKBACK), use the pre-computed _CAL_LOOKBACK_DAYS constant;
+    # otherwise apply the same conversion.
+    cal_days = _CAL_LOOKBACK_DAYS if days == LOOKBACK else int(days * _CAL_PER_TRADING_DAY) + 30
+    start = end - timedelta(days=cal_days)
     batch_size = 200
     result = {}
 
