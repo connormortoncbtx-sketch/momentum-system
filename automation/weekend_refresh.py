@@ -235,11 +235,15 @@ def rebuild_scores(signals: pd.DataFrame, raw_scores: pd.Series,
     """
     # Start from previous scores, update the alpha columns
     # Preserve EV columns and composite rank -- these are not recomputed by weekend refresh
+    # scored_at is preserved to reflect the original Friday scoring date (not the refresh date).
+    # This is critical for collect_returns.py's 5-trading-day guard -- if we overwrote scored_at
+    # to Sunday/Monday, the Friday learning loop would see elapsed<5 days and skip every week.
     meta_cols = ["symbol", "name", "exchange", "sector", "industry",
                  "last_price", "avg_vol_20d", "market_cap",
                  "ev_score", "ev_rank", "ev_pct_rank", "ev_conviction",
                  "avg_win_magnitude", "avg_loss_magnitude", "weekly_vol",
                  "composite_rank",
+                 "scored_at",
                  "sig_momentum_rs", "sig_momentum_trend", "sig_momentum_vol_surge",
                  "sig_momentum_breakout", "sig_catalyst_analyst",
                  "sig_fund_growth", "sig_fund_quality", "sig_fund_profitability",
@@ -270,7 +274,15 @@ def rebuild_scores(signals: pd.DataFrame, raw_scores: pd.Series,
 
     out["regime"]           = regime_data["regime"]
     out["regime_composite"] = regime_data["composite"]
-    out["scored_at"]        = datetime.today().strftime("%Y-%m-%d")
+    # Record when this refresh ran -- distinct from scored_at (the original Friday scoring date).
+    # The Friday learning loop's 5-trading-day guard reads scored_at, so we MUST NOT overwrite it.
+    today_str = datetime.today().strftime("%Y-%m-%d")
+    out["refreshed_at"] = today_str
+    # Defensive fallback: if scored_at didn't make it through meta preservation (e.g., very
+    # first run of this fix against a scores file lacking the column), seed it with today.
+    # Next Friday's pipeline will write the correct Friday date.
+    if "scored_at" not in out.columns or out["scored_at"].isna().all():
+        out["scored_at"] = today_str
 
     # Flag what changed vs Friday
     if "alpha_rank" in previous_scores.columns:
