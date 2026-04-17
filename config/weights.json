@@ -2,16 +2,16 @@
   "_meta": {
     "description": "Signal weights and regime multipliers. This is the ONLY file the self-refinement pass may modify.",
     "schema_version": "1.0",
-    "last_modified": "2026-04-11",
+    "last_modified": "2026-04-17",
     "modified_by": "self_refine.py",
     "philosophy": "There are always winners in any market. The regime determines WHERE they are, not WHETHER they exist. Never reduce to zero \u2014 redirect."
   },
   "signal_weights": {
-    "momentum": 0.35,
+    "momentum": 0.25,
     "technicals": 0.15,
-    "catalyst": 0.3,
+    "catalyst": 0.35,
     "fundamentals": 0.05,
-    "sentiment": 0.15
+    "sentiment": 0.2
   },
   "regime_multipliers": {
     "risk_on": {
