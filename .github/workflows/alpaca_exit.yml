@@ -39,9 +39,9 @@ jobs:
           ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
           ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
           ALPACA_PAPER: ${{ secrets.ALPACA_PAPER || 'true' }}
-          ALPACA_WITHDRAWAL_ENABLED: ${{ secrets.ALPACA_WITHDRAWAL_ENABLED }}
-          ALPACA_WITHDRAWAL_AMOUNT: ${{ secrets.ALPACA_WITHDRAWAL_AMOUNT }}
-          ALPACA_WITHDRAWAL_PCT: ${{ secrets.ALPACA_WITHDRAWAL_PCT }}
+          ALPACA_WITHDRAWAL_MODE: ${{ secrets.ALPACA_WITHDRAWAL_MODE || 'off' }}
+          ALPACA_WITHDRAWAL_PCT: ${{ secrets.ALPACA_WITHDRAWAL_PCT || '0.25' }}
+          ALPACA_LUMP_SUM_AMOUNT: ${{ secrets.ALPACA_LUMP_SUM_AMOUNT || '0' }}
         run: python automation/alpaca_trader.py exit
 
       - name: Commit state
