@@ -28,6 +28,10 @@ import datetime
 import pandas as pd
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from automation.system_logger import log_event, LogStatus
+from automation.notifier import notify_alert, notify_error, notify_success
+
 # Ensure repo root on path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
@@ -396,6 +400,34 @@ def run_entry():
     if failed:
         log.warning(f"  Failed: {failed}")
 
+    # Capital-at-risk: always notify on entry completion. Success/failure asymmetry:
+    # a normal entry is info-level, any failure is alert-level.
+    if failed:
+        log_event("alpaca_trader", LogStatus.WARNING,
+                  f"Entry: {len(filled)} filled, {len(failed)} FAILED",
+                  metrics={
+                      "filled":         len(filled),
+                      "failed":         len(failed),
+                      "fallbacks_used": len(fallback_used),
+                      "symbols_failed": failed[:10],
+                  })
+        notify_alert("alpaca_trader",
+                     f"Entry: {len(filled)}/{len(filled)+len(failed)} filled, "
+                     f"{len(failed)} FAILED: {', '.join(failed[:5])}"
+                     f"{'…' if len(failed) > 5 else ''}")
+    else:
+        log_event("alpaca_trader", LogStatus.SUCCESS,
+                  f"Entry: all {len(filled)} orders placed",
+                  metrics={
+                      "filled":         len(filled),
+                      "fallbacks_used": len(fallback_used),
+                      "top_pick":       filled[0] if filled else None,
+                  })
+        notify_success("alpaca_trader",
+                       f"Entry: {len(filled)} BUY MOC orders placed. "
+                       f"Stops will be submitted Tuesday 8:30am CT via monitor. "
+                       f"{('Fallbacks used: ' + ', '.join(fallback_used)) if fallback_used else ''}")
+
 
 # ── EXIT (FRIDAY 2:30 PM CT) ──────────────────────────────────────────────────
 
@@ -457,6 +489,36 @@ def run_exit():
     state["entry_date"]      = None
     state["week_open_value"] = None
     save_state(state)
+
+    # Capital-at-risk: notify on every exit completion. Weekly P&L is the single
+    # most important number to surface.
+    metrics = {
+        "closed":           len(closed),
+        "failed":           len(failed),
+        "week_open":        round(float(week_open), 2),
+        "week_close":       round(float(portfolio_value), 2),
+        "week_return_pct":  round(float(week_return * 100), 2),
+        "symbols_failed":   failed[:10],
+    }
+    if failed:
+        log_event("alpaca_trader", LogStatus.WARNING,
+                  f"Exit: {len(closed)} closed, {len(failed)} FAILED "
+                  f"(week {week_return*100:+.2f}%)",
+                  metrics=metrics)
+        notify_alert("alpaca_trader",
+                     f"Exit: {len(closed)} closed, {len(failed)} FAILED: "
+                     f"{', '.join(failed[:5])}{'…' if len(failed) > 5 else ''}\n"
+                     f"Week: {week_return*100:+.2f}%  "
+                     f"(${week_open:,.0f} → ${portfolio_value:,.0f})")
+    else:
+        log_event("alpaca_trader", LogStatus.SUCCESS,
+                  f"Exit: all {len(closed)} closed "
+                  f"(week {week_return*100:+.2f}%)",
+                  metrics=metrics)
+        notify_success("alpaca_trader",
+                       f"Exit complete: {len(closed)} positions closed.\n"
+                       f"Week: {week_return*100:+.2f}%  "
+                       f"(${week_open:,.0f} → ${portfolio_value:,.0f})")
 
 
 # ── WITHDRAWAL ────────────────────────────────────────────────────────────────
@@ -599,41 +661,63 @@ def run(mode: str = "entry"):
     today   = ct.date()
     log.info(f"Alpaca trader running at {ct.strftime('%A %Y-%m-%d %H:%M CT')}")
     log.info(f"Mode: {mode}")
+    log_event("alpaca_trader", LogStatus.INFO, f"Starting alpaca_trader mode={mode}")
 
-    if mode == "entry":
-        # Check if today is the correct entry day accounting for holidays
-        entry_day = get_entry_day(today)
-        if entry_day == "skip":
-            log.info("Both Monday and Tuesday are holidays -- skipping entry this week")
-            return
-        if not is_entry_day(today):
-            log.info(f"Today is not the entry day for this week "
-                     f"(expected {entry_day}) -- skipping")
-            return
-        log.info(f"Entry day confirmed: {entry_day}")
-        run_entry()
+    try:
+        if mode == "entry":
+            # Check if today is the correct entry day accounting for holidays
+            entry_day = get_entry_day(today)
+            if entry_day == "skip":
+                log.info("Both Monday and Tuesday are holidays -- skipping entry this week")
+                log_event("alpaca_trader", LogStatus.INFO,
+                          "Skipped entry: both Monday and Tuesday are holidays")
+                return
+            if not is_entry_day(today):
+                log.info(f"Today is not the entry day for this week "
+                         f"(expected {entry_day}) -- skipping")
+                log_event("alpaca_trader", LogStatus.INFO,
+                          f"Skipped: not entry day (expected {entry_day})")
+                return
+            log.info(f"Entry day confirmed: {entry_day}")
+            run_entry()
 
-    elif mode == "exit":
-        # Check if today is the correct exit day accounting for holidays
-        exit_day = get_exit_day(today)
-        if exit_day == "skip":
-            log.info("Both Friday and Thursday are holidays -- skipping exit this week")
-            return
-        if not is_exit_day(today):
-            log.info(f"Today is not the exit day for this week "
-                     f"(expected {exit_day}) -- skipping")
-            return
-        log.info(f"Exit day confirmed: {exit_day}")
-        run_exit()
+        elif mode == "exit":
+            # Check if today is the correct exit day accounting for holidays
+            exit_day = get_exit_day(today)
+            if exit_day == "skip":
+                log.info("Both Friday and Thursday are holidays -- skipping exit this week")
+                log_event("alpaca_trader", LogStatus.INFO,
+                          "Skipped exit: both Friday and Thursday are holidays")
+                return
+            if not is_exit_day(today):
+                log.info(f"Today is not the exit day for this week "
+                         f"(expected {exit_day}) -- skipping")
+                log_event("alpaca_trader", LogStatus.INFO,
+                          f"Skipped: not exit day (expected {exit_day})")
+                return
+            log.info(f"Exit day confirmed: {exit_day}")
+            run_exit()
 
-    elif mode == "circuit_breaker":
-        if not is_trading_day(today):
-            log.info("Market holiday -- skipping circuit breaker check")
-            return
-        run_circuit_breaker_check()
+        elif mode == "circuit_breaker":
+            if not is_trading_day(today):
+                log.info("Market holiday -- skipping circuit breaker check")
+                return
+            run_circuit_breaker_check()
 
-    else:
-        log.error(f"Unknown mode: {mode}. Use 'entry', 'exit', or 'circuit_breaker'")
+        else:
+            log.error(f"Unknown mode: {mode}. Use 'entry', 'exit', or 'circuit_breaker'")
+            log_event("alpaca_trader", LogStatus.ERROR,
+                      f"Unknown mode: {mode}")
+            notify_error("alpaca_trader", f"Unknown mode '{mode}' passed to run()")
+
+    except Exception as e:
+        log.error(f"alpaca_trader crashed: {e}", exc_info=True)
+        log_event("alpaca_trader", LogStatus.ERROR,
+                  f"Unhandled exception during {mode}",
+                  errors=[str(e)])
+        # Capital-at-risk workflow -- any unhandled error MUST alert immediately.
+        notify_error("alpaca_trader", f"{mode.upper()} crashed: {e}")
+        raise
 
 
 if __name__ == "__main__":

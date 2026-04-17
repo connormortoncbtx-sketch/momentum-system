@@ -24,6 +24,8 @@ import datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from automation.system_logger import log_event, LogStatus
+from automation.notifier import notify_alert, notify_error, notify_success
 
 log = logging.getLogger(__name__)
 logging.basicConfig(
@@ -155,9 +157,26 @@ def ensure_phase1_stop(api, symbol: str, state: dict) -> bool:
         state["positions"][symbol]["hard_stop_order_id"] = order.id
         state["positions"][symbol]["hard_stop_price"]    = stop_price
         state["positions"][symbol]["entry_price_actual"] = actual_entry
+        log_event("alpaca_monitor", LogStatus.SUCCESS,
+                  f"Hard stop placed: {symbol} @ ${stop_price:.2f}",
+                  metrics={
+                      "symbol":       symbol,
+                      "shares":       shares,
+                      "entry_price":  round(actual_entry, 2),
+                      "stop_price":   round(stop_price, 2),
+                      "stop_pct":     round(hard_stop_pct, 2),
+                  })
         return True
     except Exception as e:
         log.error(f"  {symbol}: stop order submission failed: {e}")
+        log_event("alpaca_monitor", LogStatus.ERROR,
+                  f"Hard stop submission failed for {symbol}",
+                  errors=[str(e)])
+        # This is capital-at-risk. If a stop can't be placed, the position is
+        # naked. Alert immediately.
+        notify_error("alpaca_monitor",
+                     f"Failed to place hard stop for {symbol}: {e}\n"
+                     f"Position is NAKED until stop is placed.")
         return False
 
 
@@ -294,10 +313,37 @@ def upgrade_to_phase2(api, symbol: str, current_price: float,
         state["positions"][symbol]["partial_sell_pct_actual"] = round(
             sell_qty / total_qty, 4) if total_qty > 0 else 0
         save_state(state)
+
+        # Phase 2 upgrade is the single most important intraday event -- send a
+        # high-priority notification since it means the position hit the profit
+        # threshold and we're locking in gains.
+        entry = pos_state.get("entry_price_est") or pos_state.get("entry_price_actual", 0)
+        gain_pct = ((current_price / entry) - 1) * 100 if entry else 0
+        log_event("alpaca_monitor", LogStatus.SUCCESS,
+                  f"Phase 2 activated: {symbol} @ ${current_price:.2f} ({gain_pct:+.1f}%)",
+                  metrics={
+                      "symbol":              symbol,
+                      "current_price":       round(current_price, 2),
+                      "gain_pct":            round(gain_pct, 2),
+                      "partial_sell_qty":    sell_qty,
+                      "trail_qty":           trail_qty,
+                      "partial_sell_pct":    round(sell_pct * 100, 1),
+                      "trail_pct":           trail_pct,
+                  })
+        notify_success("alpaca_monitor",
+                       f"PHASE 2 ACTIVATED: {symbol} @ ${current_price:.2f} "
+                       f"({gain_pct:+.1f}%)\n"
+                       f"Sold {sell_qty} shares, trailing {trail_qty} @ {trail_pct}%")
         return True
 
     except Exception as e:
         log.error(f"Phase 2 upgrade failed for {symbol}: {e}")
+        log_event("alpaca_monitor", LogStatus.ERROR,
+                  f"Phase 2 upgrade failed: {symbol}",
+                  errors=[str(e)])
+        notify_error("alpaca_monitor",
+                     f"PHASE 2 UPGRADE FAILED for {symbol}: {e}\n"
+                     f"Position may now lack a stop. Investigate.")
         return False
 
 
@@ -308,6 +354,9 @@ def run(duration_minutes: int = 180):
     log.info(f"ALPACA MONITOR starting -- duration={duration_minutes} min")
     log.info(f"Mode: {'PAPER' if PAPER_MODE else '*** LIVE ***'}")
     log.info("=" * 60)
+    log_event("alpaca_monitor", LogStatus.INFO,
+              f"Starting monitor (duration={duration_minutes}min, "
+              f"mode={'PAPER' if PAPER_MODE else 'LIVE'})")
 
     # Holiday check -- no point monitoring on a closed market
     try:
@@ -316,6 +365,8 @@ def run(duration_minutes: int = 180):
         today = dt.date.today()
         if not is_trading_day(today):
             log.info(f"Market holiday ({today}) -- monitor exiting cleanly")
+            log_event("alpaca_monitor", LogStatus.INFO,
+                      f"Skipped: market holiday {today}")
             return
     except Exception as e:
         log.debug(f"Holiday check unavailable: {e} -- proceeding")
@@ -324,6 +375,8 @@ def run(duration_minutes: int = 180):
     end_time   = datetime.datetime.now() + datetime.timedelta(minutes=duration_minutes)
     poll_count = 0
     upgrades   = 0
+    stops_placed = 0
+    poll_errors = 0
 
     while datetime.datetime.now() < end_time:
         poll_count += 1
@@ -356,6 +409,7 @@ def run(duration_minutes: int = 180):
                     # before check_and_upgrade because Phase 2 upgrade cancels the hard stop.
                     if ensure_phase1_stop(api, symbol, state):
                         changed = True
+                        stops_placed += 1
 
                     upgraded = check_and_upgrade(api, symbol, current_price, state)
                     if upgraded:
@@ -373,6 +427,7 @@ def run(duration_minutes: int = 180):
                                  f"phase={phase}")
                 except Exception as e:
                     log.warning(f"  {symbol}: price check error: {e}")
+                    poll_errors += 1
 
             if changed:
                 save_state(state)
@@ -384,10 +439,34 @@ def run(duration_minutes: int = 180):
 
         except Exception as e:
             log.error(f"Poll {poll_count} error: {e}")
+            poll_errors += 1
 
         time.sleep(POLL_INTERVAL_SECS)
 
     log.info(f"Monitor complete -- {poll_count} polls, {upgrades} Phase 2 upgrades")
+
+    # End-of-session summary. We don't notify on every monitor run (too noisy),
+    # but do notify if anything material happened or if error rate was high.
+    metrics = {
+        "polls":        poll_count,
+        "upgrades":     upgrades,
+        "stops_placed": stops_placed,
+        "poll_errors":  poll_errors,
+    }
+    if upgrades > 0 or stops_placed > 0:
+        log_event("alpaca_monitor", LogStatus.SUCCESS,
+                  f"Session: {upgrades} upgrades, {stops_placed} stops placed",
+                  metrics=metrics)
+    else:
+        log_event("alpaca_monitor", LogStatus.INFO,
+                  f"Session quiet: {poll_count} polls, no phase transitions",
+                  metrics=metrics)
+
+    # Alert if poll error rate is suspiciously high (>10% of polls failed)
+    if poll_count > 10 and poll_errors > 0.10 * poll_count:
+        notify_alert("alpaca_monitor",
+                     f"High poll error rate: {poll_errors}/{poll_count} polls "
+                     f"had errors. API issues or state file problems?")
 
 
 if __name__ == "__main__":

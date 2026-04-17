@@ -4,12 +4,17 @@
 
 import json
 import logging
+import sys
 import numpy as np
 import pandas as pd
 from pathlib import Path
 from datetime import datetime
 from scipy import stats
 from anthropic import Anthropic
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from automation.system_logger import log_event, LogStatus
+from automation.notifier import notify_alert, notify_error
 
 log = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO,
@@ -250,6 +255,9 @@ def run():
 
     if n_weeks < MIN_WEEKS:
         log.info("Only %d weeks of data (need %d) - skipping refinement" % (n_weeks, MIN_WEEKS))
+        log_event("self_refine", LogStatus.INFO,
+                  f"Skipped: only {n_weeks} weeks (need {MIN_WEEKS})",
+                  metrics={"weeks_available": n_weeks, "weeks_needed": MIN_WEEKS})
         return
 
     log.info("Analyzing %d weeks, %d rows..." % (n_weeks, len(log_df)))
@@ -280,6 +288,10 @@ def run():
         new_weights = json.loads(raw)
     except Exception as e:
         log.error("Claude API call failed: %s - skipping refinement" % e)
+        log_event("self_refine", LogStatus.ERROR,
+                  "Claude API call failed during refinement",
+                  errors=[str(e)])
+        notify_error("self_refine", f"Claude API failed: {e}")
         return
 
     valid, reason = validate_weights(new_weights, current_weights)
@@ -289,6 +301,15 @@ def run():
         with open(note_path, "w") as f:
             f.write("# Refinement %s - REJECTED\n\n**Reason:** %s\n\nWeeks analyzed: %d\n" % (
                 date_str, reason, n_weeks))
+        # Critical alert: when this module historically rejected 4 weeks in a row
+        # with the same validation error, nobody noticed until the review. Now each
+        # rejection fires a notification so the feedback loop is tight.
+        log_event("self_refine", LogStatus.WARNING,
+                  f"Weight validation REJECTED: {reason}",
+                  metrics={"weeks_analyzed": n_weeks, "reason": reason})
+        notify_alert("self_refine",
+                     f"Claude's proposed weights were REJECTED: {reason}\n"
+                     f"Current weights kept. Weeks analyzed: {n_weeks}")
         return
 
     new_weights["_meta"] = {
@@ -331,6 +352,14 @@ def run():
     with open(note_path, "w") as f:
         f.write("\n".join(note_lines))
     log.info("Refinement note -> %s" % note_path)
+
+    log_event("self_refine", LogStatus.SUCCESS,
+              f"Refinement complete: {len(changes)} weight changes",
+              metrics={
+                  "weeks_analyzed": n_weeks,
+                  "data_points":    len(log_df),
+                  "n_changes":      len(changes),
+              })
 
 
 if __name__ == "__main__":

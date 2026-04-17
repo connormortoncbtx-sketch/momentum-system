@@ -40,6 +40,8 @@ from datetime import datetime, timedelta
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from automation.tz_utils import now_ct, assert_normal_week
+from automation.system_logger import log_event, LogStatus
+from automation.notifier import notify_alert, notify_error
 
 log = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO,
@@ -255,96 +257,150 @@ def build_rows(scores, ohlcv_data, week_start_friday):
 
 def run():
     DATA_DIR.mkdir(parents=True, exist_ok=True)
+    log_event("collect_returns", LogStatus.INFO, "Starting collect_returns")
 
     if not assert_normal_week("collect_returns"):
+        log_event("collect_returns", LogStatus.INFO,
+                  "Skipped: not a normal trading week (disruptive holiday)")
         return
 
     today_ct  = now_ct().strftime("%Y-%m-%d")
     lock_file = DATA_DIR / ".collect_lock"
     lock_key  = f"friday_learning_{today_ct}"
+    # Lock check: detects a successful prior run today. Write is moved to END of
+    # function (was at top, but that blocked retries after any crash between lock
+    # write and actual work completion).
     if lock_file.exists() and lock_file.read_text().strip() == lock_key:
         log.info(f"collect_returns already ran today ({today_ct}) — skipping duplicate")
+        log_event("collect_returns", LogStatus.INFO,
+                  f"Skipped: already ran today ({today_ct})")
         return
-    lock_file.write_text(lock_key)
 
     if not SCORES.exists():
         log.warning("No scores_final.csv — nothing to collect")
+        log_event("collect_returns", LogStatus.WARNING,
+                  "Skipped: scores_final.csv missing")
+        notify_alert("collect_returns",
+                     "scores_final.csv missing — no data to collect. "
+                     "Run the pipeline first.")
         return
 
-    scores = pd.read_csv(SCORES)
-    log.info(f"Loaded scores: {len(scores):,} tickers")
+    try:
+        scores = pd.read_csv(SCORES)
+        log.info(f"Loaded scores: {len(scores):,} tickers")
 
-    today        = datetime.today()
-    this_friday  = last_friday(today)
-    score_friday = this_friday - timedelta(weeks=1)
+        today        = datetime.today()
+        this_friday  = last_friday(today)
+        score_friday = this_friday - timedelta(weeks=1)
 
-    # 5-trading-day guard
-    scored_at = None
-    if "scored_at" in scores.columns:
-        try:
-            scored_at = datetime.strptime(str(scores["scored_at"].iloc[0]), "%Y-%m-%d")
-        except Exception:
-            pass
+        # 5-trading-day guard
+        scored_at = None
+        if "scored_at" in scores.columns:
+            try:
+                scored_at = datetime.strptime(str(scores["scored_at"].iloc[0]), "%Y-%m-%d")
+            except Exception:
+                pass
 
-    if scored_at:
-        elapsed = trading_days_since(scored_at)
-        log.info(f"Scores generated: {scored_at.date()}  |  Elapsed: {elapsed} trading days")
-        if elapsed < 5:
-            log.warning(f"Only {elapsed} trading days elapsed (need 5) — skipping")
+        if scored_at:
+            elapsed = trading_days_since(scored_at)
+            log.info(f"Scores generated: {scored_at.date()}  |  Elapsed: {elapsed} trading days")
+            if elapsed < 5:
+                log.warning(f"Only {elapsed} trading days elapsed (need 5) — skipping")
+                # This was THE silent failure mode that broke the learning loop. Prior
+                # to the Tier 1 fix, weekend_refresh overwrote scored_at to the refresh
+                # date, making elapsed always <5 and causing this guard to skip weekly.
+                # Notification ensures we catch any recurrence immediately.
+                log_event("collect_returns", LogStatus.WARNING,
+                          f"Skipped: only {elapsed} trading days elapsed (need 5)",
+                          metrics={"scored_at": str(scored_at.date()),
+                                   "elapsed_trading_days": elapsed})
+                notify_alert("collect_returns",
+                             f"5-day guard skipped learning loop: "
+                             f"scored_at={scored_at.date()}, elapsed={elapsed} days")
+                return
+
+        # Idempotency check
+        week_str = score_friday.strftime("%Y-%m-%d")
+        if PERF_LOG.exists():
+            existing = pd.read_csv(PERF_LOG, low_memory=False)
+            if "week_of" in existing.columns and (existing["week_of"] == week_str).any():
+                log.info(f"Week {week_str} already logged — skipping")
+                log_event("collect_returns", LogStatus.INFO,
+                          f"Skipped: week {week_str} already in perf_log")
+                return
+        else:
+            existing = pd.DataFrame()
+
+        # Fetch OHLCV
+        symbols    = scores["symbol"].tolist()
+        ohlcv_data = fetch_weekly_ohlcv(symbols, score_friday)
+
+        if not ohlcv_data:
+            log.warning("No OHLCV data fetched")
+            log_event("collect_returns", LogStatus.ERROR,
+                      "Failed: yfinance returned no OHLCV data",
+                      metrics={"symbols_requested": len(symbols)})
+            notify_error("collect_returns",
+                         f"yfinance returned no OHLCV data for "
+                         f"{len(symbols)} symbols. Rate limit or network?")
             return
 
-    # Idempotency check
-    week_str = score_friday.strftime("%Y-%m-%d")
-    if PERF_LOG.exists():
-        existing = pd.read_csv(PERF_LOG, low_memory=False)
-        if "week_of" in existing.columns and (existing["week_of"] == week_str).any():
-            log.info(f"Week {week_str} already logged — skipping")
-            return
-    else:
-        existing = pd.DataFrame()
+        # Build rows
+        log.info("Building performance log rows...")
+        new_df = build_rows(scores, ohlcv_data, score_friday)
 
-    # Fetch OHLCV
-    symbols    = scores["symbol"].tolist()
-    ohlcv_data = fetch_weekly_ohlcv(symbols, score_friday)
+        combined = pd.concat([existing, new_df], ignore_index=True) \
+                   if not existing.empty else new_df
+        combined.to_csv(PERF_LOG, index=False)
 
-    if not ohlcv_data:
-        log.warning("No OHLCV data fetched")
-        return
+        coverage = new_df["return_tue_open"].notna().mean()
+        log.info(f"Performance log updated: {len(new_df):,} rows added")
+        log.info(f"Return coverage: {coverage*100:.1f}%")
 
-    # Build rows
-    log.info("Building performance log rows...")
-    new_df = build_rows(scores, ohlcv_data, score_friday)
+        # Entry day comparison for top 20% composite picks
+        top20 = new_df.nsmallest(max(1, int(len(new_df)*0.20)), "composite_rank")
+        log.info(f"\nEntry day comparison — top 20% composite rank ({len(top20)} tickers):")
+        for col, label in [
+            ("return_mon_open", "Monday open → Friday close"),
+            ("return_tue_open", "Tuesday open → Friday close  <- primary"),
+            ("return_mon_peak", "Monday open → weekly high"),
+            ("return_tue_peak", "Tuesday open → weekly high"),
+            ("return_fri_fri",  "Friday close → Friday close (theoretical)"),
+        ]:
+            if col in top20.columns:
+                avg = top20[col].mean()
+                if pd.notna(avg):
+                    log.info(f"  {label:<48} {avg*100:+.2f}%")
 
-    combined = pd.concat([existing, new_df], ignore_index=True) \
-               if not existing.empty else new_df
-    combined.to_csv(PERF_LOG, index=False)
+        if "peak_day" in new_df.columns:
+            peak_dist = new_df["peak_day"].value_counts(normalize=True)
+            log.info(f"\nWeekly high occurred on (full universe):")
+            for day, pct_val in peak_dist.items():
+                log.info(f"  {day}: {pct_val*100:.1f}%")
 
-    coverage = new_df["return_tue_open"].notna().mean()
-    log.info(f"Performance log updated: {len(new_df):,} rows added")
-    log.info(f"Return coverage: {coverage*100:.1f}%")
+        log.info(f"\nOutput -> {PERF_LOG}  (total rows: {len(combined):,})")
 
-    # Entry day comparison for top 20% composite picks
-    top20 = new_df.nsmallest(max(1, int(len(new_df)*0.20)), "composite_rank")
-    log.info(f"\nEntry day comparison — top 20% composite rank ({len(top20)} tickers):")
-    for col, label in [
-        ("return_mon_open", "Monday open → Friday close"),
-        ("return_tue_open", "Tuesday open → Friday close  <- primary"),
-        ("return_mon_peak", "Monday open → weekly high"),
-        ("return_tue_peak", "Tuesday open → weekly high"),
-        ("return_fri_fri",  "Friday close → Friday close (theoretical)"),
-    ]:
-        if col in top20.columns:
-            avg = top20[col].mean()
-            if pd.notna(avg):
-                log.info(f"  {label:<48} {avg*100:+.2f}%")
+        # Success -- record lock AFTER work completes so partial failures don't
+        # block retries within the same day.
+        lock_file.write_text(lock_key)
 
-    if "peak_day" in new_df.columns:
-        peak_dist = new_df["peak_day"].value_counts(normalize=True)
-        log.info(f"\nWeekly high occurred on (full universe):")
-        for day, pct_val in peak_dist.items():
-            log.info(f"  {day}: {pct_val*100:.1f}%")
+        log_event("collect_returns", LogStatus.SUCCESS,
+                  f"Collected {len(new_df):,} rows for week {week_str}",
+                  metrics={
+                      "week_of":          week_str,
+                      "rows_added":       int(len(new_df)),
+                      "total_rows":       int(len(combined)),
+                      "coverage_pct":     round(float(coverage * 100), 1),
+                      "symbols_with_data": int(len(ohlcv_data)),
+                  })
 
-    log.info(f"\nOutput -> {PERF_LOG}  (total rows: {len(combined):,})")
+    except Exception as e:
+        log.error(f"collect_returns crashed: {e}", exc_info=True)
+        log_event("collect_returns", LogStatus.ERROR,
+                  "Unhandled exception during collect",
+                  errors=[str(e)])
+        notify_error("collect_returns", f"Unhandled error: {e}")
+        raise
 
 
 if __name__ == "__main__":

@@ -32,6 +32,8 @@ import pandas as pd
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from automation.system_logger import log_event, LogStatus
+from automation.notifier import notify_alert, notify_error
 
 log = logging.getLogger(__name__)
 logging.basicConfig(
@@ -331,6 +333,15 @@ def log_scaling_alerts(basket: dict):
         for alert in alerts:
             log.warning(f"  {alert}")
         log.info("======================\n")
+        # The original code logged alerts only to workflow stdout -- defeats the
+        # whole purpose of a "scaling decision framework." Now each alert fires a
+        # push notification so the user actually sees when slippage/ADV/
+        # concentration/rank-quality thresholds are breached.
+        log_event("execution_tracker", LogStatus.WARNING,
+                  f"Scaling thresholds breached: {len(alerts)} alerts",
+                  metrics={"alert_count": len(alerts)})
+        notify_alert("execution_tracker",
+                     "Scaling thresholds breached:\n\n" + "\n\n".join(alerts))
     else:
         log.info("Scaling metrics: no alerts -- system operating within normal parameters")
 
@@ -343,90 +354,119 @@ def run():
     log.info("=" * 60)
     log.info("EXECUTION TRACKER")
     log.info("=" * 60)
+    log_event("execution_tracker", LogStatus.INFO, "Starting execution tracking")
 
-    # Determine week string
-    today      = datetime.date.today()
-    days_back  = (today.weekday() - 4) % 7
-    last_fri   = today - datetime.timedelta(days=days_back if days_back > 0 else 7)
-    week_str   = last_fri.strftime("%Y-%m-%d")
-    week_start = (last_fri - datetime.timedelta(days=7)).isoformat()
-    week_end   = last_fri.isoformat()
+    try:
+        # Determine week string
+        today      = datetime.date.today()
+        days_back  = (today.weekday() - 4) % 7
+        last_fri   = today - datetime.timedelta(days=days_back if days_back > 0 else 7)
+        week_str   = last_fri.strftime("%Y-%m-%d")
+        week_start = (last_fri - datetime.timedelta(days=7)).isoformat()
+        week_end   = last_fri.isoformat()
 
-    log.info(f"Processing week: {week_str}")
+        log.info(f"Processing week: {week_str}")
 
-    # Load existing execution log
-    if EXEC_LOG.exists():
-        exec_df = pd.read_csv(EXEC_LOG, low_memory=False)
-        # Idempotency check
-        if "week_of" in exec_df.columns and (exec_df["week_of"].astype(str) == week_str).any():
-            log.info(f"Execution log already has week {week_str} -- skipping")
+        # Load existing execution log
+        if EXEC_LOG.exists():
+            exec_df = pd.read_csv(EXEC_LOG, low_memory=False)
+            # Idempotency check
+            if "week_of" in exec_df.columns and (exec_df["week_of"].astype(str) == week_str).any():
+                log.info(f"Execution log already has week {week_str} -- skipping")
+                log_event("execution_tracker", LogStatus.INFO,
+                          f"Skipped: week {week_str} already in exec log")
+                return
+        else:
+            exec_df = pd.DataFrame()
+
+        # Load supporting data
+        state     = json.loads(TRADE_STATE.read_text()) if TRADE_STATE.exists() else {}
+        perf_df   = pd.read_csv(PERF_LOG, low_memory=False) if PERF_LOG.exists() else pd.DataFrame()
+        scores_df = pd.read_csv(SCORES_CSV) if SCORES_CSV.exists() else pd.DataFrame()
+
+        # Get Alpaca fill data
+        fills = get_alpaca_fills(week_start, week_end)
+
+        # Compute per-symbol metrics
+        rows = compute_execution_metrics(week_str, fills, state, perf_df, scores_df)
+
+        if not rows:
+            log.info("No execution data available for this week")
+            # Common condition while Alpaca paper ramps up. Log as INFO since it's
+            # expected during bootstrap; will upgrade to WARNING once we expect
+            # actual fills to be present.
+            log_event("execution_tracker", LogStatus.INFO,
+                      f"Skipped: no execution data for week {week_str}",
+                      metrics={"fills_count": len(fills),
+                               "state_positions": len(state.get("positions", {}))})
             return
-    else:
-        exec_df = pd.DataFrame()
 
-    # Load supporting data
-    state     = json.loads(TRADE_STATE.read_text()) if TRADE_STATE.exists() else {}
-    perf_df   = pd.read_csv(PERF_LOG, low_memory=False) if PERF_LOG.exists() else pd.DataFrame()
-    scores_df = pd.read_csv(SCORES_CSV) if SCORES_CSV.exists() else pd.DataFrame()
+        # Compute basket-level metrics
+        basket = compute_basket_metrics(rows, week_str)
 
-    # Get Alpaca fill data
-    fills = get_alpaca_fills(week_start, week_end)
+        # Log results
+        log.info(f"\nExecution metrics for week {week_str}:")
+        log.info(f"  Positions tracked: {len(rows)}")
+        if basket:
+            log.info(f"  Basket avg return:      {basket.get('basket_avg_return', 0)*100:+.2f}%")
+            log.info(f"  Alpha concentration:    top1={basket.get('alpha_concentration_1', 0)*100:.1f}%  "
+                     f"top2={basket.get('alpha_concentration_2', 0)*100:.1f}%")
+            log.info(f"  Top contributor:        {basket.get('top_contributor')} "
+                     f"+{basket.get('top_contributor_ret', 0)*100:.1f}%")
+            log.info(f"  Signal quality by rank:")
+            for bucket, key in [
+                ("  Rank 1-3",   "rank_1_3_avg_ret"),
+                ("  Rank 4-6",   "rank_4_6_avg_ret"),
+                ("  Rank 7-10",  "rank_7_10_avg_ret"),
+                ("  Rank 11-15", "rank_11_15_avg_ret"),
+            ]:
+                val = basket.get(key)
+                if val is not None:
+                    log.info(f"    {bucket}: {val*100:+.2f}%")
+            slip = basket.get("avg_entry_slippage_pct")
+            adv  = basket.get("avg_adv_utilization_pct")
+            if slip is not None:
+                log.info(f"  Avg entry slippage:     {slip:.3f}%")
+            if adv is not None:
+                log.info(f"  Avg ADV utilization:    {adv:.3f}%")
 
-    # Compute per-symbol metrics
-    rows = compute_execution_metrics(week_str, fills, state, perf_df, scores_df)
+        # Log scaling alerts
+        log_scaling_alerts(basket)
 
-    if not rows:
-        log.info("No execution data available for this week")
-        return
+        # Save per-symbol rows
+        new_exec_df = pd.DataFrame(rows)
+        combined = pd.concat([exec_df, new_exec_df], ignore_index=True) \
+            if not exec_df.empty else new_exec_df
+        combined.to_csv(EXEC_LOG, index=False)
+        log.info(f"Execution log -> {EXEC_LOG} ({len(combined)} total rows)")
 
-    # Compute basket-level metrics
-    basket = compute_basket_metrics(rows, week_str)
+        # Save basket summary as a separate weekly summary file
+        basket_log = DATA_DIR / "basket_metrics_log.csv"
+        basket_df_existing = pd.read_csv(basket_log, low_memory=False) \
+            if basket_log.exists() else pd.DataFrame()
+        basket_new = pd.DataFrame([basket])
+        basket_combined = pd.concat([basket_df_existing, basket_new], ignore_index=True) \
+            if not basket_df_existing.empty else basket_new
+        basket_combined.to_csv(basket_log, index=False)
+        log.info(f"Basket metrics log -> {basket_log} ({len(basket_combined)} weeks)")
 
-    # Log results
-    log.info(f"\nExecution metrics for week {week_str}:")
-    log.info(f"  Positions tracked: {len(rows)}")
-    if basket:
-        log.info(f"  Basket avg return:      {basket.get('basket_avg_return', 0)*100:+.2f}%")
-        log.info(f"  Alpha concentration:    top1={basket.get('alpha_concentration_1', 0)*100:.1f}%  "
-                 f"top2={basket.get('alpha_concentration_2', 0)*100:.1f}%")
-        log.info(f"  Top contributor:        {basket.get('top_contributor')} "
-                 f"+{basket.get('top_contributor_ret', 0)*100:.1f}%")
-        log.info(f"  Signal quality by rank:")
-        for bucket, key in [
-            ("  Rank 1-3",   "rank_1_3_avg_ret"),
-            ("  Rank 4-6",   "rank_4_6_avg_ret"),
-            ("  Rank 7-10",  "rank_7_10_avg_ret"),
-            ("  Rank 11-15", "rank_11_15_avg_ret"),
-        ]:
-            val = basket.get(key)
-            if val is not None:
-                log.info(f"    {bucket}: {val*100:+.2f}%")
-        slip = basket.get("avg_entry_slippage_pct")
-        adv  = basket.get("avg_adv_utilization_pct")
-        if slip is not None:
-            log.info(f"  Avg entry slippage:     {slip:.3f}%")
-        if adv is not None:
-            log.info(f"  Avg ADV utilization:    {adv:.3f}%")
+        log_event("execution_tracker", LogStatus.SUCCESS,
+                  f"Tracked {len(rows)} positions for week {week_str}",
+                  metrics={
+                      "week_of":          week_str,
+                      "positions":        int(len(rows)),
+                      "fills_received":   len(fills),
+                      "basket_avg_return": basket.get("basket_avg_return") if basket else None,
+                      "top_contributor": basket.get("top_contributor") if basket else None,
+                  })
 
-    # Log scaling alerts
-    log_scaling_alerts(basket)
-
-    # Save per-symbol rows
-    new_exec_df = pd.DataFrame(rows)
-    combined = pd.concat([exec_df, new_exec_df], ignore_index=True) \
-        if not exec_df.empty else new_exec_df
-    combined.to_csv(EXEC_LOG, index=False)
-    log.info(f"Execution log -> {EXEC_LOG} ({len(combined)} total rows)")
-
-    # Save basket summary as a separate weekly summary file
-    basket_log = DATA_DIR / "basket_metrics_log.csv"
-    basket_df_existing = pd.read_csv(basket_log, low_memory=False) \
-        if basket_log.exists() else pd.DataFrame()
-    basket_new = pd.DataFrame([basket])
-    basket_combined = pd.concat([basket_df_existing, basket_new], ignore_index=True) \
-        if not basket_df_existing.empty else basket_new
-    basket_combined.to_csv(basket_log, index=False)
-    log.info(f"Basket metrics log -> {basket_log} ({len(basket_combined)} weeks)")
+    except Exception as e:
+        log.error(f"execution_tracker crashed: {e}", exc_info=True)
+        log_event("execution_tracker", LogStatus.ERROR,
+                  "Unhandled exception during execution tracking",
+                  errors=[str(e)])
+        notify_error("execution_tracker", f"Unhandled error: {e}")
+        raise
 
 
 if __name__ == "__main__":

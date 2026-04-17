@@ -39,6 +39,8 @@ from datetime import datetime
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from automation.tz_utils import now_ct, format_ct, is_dst
+from automation.system_logger import log_event, LogStatus
+from automation.notifier import notify_alert, notify_error
 
 log = logging.getLogger(__name__)
 logging.basicConfig(
@@ -373,10 +375,14 @@ def log_notable_changes(scores: pd.DataFrame, run_label: str):
 
 def run(run_label: str = "weekend_refresh"):
     DATA_DIR.mkdir(parents=True, exist_ok=True)
+    log_event("weekend_refresh", LogStatus.INFO,
+              f"Starting weekend refresh ({run_label})")
 
     # Holiday check — skip if not a full 5-day trading week
     from automation.tz_utils import assert_normal_week
     if not assert_normal_week(run_label):
+        log_event("weekend_refresh", LogStatus.INFO,
+                  "Skipped: not a normal trading week")
         return
 
     # Idempotency guard — prevent double-run when both CDT and CST crons fire
@@ -388,6 +394,8 @@ def run(run_label: str = "weekend_refresh"):
         last_run = lock_file.read_text().strip()
         if last_run == lock_key:
             log.info(f"Already ran {run_label} today ({today}) — skipping duplicate cron trigger")
+            log_event("weekend_refresh", LogStatus.INFO,
+                      f"Skipped: {run_label} already ran today ({today})")
             return
 
     lock_file.write_text(lock_key)
@@ -397,90 +405,115 @@ def run(run_label: str = "weekend_refresh"):
     log.info("=" * 60)
 
     if not check_prerequisites():
+        log_event("weekend_refresh", LogStatus.WARNING,
+                  "Skipped: prerequisites check failed")
+        notify_alert("weekend_refresh",
+                     f"{run_label} prerequisites missing — likely means Friday's "
+                     f"pipeline hasn't run yet")
         return
 
-    # Load existing data
-    log.info("Loading existing signals and scores...")
-    signals        = pd.read_csv(SIGNALS_CSV)
-    previous_scores = pd.read_csv(SCORES_CSV)
-    universe       = signals[["symbol"]].copy()
+    try:
+        # Load existing data
+        log.info("Loading existing signals and scores...")
+        signals        = pd.read_csv(SIGNALS_CSV)
+        previous_scores = pd.read_csv(SCORES_CSV)
+        universe       = signals[["symbol"]].copy()
 
-    with open(REGIME_JSON) as f:
-        regime_data = json.load(f)
+        with open(REGIME_JSON) as f:
+            regime_data = json.load(f)
 
-    log.info(f"  {len(signals)} symbols  |  regime: {regime_data['regime']}")
+        log.info(f"  {len(signals)} symbols  |  regime: {regime_data['regime']}")
 
-    # Re-run catalyst signal
-    fresh_catalyst = refresh_catalyst(universe, signals)
-    signals        = merge_refreshed_signals(signals, fresh_catalyst)
+        # Re-run catalyst signal
+        fresh_catalyst = refresh_catalyst(universe, signals)
+        signals        = merge_refreshed_signals(signals, fresh_catalyst)
 
-    # Save updated signals
-    signals.to_csv(SIGNALS_CSV, index=False)
+        # Save updated signals
+        signals.to_csv(SIGNALS_CSV, index=False)
 
-    # Rescore
-    log.info("Rescoring with updated catalyst data...")
-    raw_scores = rescore(signals)
+        # Rescore
+        log.info("Rescoring with updated catalyst data...")
+        raw_scores = rescore(signals)
 
-    # Rebuild scores
-    scores = rebuild_scores(signals, raw_scores, regime_data, previous_scores)
+        # Rebuild scores
+        scores = rebuild_scores(signals, raw_scores, regime_data, previous_scores)
 
-    # Log notable changes
-    log_notable_changes(scores, run_label)
+        # Log notable changes
+        log_notable_changes(scores, run_label)
 
-    # Save updated scores (without thesis yet — LLM synthesis adds it)
-    scores["thesis"]               = previous_scores.set_index("symbol")["thesis"].reindex(scores["symbol"]).values
-    scores["risk_flag"]            = previous_scores.set_index("symbol").get("risk_flag", pd.Series()).reindex(scores["symbol"]).values
-    scores["confidence"]           = previous_scores.set_index("symbol").get("confidence", pd.Series()).reindex(scores["symbol"]).values
-    scores["thesis_source"]        = "rule_based"
-    scores["conviction_adjustment"] = 0.0
-    scores.to_csv(SCORES_CSV, index=False)
+        # Save updated scores (without thesis yet — LLM synthesis adds it)
+        scores["thesis"]               = previous_scores.set_index("symbol")["thesis"].reindex(scores["symbol"]).values
+        scores["risk_flag"]            = previous_scores.set_index("symbol").get("risk_flag", pd.Series()).reindex(scores["symbol"]).values
+        scores["confidence"]           = previous_scores.set_index("symbol").get("confidence", pd.Series()).reindex(scores["symbol"]).values
+        scores["thesis_source"]        = "rule_based"
+        scores["conviction_adjustment"] = 0.0
+        scores.to_csv(SCORES_CSV, index=False)
 
-    # Re-run LLM synthesis on new top 50
-    log.info("Re-running LLM synthesis on updated top 50...")
-    import importlib
-    synth = importlib.import_module("pipeline.05_llm_synthesis")
-    synth.run()
+        # Re-run LLM synthesis on new top 50
+        log.info("Re-running LLM synthesis on updated top 50...")
+        import importlib
+        synth = importlib.import_module("pipeline.05_llm_synthesis")
+        synth.run()
 
-    # Regenerate report -- write back to last Friday's file, not today's date
-    log.info("Regenerating report...")
-    from datetime import date as _date, timedelta as _timedelta
-    _today = _date.today()
-    _days_since_friday = (_today.weekday() - 4) % 7
-    _last_friday = _today - _timedelta(days=_days_since_friday if _days_since_friday > 0 else 7)
-    _friday_str = _last_friday.strftime("%Y-%m-%d")
-    log.info(f"  Writing to Friday report: {_friday_str}.html")
-    report = importlib.import_module("pipeline.06_report")
-    report.run(date_override=_friday_str)
+        # Regenerate report -- write back to last Friday's file, not today's date
+        log.info("Regenerating report...")
+        from datetime import date as _date, timedelta as _timedelta
+        _today = _date.today()
+        _days_since_friday = (_today.weekday() - 4) % 7
+        _last_friday = _today - _timedelta(days=_days_since_friday if _days_since_friday > 0 else 7)
+        _friday_str = _last_friday.strftime("%Y-%m-%d")
+        log.info(f"  Writing to Friday report: {_friday_str}.html")
+        report = importlib.import_module("pipeline.06_report")
+        report.run(date_override=_friday_str)
 
-    # Update index
-    log.info("Updating index...")
-    idx = importlib.import_module("automation.update_index")
-    idx.run()
+        # Update index
+        log.info("Updating index...")
+        idx = importlib.import_module("automation.update_index")
+        idx.run()
 
-    # Write refresh log
-    refresh_entry = {
-        "run_label":    run_label,
-        "timestamp":    datetime.now().isoformat(),
-        "regime":       regime_data["regime"],
-        "top_5":        scores.head(5)[["symbol","alpha_score","alpha_rank"]].to_dict("records"),
-    }
-    existing_log = []
-    if REFRESH_LOG.exists():
-        with open(REFRESH_LOG) as f:
-            existing_log = json.load(f)
-    existing_log.append(refresh_entry)
-    with open(REFRESH_LOG, "w") as f:
-        json.dump(existing_log[-20:], f, indent=2)  # keep last 20 entries
+        # Write refresh log
+        refresh_entry = {
+            "run_label":    run_label,
+            "timestamp":    datetime.now().isoformat(),
+            "regime":       regime_data["regime"],
+            "top_5":        scores.head(5)[["symbol","alpha_score","alpha_rank"]].to_dict("records"),
+        }
+        existing_log = []
+        if REFRESH_LOG.exists():
+            with open(REFRESH_LOG) as f:
+                existing_log = json.load(f)
+        existing_log.append(refresh_entry)
+        with open(REFRESH_LOG, "w") as f:
+            json.dump(existing_log[-20:], f, indent=2)  # keep last 20 entries
 
-    log.info("=" * 60)
-    log.info(f"Refresh complete — {run_label}")
-    log.info(f"Top 5:")
-    for _, r in scores.head(5).iterrows():
-        change = f"↑{int(r['rank_change'])}" if r.get('rank_change',0) > 0 else (
-                 f"↓{abs(int(r['rank_change']))}" if r.get('rank_change',0) < 0 else "—")
-        log.info(f"  #{int(r['alpha_rank']):<4} {r['symbol']:<8} "
-                 f"score={r['alpha_score']:.4f}  {change}")
-    log.info("=" * 60)
+        log.info("=" * 60)
+        log.info(f"Refresh complete — {run_label}")
+        log.info(f"Top 5:")
+        for _, r in scores.head(5).iterrows():
+            change = f"↑{int(r['rank_change'])}" if r.get('rank_change',0) > 0 else (
+                     f"↓{abs(int(r['rank_change']))}" if r.get('rank_change',0) < 0 else "—")
+            log.info(f"  #{int(r['alpha_rank']):<4} {r['symbol']:<8} "
+                     f"score={r['alpha_score']:.4f}  {change}")
+        log.info("=" * 60)
+
+        top1 = scores.iloc[0]
+        log_event("weekend_refresh", LogStatus.SUCCESS,
+                  f"Refresh complete ({run_label})",
+                  metrics={
+                      "run_label":     run_label,
+                      "symbols":       int(len(scores)),
+                      "regime":        regime_data["regime"],
+                      "top_pick":      str(top1["symbol"]),
+                      "top_score":     round(float(top1["alpha_score"]), 4),
+                  })
+
+    except Exception as e:
+        log.error(f"weekend_refresh crashed: {e}", exc_info=True)
+        log_event("weekend_refresh", LogStatus.ERROR,
+                  f"Unhandled exception during {run_label}",
+                  errors=[str(e)])
+        notify_error("weekend_refresh", f"{run_label} failed: {e}")
+        raise
 
 
 if __name__ == "__main__":

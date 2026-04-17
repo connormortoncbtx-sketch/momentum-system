@@ -53,7 +53,11 @@ def log_event(
     entry = {
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "workflow":  workflow,
-        "status":    str(status),
+        # Use .value for proper enum-string serialization. Previously str(status) returned
+        # "LogStatus.SUCCESS" not "success" due to Python 3.11+ Enum str() behavior change,
+        # which made all downstream consumers (read_logs, format_logs_for_review, health_check)
+        # see malformed status values.
+        "status":    status.value if isinstance(status, LogStatus) else str(status),
         "message":   message,
         "metrics":   metrics or {},
         "errors":    errors or [],

@@ -29,6 +29,10 @@ import yfinance as yf
 from pathlib import Path
 from jinja2 import Template
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from automation.system_logger import log_event, LogStatus
+from automation.notifier import notify_alert, notify_error
+
 # Ensure repo root is on path so automation modules are importable
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
@@ -585,10 +589,13 @@ def render_report(
 def run():
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     REPORTS.mkdir(parents=True, exist_ok=True)
+    log_event("premarket_monitor", LogStatus.INFO, "Starting premarket monitor")
 
     # Holiday check -- skip if not a full 5-day trading week
     from automation.tz_utils import assert_normal_week, now_ct
     if not assert_normal_week("premarket_monitor"):
+        log_event("premarket_monitor", LogStatus.INFO,
+                  "Skipped: not a normal trading week")
         return
 
     # DST guard -- both CDT and CST crons are scheduled, only run at 6:00 AM CT
@@ -596,6 +603,8 @@ def run():
     _now_ct = now_ct()
     if _now_ct.hour != 6:
         log.info(f"DST guard: current CT hour is {_now_ct.hour}, expected 6 -- skipping")
+        log_event("premarket_monitor", LogStatus.INFO,
+                  f"Skipped: DST guard (CT hour={_now_ct.hour}, expected 6)")
         return
 
     date_str   = datetime.date.today().strftime("%Y-%m-%d")
@@ -605,151 +614,195 @@ def run():
     # Load Friday's top tickers
     if not SCORES_CSV.exists():
         log.error("No scores_final.csv found — run weekly pipeline first")
+        log_event("premarket_monitor", LogStatus.WARNING,
+                  "Skipped: scores_final.csv missing")
+        notify_alert("premarket_monitor",
+                     "scores_final.csv missing — cannot run premarket monitor. "
+                     "Check Friday's pipeline.")
         return
 
-    scores = pd.read_csv(SCORES_CSV)
-    top    = scores.head(TOP_N).copy()
-    symbols = top["symbol"].tolist()
+    try:
+        scores = pd.read_csv(SCORES_CSV)
+        top    = scores.head(TOP_N).copy()
+        symbols = top["symbol"].tolist()
 
-    log.info(f"Monitoring {len(symbols)} tickers: {', '.join(symbols[:10])}...")
+        log.info(f"Monitoring {len(symbols)} tickers: {', '.join(symbols[:10])}...")
 
-    # Load or init the pre-market log
-    if PRELOG.exists():
-        with open(PRELOG) as f:
-            pm_log = json.load(f)
-        # If it's a new day, reset
-        if pm_log.get("date") != date_str:
+        # Load or init the pre-market log
+        if PRELOG.exists():
+            with open(PRELOG) as f:
+                pm_log = json.load(f)
+            # If it's a new day, reset
+            if pm_log.get("date") != date_str:
+                pm_log = {"date": date_str, "checks": []}
+        else:
             pm_log = {"date": date_str, "checks": []}
-    else:
-        pm_log = {"date": date_str, "checks": []}
 
-    checks_done = len(pm_log["checks"])
-    remaining   = CHECK_TIMES_MINUTES[checks_done:]
+        checks_done = len(pm_log["checks"])
+        remaining   = CHECK_TIMES_MINUTES[checks_done:]
 
-    if not remaining:
-        log.info("All checks already complete for today")
-        return
+        if not remaining:
+            log.info("All checks already complete for today")
+            log_event("premarket_monitor", LogStatus.INFO,
+                      f"Skipped: all {len(CHECK_TIMES_MINUTES)} checks already done today")
+            return
 
-    for check_idx, wait_minutes in enumerate(remaining):
-        absolute_check = checks_done + check_idx
-        check_name     = ["6:00","6:30","7:00","7:30","8:00"][absolute_check]
+        total_checks_done = 0
+        final_gaps = {"go": 0, "caution": 0, "skip": 0}
 
-        # Sleep until this check window
-        if check_idx > 0:
-            sleep_secs = 30 * 60   # 30 minutes
-            log.info(f"Sleeping {sleep_secs//60} min until {check_name} AM check...")
-            time.sleep(sleep_secs)
+        for check_idx, wait_minutes in enumerate(remaining):
+            absolute_check = checks_done + check_idx
+            check_name     = ["6:00","6:30","7:00","7:30","8:00"][absolute_check]
 
-        log.info(f"Running check {absolute_check + 1}/5 ({check_name} AM ET)...")
-        now_str = datetime.datetime.now().strftime("%H:%M:%S")
+            # Sleep until this check window
+            if check_idx > 0:
+                sleep_secs = 30 * 60   # 30 minutes
+                log.info(f"Sleeping {sleep_secs//60} min until {check_name} AM check...")
+                time.sleep(sleep_secs)
 
-        prices = fetch_premarket_prices(symbols)
-        log.info(f"  Got prices for {len(prices)} symbols")
+            log.info(f"Running check {absolute_check + 1}/5 ({check_name} AM ET)...")
+            now_str = datetime.datetime.now().strftime("%H:%M:%S")
 
-        pm_log["checks"].append({
-            "check_num":  absolute_check + 1,
-            "check_name": check_name,
-            "timestamp":  now_str,
-            "prices":     prices,
-        })
+            prices = fetch_premarket_prices(symbols)
+            log.info(f"  Got prices for {len(prices)} symbols")
 
-        with open(PRELOG, "w") as f:
-            json.dump(pm_log, f, indent=2)
-
-        # Build rows for report
-        rows = []
-        for _, ticker_row in top.iterrows():
-            sym = ticker_row["symbol"]
-
-            # Gather all checks for this symbol
-            sym_checks = []
-            for chk in pm_log["checks"]:
-                if sym in chk["prices"]:
-                    sym_checks.append({
-                        "time":           chk["check_name"],
-                        "gap_pct":        chk["prices"][sym]["gap_pct"],
-                        "premarket_price": chk["prices"][sym]["premarket_price"],
-                    })
-
-            latest = prices.get(sym)
-            if not latest:
-                continue
-
-            trend_data = analyze_trend(sym, sym_checks)
-            action     = action_recommendation(
-                latest["gap_pct"],
-                trend_data["trend"],
-                int(ticker_row.get("alpha_rank", 0)),
-            )
-
-            gap_pct = latest["gap_pct"]
-            rows.append({
-                "rank":           int(ticker_row.get("alpha_rank", 0)),
-                "symbol":         sym,
-                "sector":         str(ticker_row.get("sector", ""))[:20],
-                "prior_close":   latest["prior_close"],
-                "premarket_price": latest["premarket_price"],
-                "gap_pct":        gap_pct,
-                "gap_str":        f"{gap_pct*100:+.1f}%",
-                "trend":          trend_data["trend"],
-                "arrow":          trend_data["arrow"],
-                "sparkline":      trend_data["sparkline"],
-                "action":         action["action"],
-                "reason":         action["reason"],
-                "thesis":         str(ticker_row.get("thesis", ""))[:120],
+            pm_log["checks"].append({
+                "check_num":  absolute_check + 1,
+                "check_name": check_name,
+                "timestamp":  now_str,
+                "prices":     prices,
             })
 
-        # Sort: SKIPs to bottom, then by gap desc
-        action_order = {"SKIP":5,"REVIEW":4,"WATCH":1,"CAUTION":2,"WAIT":3,"GO":0}
-        rows.sort(key=lambda r: (action_order.get(r["action"],0), -abs(r["gap_pct"])))
+            with open(PRELOG, "w") as f:
+                json.dump(pm_log, f, indent=2)
 
-        html = render_report(rows, absolute_check + 1, date_str, now_str, day_name)
-        with open(report_out, "w", encoding="utf-8") as f:
-            f.write(html)
+            # Build rows for report
+            rows = []
+            for _, ticker_row in top.iterrows():
+                sym = ticker_row["symbol"]
 
-        log.info(f"  Report updated -> {report_out}")
+                # Gather all checks for this symbol
+                sym_checks = []
+                for chk in pm_log["checks"]:
+                    if sym in chk["prices"]:
+                        sym_checks.append({
+                            "time":           chk["check_name"],
+                            "gap_pct":        chk["prices"][sym]["gap_pct"],
+                            "premarket_price": chk["prices"][sym]["premarket_price"],
+                        })
 
-        # Update hub index so premarket link is accessible from main page
-        try:
-            import importlib
-            idx = importlib.import_module("automation.update_index")
-            idx.run()
-        except Exception as e:
-            log.warning(f"  Index update failed: {e}")
+                latest = prices.get(sym)
+                if not latest:
+                    continue
 
-        # Commit after each check so the page updates in real time
-        try:
-            import subprocess
-            subprocess.run(["git", "config", "user.name", "momentum-bot"], check=False)
-            subprocess.run(["git", "config", "user.email", "momentum-bot@users.noreply.github.com"], check=False)
-            subprocess.run(["git", "add", "docs/", "data/premarket_log.json"], check=False)
-            result = subprocess.run(
-                ["git", "diff", "--cached", "--quiet"],
-                capture_output=True
-            )
-            if result.returncode != 0:
-                subprocess.run(
-                    ["git", "commit", "-m",
-                     f"premarket: {date_str} check {absolute_check + 1}/5 ({check_name} AM)"],
-                    check=False
+                trend_data = analyze_trend(sym, sym_checks)
+                action     = action_recommendation(
+                    latest["gap_pct"],
+                    trend_data["trend"],
+                    int(ticker_row.get("alpha_rank", 0)),
                 )
-                subprocess.run(["git", "pull", "--rebase", "origin", "main"], check=False)
-                subprocess.run(["git", "push"], check=False)
-                log.info(f"  Committed check {absolute_check + 1}/5")
-        except Exception as e:
-            log.warning(f"  Git commit failed: {e}")
 
-        # Log summary
-        skips   = sum(1 for r in rows if r["action"] == "SKIP")
-        caution = sum(1 for r in rows if r["action"] in ("CAUTION","WATCH","WAIT"))
-        go      = sum(1 for r in rows if r["action"] == "GO")
-        log.info(f"  GO: {go}  CAUTION: {caution}  SKIP: {skips}")
+                gap_pct = latest["gap_pct"]
+                rows.append({
+                    "rank":           int(ticker_row.get("alpha_rank", 0)),
+                    "symbol":         sym,
+                    "sector":         str(ticker_row.get("sector", ""))[:20],
+                    "prior_close":   latest["prior_close"],
+                    "premarket_price": latest["premarket_price"],
+                    "gap_pct":        gap_pct,
+                    "gap_str":        f"{gap_pct*100:+.1f}%",
+                    "trend":          trend_data["trend"],
+                    "arrow":          trend_data["arrow"],
+                    "sparkline":      trend_data["sparkline"],
+                    "action":         action["action"],
+                    "reason":         action["reason"],
+                    "thesis":         str(ticker_row.get("thesis", ""))[:120],
+                })
 
-        for r in rows[:5]:
-            log.info(f"  #{r['rank']:<4} {r['symbol']:<8} {r['gap_str']:>7}  "
-                     f"{r['arrow']} {r['trend']:<8}  [{r['action']}]")
+            # Sort: SKIPs to bottom, then by gap desc
+            action_order = {"SKIP":5,"REVIEW":4,"WATCH":1,"CAUTION":2,"WAIT":3,"GO":0}
+            rows.sort(key=lambda r: (action_order.get(r["action"],0), -abs(r["gap_pct"])))
 
-    log.info("Pre-market monitor complete")
+            html = render_report(rows, absolute_check + 1, date_str, now_str, day_name)
+            with open(report_out, "w", encoding="utf-8") as f:
+                f.write(html)
+
+            log.info(f"  Report updated -> {report_out}")
+
+            # Update hub index so premarket link is accessible from main page
+            try:
+                import importlib
+                idx = importlib.import_module("automation.update_index")
+                idx.run()
+            except Exception as e:
+                log.warning(f"  Index update failed: {e}")
+
+            # Commit after each check so the page updates in real time
+            try:
+                import subprocess
+                subprocess.run(["git", "config", "user.name", "momentum-bot"], check=False)
+                subprocess.run(["git", "config", "user.email", "momentum-bot@users.noreply.github.com"], check=False)
+                subprocess.run(["git", "add", "docs/", "data/premarket_log.json"], check=False)
+                result = subprocess.run(
+                    ["git", "diff", "--cached", "--quiet"],
+                    capture_output=True
+                )
+                if result.returncode != 0:
+                    subprocess.run(
+                        ["git", "commit", "-m",
+                         f"premarket: {date_str} check {absolute_check + 1}/5 ({check_name} AM)"],
+                        check=False
+                    )
+                    subprocess.run(["git", "pull", "--rebase", "origin", "main"], check=False)
+                    subprocess.run(["git", "push"], check=False)
+                    log.info(f"  Committed check {absolute_check + 1}/5")
+            except Exception as e:
+                log.warning(f"  Git commit failed: {e}")
+
+            # Log summary
+            skips   = sum(1 for r in rows if r["action"] == "SKIP")
+            caution = sum(1 for r in rows if r["action"] in ("CAUTION","WATCH","WAIT"))
+            go      = sum(1 for r in rows if r["action"] == "GO")
+            log.info(f"  GO: {go}  CAUTION: {caution}  SKIP: {skips}")
+
+            for r in rows[:5]:
+                log.info(f"  #{r['rank']:<4} {r['symbol']:<8} {r['gap_str']:>7}  "
+                         f"{r['arrow']} {r['trend']:<8}  [{r['action']}]")
+
+            # Track final tally for end-of-session notification
+            total_checks_done += 1
+            final_gaps = {"go": go, "caution": caution, "skip": skips}
+
+            # High-signal intra-session notification: if many top picks have big
+            # gaps (up OR down), the user should see it before Monday open. Don't
+            # notify on every check -- only when something meaningful is there.
+            big_gaps = [r for r in rows if abs(r["gap_pct"]) >= 0.05]  # 5%+ either way
+            if absolute_check == len(CHECK_TIMES_MINUTES) - 1 and big_gaps:
+                summary = "\n".join(
+                    f"{r['symbol']:<6} {r['gap_str']:>7}  [{r['action']}]"
+                    for r in big_gaps[:8]
+                )
+                notify_alert("premarket_monitor",
+                             f"Premarket final check: {len(big_gaps)} names with ≥5% gap\n\n"
+                             + summary)
+
+        log.info("Pre-market monitor complete")
+        log_event("premarket_monitor", LogStatus.SUCCESS,
+                  f"Completed {total_checks_done} premarket checks",
+                  metrics={
+                      "date":            date_str,
+                      "checks_done":     total_checks_done,
+                      "tickers_tracked": len(symbols),
+                      **final_gaps,
+                  })
+
+    except Exception as e:
+        log.error(f"premarket_monitor crashed: {e}", exc_info=True)
+        log_event("premarket_monitor", LogStatus.ERROR,
+                  "Unhandled exception during premarket monitoring",
+                  errors=[str(e)])
+        notify_error("premarket_monitor", f"Monitor crashed: {e}")
+        raise
 
 
 if __name__ == "__main__":

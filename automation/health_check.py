@@ -71,8 +71,21 @@ def run_health_check() -> dict:
 
     if not entries:
         log.info("No log entries found -- system may be newly deployed")
+        # H1 fix: this was the most common failure mode -- for weeks the system_log
+        # was empty (no module wrote to it) and the health check quietly logged a
+        # warning to itself and returned. The user never saw alerts. Now this path
+        # escalates via push notification so the "nothing is being observed"
+        # condition can't hide.
         log_event("health_check", LogStatus.WARNING,
                   "No log entries found for past 7 days")
+        notify(
+            title    = "Momentum Alpha — OBSERVABILITY GAP",
+            message  = ("Health check found zero log entries in the last 7 days. "
+                        "Either the system hasn't run, or no module is writing to "
+                        "system_log.jsonl. Investigate before the next pipeline run."),
+            priority = NotifyPriority.HIGH,
+            tags     = ["warning", "eyes"],
+        )
         return {"status": "warning", "message": "No log entries found"}
 
     # Format for Claude

@@ -13,11 +13,16 @@
 
 import json
 import logging
+import sys
 import numpy as np
 import pandas as pd
 from pathlib import Path
 from datetime import datetime, date, timedelta
 from anthropic import Anthropic
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from automation.system_logger import log_event, LogStatus
+from automation.notifier import notify_error
 
 log = logging.getLogger(__name__)
 logging.basicConfig(
@@ -36,11 +41,24 @@ TOP_N     = 10  # number of winners to analyze
 # -- HELPERS ------------------------------------------------------------------
 
 def get_last_completed_week(log_df: pd.DataFrame) -> str:
-    """Return the most recent week_of value that has return data."""
-    completed = log_df[log_df["forward_return_1w"].notna()]
-    if completed.empty:
+    """
+    Return the most recent week_of value that has LIVE signal+return data.
+    A week is "complete" when it has both forward_return_1w AND alpha_score populated --
+    i.e., the pipeline scored that week AND the forward returns were collected.
+
+    Returns a YYYY-MM-DD string (not a stringified Timestamp) so subsequent
+    astype(str) comparisons in get_top_winners match. Previously str(Timestamp)
+    produced "2026-04-03 00:00:00" while log_df["week_of"].astype(str) produced
+    "2026-04-03" -- the two never matched, so every run silently skipped.
+    """
+    # H2 guard: require actual signal data, not just backfill-only rows with returns.
+    # Without this, get_last_completed_week returns backfill weeks and Claude gets
+    # prompts full of "signal=n/a" -- wasted API tokens, no useful analysis.
+    live = log_df[log_df["forward_return_1w"].notna() & log_df["alpha_score"].notna()]
+    if live.empty:
         return None
-    return str(completed["week_of"].max())
+    # H1 fix: format as YYYY-MM-DD to match the astype(str) comparison downstream.
+    return live["week_of"].max().strftime("%Y-%m-%d")
 
 
 def get_top_winners(log_df: pd.DataFrame, week: str, n: int = 10) -> pd.DataFrame:
@@ -149,114 +167,158 @@ def build_prompt(winners: pd.DataFrame, week: str, regime: str,
 
 def run():
     INSIGHTS.mkdir(parents=True, exist_ok=True)
+    log_event("analyze_winners", LogStatus.INFO, "Starting weekly winners analysis")
 
     if not PERF_LOG.exists():
         log.info("No performance log yet -- skipping winners analysis")
+        log_event("analyze_winners", LogStatus.INFO,
+                  "Skipped: no performance_log.csv")
         return
 
-    log_df = pd.read_csv(PERF_LOG, low_memory=False, parse_dates=["week_of"])
-    n_weeks = log_df["week_of"].nunique()
-
-    if n_weeks < MIN_WEEKS:
-        log.info(f"Only {n_weeks} weeks of data -- skipping winners analysis")
-        return
-
-    week = get_last_completed_week(log_df)
-    if not week:
-        log.info("No completed weeks with return data -- skipping")
-        return
-
-    # Check if we already ran this week
-    out_path = INSIGHTS / f"{week}_winners.md"
-    if out_path.exists():
-        log.info(f"Winners analysis already exists for {week} -- skipping")
-        return
-
-    log.info(f"Analyzing top winners for week of {week}...")
-
-    winners = get_top_winners(log_df, week, TOP_N)
-    if len(winners) < 3:
-        log.info(f"Not enough return data for week {week} -- skipping")
-        return
-
-    # Universe stats for context
-    week_df = log_df[log_df["week_of"].astype(str) == week]
-    universe_avg    = float(week_df["forward_return_1w"].mean())
-    universe_median = float(week_df["forward_return_1w"].median())
-    regime = str(week_df["regime"].mode().iloc[0]) if len(week_df) > 0 else "unknown"
-
-    log.info(f"  Week regime: {regime}")
-    log.info(f"  Universe avg: {universe_avg*100:+.2f}%  "
-             f"median: {universe_median*100:+.2f}%")
-    log.info(f"  Top winner: {winners.iloc[0]['symbol']} "
-             f"+{winners.iloc[0]['forward_return_1w']*100:.1f}%")
-
-    prompt = build_prompt(winners, week, regime, universe_avg, universe_median)
-
-    log.info("Sending to Claude for pattern analysis...")
     try:
-        client   = Anthropic()
-        response = client.messages.create(
-            model="claude-sonnet-4-20250514",
-            max_tokens=2000,
-            system=SYSTEM_PROMPT,
-            messages=[{"role": "user", "content": prompt}],
-        )
-        analysis = response.content[0].text.strip()
+        log_df = pd.read_csv(PERF_LOG, low_memory=False, parse_dates=["week_of"])
+        # Count LIVE weeks (both signals and returns), not backfill weeks. Previously
+        # MIN_WEEKS compared total unique weeks which passed trivially on backfill-heavy
+        # logs, giving a false sense that analysis could proceed.
+        live_mask = log_df["forward_return_1w"].notna() & log_df["alpha_score"].notna()
+        n_weeks = log_df.loc[live_mask, "week_of"].nunique()
+
+        if n_weeks < MIN_WEEKS:
+            log.info(f"Only {n_weeks} live weeks of data -- skipping winners analysis")
+            log_event("analyze_winners", LogStatus.INFO,
+                      f"Skipped: only {n_weeks} live weeks (need {MIN_WEEKS})")
+            return
+
+        week = get_last_completed_week(log_df)
+        if not week:
+            log.info("No completed weeks with return data -- skipping")
+            log_event("analyze_winners", LogStatus.INFO,
+                      "Skipped: no week has both live signals and returns")
+            return
+
+        # Check if we already ran this week
+        out_path = INSIGHTS / f"{week}_winners.md"
+        if out_path.exists():
+            log.info(f"Winners analysis already exists for {week} -- skipping")
+            log_event("analyze_winners", LogStatus.INFO,
+                      f"Skipped: analysis already exists for week {week}")
+            return
+
+        log.info(f"Analyzing top winners for week of {week}...")
+
+        winners = get_top_winners(log_df, week, TOP_N)
+        if len(winners) < 3:
+            log.info(f"Not enough return data for week {week} -- skipping")
+            # Previously a near-silent failure mode: the H1 date-string bug produced
+            # 0 winners every run. Now that H1 is fixed, this path should only fire
+            # when a week genuinely has <3 tickers with return data -- rare and worth
+            # surfacing.
+            log_event("analyze_winners", LogStatus.WARNING,
+                      f"Skipped: only {len(winners)} winners for week {week} (need 3+)",
+                      metrics={"week": week, "winners_found": len(winners)})
+            return
+
+        # Universe stats for context
+        week_df = log_df[log_df["week_of"].astype(str) == week]
+        universe_avg    = float(week_df["forward_return_1w"].mean())
+        universe_median = float(week_df["forward_return_1w"].median())
+        regime = str(week_df["regime"].mode().iloc[0]) if len(week_df) > 0 else "unknown"
+
+        log.info(f"  Week regime: {regime}")
+        log.info(f"  Universe avg: {universe_avg*100:+.2f}%  "
+                 f"median: {universe_median*100:+.2f}%")
+        log.info(f"  Top winner: {winners.iloc[0]['symbol']} "
+                 f"+{winners.iloc[0]['forward_return_1w']*100:.1f}%")
+
+        prompt = build_prompt(winners, week, regime, universe_avg, universe_median)
+
+        log.info("Sending to Claude for pattern analysis...")
+        try:
+            client   = Anthropic()
+            response = client.messages.create(
+                model="claude-sonnet-4-20250514",
+                max_tokens=2000,
+                system=SYSTEM_PROMPT,
+                messages=[{"role": "user", "content": prompt}],
+            )
+            analysis = response.content[0].text.strip()
+        except Exception as e:
+            log.error(f"Claude API call failed: {e} -- skipping analysis")
+            log_event("analyze_winners", LogStatus.ERROR,
+                      f"Claude API call failed: {e}",
+                      errors=[str(e)])
+            notify_error("analyze_winners", f"Claude API failed: {e}")
+            return
+
+        # Build the output markdown
+        found = winners[winners["conviction"].isin(["very_high", "high"])]
+        top50 = winners[winners["alpha_rank"].notna() & (winners["alpha_rank"] <= 50)]
+
+        output_lines = [
+            f"# Weekly Winners Analysis -- {week}",
+            "",
+            f"**Regime:** {regime}  ",
+            f"**Universe avg return:** {universe_avg*100:+.2f}%  ",
+            f"**Universe median return:** {universe_median*100:+.2f}%  ",
+            f"**System hit rate:** {len(found)}/{len(winners)} winners in very_high/high conviction  ",
+            f"**Top-50 capture:** {len(top50)}/{len(winners)} winners ranked in top 50",
+            "",
+            "## Top 10 Actual Gainers",
+            "",
+        ]
+
+        for i, (_, row) in enumerate(winners.iterrows(), 1):
+            ret = row.get("forward_return_1w", 0)
+            conv = row.get("conviction", "n/a")
+            rank = row.get("composite_rank", row.get("alpha_rank", "n/a"))
+            output_lines.append(
+                f"{i}. **{row.get('symbol', '?')}** +{ret*100:.1f}%  "
+                f"rank={rank}  conviction={conv}  "
+                f"sector={row.get('sector', 'unknown')}"
+            )
+
+        output_lines += [
+            "",
+            "## Pattern Analysis",
+            "",
+            analysis,
+            "",
+            f"*Generated {datetime.today().strftime('%Y-%m-%d %H:%M')} by analyze_winners.py*",
+        ]
+
+        with open(out_path, "w", encoding="utf-8") as f:
+            f.write("\n".join(output_lines))
+
+        log.info(f"Winners analysis -> {out_path}")
+
+        # Log the hit rate summary
+        log.info(f"  Hit rate: {len(found)}/{len(winners)} winners were high/very_high conviction")
+        log.info(f"  Top-50 capture: {len(top50)}/{len(winners)} winners in top 50")
+        for i, (_, row) in enumerate(winners.iterrows(), 1):
+            ret = row.get("forward_return_1w", 0)
+            rank = row.get("composite_rank", row.get("alpha_rank", "n/a"))
+            conv = row.get("conviction", "n/a")
+            log.info(f"  #{i:<2} {row.get('symbol','?'):<8} "
+                     f"+{ret*100:.1f}%  rank={rank}  {conv}")
+
+        log_event("analyze_winners", LogStatus.SUCCESS,
+                  f"Analyzed {len(winners)} winners for week {week}",
+                  metrics={
+                      "week":             week,
+                      "winners_analyzed": int(len(winners)),
+                      "hit_rate_count":   int(len(found)),
+                      "top50_capture":    int(len(top50)),
+                      "universe_avg_pct": round(float(universe_avg * 100), 2),
+                      "regime":           regime,
+                  })
+
     except Exception as e:
-        log.error(f"Claude API call failed: {e} -- skipping analysis")
-        return
-
-    # Build the output markdown
-    found = winners[winners["conviction"].isin(["very_high", "high"])]
-    top50 = winners[winners["alpha_rank"].notna() & (winners["alpha_rank"] <= 50)]
-
-    output_lines = [
-        f"# Weekly Winners Analysis -- {week}",
-        "",
-        f"**Regime:** {regime}  ",
-        f"**Universe avg return:** {universe_avg*100:+.2f}%  ",
-        f"**Universe median return:** {universe_median*100:+.2f}%  ",
-        f"**System hit rate:** {len(found)}/{len(winners)} winners in very_high/high conviction  ",
-        f"**Top-50 capture:** {len(top50)}/{len(winners)} winners ranked in top 50",
-        "",
-        "## Top 10 Actual Gainers",
-        "",
-    ]
-
-    for i, (_, row) in enumerate(winners.iterrows(), 1):
-        ret = row.get("forward_return_1w", 0)
-        conv = row.get("conviction", "n/a")
-        rank = row.get("composite_rank", row.get("alpha_rank", "n/a"))
-        output_lines.append(
-            f"{i}. **{row.get('symbol', '?')}** +{ret*100:.1f}%  "
-            f"rank={rank}  conviction={conv}  "
-            f"sector={row.get('sector', 'unknown')}"
-        )
-
-    output_lines += [
-        "",
-        "## Pattern Analysis",
-        "",
-        analysis,
-        "",
-        f"*Generated {datetime.today().strftime('%Y-%m-%d %H:%M')} by analyze_winners.py*",
-    ]
-
-    with open(out_path, "w", encoding="utf-8") as f:
-        f.write("\n".join(output_lines))
-
-    log.info(f"Winners analysis -> {out_path}")
-
-    # Log the hit rate summary
-    log.info(f"  Hit rate: {len(found)}/{len(winners)} winners were high/very_high conviction")
-    log.info(f"  Top-50 capture: {len(top50)}/{len(winners)} winners in top 50")
-    for i, (_, row) in enumerate(winners.iterrows(), 1):
-        ret = row.get("forward_return_1w", 0)
-        rank = row.get("composite_rank", row.get("alpha_rank", "n/a"))
-        conv = row.get("conviction", "n/a")
-        log.info(f"  #{i:<2} {row.get('symbol','?'):<8} "
-                 f"+{ret*100:.1f}%  rank={rank}  {conv}")
+        log.error(f"analyze_winners crashed: {e}", exc_info=True)
+        log_event("analyze_winners", LogStatus.ERROR,
+                  "Unhandled exception during winners analysis",
+                  errors=[str(e)])
+        notify_error("analyze_winners", f"Unhandled error: {e}")
+        raise
 
 
 if __name__ == "__main__":
