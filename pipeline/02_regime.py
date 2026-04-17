@@ -28,7 +28,14 @@ from pathlib import Path
 
 # ── CONFIG ────────────────────────────────────────────────────────────────────
 
-LOOKBACK_DAYS = 90
+# LOOKBACK_DAYS must provide ≥200 trading days for the SMA200 check in
+# score_trend(). Previously 90 calendar days → ~75 trading days → above_sma(spy,
+# 200) was hitting the insufficient-data fallback on EVERY run. That fallback
+# returned True unconditionally, which added a phantom +0.15 to every trend
+# score. Regimes have been biased risk-on across the board for the life of the
+# system. 300 calendar days → ~215 trading days safely covers SMA200 with
+# headroom for holiday weeks and the pandas rolling() window fill.
+LOOKBACK_DAYS = 300
 DATA_DIR      = Path("data")
 OUTPUT        = DATA_DIR / "regime.json"
 WEIGHTS_FILE  = Path("config/weights.json")
@@ -120,8 +127,21 @@ def ret(series: pd.Series, n: int) -> float:
 
 
 def above_sma(series: pd.Series, n: int) -> bool:
+    """
+    True if latest price is above the n-period SMA.
+
+    Previously: when len(series) < n, returned True (optimistic fallback) which
+    silently corrupted regime classification — with a 90-day lookback, every
+    above_sma(spy, 200) call hit this branch. Now raises, because this function
+    is only called from regime scoring where an incorrect fallback has real
+    downstream consequences (wrong regime multipliers applied to every
+    ticker's score).
+    """
     if len(series) < n:
-        return True
+        raise ValueError(
+            f"above_sma needs ≥{n} data points, got {len(series)}. "
+            f"Caller should bump LOOKBACK_DAYS or pass a different window."
+        )
     return bool(series.iloc[-1] > series.rolling(n).mean().iloc[-1])
 
 
