@@ -1,13 +1,13 @@
 {
   "regime": "risk_on",
   "description": "Strong broad uptrend, risk assets leading, low fear. Full momentum mode.",
-  "composite": 0.5888,
+  "composite": 0.7493,
   "scores": {
-    "trend": 0.4058,
-    "breadth": 0.9026,
-    "sentiment": 0.2865,
-    "rotation": 0.7074,
-    "safety": 0.7797
+    "trend": 0.7589,
+    "breadth": 1.0,
+    "sentiment": 0.2,
+    "rotation": 1.0,
+    "safety": 0.8159
   },
   "weights": {
     "trend": 0.3,
@@ -18,42 +18,42 @@
   },
   "details": {
     "trend": {
-      "spy_ret_20d": 0.0287,
-      "spy_ret_50d": -0.0183,
+      "spy_ret_20d": 0.0949,
+      "spy_ret_50d": 0.0509,
       "spy_above_sma50": true,
       "spy_above_sma200": true,
-      "spy_drawdown": -0.0204
+      "spy_drawdown": 0.0
     },
     "breadth": {
-      "qqq_ret_20d": 0.0305,
-      "iwm_ret_20d": 0.0615,
-      "iwm_vs_spy": 0.0328,
+      "qqq_ret_20d": 0.1162,
+      "iwm_ret_20d": 0.1386,
+      "iwm_vs_spy": 0.0436,
       "iwm_above_sma50": true
     },
     "sentiment": {
-      "vix": 19.23,
-      "vix_ma20": 25.0,
-      "vix_trend": -5.77,
-      "hyg_vs_spy_20d": -0.0142
+      "vix": 17.48,
+      "vix_ma20": 23.44,
+      "vix_trend": -5.96,
+      "hyg_vs_spy_20d": -0.0681
     },
     "rotation": {
-      "offensive_ret_20d": 0.0372,
-      "defensive_ret_20d": -0.0093,
-      "rotation_spread": 0.0465,
-      "xlk_slope": 0.000704,
-      "xlu_slope": 0.000654
+      "offensive_ret_20d": 0.1292,
+      "defensive_ret_20d": 0.0297,
+      "rotation_spread": 0.0995,
+      "xlk_slope": 0.00678,
+      "xlu_slope": 0.002092
     },
     "safety": {
-      "tlt_ret_20d": 0.0034,
-      "gld_ret_20d": -0.0514,
-      "tlt_vs_spy": -0.0253,
-      "gld_vs_spy": -0.0802
+      "tlt_ret_20d": 0.0185,
+      "gld_ret_20d": 0.0787,
+      "tlt_vs_spy": -0.0764,
+      "gld_vs_spy": -0.0162
     }
   },
   "context": {
-    "spy_realized_vol_20d": 0.1961,
-    "vix": 19.23,
-    "as_of": "2026-04-11"
+    "spy_realized_vol_20d": 0.1907,
+    "vix": 17.48,
+    "as_of": "2026-04-18"
   },
   "playbook": {
     "momentum": 1.2,
