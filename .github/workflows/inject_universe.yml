@@ -42,5 +42,26 @@ jobs:
           git config user.email "momentum-bot@users.noreply.github.com"
           git add data/universe.csv
           git diff --cached --quiet || git commit -m "universe: injected ${{ github.event.inputs.ticker_file }}"
-          git pull --rebase origin main
-          git push
+          # Retry push with rebase -- handles concurrent commits from other workflows.
+          # JSONL log files (system_log, health_check_log, etc.) get appended to by
+          # multiple workflows; if two workflows commit within seconds of each other,
+          # rebase cannot auto-merge and the whole push fails. Retry loop attempts 5
+          # times with jittered backoff; if rebase conflicts on log files, accepts
+          # "theirs" (additive JSONL is safe to merge by taking both sides).
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push; then
+              echo "Push succeeded on attempt $attempt"
+              break
+            else
+              echo "Push attempt $attempt failed; aborting rebase and retrying"
+              git rebase --abort 2>/dev/null || true
+              # On conflict, prefer remote JSONL additions (theirs) to avoid losing
+              # other workflows log entries. -X theirs applies to content conflicts.
+              git pull origin main --no-rebase --strategy=recursive -X theirs --no-edit 2>/dev/null || true
+              if [ $attempt -eq 5 ]; then
+                echo "All 5 push attempts exhausted; giving up (data stays in runner fs)"
+                exit 1
+              fi
+              sleep $((RANDOM % 5 + 2))
+            fi
+          done
