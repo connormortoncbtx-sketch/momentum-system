@@ -84,11 +84,23 @@ def build_training_data(log_df: pd.DataFrame,
     )
 
     # C1: prefer 18-feature sub-signal set; fall back to 4 composites.
-    full_present = all(c in log_df.columns for c in RETRAIN_FEATURES)
-    if full_present:
-        features = RETRAIN_FEATURES
-        log.info(f"  Training on full {len(features)}-feature sub-signal set")
-    elif all(c in log_df.columns for c in FALLBACK_FEATURES):
+    # Tolerate partial sub-signal availability: if ≥60% of the 18 sub-signal columns
+    # are present AND at least one row has ≥70% of features non-null, use the
+    # sub-signal set. Historically perf_log rows have varying signal coverage
+    # (insider data missing for small-caps, analyst data missing for micro-caps,
+    # etc.) so requiring all 18 features be non-null for a row to be kept was
+    # zeroing out the entire training set. The ≥70% threshold per row balances
+    # "train on richest possible feature set" against "don't lose every row."
+    full_available    = [c for c in RETRAIN_FEATURES if c in log_df.columns]
+    fallback_present  = all(c in log_df.columns for c in FALLBACK_FEATURES)
+
+    if len(full_available) >= 0.60 * len(RETRAIN_FEATURES):
+        # Use the sub-signals that are present (not necessarily all 18)
+        features = full_available
+        log.info(f"  Training on {len(features)}/{len(RETRAIN_FEATURES)} sub-signal features "
+                 f"(those present in perf_log)")
+        min_features_per_row = int(0.70 * len(features))
+    elif fallback_present:
         features = FALLBACK_FEATURES
         missing = [c for c in RETRAIN_FEATURES if c not in log_df.columns]
         log.warning(
@@ -97,6 +109,7 @@ def build_training_data(log_df: pd.DataFrame,
             f"Sub-signals will become available in perf_log after "
             f"collect_returns runs for N weeks with the post-Tier-4 build."
         )
+        min_features_per_row = len(features)  # all 4 composites required
     else:
         # No usable feature set. Return empty frames so run() skips cleanly.
         missing = [c for c in FALLBACK_FEATURES if c not in log_df.columns]
@@ -104,17 +117,23 @@ def build_training_data(log_df: pd.DataFrame,
                   f"FALLBACK_FEATURES are missing. Absent composites: {missing}")
         return pd.DataFrame(), pd.Series(dtype=int)
 
-    # C2: mask BEFORE fillna -- drop rows with any missing feature or label
+    # C2: mask BEFORE fillna -- keep rows with label + at least min_features_per_row
+    # non-null features. This tolerates partial coverage per row while still
+    # requiring enough signal density that the row carries real information.
     y = log_df["label"]
     X_raw = log_df[features]
-    mask  = y.notna() & X_raw.notna().all(axis=1)
+    features_per_row = X_raw.notna().sum(axis=1)
+    mask = y.notna() & (features_per_row >= min_features_per_row)
 
-    # Apply mask first, then defensively fill (shouldn't find any NaN post-mask)
+    # Apply mask first, then fill residual NaN in kept rows with 0.5 (neutral).
+    # This is meaningfully different from the pre-fix fillna-then-vacuous-mask:
+    # now 0.5 only appears in rows that already have ≥70% real signal, so it's
+    # a minority replacement rather than dominating the training set.
     X = X_raw[mask].fillna(0.5)
     y = y[mask].astype(int)
 
     log.info(f"  Training data: {len(X):,} rows after masking "
-             f"({(~mask).sum():,} dropped for missing features/label)")
+             f"({(~mask).sum():,} dropped for missing label or <{min_features_per_row} features)")
 
     return X, y
 

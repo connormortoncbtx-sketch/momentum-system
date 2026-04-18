@@ -384,7 +384,18 @@ def run():
         log.info(f"Return coverage: {coverage*100:.1f}%")
 
         # Entry day comparison for top 20% composite picks
-        top20 = new_df.nsmallest(max(1, int(len(new_df)*0.20)), "composite_rank")
+        # Coerce composite_rank to numeric -- when the column mixes NaN from old
+        # pre-Tier-2 rows with ints from new rows, pd.read_csv returns object
+        # dtype and nsmallest can't sort it. `errors="coerce"` turns unparseable
+        # values into NaN; dropna filters rows that couldn't be ranked.
+        new_df["composite_rank"] = pd.to_numeric(
+            new_df["composite_rank"], errors="coerce")
+        ranked = new_df.dropna(subset=["composite_rank"])
+        if len(ranked) > 0:
+            top20 = ranked.nsmallest(max(1, int(len(ranked)*0.20)), "composite_rank")
+        else:
+            log.warning("  No rows with numeric composite_rank -- skipping entry day comparison")
+            top20 = new_df.head(0)  # empty, so the loop below is a no-op
         log.info(f"\nEntry day comparison — top 20% composite rank ({len(top20)} tickers):")
         for col, label in [
             ("return_mon_open", "Monday open → Friday close"),
