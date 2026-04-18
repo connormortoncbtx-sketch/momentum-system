@@ -1,125 +1,100 @@
-# Position Sizing Patch — 10×10% baseline
+# Commit Retry Patch — eliminates the concurrent push race
 
-Implements the canonical deployment philosophy: 10 positions × 10% of capital.
-
-## Philosophy (encoded in code comments)
-
-Baseline deployment is 10 positions × 10% of capital. This is the canonical
-shape; everything else is a variation. Position COUNT is the primary lever,
-position SIZE is derived. `MIN_POSITIONS = 10` is a hard floor — below 10
-qualifying names, deploy what's available and alert.
-
-Future work (post-paper-trading, not in this patch): dynamic position count
-growth beyond 10 when per-ticker liquidity constraints force dilution. The
-threshold data needed to calibrate this comes from paper trading slippage
-and ADV observations.
+Eliminates the git rebase conflict that bit three times tonight: the monitor,
+the Friday pipeline, and (potentially) any workflow that commits within
+seconds of another.
 
 ## What changed
 
-File: `automation/alpaca_trader.py`
+All 11 workflows in `.github/workflows/*.yml` had their commit step updated
+from:
 
-### Constants section
-
-Added:
-- `DEFAULT_POSITIONS = 10` — target count
-- `MIN_POSITIONS = 10` — hard floor with alert, not a refusal
-
-Retained (unchanged):
-- `MIN_POSITION_SIZE = 500.0`
-- `MAX_POSITION_PCT = 0.15`
-- `MIN_COMPOSITE_PERCENTILE = 0.70`
-- `MAX_ADV_PCT = 0.01`
-- `MIN_PRICE = 1.00`
-
-### compute_positions() function
-
-Replaced:
-```python
-max_by_capital = int(portfolio_value / MIN_POSITION_SIZE)
-# ... liquidity filter using est_position = portfolio_value / min(...) ...
-n_positions = min(max_by_capital, len(df))
+```bash
+git pull --rebase origin main
+git push
 ```
 
-With:
-```python
-max_by_capital = int(portfolio_value / MIN_POSITION_SIZE)
-# ... liquidity filter using target_position = portfolio_value / DEFAULT_POSITIONS ...
-n_positions = min(max_by_capital, len(df), DEFAULT_POSITIONS)
-# ... report which of the three constraints bound the count ...
-# ... if n_positions < MIN_POSITIONS: warn + notify ...
+To a retry loop:
+
+```bash
+for attempt in 1 2 3 4 5; do
+  if git pull --rebase origin main && git push; then
+    echo "Push succeeded on attempt $attempt"
+    break
+  else
+    echo "Push attempt $attempt failed; aborting rebase and retrying"
+    git rebase --abort 2>/dev/null || true
+    git pull origin main --no-rebase --strategy=recursive -X theirs --no-edit 2>/dev/null || true
+    if [ $attempt -eq 5 ]; then
+      echo "All 5 push attempts exhausted; giving up"
+      exit 1  # or exit 0 for workflows that previously had `|| true`
+    fi
+    sleep $((RANDOM % 5 + 2))
+  fi
+done
 ```
 
-Plus new logging: every entry now prints which constraint bound the position
-count (transaction cost floor / qualifying pool / default target). This
-surfaces design signal every week.
+## How it handles the race
 
-Plus new notification: if n_positions < MIN_POSITIONS, the Tier 3 notifier
-sends a HIGH priority alert so you can investigate why the qualifying pool
-was narrow.
+When two workflows commit to `system_log.jsonl` within seconds of each other:
 
-## Behavior across capital levels
+1. First one pushes successfully.
+2. Second one tries `git pull --rebase`, hits a merge conflict on the JSONL
+   file, rebase fails.
+3. OLD behavior: workflow exits red, data lost from runner filesystem.
+4. NEW behavior: abort the rebase, try a non-rebase pull with `-X theirs`
+   which prefers the remote's JSONL additions during content conflicts.
+   Our local commit gets re-applied on top. Push succeeds on retry.
 
-| Capital | tx floor | n_positions | per-position | % of portfolio | bound by |
-|---|---|---|---|---|---|
-| $1,000 | 2 | 2 | $150* | 15% | transaction cost floor ⚠ below MIN |
-| $3,000 | 6 | 6 | $450* | 15% | transaction cost floor ⚠ below MIN |
-| $5,000 | 10 | 10 | $500 | 10% | default target |
-| $7,500 | 15 | 10 | $750 | 10% | default target |
-| $25,000 | 50 | 10 | $2,500 | 10% | default target |
-| $100,000 | 200 | 10 | $10,000 | 10% | default target |
-| $1,000,000 | 2,000 | 10 | $100,000 | 10% | default target |
+The `-X theirs` flag is safe for this specific use case because JSONL log
+files are append-only. Taking "theirs" keeps the remote's log lines and
+our commit adds ours on top. No data loss either way.
 
-*Binds against MAX_POSITION_PCT = 15% at very small capital. Position count
-below 10 triggers the notification.
+## Behavior matrix
 
-## Key behavioral changes vs. prior code
+| Scenario | Old | New |
+|---|---|---|
+| No conflict | succeeds | succeeds (on attempt 1) |
+| Concurrent JSONL append | fails, data lost | succeeds (on attempt 2-5) |
+| Genuine conflict in code | fails | fails after 5 attempts |
+| Network blip during push | fails, data lost | retries, usually succeeds |
 
-**At $7,500 (current Fidelity)**: was 15 positions × $500, now 10 positions
-× $750. Matches what you actually do manually.
+## Workflows affected
 
-**At $100k (upcoming Alpaca paper)**: was 200 positions × $500, now 10
-positions × $10,000. Matches your philosophy of concentrating in highest-
-conviction names rather than diluting down the rank order.
+All 11 (9 with plain push, 2 with `|| true` suffix preserving fault-tolerant behavior):
 
-**At any scale**: position count no longer grows with capital. Size grows.
-When position count needs to grow (future work), it will be triggered by
-per-ticker liquidity constraints, not by capital/floor arithmetic.
-
-## Low-qualifying-pool behavior
-
-If fewer than 10 names qualify for entry (after composite percentile filter,
-liquidity filter, price filter, etc.):
-
-1. Deploy what's available (don't refuse to trade)
-2. Log a warning with the actual count
-3. Send a HIGH priority notification via the Tier 3 observability layer
-4. Each deployed position still sizes to its fair share (e.g., 8 qualifying
-   names = 8 positions × 12.5% each, still under MAX_POSITION_PCT=15%)
-
-This is "Option 2" from the discussion — practical floor with visibility,
-not an absolute refusal to trade below the floor.
-
-## Deploy
-
-Drop in place. No data migration needed. Monday's 2:30pm CT entry will use
-the new sizing logic automatically.
+- alpaca_entry.yml
+- alpaca_exit.yml
+- alpaca_monitor.yml (preserves exit 0 on failure — was `|| true`)
+- backfill_history.yml
+- backfill_sectors.yml
+- friday_learning.yml
+- inject_universe.yml
+- premarket_monitor.yml
+- weekend_refresh.yml
+- weekly_health_check.yml (preserves exit 0 on failure — was `|| true`)
+- weekly_pipeline.yml
 
 ## Verification
 
-- Syntax: `py_compile` passes
-- Simulation: correct behavior at $1k, $3k, $5k, $7.5k, $10k, $25k, $100k,
-  $500k, $1M, $10M (see table above)
-- MIN_POSITIONS alert fires correctly below $5k
-- Default target binds correctly at $5k and above
-- Position sizing honors MAX_POSITION_PCT at very small capital
+- All 11 files parse as valid YAML
+- Retry block preserved identical behavior for success path (unchanged pull-rebase-push)
+- Only changes behavior for failure paths (adds retry instead of exiting)
 
-## What's explicitly NOT in this patch
+## Deploy
 
-- Dynamic position count growth based on per-ticker liquidity caps
-- VWAP/TWAP execution routing when individual position size exceeds
-  impact thresholds
-- Universe floor ratcheting (raising MIN_MARKET_CAP as capital grows)
+Drop all 11 files in place over `.github/workflows/`, push. Next time two
+workflows race, the later one retries cleanly instead of failing.
 
-All three are planned post-paper-trading features that require empirical
-calibration data this system doesn't yet have. Leaving them unbuilt now is
-intentional.
+## Note on what this doesn't fix
+
+If conflicts happen on non-JSONL files (e.g., both workflows modify
+`data/scores_final.csv` simultaneously), `-X theirs` would silently overwrite
+the local change. Unlikely given the current workflow designs — each writes
+to distinct files except for the log — but worth knowing. If future
+workflows share non-append-only files, this pattern would need adjustment.
+
+Longer-term architectural fix (Tier 5+): per-workflow log files
+(`system_log_monitor.jsonl`, `system_log_pipeline.jsonl`, etc.) so conflicts
+become structurally impossible rather than handled after the fact. Retry
+loop is the right short-term fix; separate files is the right long-term one.
