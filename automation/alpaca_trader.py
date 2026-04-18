@@ -56,13 +56,36 @@ REGIME_JSON = DATA_DIR / "regime.json"
 TRADE_STATE = DATA_DIR / "alpaca_state.json"  # tracks open positions
 
 # -- POSITION SIZING PARAMETERS (tune as capital scales) ----------------------
+#
+# Design philosophy: the baseline deployment is 10 positions × 10% of capital.
+# This is the canonical shape; everything else is a variation.
+#
+# Position COUNT is the primary lever, position SIZE is derived. In the future,
+# position count will grow beyond 10 when per-ticker liquidity constraints force
+# dilution (i.e., when a 10%-of-capital position would exceed what the highest-
+# conviction names can absorb without market impact). That dynamic sizing logic
+# is not yet implemented -- it will be built after paper trading provides the
+# slippage/ADV data needed to calibrate the thresholds.
+#
+# For now: 10 positions is the fixed target. MIN_POSITIONS = 10 is a hard floor.
 
-# Minimum dollar value per position
-# Prevents trivially small positions as count expands
+# Target number of positions at the baseline deployment
+DEFAULT_POSITIONS = 10
+
+# Minimum positions to deploy. Below this, we still deploy what we have but
+# log a warning -- the qualifying pool was too narrow to hit the floor.
+# The system does not refuse to trade below this; it just surfaces the
+# condition via the observability layer so you can investigate the universe.
+MIN_POSITIONS = 10
+
+# Minimum dollar value per position. Transaction-cost floor: below this,
+# spread + commission drag dominates expected weekly return. At baseline
+# 10 positions, binds only for very small accounts (< $5000).
 MIN_POSITION_SIZE = 500.0
 
-# Maximum single position as % of total portfolio
-# Prevents over-concentration in one name
+# Maximum single position as % of total portfolio. Hard cap to prevent any
+# one position from dominating portfolio risk, even if sizing math would
+# otherwise produce a larger allocation.
 MAX_POSITION_PCT = 0.15
 
 # Minimum composite rank percentile to qualify for entry
@@ -182,27 +205,68 @@ def compute_positions(scores: pd.DataFrame, portfolio_value: float) -> list[dict
         log.warning("No qualifying tickers after filters")
         return []
 
-    # Dynamic position count
-    # Max positions = how many MIN_POSITION_SIZE slots fit in portfolio
+    # Position count: baseline is DEFAULT_POSITIONS (10 @ 10% of capital).
+    # This is the canonical deployment shape; dynamic liquidity-driven growth
+    # beyond 10 will be added post-paper-trading once calibration data exists.
+    #
+    # Four bounds define the final count, applied in order:
+    #   1. max_by_capital   -- transaction-cost floor ($500/position). Only
+    #                          binds on very small accounts where 10 positions
+    #                          at 10% each would be < $500/position.
+    #   2. qualifying pool  -- can't hold more names than qualify for entry.
+    #   3. DEFAULT_POSITIONS -- target count (10).
+    #   4. MIN_POSITIONS    -- hard floor. If 1-3 drive count below this, we
+    #                          deploy below-floor and log a warning rather than
+    #                          refuse to trade. The alert surfaces "narrow
+    #                          qualifying pool" as a condition to investigate.
     max_by_capital = int(portfolio_value / MIN_POSITION_SIZE)
 
-    # Also cap by liquidity -- position size must be < MAX_ADV_PCT of ADV
-    # At current capital this won't bind but the logic is here for scaling
+    # Liquidity filter: the target position size (10% of capital) must be
+    # absorbable for every name in the deployed pool. Drop names where our
+    # position would exceed MAX_ADV_PCT of their average daily volume.
+    # At baseline 10%, this only bites on large capital + micro-cap names.
     if "avg_vol_20d" in df.columns and "last_price" in df.columns:
-        # Estimate equal-weight position size
-        est_position = portfolio_value / min(max_by_capital, len(df))
+        target_position = portfolio_value / DEFAULT_POSITIONS
         df["adv_dollar"] = df["avg_vol_20d"] * df["last_price"]
         df["max_by_liquidity"] = df["adv_dollar"] * MAX_ADV_PCT
-        # Flag names where our position would exceed liquidity cap
-        df["liquidity_ok"] = df["max_by_liquidity"] >= est_position
+        df["liquidity_ok"] = df["max_by_liquidity"] >= target_position
         df = df[df["liquidity_ok"]]
 
     if df.empty:
         log.warning("No qualifying tickers after liquidity filter")
         return []
 
-    # Target position count: minimum of capital-constrained max and qualified names
-    n_positions = min(max_by_capital, len(df))
+    # Apply the three upper bounds, then check against MIN_POSITIONS floor
+    n_positions = min(max_by_capital, len(df), DEFAULT_POSITIONS)
+
+    # Report which constraint bound the position count -- surfaces design
+    # signal every week (did transaction floor bite? qualifying pool? target?)
+    if n_positions == max_by_capital and max_by_capital < DEFAULT_POSITIONS:
+        bound_by = "transaction cost floor"
+    elif n_positions == len(df) and len(df) < DEFAULT_POSITIONS:
+        bound_by = "qualifying pool size"
+    else:
+        bound_by = f"default target ({DEFAULT_POSITIONS})"
+    log.info(f"  Position count bound by: {bound_by}")
+
+    # MIN_POSITIONS floor: do not refuse to trade below this, but surface it
+    if n_positions < MIN_POSITIONS:
+        log.warning(
+            f"  Position count {n_positions} below MIN_POSITIONS={MIN_POSITIONS}; "
+            f"deploying what's available. Review qualifying pool."
+        )
+        # Notify -- this is a condition you want visibility on, not silence
+        try:
+            from automation.notifier import notify
+            notify(
+                title=f"Narrow qualifying pool: {n_positions} positions",
+                body=(f"Only {n_positions} names qualified for entry "
+                      f"(target={DEFAULT_POSITIONS}, floor={MIN_POSITIONS}). "
+                      f"Review universe filters and signal output."),
+                priority="high",
+            )
+        except Exception:
+            pass  # non-fatal -- we're already in a degraded path
 
     # Build extended candidate pool -- up to 2x target count for fallback coverage.
     # If primary candidates fail (untradable, halted, etc.) fallbacks ensure capital
