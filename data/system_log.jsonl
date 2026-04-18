@@ -15,3 +15,10 @@
 {"timestamp": "2026-04-17T23:45:07.546665+00:00", "workflow": "self_refine", "status": "success", "message": "Refinement complete: 3 weight changes", "metrics": {"weeks_analyzed": 29, "data_points": 85995, "n_changes": 3}, "errors": []}
 {"timestamp": "2026-04-17T23:45:08.085002+00:00", "workflow": "retrain", "status": "info", "message": "Starting retrain", "metrics": {}, "errors": []}
 {"timestamp": "2026-04-17T23:45:08.343621+00:00", "workflow": "retrain", "status": "warning", "message": "Skipped: no training rows passed feature/label mask", "metrics": {"weeks": 29, "raw_rows": 85346}, "errors": []}
+{"timestamp": "2026-04-18T02:35:55.969306+00:00", "workflow": "execution_tracker", "status": "info", "message": "Starting execution tracking", "metrics": {}, "errors": []}
+{"timestamp": "2026-04-18T02:35:56.739686+00:00", "workflow": "execution_tracker", "status": "info", "message": "Skipped: no execution data for week 2026-04-17", "metrics": {"fills_count": 0, "state_positions": 0}, "errors": []}
+{"timestamp": "2026-04-18T02:35:57.527486+00:00", "workflow": "analyze_winners", "status": "info", "message": "Starting weekly winners analysis", "metrics": {}, "errors": []}
+{"timestamp": "2026-04-18T02:35:57.754586+00:00", "workflow": "analyze_winners", "status": "info", "message": "Skipped: analysis already exists for week 2026-04-10", "metrics": {}, "errors": []}
+{"timestamp": "2026-04-18T02:36:07.650340+00:00", "workflow": "self_refine", "status": "success", "message": "Refinement complete: 3 weight changes", "metrics": {"weeks_analyzed": 29, "data_points": 85995, "n_changes": 3}, "errors": []}
+{"timestamp": "2026-04-18T02:36:08.123016+00:00", "workflow": "retrain", "status": "info", "message": "Starting retrain", "metrics": {}, "errors": []}
+{"timestamp": "2026-04-18T02:36:08.387991+00:00", "workflow": "retrain", "status": "warning", "message": "Skipped: no training rows passed feature/label mask", "metrics": {"weeks": 29, "raw_rows": 85346}, "errors": []}
