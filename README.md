@@ -1,63 +1,125 @@
-# Followup Patches — first-cycle issues
+# Position Sizing Patch — 10×10% baseline
 
-Three small fixes for issues surfaced by the first live Friday run after Tiers 1-4.
+Implements the canonical deployment philosophy: 10 positions × 10% of capital.
 
-## Files
+## Philosophy (encoded in code comments)
 
+Baseline deployment is 10 positions × 10% of capital. This is the canonical
+shape; everything else is a variation. Position COUNT is the primary lever,
+position SIZE is derived. `MIN_POSITIONS = 10` is a hard floor — below 10
+qualifying names, deploy what's available and alert.
+
+Future work (post-paper-trading, not in this patch): dynamic position count
+growth beyond 10 when per-ticker liquidity constraints force dilution. The
+threshold data needed to calibrate this comes from paper trading slippage
+and ADV observations.
+
+## What changed
+
+File: `automation/alpaca_trader.py`
+
+### Constants section
+
+Added:
+- `DEFAULT_POSITIONS = 10` — target count
+- `MIN_POSITIONS = 10` — hard floor with alert, not a refusal
+
+Retained (unchanged):
+- `MIN_POSITION_SIZE = 500.0`
+- `MAX_POSITION_PCT = 0.15`
+- `MIN_COMPOSITE_PERCENTILE = 0.70`
+- `MAX_ADV_PCT = 0.01`
+- `MIN_PRICE = 1.00`
+
+### compute_positions() function
+
+Replaced:
+```python
+max_by_capital = int(portfolio_value / MIN_POSITION_SIZE)
+# ... liquidity filter using est_position = portfolio_value / min(...) ...
+n_positions = min(max_by_capital, len(df))
 ```
-followup_patches/
-├── automation/
-│   ├── collect_returns.py     composite_rank dtype coercion
-│   └── retrain.py             partial sub-signal tolerance
-├── .github/workflows/
-│   └── friday_learning.yml    Alpaca SDK install added
-└── diffs/                     unified diffs vs shipped Tier 3/4 versions
+
+With:
+```python
+max_by_capital = int(portfolio_value / MIN_POSITION_SIZE)
+# ... liquidity filter using target_position = portfolio_value / DEFAULT_POSITIONS ...
+n_positions = min(max_by_capital, len(df), DEFAULT_POSITIONS)
+# ... report which of the three constraints bound the count ...
+# ... if n_positions < MIN_POSITIONS: warn + notify ...
 ```
 
-## What each patch does
+Plus new logging: every entry now prints which constraint bound the position
+count (transaction cost floor / qualifying pool / default target). This
+surfaces design signal every week.
 
-### `collect_returns.py` — composite_rank dtype fix
+Plus new notification: if n_positions < MIN_POSITIONS, the Tier 3 notifier
+sends a HIGH priority alert so you can investigate why the qualifying pool
+was narrow.
 
-**Symptom**: `TypeError: Column 'composite_rank' has dtype object, cannot use method 'nsmallest' with this dtype`
+## Behavior across capital levels
 
-**Cause**: When pd.read_csv reads `performance_log.csv`, rows from before Tier 2 have NaN for `composite_rank` while new rows have integers. pandas stores the mixed column as `object` dtype, which `nsmallest` can't sort.
+| Capital | tx floor | n_positions | per-position | % of portfolio | bound by |
+|---|---|---|---|---|---|
+| $1,000 | 2 | 2 | $150* | 15% | transaction cost floor ⚠ below MIN |
+| $3,000 | 6 | 6 | $450* | 15% | transaction cost floor ⚠ below MIN |
+| $5,000 | 10 | 10 | $500 | 10% | default target |
+| $7,500 | 15 | 10 | $750 | 10% | default target |
+| $25,000 | 50 | 10 | $2,500 | 10% | default target |
+| $100,000 | 200 | 10 | $10,000 | 10% | default target |
+| $1,000,000 | 2,000 | 10 | $100,000 | 10% | default target |
 
-**Fix**: Coerce to numeric with `errors="coerce"` before `nsmallest`, then drop rows that couldn't be ranked.
+*Binds against MAX_POSITION_PCT = 15% at very small capital. Position count
+below 10 triggers the notification.
 
-**Impact**: The crash happened *after* the successful data write, so this week's perf_log rows are fine. Fix prevents the crash on future runs.
+## Key behavioral changes vs. prior code
 
-### `retrain.py` — partial sub-signal tolerance
+**At $7,500 (current Fidelity)**: was 15 positions × $500, now 10 positions
+× $750. Matches what you actually do manually.
 
-**Symptom**: `Training data: 0 rows after masking (85,995 dropped for missing features/label)`
+**At $100k (upcoming Alpaca paper)**: was 200 positions × $500, now 10
+positions × $10,000. Matches your philosophy of concentrating in highest-
+conviction names rather than diluting down the rank order.
 
-**Cause**: The Tier 4 mask-before-fillna logic required ALL 18 sub-signal features to be non-null for a row to be kept. In practice, many rows have 1-2 sub-signals missing (e.g. insider data unavailable for a given ticker that week) so requiring 100% coverage zeroed out the training set.
+**At any scale**: position count no longer grows with capital. Size grows.
+When position count needs to grow (future work), it will be triggered by
+per-ticker liquidity constraints, not by capital/floor arithmetic.
 
-**Fix**: Require ≥60% of sub-signal columns to be present in perf_log, and ≥70% of features to be non-null per row. Apply fillna(0.5) only to the minority NaN in kept rows, after masking. This is still meaningfully stricter than the original pre-Tier-4 behavior (which treated 100% NaN rows as synthetic-neutral training data) while being practical for real-world signal coverage.
+## Low-qualifying-pool behavior
 
-**Impact**: Retrain will start producing usable models once you have ~5000 rows with adequate sub-signal coverage. Should take 2-3 weeks to accumulate given current fill rate.
+If fewer than 10 names qualify for entry (after composite percentile filter,
+liquidity filter, price filter, etc.):
 
-### `friday_learning.yml` — Alpaca SDK install
+1. Deploy what's available (don't refuse to trade)
+2. Log a warning with the actual count
+3. Send a HIGH priority notification via the Tier 3 observability layer
+4. Each deployed position still sizes to its fair share (e.g., 8 qualifying
+   names = 8 positions × 12.5% each, still under MAX_POSITION_PCT=15%)
 
-**Symptom**: `WARNING  Could not retrieve Alpaca fills: No module named 'alpaca_trade_api'`
-
-**Cause**: `execution_tracker.py` imports `alpaca_trade_api` but the workflow job only runs `pip install -r requirements.txt`, which doesn't include the Alpaca SDK. The entry/exit workflows install it explicitly; the learning loop didn't.
-
-**Fix**: Add explicit `pip install "alpaca-trade-api>=3.0.0" "aiohttp>=3.9.0"` step after the requirements.txt install, mirroring the pattern in `alpaca_entry.yml`.
-
-**Impact**: Once Monday's paper trades fill and Friday's exit completes, execution_tracker will successfully query Alpaca for fills and record slippage/ADV metrics. Without this, every Friday would have silently returned zero execution data even with real fills happening.
+This is "Option 2" from the discussion — practical floor with visibility,
+not an absolute refusal to trade below the floor.
 
 ## Deploy
 
-Drop the three files in place over the current repo. No data migration needed. All three changes are additive/corrective and don't affect data already on disk.
+Drop in place. No data migration needed. Monday's 2:30pm CT entry will use
+the new sizing logic automatically.
 
-## Verification done
+## Verification
 
-- All three files pass syntax check (py_compile for Python, yaml.safe_load for YAML)
-- No test run was possible since the failure requires Friday learning loop conditions
-- The retrain change is the only one that could produce a behavior change on the next run; the other two fix error paths
+- Syntax: `py_compile` passes
+- Simulation: correct behavior at $1k, $3k, $5k, $7.5k, $10k, $25k, $100k,
+  $500k, $1M, $10M (see table above)
+- MIN_POSITIONS alert fires correctly below $5k
+- Default target binds correctly at $5k and above
+- Position sizing honors MAX_POSITION_PCT at very small capital
 
-## What to watch next Friday
+## What's explicitly NOT in this patch
 
-- `collect_returns`: should complete without the `nsmallest` crash, log the entry-day comparison for top-20% composite picks
-- `retrain`: should log a row count > 0 after masking (exact count depends on how many sub-signals are populated in new rows)
-- `execution_tracker`: should log fill count — though still expected to be zero until Monday entries actually fill
+- Dynamic position count growth based on per-ticker liquidity caps
+- VWAP/TWAP execution routing when individual position size exceeds
+  impact thresholds
+- Universe floor ratcheting (raising MIN_MARKET_CAP as capital grows)
+
+All three are planned post-paper-trading features that require empirical
+calibration data this system doesn't yet have. Leaving them unbuilt now is
+intentional.
