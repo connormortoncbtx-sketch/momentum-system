@@ -222,5 +222,37 @@
         "alpha_rank": 5
       }
     ]
+  },
+  {
+    "run_label": "monday_morning",
+    "timestamp": "2026-04-20T11:39:20.224972",
+    "regime": "risk_on",
+    "top_5": [
+      {
+        "symbol": "FIP",
+        "alpha_score": 0.8135906700487902,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "DXST",
+        "alpha_score": 0.6983802250838294,
+        "alpha_rank": 2
+      },
+      {
+        "symbol": "LBRT",
+        "alpha_score": 0.5982559383156123,
+        "alpha_rank": 3
+      },
+      {
+        "symbol": "ONB",
+        "alpha_score": 0.5940229467121309,
+        "alpha_rank": 4
+      },
+      {
+        "symbol": "PRCT",
+        "alpha_score": 0.5809297494978365,
+        "alpha_rank": 5
+      }
+    ]
   }
 ]
