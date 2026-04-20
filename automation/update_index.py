@@ -64,7 +64,18 @@ def load_scores_summary() -> dict:
     try:
         import pandas as pd
         df  = pd.read_csv(DATA_DIR / "scores_final.csv")
-        top = df.head(5)[["symbol","alpha_score","conviction","thesis"]].to_dict("records")
+        # Sort by composite_rank if present, else fall back to alpha_rank.
+        # The file's row order cannot be trusted for "top picks" purposes:
+        # stage 5 sorts by alpha_rank, weekend_refresh sorts by alpha_rank,
+        # but actual trading uses composite_rank. The index top-5 must match
+        # what Alpaca will buy, not what alpha alone preferred.
+        if "composite_rank" in df.columns and df["composite_rank"].notna().any():
+            df_sorted = df.sort_values("composite_rank")
+        elif "alpha_rank" in df.columns:
+            df_sorted = df.sort_values("alpha_rank")
+        else:
+            df_sorted = df
+        top = df_sorted.head(5)[["symbol","alpha_score","conviction","thesis"]].to_dict("records")
         return {
             "total":    len(df),
             "top_five": top,

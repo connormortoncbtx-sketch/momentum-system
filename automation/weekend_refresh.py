@@ -455,16 +455,36 @@ def run(run_label: str = "weekend_refresh"):
         synth = importlib.import_module("pipeline.05_llm_synthesis")
         synth.run()
 
-        # Regenerate report -- write back to last Friday's file, not today's date
+        # Regenerate report -- write back to the most recent existing report,
+        # not to a computed "last Friday" filename.
+        #
+        # Timezone trap: stage 6 in the Friday pipeline runs with UTC
+        # datetime.today() on the GitHub runner. The pipeline fires Fri 8pm CT
+        # which is Sat 00:00 UTC, so the pipeline names its report with
+        # Saturday's UTC date (e.g. 2026-04-18.html for a Fri Apr 17 pipeline).
+        # Meanwhile weekend_refresh computing "last Friday" via local weekday
+        # arithmetic returns the CT-calendar Friday (Apr 17), which doesn't
+        # match the existing file. The refresh then silently wrote to
+        # 2026-04-17.html, creating an unreferenced duplicate while the actual
+        # Pages-displayed 2026-04-18.html stayed stale.
+        #
+        # Solution: find the newest existing report file and write to it.
         log.info("Regenerating report...")
-        from datetime import date as _date, timedelta as _timedelta
-        _today = _date.today()
-        _days_since_friday = (_today.weekday() - 4) % 7
-        _last_friday = _today - _timedelta(days=_days_since_friday if _days_since_friday > 0 else 7)
-        _friday_str = _last_friday.strftime("%Y-%m-%d")
-        log.info(f"  Writing to Friday report: {_friday_str}.html")
+        from pathlib import Path as _Path
+        reports_dir = _Path("docs/reports")
+        existing = sorted(reports_dir.glob("????-??-??.html"), reverse=True)
+        if existing:
+            target = existing[0]
+            target_str = target.stem  # YYYY-MM-DD without extension
+            log.info(f"  Writing to most recent existing report: {target.name}")
+        else:
+            # Fallback: no existing reports, use today's UTC date to match
+            # what stage 6 would produce on a fresh pipeline run.
+            from datetime import datetime as _dt
+            target_str = _dt.utcnow().strftime("%Y-%m-%d")
+            log.warning(f"  No existing reports found; writing to UTC today: {target_str}.html")
         report = importlib.import_module("pipeline.06_report")
-        report.run(date_override=_friday_str)
+        report.run(date_override=target_str)
 
         # Update index
         log.info("Updating index...")
