@@ -58,3 +58,5 @@
 {"timestamp": "2026-04-20T11:39:20.228702+00:00", "workflow": "weekend_refresh", "status": "success", "message": "Refresh complete (monday_morning)", "metrics": {"run_label": "monday_morning", "symbols": 5102, "regime": "risk_on", "top_pick": "FIP", "top_score": 0.8136}, "errors": []}
 {"timestamp": "2026-04-20T13:59:24.830655+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Starting premarket monitor", "metrics": {}, "errors": []}
 {"timestamp": "2026-04-20T13:59:24.833388+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Skipped: DST guard (CT hour=8, expected 6)", "metrics": {}, "errors": []}
+{"timestamp": "2026-04-20T15:03:42.077571+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Starting monitor (duration=185min, mode=PAPER)", "metrics": {}, "errors": []}
+{"timestamp": "2026-04-20T18:09:07.014553+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Session quiet: 184 polls, no phase transitions", "metrics": {"polls": 184, "upgrades": 0, "stops_placed": 0, "poll_errors": 0}, "errors": []}
