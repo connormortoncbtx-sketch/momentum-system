@@ -54,6 +54,7 @@ OUTPUT      = DATA_DIR / "scores.csv"
 
 MIN_WEEKLY_VOL      = 2.0         # 2% min weekly vol (stored as percent, e.g. 15.65 for 15.65%)
 MIN_AVG_DOLLAR_VOL  = 500_000     # $500k minimum daily dollar volume (liquidity floor)
+MIN_TRADABLE_PRICE  = 1.00        # $1 minimum share price (sub-$1 names aren't reliably tradable
 
 # Feature columns fed to the model
 SIGNAL_FEATURES = [
@@ -418,11 +419,18 @@ def build_output(df: pd.DataFrame, raw_scores: pd.Series,
                    "avg_win_magnitude", "avg_loss_magnitude", "weekly_vol"]
         out = out.merge(ev_df[ev_cols], on="symbol", how="left")
 
-        # ── LIQUIDITY + VOLATILITY EXCLUSION ─────────────────────────────────
-        # Exclude structurally un-tradable tickers (shells, SPACs, dead quotes)
-        # from ranking BEFORE composite_rank is computed. They keep their alpha
-        # and EV scores for diagnostic lookup but are removed from the rank
-        # pool entirely, so top ranks reflect genuine momentum candidates.
+        # ── LIQUIDITY + VOLATILITY + PRICE EXCLUSION ────────────────────────
+        # Exclude structurally un-tradable tickers from ranking BEFORE
+        # composite_rank is computed. They keep their alpha and EV scores for
+        # diagnostic lookup but are removed from the rank pool entirely, so
+        # top ranks reflect genuine momentum candidates.
+        #
+        # Three filters:
+        #   - weekly_vol < 2%       -> shell / SPAC / dead quote (no movement)
+        #   - dollar_vol < $500k/d  -> can't absorb even small positions
+        #   - price < $1            -> sub-$1 names are often un-tradable at
+        #                              retail (Alpaca rejects, Fidelity adds
+        #                              fees or restrictions)
         #
         # See constants at top of file for threshold rationale. weekly_vol is
         # stored as percent (e.g. 15.65 for 15.65%), dollar_vol computed below.
@@ -430,20 +438,24 @@ def build_output(df: pd.DataFrame, raw_scores: pd.Series,
 
         excluded_weekly_vol   = out["weekly_vol"].fillna(0) < MIN_WEEKLY_VOL
         excluded_dollar_vol   = dollar_vol.fillna(0) < MIN_AVG_DOLLAR_VOL
-        excluded              = excluded_weekly_vol | excluded_dollar_vol
+        excluded_price        = out["last_price"].fillna(0) < MIN_TRADABLE_PRICE
+        excluded              = excluded_weekly_vol | excluded_dollar_vol | excluded_price
 
         out["excluded_by_liquidity"] = excluded
         out["exclusion_reason"] = None
-        out.loc[excluded_weekly_vol & ~excluded_dollar_vol, "exclusion_reason"] = "low_volatility"
-        out.loc[~excluded_weekly_vol & excluded_dollar_vol, "exclusion_reason"] = "low_dollar_volume"
-        out.loc[excluded_weekly_vol & excluded_dollar_vol, "exclusion_reason"]  = "low_vol_and_volume"
+        # Tag with the most restrictive single reason (priority: price > dollar_vol > weekly_vol)
+        # Price floor takes priority because it's a tradability issue, not a signal-quality one.
+        out.loc[excluded_price,                                          "exclusion_reason"] = "below_min_price"
+        out.loc[~excluded_price & excluded_dollar_vol,                   "exclusion_reason"] = "low_dollar_volume"
+        out.loc[~excluded_price & ~excluded_dollar_vol & excluded_weekly_vol, "exclusion_reason"] = "low_volatility"
 
         n_excluded    = int(excluded.sum())
+        n_price       = int(excluded_price.sum())
         n_low_vol     = int(excluded_weekly_vol.sum())
         n_low_dollar  = int(excluded_dollar_vol.sum())
         log.info(f"  Liquidity exclusions: {n_excluded} tickers "
-                 f"(low_vol={n_low_vol}, low_dollar={n_low_dollar}, "
-                 f"overlap={n_low_vol + n_low_dollar - n_excluded})")
+                 f"(price<${MIN_TRADABLE_PRICE}: {n_price}, "
+                 f"low_vol: {n_low_vol}, low_dollar: {n_low_dollar})")
 
         # Composite rank: blend alpha rank and EV rank 50/50
         # (adjustable as model matures — EV weight increases with real labels)
