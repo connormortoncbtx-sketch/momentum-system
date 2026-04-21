@@ -29,6 +29,68 @@ _CAL_PER_TRADING_DAY = 7 / 5
 _CAL_LOOKBACK_DAYS   = int(LOOKBACK * _CAL_PER_TRADING_DAY) + 30
 
 
+import logging
+import time
+
+log = logging.getLogger(__name__)
+
+
+# ── THROTTLING + RETRY CONFIG ─────────────────────────────────────────────────
+# yfinance is a free-tier wrapper over Yahoo's public endpoints. Rate limiting
+# is aggressive; a hammered endpoint returns empty data silently (no exception,
+# no rate-limit error -- just empty frames). The 2026-04 pipeline runs showed
+# 40%+ coverage gaps on market_cap and ~20% gaps on price history.
+#
+# Design choice: the Friday pipeline has no real-time deadline -- it just needs
+# to finish before Monday morning. We trade runtime for coverage. Baseline
+# measured at ~1 hour; throttled version should be ~1.5 hours but with far
+# better data completeness.
+
+FETCH_BATCH_SIZE       = 100   # down from 200 (smaller = less instantaneous load)
+FETCH_BATCH_SLEEP      = 5.0   # inter-batch pause (was 0 in momentum/EV code)
+FETCH_RETRY_WAIT       = 30.0  # pause before retrying a failed batch
+FETCH_RETRY_WAIT_2     = 60.0  # pause before second retry
+FETCH_MAX_RETRIES      = 2     # total of 3 attempts per batch (initial + 2 retries)
+
+
+def _fetch_batch_with_retry(batch, start_str, end_str, label="batch"):
+    """Download a batch from yfinance with retry-on-empty-or-exception.
+
+    Returns the raw DataFrame (possibly empty) on success, None if all
+    retries exhausted. An empty return from yfinance is treated as a soft
+    failure and retried -- empty is the typical signature of rate-limiting
+    on free-tier endpoints.
+    """
+    wait_schedule = [0, FETCH_RETRY_WAIT, FETCH_RETRY_WAIT_2]
+    for attempt, wait_before in enumerate(wait_schedule):
+        if wait_before > 0:
+            log.info(f"    Retry attempt {attempt} after {wait_before:.0f}s wait...")
+            time.sleep(wait_before)
+        try:
+            raw = yf.download(
+                batch,
+                start=start_str,
+                end=end_str,
+                auto_adjust=True,
+                progress=False,
+                threads=True,
+            )
+            if raw is None or raw.empty:
+                continue  # empty response -> treat as rate-limit, retry
+            # Quick sanity: at least one non-null close price somewhere
+            if isinstance(raw.columns, pd.MultiIndex) and "Close" in raw.columns.get_level_values(0):
+                if not raw["Close"].notna().any().any():
+                    continue
+            elif "Close" in raw.columns and not raw["Close"].notna().any():
+                continue
+            return raw
+        except Exception as e:
+            log.warning(f"    {label} attempt {attempt} error: {e}")
+            continue
+    log.warning(f"    {label}: all {len(wait_schedule)} attempts failed")
+    return None
+
+
 def fetch_history(symbols: list[str], days: int = LOOKBACK) -> dict[str, pd.DataFrame]:
     """
     Download full OHLCV history for all symbols in batches.
@@ -36,6 +98,9 @@ def fetch_history(symbols: list[str], days: int = LOOKBACK) -> dict[str, pd.Data
 
     `days` param retained as trading-day target for back-compat; internally
     converts to a sufficient calendar window.
+
+    Throttled + retried: batches use a 5s inter-batch pause and retry up to
+    2 times on empty/exception response (treating empty as rate-limiting).
     """
     end   = datetime.today()
     # Convert requested trading days -> calendar window. If caller passed the
@@ -43,20 +108,23 @@ def fetch_history(symbols: list[str], days: int = LOOKBACK) -> dict[str, pd.Data
     # otherwise apply the same conversion.
     cal_days = _CAL_LOOKBACK_DAYS if days == LOOKBACK else int(days * _CAL_PER_TRADING_DAY) + 30
     start = end - timedelta(days=cal_days)
-    batch_size = 200
+    start_str = start.strftime("%Y-%m-%d")
+    end_str   = end.strftime("%Y-%m-%d")
     result = {}
 
-    for i in range(0, len(symbols), batch_size):
-        batch = symbols[i:i+batch_size]
-        try:
-            raw = yf.download(
-                batch,
-                start=start.strftime("%Y-%m-%d"),
-                end=end.strftime("%Y-%m-%d"),
-                auto_adjust=True,
-                progress=False,
-                threads=True,
-            )
+    n_batches = (len(symbols) + FETCH_BATCH_SIZE - 1) // FETCH_BATCH_SIZE
+    log.info(f"  Momentum fetch: {len(symbols):,} symbols in {n_batches} batches "
+             f"(batch={FETCH_BATCH_SIZE}, sleep={FETCH_BATCH_SLEEP}s)")
+
+    for batch_idx, i in enumerate(range(0, len(symbols), FETCH_BATCH_SIZE), start=1):
+        batch = symbols[i:i+FETCH_BATCH_SIZE]
+
+        if batch_idx % 10 == 0:
+            log.info(f"    Batch {batch_idx}/{n_batches} ({len(result):,} tickers captured so far)")
+
+        raw = _fetch_batch_with_retry(batch, start_str, end_str, label=f"batch-{batch_idx}")
+
+        if raw is not None:
             if len(batch) == 1:
                 sym = batch[0]
                 df  = raw.rename(columns=str.lower)
@@ -76,9 +144,14 @@ def fetch_history(symbols: list[str], days: int = LOOKBACK) -> dict[str, pd.Data
                             result[sym] = df
                     except Exception:
                         continue
-        except Exception:
-            continue
+        # else: batch failed all retries; all symbols in batch get no data
 
+        # Inter-batch pause (not after last batch)
+        if batch_idx < n_batches:
+            time.sleep(FETCH_BATCH_SLEEP)
+
+    log.info(f"  Momentum fetch complete: {len(result):,}/{len(symbols):,} "
+             f"tickers have usable history ({100*len(result)/max(1,len(symbols)):.1f}%)")
     return result
 
 
