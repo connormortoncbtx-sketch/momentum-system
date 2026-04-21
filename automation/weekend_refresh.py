@@ -153,55 +153,129 @@ def merge_refreshed_signals(signals: pd.DataFrame,
 
 # ── RESCORE ───────────────────────────────────────────────────────────────────
 
-def rescore(signals: pd.DataFrame) -> pd.DataFrame:
-    """Re-run the LightGBM model with updated signal features."""
-    import pickle
-    from pathlib import Path as P
+# Max magnitude by which weekend refresh can shift any single ticker's
+# alpha_score. Consistent with the LLM conviction_adjustment bound elsewhere
+# in the system. Chosen to allow meaningful rank reshuffling when catalyst
+# data changes substantially, while preventing the "top pick to rank 555"
+# swings that previously occurred when full LightGBM rescoring was performed
+# against a mix of Friday signals + Sunday catalyst + NaN-as-0.5 substitutions.
+MAX_REFRESH_ADJUSTMENT = 0.15
 
-    model_file = P("models/lgbm_model.pkl")
-    if not model_file.exists():
-        log.warning("No model found — using weighted fallback for rescoring")
+
+def rescore(signals: pd.DataFrame,
+            previous_scores: pd.DataFrame = None) -> pd.Series:
+    """Compute refreshed alpha scores as BOUNDED TWEAKS to Friday's scores.
+
+    Previous implementation: full LightGBM re-prediction on the updated
+    feature matrix. This was architecturally unsound -- the model was trained
+    on rows with real data, but the refresh feeds it a mix of Friday signals,
+    Sunday catalyst, and NaN-replaced-as-0.5 values. Small input perturbations
+    compound to large output swings because it is effectively extrapolating
+    into a regime the model never saw in training. Result: the 2026-04-20
+    trading incident, where WATT moved from alpha=0.93 to 0.097 purely from
+    refresh-side noise with no corresponding real-world change.
+
+    New approach: anchor to Friday's alpha_score. Compute a bounded adjustment
+    based on how much the CATALYST signal moved between Friday and Sunday
+    (the only signal the refresh actually updates). Apply that adjustment
+    clipped to +/- MAX_REFRESH_ADJUSTMENT. Re-rank from the tweaked scores.
+
+    This guarantees:
+    - If catalyst didn't change, scores are identical to Friday
+    - If catalyst changed modestly, scores shift modestly
+    - If catalyst changed wildly, score shifts are still bounded so no ticker
+      can vanish from the top 10 or appear from obscurity on refresh alone
+    - The LightGBM model is never invoked in the refresh path, removing the
+      NaN->0.5 extrapolation problem entirely
+    """
+    if previous_scores is None or "alpha_score" not in previous_scores.columns:
+        log.warning("  rescore() called without previous_scores -- cannot anchor. "
+                    "Falling back to weighted rescore (old behavior).")
         return weighted_rescore(signals)
 
-    with open(model_file, "rb") as f:
-        model = pickle.load(f)
+    # Build a lookup: symbol -> Friday's alpha_score, Friday's sig_catalyst
+    prev_indexed    = previous_scores.set_index("symbol") if "symbol" in previous_scores.columns else previous_scores
+    signals_indexed = signals.set_index("symbol") if "symbol" in signals.columns else signals
 
-    # Detect how many features the model expects and use matching feature set
-    n_expected = model.n_features_in_
+    # Align indices on symbol
+    common_symbols = prev_indexed.index.intersection(signals_indexed.index)
+    log.info(f"  Anchor rescore: {len(common_symbols):,} symbols present in both "
+             f"(previous={len(prev_indexed):,}, signals={len(signals_indexed):,})")
 
-    FEATURES_FULL = [
-        "sig_momentum_rs", "sig_momentum_trend", "sig_momentum_vol_surge",
-        "sig_momentum_breakout", "sig_catalyst_earnings", "sig_catalyst_insider",
-        "sig_catalyst_analyst", "sig_fund_growth", "sig_fund_quality",
-        "sig_fund_profitability", "sig_fund_value", "sig_sentiment_news",
-        "sig_sentiment_analyst", "sig_sentiment_short",
-        "sig_momentum_adj", "sig_catalyst_adj", "sig_fundamentals_adj",
-        "sig_sentiment_adj",
-    ]
-    FEATURES_COMPOSITE = [
-        "sig_momentum", "sig_catalyst", "sig_fundamentals", "sig_sentiment",
-    ]
+    friday_alpha = pd.to_numeric(
+        prev_indexed.loc[common_symbols, "alpha_score"], errors="coerce"
+    )
 
-    # Pick feature set that matches model expectation
-    if n_expected <= 4:
-        feature_candidates = FEATURES_COMPOSITE
-        log.info(f"  Model expects {n_expected} features — using composite signals")
+    # Friday's catalyst value: prefer sig_catalyst (composite) from previous_scores,
+    # fall back to signals.csv if not present in previous_scores.
+    if "sig_catalyst" in prev_indexed.columns and prev_indexed["sig_catalyst"].notna().any():
+        friday_catalyst = pd.to_numeric(
+            prev_indexed.loc[common_symbols, "sig_catalyst"], errors="coerce"
+        )
     else:
-        feature_candidates = FEATURES_FULL
-        log.info(f"  Model expects {n_expected} features — using sub-signals")
+        # No previous catalyst -- we can't compute a delta, so adjustment will be zero
+        log.warning("  Previous scores missing sig_catalyst -- no adjustment possible this refresh")
+        friday_catalyst = pd.Series(0.5, index=common_symbols)
 
-    features = [f for f in feature_candidates if f in signals.columns]
+    # Sunday's catalyst (just computed by refresh)
+    sunday_catalyst = pd.to_numeric(
+        signals_indexed.loc[common_symbols, "sig_catalyst"], errors="coerce"
+    )
 
-    if len(features) < n_expected:
-        log.warning(f"  Only {len(features)} of {n_expected} expected features available "
-                    f"— falling back to weighted rescore")
-        return weighted_rescore(signals)
+    # Catalyst delta. NaN handling: if either side is NaN, delta is 0 (no adjustment).
+    # This is stricter than fillna(0.5) because we're saying "if we couldn't measure
+    # the catalyst change, don't pretend we did."
+    delta_catalyst = (sunday_catalyst - friday_catalyst).fillna(0.0)
 
-    X      = signals[features].fillna(0.5).values
-    scores = pd.Series(model.predict_proba(X)[:, 1], index=signals.index)
+    # Translate catalyst delta into alpha adjustment.
+    # Scaling: the adjustment is delta_catalyst x catalyst_weight. E.g., if catalyst
+    # weight is 0.25 and catalyst swung +0.4, raw adjustment is +0.10. A larger swing
+    # (+0.8) would produce +0.20, which then gets clipped to +MAX_REFRESH_ADJUSTMENT.
+    try:
+        with open(Path("config/weights.json")) as f:
+            weights = json.load(f)
+        cat_weight = float(weights.get("signal_weights", {}).get("catalyst", 0.25))
+    except Exception:
+        cat_weight = 0.25
 
-    log.info(f"Rescore complete — mean={scores.mean():.4f}  std={scores.std():.4f}")
-    return scores
+    raw_adjustment = delta_catalyst * cat_weight
+    adjustment     = raw_adjustment.clip(-MAX_REFRESH_ADJUSTMENT, MAX_REFRESH_ADJUSTMENT)
+
+    # Apply to Friday's alpha, then clip score to valid [0, 1] range
+    new_alpha = (friday_alpha + adjustment).clip(0.0, 1.0)
+
+    # Stats for logging
+    n_moved_up   = int((adjustment >  0.001).sum())
+    n_moved_down = int((adjustment < -0.001).sum())
+    n_clipped_up = int((raw_adjustment >  MAX_REFRESH_ADJUSTMENT).sum())
+    n_clipped_dn = int((raw_adjustment < -MAX_REFRESH_ADJUSTMENT).sum())
+    mean_abs_adj = float(adjustment.abs().mean())
+    max_adj      = float(adjustment.abs().max())
+
+    log.info(f"  Adjustments: {n_moved_up} moved up, {n_moved_down} moved down, "
+             f"{len(common_symbols) - n_moved_up - n_moved_down} unchanged")
+    log.info(f"  Adjustment magnitude: mean={mean_abs_adj:.4f}, max={max_adj:.4f}")
+    if n_clipped_up or n_clipped_dn:
+        log.info(f"  Clipped at bound: {n_clipped_up} upward, {n_clipped_dn} downward "
+                 f"(bound = +/-{MAX_REFRESH_ADJUSTMENT})")
+
+    # Return as a Series in the row order of the original signals DataFrame.
+    # Any symbols in signals but not in previous_scores (rare but possible) get
+    # alpha_score = 0.5 (neutral) -- they have no Friday anchor to tweak from.
+    # These will rank in the middle and almost never reach top 10.
+    result_by_symbol = pd.Series(0.5, index=signals_indexed.index, name="alpha_score")
+    result_by_symbol.loc[common_symbols] = new_alpha
+
+    # Map back to the row order expected by rebuild_scores
+    if "symbol" in signals.columns:
+        result = pd.Series(
+            result_by_symbol.reindex(signals["symbol"].values).values,
+            index=signals.index, name="alpha_score"
+        )
+    else:
+        result = result_by_symbol.reindex(signals.index)
+
+    return result
 
 
 def weighted_rescore(signals: pd.DataFrame) -> pd.Series:
@@ -250,6 +324,9 @@ def rebuild_scores(signals: pd.DataFrame, raw_scores: pd.Series,
                  "ev_score", "ev_rank", "ev_pct_rank", "ev_conviction",
                  "avg_win_magnitude", "avg_loss_magnitude", "weekly_vol",
                  "composite_rank",
+                 # Liquidity exclusion flags (set by stage 4). Must be preserved
+                 # so weekend refresh can respect them when recomputing composite_rank.
+                 "excluded_by_liquidity", "exclusion_reason",
                  # Stop parameters — persisted by stage 4 so alpaca_trader can read them.
                  # Must be preserved across refreshes or alpaca_trader falls back to None
                  # and never places hard stops.
@@ -331,16 +408,39 @@ def rebuild_scores(signals: pd.DataFrame, raw_scores: pd.Series,
     else:
         out["rank_change"] = 0
 
+    # Sort by composite_rank if available (matches what alpaca_trader uses
+    # for picking), falling back to alpha_rank if composite hasn't been
+    # computed yet (gets computed below). Previously sorted by alpha_rank,
+    # which caused update_index to display a different top-5 than the system
+    # actually traded -- cosmetic bug fixed as part of the refresh rewrite.
+    # We'll re-sort after composite_rank is recomputed below.
     out = out.sort_values("alpha_rank").reset_index(drop=True)
 
     # Recompute composite rank if EV data is available (blends updated alpha rank with preserved EV rank)
+    # Respect the liquidity exclusion from stage 4 -- tickers marked as
+    # excluded_by_liquidity should keep NaN composite_rank so downstream
+    # trading logic (which filters on .notna()) continues to skip them.
     if "ev_pct_rank" in out.columns and out["ev_pct_rank"].notna().any():
         out["alpha_pct_rank_tmp"] = out["alpha_score"].rank(pct=True).round(4)
-        out["composite_rank"] = (
+        composite_score = (
             out["alpha_pct_rank_tmp"].fillna(0.5) * 0.50 +
             out["ev_pct_rank"].fillna(0.5) * 0.50
-        ).rank(ascending=False, method="min").astype(int)
+        )
+        # Null out composite score for liquidity-excluded tickers BEFORE ranking
+        # so they don't occupy rank positions in the refreshed output.
+        if "excluded_by_liquidity" in out.columns:
+            excluded_mask = out["excluded_by_liquidity"].fillna(False).astype(bool)
+            composite_score = composite_score.where(~excluded_mask)
+        out["composite_rank"] = composite_score.rank(
+            ascending=False, method="min"
+        ).astype("Int64")
         out = out.drop(columns=["alpha_pct_rank_tmp"])
+
+        # Final sort: by composite_rank (ascending = best first).
+        # NaN composite_rank values (liquidity-excluded) sort last, which is
+        # correct behavior -- they should appear at the bottom of any display,
+        # not at the top.
+        out = out.sort_values("composite_rank", na_position="last").reset_index(drop=True)
 
     return out
 
@@ -431,9 +531,9 @@ def run(run_label: str = "weekend_refresh"):
         # Save updated signals
         signals.to_csv(SIGNALS_CSV, index=False)
 
-        # Rescore
-        log.info("Rescoring with updated catalyst data...")
-        raw_scores = rescore(signals)
+        # Rescore -- bounded-tweak adjustment, anchored to Friday's alpha_score
+        log.info("Rescoring with bounded tweak from refreshed catalyst data...")
+        raw_scores = rescore(signals, previous_scores=previous_scores)
 
         # Rebuild scores
         scores = rebuild_scores(signals, raw_scores, regime_data, previous_scores)
