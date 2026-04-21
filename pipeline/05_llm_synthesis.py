@@ -320,9 +320,31 @@ def run():
             time.sleep(API_SLEEP)
 
     # ── RE-RANK AFTER LLM ADJUSTMENTS ────────────────────────────────────────
+    # LLM synthesis can shift alpha_score via conviction_adjustment. Both
+    # alpha_rank AND composite_rank must be recomputed to reflect those
+    # shifts -- otherwise composite_rank (which alpaca_trader uses for
+    # position selection) lags the post-LLM alpha_score in the same file.
     scores["alpha_pct_rank"] = scores["alpha_score"].rank(pct=True).round(4)
     scores["alpha_rank"]     = scores["alpha_score"].rank(
-        ascending=False, method="min").astype(int)
+        ascending=False, method="min").astype("Int64")
+
+    # Recompute composite_rank from the refreshed alpha_pct_rank + preserved
+    # ev_pct_rank. Respect the liquidity exclusion from stage 4 -- tickers
+    # marked excluded_by_liquidity should keep NaN composite_rank so
+    # downstream trading logic continues to skip them.
+    if "ev_pct_rank" in scores.columns and scores["ev_pct_rank"].notna().any():
+        composite_score = (
+            scores["alpha_pct_rank"].fillna(0.5) * 0.50 +
+            scores["ev_pct_rank"].fillna(0.5)    * 0.50
+        )
+        if "excluded_by_liquidity" in scores.columns:
+            excluded_mask = scores["excluded_by_liquidity"].fillna(False).astype(bool)
+            composite_score = composite_score.where(~excluded_mask)
+        # Also exclude rows with NaN alpha_score (from coverage gate)
+        composite_score = composite_score.where(scores["alpha_score"].notna())
+        scores["composite_rank"] = composite_score.rank(
+            ascending=False, method="min"
+        ).astype("Int64")
 
     # Reapply conviction tiers
     p = scores["alpha_pct_rank"]
@@ -332,7 +354,13 @@ def run():
         labels=["low", "moderate", "elevated", "high", "very_high"],
     )
 
-    scores = scores.sort_values("alpha_rank").reset_index(drop=True)
+    # Sort by composite_rank (authoritative ranking for trading). NaN rows
+    # (liquidity-excluded, coverage-gated) sort last so they don't pollute
+    # the top of the display.
+    if "composite_rank" in scores.columns and scores["composite_rank"].notna().any():
+        scores = scores.sort_values("composite_rank", na_position="last").reset_index(drop=True)
+    else:
+        scores = scores.sort_values("alpha_rank", na_position="last").reset_index(drop=True)
 
     # ── SAVE ──────────────────────────────────────────────────────────────────
     scores.to_csv(FINAL_CSV, index=False)
