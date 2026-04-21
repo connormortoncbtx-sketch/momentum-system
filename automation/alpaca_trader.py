@@ -659,6 +659,26 @@ def run_place_stops():
 # ── EXIT (FRIDAY 2:30 PM CT) ──────────────────────────────────────────────────
 
 def run_exit():
+    """Friday exit: close all open positions via MOC sell orders.
+
+    Order of operations:
+      1. Cancel ALL outstanding stop / trailing-stop / stop-limit orders for
+         each open position. Without this step, MOC sells collide with the
+         stops (Alpaca rejects duplicate sell coverage for the same shares).
+      2. Submit MOC sell for each position using the live qty from Alpaca
+         (not state qty, since Phase 2 partial sells may have reduced it).
+      3. Record per-symbol results; don't clear state until exits confirmed.
+      4. Clear state only for positions that successfully submitted. Positions
+         that failed to close stay in state so next week's entry check catches
+         them.
+
+    Previously: stops were not cancelled pre-sell, which at worst would cause
+    all MOC sells to fail on "position already has open sell coverage."
+
+    State clearing previously happened unconditionally. If any exits failed,
+    next week's entry saw empty state but Alpaca still had open positions,
+    requiring manual intervention.
+    """
     log.info("=" * 60)
     log.info("ALPACA TRADER -- FRIDAY EXIT")
     log.info(f"MODE: {'PAPER' if PAPER_MODE else '*** LIVE ***'}")
@@ -669,6 +689,12 @@ def run_exit():
     positions = api.list_positions()
     if not positions:
         log.info("No open positions to close")
+        # Still clear state -- nothing to close means nothing to track
+        state = load_state()
+        state["positions"]       = {}
+        state["entry_date"]      = None
+        state["week_open_value"] = None
+        save_state(state)
         return
 
     account          = api.get_account()
@@ -679,16 +705,54 @@ def run_exit():
     log.info(f"Week return: {week_return*100:+.2f}%  "
              f"(${week_open:,.0f} -> ${portfolio_value:,.0f})")
 
-    # Circuit breaker check
+    # Circuit breaker check (informational -- does not alter behavior since
+    # we're already exiting all positions. Kept for observability parity with
+    # the non-exit circuit breaker path.)
     if CIRCUIT_BREAKER_PCT and week_return < -CIRCUIT_BREAKER_PCT:
-        log.warning(f"CIRCUIT BREAKER: down {week_return*100:.1f}% -- exiting all")
+        log.warning(f"CIRCUIT BREAKER: down {week_return*100:.1f}% on exit day "
+                    f"(threshold {CIRCUIT_BREAKER_PCT*100:.1f}%)")
 
+    # ── STEP 1: CANCEL ALL OUTSTANDING STOPS ─────────────────────────────
+    # Collect all open orders, identify the ones that overlap with our
+    # positions, cancel them. MOC sells would otherwise collide with active
+    # stop orders (same symbol, same side).
+    position_symbols = {p.symbol for p in positions}
+
+    try:
+        open_orders = api.list_orders(status="open")
+    except Exception as e:
+        log.error(f"Could not list open orders: {e} -- proceeding to sells "
+                  f"but some may fail on stop collision")
+        open_orders = []
+
+    stops_to_cancel = [
+        o for o in open_orders
+        if o.symbol in position_symbols
+        and o.side == "sell"
+        and o.order_type in ("stop", "stop_limit", "trailing_stop")
+    ]
+
+    cancelled_stops = []
+    for order in stops_to_cancel:
+        try:
+            api.cancel_order(order.id)
+            cancelled_stops.append((order.symbol, order.order_type, order.id))
+            log.info(f"  Cancelled {order.order_type} {order.id} for {order.symbol}")
+        except Exception as e:
+            log.warning(f"  Could not cancel {order.id} for {order.symbol}: {e}")
+
+    if cancelled_stops:
+        log.info(f"  Cancelled {len(cancelled_stops)} outstanding stop orders")
+
+    # ── STEP 2: SUBMIT MOC SELLS ──────────────────────────────────────────
     closed = []
     failed = []
+    per_symbol_results = {}
 
     for pos in positions:
         sym    = pos.symbol
-        shares = int(pos.qty)
+        # int(float(...)) handles both "1723" and "1723.0" responses
+        shares = int(float(pos.qty))
         try:
             api.submit_order(
                 symbol        = sym,
@@ -702,30 +766,51 @@ def run_exit():
                      f"return={ret_pct:+.2f}%  "
                      f"P&L=${float(pos.unrealized_pl):+,.2f}")
             closed.append(sym)
+            per_symbol_results[sym] = {"status": "submitted", "shares": shares,
+                                        "return_pct": round(ret_pct, 2),
+                                        "pnl": round(float(pos.unrealized_pl), 2)}
         except Exception as e:
             log.error(f"  FAILED {sym}: {e}")
             failed.append(sym)
+            per_symbol_results[sym] = {"status": "failed", "error": str(e)}
 
     log.info(f"Exit complete: {len(closed)} closed, {len(failed)} failed")
 
     # Handle withdrawal if enabled
     run_withdrawal(api, portfolio_value, week_return, week_open)
 
-    # Clear state
-    state["positions"]       = {}
-    state["entry_date"]      = None
-    state["week_open_value"] = None
+    # ── STEP 3: UPDATE STATE ──────────────────────────────────────────────
+    # Remove successfully-closed positions from state. Leave failed positions
+    # in state so next week's entry sees them (and its existing-positions
+    # check will refuse to enter until they're manually resolved).
+    if state.get("positions"):
+        for sym in closed:
+            state["positions"].pop(sym, None)
+
+    if not failed and not state.get("positions"):
+        # All cleared -- full reset
+        state["positions"]       = {}
+        state["entry_date"]      = None
+        state["week_open_value"] = None
+    elif failed:
+        # Partial failure -- keep entry_date/week_open so we preserve context
+        # for the failed symbols. Next week's entry check will halt and alert.
+        log.warning(f"  {len(failed)} positions failed to close -- "
+                    f"state retains these symbols for next-week reconciliation")
+
     save_state(state)
 
-    # Capital-at-risk: notify on every exit completion. Weekly P&L is the single
-    # most important number to surface.
+    # ── STEP 4: NOTIFY ─────────────────────────────────────────────────────
+    # Capital-at-risk: notify on every exit completion. Weekly P&L is the
+    # single most important number to surface.
     metrics = {
-        "closed":           len(closed),
-        "failed":           len(failed),
-        "week_open":        round(float(week_open), 2),
-        "week_close":       round(float(portfolio_value), 2),
-        "week_return_pct":  round(float(week_return * 100), 2),
-        "symbols_failed":   failed[:10],
+        "closed":             len(closed),
+        "failed":             len(failed),
+        "cancelled_stops":    len(cancelled_stops),
+        "week_open":          round(float(week_open), 2),
+        "week_close":         round(float(portfolio_value), 2),
+        "week_return_pct":    round(float(week_return * 100), 2),
+        "symbols_failed":     failed[:10],
     }
     if failed:
         log_event("alpaca_trader", LogStatus.WARNING,
@@ -736,7 +821,9 @@ def run_exit():
                      f"Exit: {len(closed)} closed, {len(failed)} FAILED: "
                      f"{', '.join(failed[:5])}{'…' if len(failed) > 5 else ''}\n"
                      f"Week: {week_return*100:+.2f}%  "
-                     f"(${week_open:,.0f} → ${portfolio_value:,.0f})")
+                     f"(${week_open:,.0f} → ${portfolio_value:,.0f})\n"
+                     f"Failed symbols remain in state -- next week's entry "
+                     f"will halt until resolved.")
     else:
         log_event("alpaca_trader", LogStatus.SUCCESS,
                   f"Exit: all {len(closed)} closed "
