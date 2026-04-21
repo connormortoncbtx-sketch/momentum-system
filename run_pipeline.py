@@ -71,10 +71,55 @@ def main():
     parser.add_argument("--only",     dest="only_stage", default=None)
     parser.add_argument("--no-holiday-check", dest="skip_holiday", action="store_true",
                         help="Skip the holiday week check (for manual runs)")
+    parser.add_argument("--force", dest="force", action="store_true",
+                        help="Force run even if scores_final.csv was updated recently "
+                             "(bypasses ghost-run prevention).")
     args = parser.parse_args()
 
     log_event("weekly_pipeline", LogStatus.INFO,
-              f"Pipeline invoked (from={args.from_stage}, only={args.only_stage})")
+              f"Pipeline invoked (from={args.from_stage}, only={args.only_stage}, "
+              f"force={args.force})")
+
+    # ── GHOST RUN PREVENTION ──────────────────────────────────────────────
+    # GitHub cron is "best effort" and can fire hours late during high load.
+    # If a manual workflow_dispatch ran Friday night and the scheduled cron
+    # then fires Saturday (or later), concurrency groups serialize them but
+    # both still execute -- the second run overwrites scores_final.csv with
+    # a fresh compute on top of the earlier one. This is how the 2026-04-18
+    # "ghost pipeline" produced a second set of rankings that silently
+    # replaced the manual run's output.
+    #
+    # Check: if scores_final.csv was updated within MIN_RERUN_HOURS, treat
+    # this as a redundant invocation and exit cleanly. --force overrides.
+    # --only and --from arguments also override (partial runs are legitimate
+    # mid-week recovery operations, not full-pipeline re-executions).
+    #
+    # Why 18 hours: covers Friday-night → Saturday-morning window comfortably
+    # while still allowing a legitimate re-run after a full trading day if
+    # needed. A normal weekly cycle (~144 hours apart) is well above this.
+    MIN_RERUN_HOURS = 18
+    if not args.force and not args.only_stage and args.from_stage == "01":
+        scores_path = Path("data/scores_final.csv")
+        if scores_path.exists():
+            age_hours = (time.time() - scores_path.stat().st_mtime) / 3600
+            if age_hours < MIN_RERUN_HOURS:
+                log.warning(
+                    f"scores_final.csv was modified {age_hours:.1f}h ago "
+                    f"(< {MIN_RERUN_HOURS}h threshold)"
+                )
+                log.warning(
+                    "Treating this invocation as a ghost run "
+                    "(GitHub cron firing late after a prior run). Exiting cleanly."
+                )
+                log.warning(
+                    "To force re-run, dispatch with --force or wait "
+                    f"{MIN_RERUN_HOURS - age_hours:.1f}h."
+                )
+                log_event("weekly_pipeline", LogStatus.INFO,
+                          f"Skipped: ghost run prevention (last run {age_hours:.1f}h ago)",
+                          metrics={"last_run_hours_ago": round(age_hours, 2),
+                                   "threshold_hours":    MIN_RERUN_HOURS})
+                sys.exit(0)
 
     # Holiday check — skip if not a full 5-day trading week
     # Bypass with --no-holiday-check for manual mid-week runs
