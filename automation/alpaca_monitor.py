@@ -200,6 +200,25 @@ def check_and_upgrade(api, symbol: str, current_price: float, state: dict) -> bo
 
     activation_price = entry * (1 + activation_pct / 100)
 
+    # Same-day cooldown: Phase 2 cannot trigger on the calendar day the position
+    # was entered. Monday MOC fills settle after close; any post-close monitor
+    # run sees the entry price as "current price" and can mistakenly trigger
+    # Phase 2 on slight fill-vs-last_price drift. Delaying eligibility until
+    # Tuesday open ensures Phase 2 only fires on real post-entry price
+    # movement, not fill-price variance.
+    entry_date_str = state.get("entry_date")
+    if entry_date_str:
+        try:
+            import datetime as _dt
+            entry_date = _dt.date.fromisoformat(entry_date_str)
+            if _dt.date.today() <= entry_date:
+                # Today is the entry day -- Phase 2 not eligible yet
+                return False
+        except Exception:
+            # Malformed entry_date -- proceed without cooldown guard rather
+            # than refusing all upgrades
+            pass
+
     if phase == 1 and current_price >= activation_price:
         log.info(f"PHASE 2 TRIGGERED: {symbol} @ ${current_price:.2f} "
                  f"(entry=${entry:.2f} activation=${activation_price:.2f} "
@@ -238,19 +257,47 @@ def compute_partial_sell_pct(alpha_score: float, weekly_vol: float) -> float:
 
 def upgrade_to_phase2(api, symbol: str, current_price: float,
                       trail_pct: float, state: dict) -> bool:
+    """Phase 2 upgrade: lock in gains with partial sell + trailing stop.
+
+    Order-of-operations redesign (2026-04-21):
+
+    The 2026-04-20 incident surfaced two compounding failures:
+
+    1. Coverage gap during upgrade: hard stop was cancelled FIRST, then
+       trailing stop placed. If trailing stop submission failed, position
+       had no stop coverage until manual intervention.
+
+    2. Gap after partial-sell cancellation: partial market sell was placed
+       for a portion of shares, trailing stop covered only the remainder.
+       If user/system cancelled the partial sell, those shares were left
+       un-stopped (hard stop already cancelled, trailing stop doesn't cover
+       them).
+
+    3. State persistence gap: state was saved at the END of upgrade. If any
+       step failed with an exception, phase remained at 1 and the next
+       monitor poll re-triggered Phase 2 -- which tried to cancel
+       already-cancelled orders, place duplicate trailing stops, etc.
+       This is why alpaca_monitor appeared to re-fire repeatedly on Monday.
+
+    Redesigned order-of-operations:
+      1. Place trailing stop FIRST (on full position quantity). Now every
+         share has stop coverage via the trailing stop.
+      2. Update state to phase=2 and save IMMEDIATELY. Even if later steps
+         fail, the position won't be re-upgraded on next poll.
+      3. Cancel the original hard stop(s). Position still covered by trail.
+      4. Submit partial market sell. If this succeeds, it sells into the
+         trailing stop (reducing trail qty by the sold amount at fill time).
+         If this fails or gets cancelled, trailing stop still covers
+         everything.
+
+    Trailing stop always covers the FULL position in this design. Partial
+    sell is an additive realization of gains, not a replacement for stop
+    coverage. This makes every intermediate state safe.
+    """
     try:
         pos_state   = state.get("positions", {}).get(symbol, {})
         alpha_score = pos_state.get("alpha_score", 0.75)
         weekly_vol  = pos_state.get("weekly_vol", 0.20)
-
-        # Cancel existing hard stop orders
-        orders = api.list_orders(status="open")
-        for order in orders:
-            if (order.symbol == symbol and
-                    order.order_type in ("stop", "stop_limit") and
-                    order.side == "sell"):
-                api.cancel_order(order.id)
-                log.info(f"  Cancelled hard stop {order.id} for {symbol}")
 
         # Get current position qty
         try:
@@ -260,59 +307,84 @@ def upgrade_to_phase2(api, symbol: str, current_price: float,
             log.error(f"  Could not get position for {symbol} -- skipping")
             return False
 
-        # Compute partial sell split
-        sell_pct   = compute_partial_sell_pct(alpha_score, weekly_vol)
-        sell_qty   = int(total_qty * sell_pct)   # floor to whole shares
-        trail_qty  = total_qty - sell_qty
+        if total_qty < 1:
+            log.warning(f"  Position for {symbol} has 0 shares -- skipping upgrade")
+            return False
 
-        log.info(f"  Partial sell calc: alpha={alpha_score:.3f} "
-                 f"weekly_vol={weekly_vol:.3f} "
-                 f"sell_pct={sell_pct*100:.1f}% "
-                 f"-> sell={sell_qty} trail={trail_qty} "
-                 f"(total={total_qty})")
-
-        # Guard: need at least 1 share on each side to split
-        if sell_qty < 1 or trail_qty < 1:
-            log.info(f"  Cannot split {total_qty} shares -- placing full trailing stop")
-            sell_qty  = 0
-            trail_qty = total_qty
-
-        # Place partial market sell
-        partial_order_id = None
-        if sell_qty > 0:
-            partial_order = api.submit_order(
-                symbol        = symbol,
-                qty           = sell_qty,
-                side          = "sell",
-                type          = "market",
-                time_in_force = "day",
-            )
-            partial_order_id = partial_order.id
-            log.info(f"  Partial sell: {symbol} {sell_qty} shares @ market "
-                     f"(~${current_price:.2f})  order_id={partial_order.id}")
-
-        # Place trailing stop on remaining shares
+        # STEP 1: Place trailing stop on the FULL position.
+        # Coverage exists before we touch anything else.
         trail_order = api.submit_order(
             symbol        = symbol,
-            qty           = trail_qty,
+            qty           = total_qty,
             side          = "sell",
             type          = "trailing_stop",
             time_in_force = "gtc",
             trail_percent = str(trail_pct),
         )
-        log.info(f"  Trailing stop: {symbol} {trail_qty} shares "
+        log.info(f"  Step 1: Trailing stop placed: {symbol} {total_qty} shares "
                  f"trail={trail_pct}% order_id={trail_order.id}")
 
-        # Update state
+        # STEP 2: Mark state phase=2 and save IMMEDIATELY.
+        # This prevents re-upgrade even if the remaining steps fail.
         state["positions"][symbol]["phase"]                = 2
         state["positions"][symbol]["trail_order_id"]       = trail_order.id
-        state["positions"][symbol]["partial_order_id"]     = partial_order_id
         state["positions"][symbol]["phase2_activated_at"]  = current_price
-        state["positions"][symbol]["partial_sell_qty"]     = sell_qty
-        state["positions"][symbol]["trail_qty"]            = trail_qty
-        state["positions"][symbol]["partial_sell_pct_actual"] = round(
-            sell_qty / total_qty, 4) if total_qty > 0 else 0
+        state["positions"][symbol]["trail_qty"]            = total_qty
+        state["positions"][symbol]["partial_order_id"]     = None
+        state["positions"][symbol]["partial_sell_qty"]     = 0
         save_state(state)
+        log.info(f"  Step 2: State marked phase=2 and saved")
+
+        # STEP 3: Cancel old hard stops. Trailing stop already covers position.
+        orders = api.list_orders(status="open")
+        cancelled = []
+        for order in orders:
+            if (order.symbol == symbol and
+                    order.order_type in ("stop", "stop_limit") and
+                    order.side == "sell" and
+                    order.id != trail_order.id):
+                try:
+                    api.cancel_order(order.id)
+                    cancelled.append(order.id)
+                except Exception as cancel_err:
+                    log.warning(f"  Could not cancel stop {order.id}: {cancel_err}")
+        if cancelled:
+            log.info(f"  Step 3: Cancelled {len(cancelled)} old hard stop(s): {cancelled}")
+
+        # STEP 4: Submit partial market sell (additive gain realization).
+        # Trailing stop covers full position, so partial sell is optional --
+        # if it fails, we still have complete stop coverage.
+        sell_pct   = compute_partial_sell_pct(alpha_score, weekly_vol)
+        sell_qty   = int(total_qty * sell_pct)
+
+        # Guard: don't submit if split is degenerate
+        if sell_qty < 1 or (total_qty - sell_qty) < 1:
+            log.info(f"  Step 4: Partial sell skipped -- split {total_qty}×{sell_pct:.2f} "
+                     f"produces degenerate qty ({sell_qty}/{total_qty - sell_qty})")
+            partial_order_id = None
+        else:
+            try:
+                partial_order = api.submit_order(
+                    symbol        = symbol,
+                    qty           = sell_qty,
+                    side          = "sell",
+                    type          = "market",
+                    time_in_force = "day",
+                )
+                partial_order_id = partial_order.id
+                log.info(f"  Step 4: Partial sell: {symbol} {sell_qty} shares @ market "
+                         f"(~${current_price:.2f})  order_id={partial_order.id}  "
+                         f"(alpha={alpha_score:.3f} vol={weekly_vol:.3f} pct={sell_pct*100:.1f}%)")
+                state["positions"][symbol]["partial_order_id"]     = partial_order_id
+                state["positions"][symbol]["partial_sell_qty"]     = sell_qty
+                state["positions"][symbol]["partial_sell_pct_actual"] = round(
+                    sell_qty / total_qty, 4) if total_qty > 0 else 0
+                save_state(state)
+            except Exception as sell_err:
+                log.warning(f"  Step 4: Partial sell failed (non-fatal): {sell_err}")
+                partial_order_id = None
+                # Trailing stop already covers full position; partial sell
+                # is gain-realization optimization, not safety-critical.
 
         # Phase 2 upgrade is the single most important intraday event -- send a
         # high-priority notification since it means the position hit the profit
@@ -325,15 +397,16 @@ def upgrade_to_phase2(api, symbol: str, current_price: float,
                       "symbol":              symbol,
                       "current_price":       round(current_price, 2),
                       "gain_pct":            round(gain_pct, 2),
-                      "partial_sell_qty":    sell_qty,
-                      "trail_qty":           trail_qty,
-                      "partial_sell_pct":    round(sell_pct * 100, 1),
+                      "partial_sell_qty":    sell_qty if partial_order_id else 0,
+                      "trail_qty":           total_qty,
+                      "partial_sell_pct":    round(sell_pct * 100, 1) if partial_order_id else 0,
                       "trail_pct":           trail_pct,
                   })
         notify_success("alpaca_monitor",
                        f"PHASE 2 ACTIVATED: {symbol} @ ${current_price:.2f} "
                        f"({gain_pct:+.1f}%)\n"
-                       f"Sold {sell_qty} shares, trailing {trail_qty} @ {trail_pct}%")
+                       f"Trailing stop on {total_qty} shares @ {trail_pct}%"
+                       + (f"\nPartial sell: {sell_qty} shares" if partial_order_id else ""))
         return True
 
     except Exception as e:

@@ -103,6 +103,18 @@ MIN_PRICE = 1.00
 # Minimum average daily volume -- ensures basic liquidity
 MIN_AVG_VOLUME = 50000
 
+# Capital deployment buffer -- hold back this fraction of portfolio value when
+# sizing MOC orders. Rationale: Alpaca reserves estimated cost at order-submit
+# time (not fill time), using last_price as the basis. If market moves up
+# between submit and close, or if multiple MOC orders land sequentially with
+# slight reservation overhead, the last order(s) in a batch can hit
+# "insufficient buying power" even when nominal math says it fits.
+#
+# 2026-04-20 incident: 9 × $10k orders on $100k account -- 10th order failed
+# because Alpaca's $90k reservation + overhead left <$10k for the final order.
+# A 5% buffer ($9.5k target per position) would have allowed all 10 to fill.
+CAPITAL_BUFFER_PCT = 0.05
+
 # Circuit breaker -- if portfolio drops this % from week-open value, exit all
 # Set to None to disable. Tune based on backtesting.
 CIRCUIT_BREAKER_PCT = None   # e.g. 0.08 = exit if down 8% from Monday open
@@ -281,11 +293,17 @@ def compute_positions(scores: pd.DataFrame, portfolio_value: float) -> list[dict
 
     log.info(f"Position sizing: target={n_positions} positions, "
              f"candidates={n_candidates} (fallback pool)")
+    # Apply capital buffer -- size positions against (portfolio * (1 - buffer))
+    # rather than full portfolio. Leaves headroom for Alpaca's order-submit
+    # reservation overhead and intraday price movement between last_price
+    # and actual fill. See CAPITAL_BUFFER_PCT constant for rationale.
+    deployable_capital = portfolio_value * (1 - CAPITAL_BUFFER_PCT)
     log.info(f"  Capital: ${portfolio_value:,.0f}  "
-             f"Per position: ${portfolio_value/n_positions:,.0f}")
+             f"Deployable (after {CAPITAL_BUFFER_PCT*100:.0f}% buffer): ${deployable_capital:,.0f}  "
+             f"Per position: ${deployable_capital/n_positions:,.0f}")
 
-    # Equal weight based on target count (not candidate count)
-    position_size = portfolio_value / n_positions
+    # Equal weight based on target count (not candidate count), using buffered capital
+    position_size = deployable_capital / n_positions
 
     # Apply max position cap
     max_position = portfolio_value * MAX_POSITION_PCT
@@ -321,9 +339,18 @@ def compute_positions(scores: pd.DataFrame, portfolio_value: float) -> list[dict
             "is_fallback": idx >= n_positions,
         })
 
-    total_deployed = sum(p["dollar_size"] for p in positions)
-    log.info(f"  Total deployed: ${total_deployed:,.0f} / ${portfolio_value:,.0f} "
-             f"({total_deployed/portfolio_value*100:.1f}%)")
+    # Compute deployment stats separately for primaries (what will actually
+    # get submitted absent failures) and total including fallbacks.
+    # Previously the log reported the total-including-fallbacks and showed
+    # "199.8% deployed" which was alarming but cosmetically wrong -- the
+    # actual deployment target is primaries only; fallbacks only replace
+    # failed primaries.
+    primary_deployed = sum(p["dollar_size"] for p in positions if p["is_primary"])
+    total_planned    = sum(p["dollar_size"] for p in positions)
+    log.info(f"  Primaries deploy: ${primary_deployed:,.0f} / ${portfolio_value:,.0f} "
+             f"({primary_deployed/portfolio_value*100:.1f}% of capital)")
+    log.info(f"  Fallback pool:    ${total_planned - primary_deployed:,.0f} "
+             f"(used only if primaries fail)")
 
     return positions
 
@@ -489,8 +516,144 @@ def run_entry():
                   })
         notify_success("alpaca_trader",
                        f"Entry: {len(filled)} BUY MOC orders placed. "
-                       f"Stops will be submitted Tuesday 8:30am CT via monitor. "
+                       f"Stops will be submitted at 3:10pm CT via place_stops workflow. "
                        f"{('Fallbacks used: ' + ', '.join(fallback_used)) if fallback_used else ''}")
+
+
+# ── EXIT (FRIDAY 2:30 PM CT) ──────────────────────────────────────────────────
+
+def run_place_stops():
+    """Place Phase 1 hard stops on Monday-entered positions.
+
+    Called ~5 minutes after Monday MOC close (3:05pm CT). Previously stops
+    were only placed by the Tuesday morning monitor poll, creating a ~17
+    hour gap between fill and coverage. This function closes that gap.
+
+    Logic mirrors alpaca_monitor.ensure_phase1_stop:
+      - Check each position in state
+      - Skip positions already with a hard_stop_order_id
+      - Look for existing stop orders on Alpaca (adopt rather than duplicate)
+      - Otherwise submit a GTC stop using the ACTUAL fill price
+        (Alpaca's avg_entry_price from the live position)
+
+    Runs as its own scheduled workflow (alpaca_place_stops.yml) at 3:05pm CT
+    Mondays. Idempotent: if run again, adopts existing stops rather than
+    duplicating.
+    """
+    log.info("=" * 60)
+    log.info("ALPACA TRADER -- MONDAY POST-CLOSE STOP PLACEMENT")
+    log.info(f"MODE: {'PAPER' if PAPER_MODE else '*** LIVE ***'}")
+    log.info("=" * 60)
+
+    api = get_alpaca()
+
+    # Need live positions to get actual fill prices
+    live_positions = api.list_positions()
+    if not live_positions:
+        log.info("No open positions -- nothing to stop")
+        return
+
+    live_by_symbol = {p.symbol: p for p in live_positions}
+    log.info(f"Alpaca reports {len(live_positions)} open positions")
+
+    state = load_state()
+    state_positions = state.get("positions", {})
+
+    if not state_positions:
+        log.warning("State has no positions but Alpaca does -- skipping to avoid placing "
+                    "stops on positions we don't have metadata for")
+        return
+
+    placed    = []
+    adopted   = []
+    skipped   = []
+    failed    = []
+
+    for symbol, pos_state in state_positions.items():
+        # Skip if already tracked
+        if pos_state.get("hard_stop_order_id"):
+            skipped.append((symbol, "already_tracked"))
+            continue
+
+        # Must be in live positions
+        live = live_by_symbol.get(symbol)
+        if not live:
+            log.warning(f"  {symbol}: in state but not in Alpaca live positions -- skipping")
+            skipped.append((symbol, "not_live"))
+            continue
+
+        hard_stop_pct = pos_state.get("hard_stop_pct")
+        if not hard_stop_pct or hard_stop_pct <= 0:
+            log.warning(f"  {symbol}: no hard_stop_pct in state -- cannot place stop")
+            skipped.append((symbol, "no_pct"))
+            continue
+
+        # Check for existing stop orders (adopt rather than duplicate)
+        try:
+            open_orders = api.list_orders(status="open")
+            adopted_id = None
+            for order in open_orders:
+                if (order.symbol == symbol and
+                        order.order_type in ("stop", "stop_limit") and
+                        order.side == "sell"):
+                    adopted_id = order.id
+                    break
+            if adopted_id:
+                log.info(f"  {symbol}: adopting existing stop {adopted_id}")
+                state["positions"][symbol]["hard_stop_order_id"] = adopted_id
+                adopted.append(symbol)
+                continue
+        except Exception as e:
+            log.warning(f"  {symbol}: list_orders check failed: {e} -- proceeding to submit")
+
+        # Submit new stop using actual fill price
+        try:
+            actual_entry = float(live.avg_entry_price)
+            shares       = int(float(live.qty))
+        except Exception as e:
+            log.error(f"  {symbol}: reading live position failed: {e}")
+            failed.append(symbol)
+            continue
+
+        if actual_entry <= 0 or shares < 1:
+            log.warning(f"  {symbol}: entry={actual_entry} qty={shares} -- invalid, skipping")
+            skipped.append((symbol, "invalid_position"))
+            continue
+
+        stop_price = round(actual_entry * (1 - hard_stop_pct / 100), 2)
+
+        try:
+            order = api.submit_order(
+                symbol        = symbol,
+                qty           = shares,
+                side          = "sell",
+                type          = "stop",
+                stop_price    = stop_price,
+                time_in_force = "gtc",
+            )
+            log.info(f"  HARD STOP {symbol}: {shares} shares @ stop=${stop_price:.2f} "
+                     f"(entry=${actual_entry:.2f} -{hard_stop_pct:.1f}%)  order_id={order.id}")
+            state["positions"][symbol]["hard_stop_order_id"] = order.id
+            state["positions"][symbol]["hard_stop_price"]    = stop_price
+            state["positions"][symbol]["entry_price_actual"] = actual_entry
+            placed.append(symbol)
+        except Exception as e:
+            log.error(f"  {symbol}: stop submission failed: {e}")
+            failed.append(symbol)
+
+    save_state(state)
+
+    log.info(f"Stop placement complete: {len(placed)} placed, {len(adopted)} adopted, "
+             f"{len(skipped)} skipped, {len(failed)} failed")
+
+    if failed:
+        notify_error("alpaca_trader",
+                     f"Stop placement FAILED for {len(failed)} positions: "
+                     f"{', '.join(failed)}. These are NAKED until resolved.")
+    elif placed or adopted:
+        notify_success("alpaca_trader",
+                       f"Post-close stops placed: {len(placed)} new, {len(adopted)} adopted. "
+                       f"All {len(placed) + len(adopted)} Monday positions now protected.")
 
 
 # ── EXIT (FRIDAY 2:30 PM CT) ──────────────────────────────────────────────────
@@ -768,8 +931,18 @@ def run(mode: str = "entry"):
                 return
             run_circuit_breaker_check()
 
+        elif mode == "place_stops":
+            # Post-entry-day stop placement. Runs ~5 minutes after Monday MOC
+            # close to place hard stops on fresh positions using actual fill
+            # prices. Previously handled only by Tuesday morning monitor;
+            # this closes the ~17 hour exposure gap.
+            if not is_trading_day(today):
+                log.info("Market holiday -- skipping stop placement")
+                return
+            run_place_stops()
+
         else:
-            log.error(f"Unknown mode: {mode}. Use 'entry', 'exit', or 'circuit_breaker'")
+            log.error(f"Unknown mode: {mode}. Use 'entry', 'exit', 'place_stops', or 'circuit_breaker'")
             log_event("alpaca_trader", LogStatus.ERROR,
                       f"Unknown mode: {mode}")
             notify_error("alpaca_trader", f"Unknown mode '{mode}' passed to run()")
