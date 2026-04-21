@@ -36,6 +36,25 @@ PERF_LOG    = DATA_DIR / "performance_log.csv"
 MODEL_FILE  = MODELS_DIR / "lgbm_model.pkl"
 OUTPUT      = DATA_DIR / "scores.csv"
 
+# ── RANKING EXCLUSION THRESHOLDS ─────────────────────────────────────────────
+# Tickers that pass universe-stage liquidity gates can still be structurally
+# un-tradable as momentum plays: shells, SPACs, and dead-quote names. These
+# pass MIN_AVG_VOL (which measures share count, not dollar flow) and MIN_PRICE
+# (which allows anything above $5) but have near-zero weekly price movement.
+#
+# The 2026-04-20 trading incident surfaced this: 3 of the top 10 composite
+# ranks were shell companies (CAEP, CGCT, ORIQ-class) with weekly volatility
+# of 0.1-0.3%. These can never be momentum winners -- the EV calculation
+# rewards them for stability rather than expected return.
+#
+# Filter applied at ranking stage (AFTER weekly_vol is computed by
+# compute_weekly_ev). Excluded tickers keep their alpha_score and ev_score
+# for diagnostic lookup but have composite_rank set to NaN, naturally
+# excluding them from downstream trading (alpaca_trader filters notna).
+
+MIN_WEEKLY_VOL      = 2.0         # 2% min weekly vol (stored as percent, e.g. 15.65 for 15.65%)
+MIN_AVG_DOLLAR_VOL  = 500_000     # $500k minimum daily dollar volume (liquidity floor)
+
 # Feature columns fed to the model
 SIGNAL_FEATURES = [
     # Momentum sub-signals
@@ -399,14 +418,48 @@ def build_output(df: pd.DataFrame, raw_scores: pd.Series,
                    "avg_win_magnitude", "avg_loss_magnitude", "weekly_vol"]
         out = out.merge(ev_df[ev_cols], on="symbol", how="left")
 
+        # ── LIQUIDITY + VOLATILITY EXCLUSION ─────────────────────────────────
+        # Exclude structurally un-tradable tickers (shells, SPACs, dead quotes)
+        # from ranking BEFORE composite_rank is computed. They keep their alpha
+        # and EV scores for diagnostic lookup but are removed from the rank
+        # pool entirely, so top ranks reflect genuine momentum candidates.
+        #
+        # See constants at top of file for threshold rationale. weekly_vol is
+        # stored as percent (e.g. 15.65 for 15.65%), dollar_vol computed below.
+        dollar_vol = out["last_price"].astype("float") * out["avg_vol_20d"].astype("float")
+
+        excluded_weekly_vol   = out["weekly_vol"].fillna(0) < MIN_WEEKLY_VOL
+        excluded_dollar_vol   = dollar_vol.fillna(0) < MIN_AVG_DOLLAR_VOL
+        excluded              = excluded_weekly_vol | excluded_dollar_vol
+
+        out["excluded_by_liquidity"] = excluded
+        out["exclusion_reason"] = None
+        out.loc[excluded_weekly_vol & ~excluded_dollar_vol, "exclusion_reason"] = "low_volatility"
+        out.loc[~excluded_weekly_vol & excluded_dollar_vol, "exclusion_reason"] = "low_dollar_volume"
+        out.loc[excluded_weekly_vol & excluded_dollar_vol, "exclusion_reason"]  = "low_vol_and_volume"
+
+        n_excluded    = int(excluded.sum())
+        n_low_vol     = int(excluded_weekly_vol.sum())
+        n_low_dollar  = int(excluded_dollar_vol.sum())
+        log.info(f"  Liquidity exclusions: {n_excluded} tickers "
+                 f"(low_vol={n_low_vol}, low_dollar={n_low_dollar}, "
+                 f"overlap={n_low_vol + n_low_dollar - n_excluded})")
+
         # Composite rank: blend alpha rank and EV rank 50/50
         # (adjustable as model matures — EV weight increases with real labels)
+        # Excluded tickers get NaN composite_rank; downstream trading filters
+        # on .notna() so they naturally drop out of position selection.
         out["composite_rank_score"] = (
             out["alpha_pct_rank"].fillna(0.5) * 0.50 +
             out["ev_pct_rank"].fillna(0.5)    * 0.50
         )
+        # Set excluded rows' composite_rank_score to NaN before ranking,
+        # so they don't occupy rank positions.
+        out.loc[excluded, "composite_rank_score"] = np.nan
         out["composite_rank"] = out["composite_rank_score"].rank(
-            ascending=False, method="min").astype(int)
+            ascending=False, method="min")
+        # Cast to Int64 (nullable) since excluded rows now have NaN rank
+        out["composite_rank"] = out["composite_rank"].astype("Int64")
     else:
         out["ev_score"]          = np.nan
         out["ev_rank"]           = np.nan
@@ -415,6 +468,8 @@ def build_output(df: pd.DataFrame, raw_scores: pd.Series,
         out["avg_win_magnitude"] = np.nan
         out["avg_loss_magnitude"]= np.nan
         out["weekly_vol"]        = np.nan
+        out["excluded_by_liquidity"] = False
+        out["exclusion_reason"]  = None
         out["composite_rank"]    = out["alpha_rank"]
 
     # Conviction tier (based on alpha score)

@@ -377,14 +377,58 @@ def update_existing(master):
     return master
 
 def check_gate_failures(master):
-    if "gate_failures" not in master.columns: master["gate_failures"]=0
-    failing=(master["last_price"]<MIN_PRICE)|(master["avg_vol_20d"]<MIN_AVG_VOL)|(master["market_cap"]<MIN_MARKET_CAP)
-    master.loc[failing,"gate_failures"]+=1
-    master.loc[~failing,"gate_failures"]=0
-    before=len(master)
-    master=master[master["gate_failures"]<MAX_GATE_FAILURES].copy()
-    removed=before-len(master)
-    if removed: log.info(f"  Removed {removed} symbols after {MAX_GATE_FAILURES} gate failures")
+    """Evaluate each ticker against liquidity/price/market-cap gates.
+
+    NaN handling: treated as a HARD EXCLUSION, not a strike. Rationale:
+    NaN means "we could not verify this ticker meets the gate." Leaving
+    unverified rows in the universe with 0 strikes (the previous behavior,
+    since NaN < X evaluates to False in pandas) let injected-but-unverified
+    tickers flow all the way to scoring without ever accumulating strikes.
+    That's how GFAI at $0.44 reached composite rank #1 — the price
+    population lagged the injection, and by the time NaN became 0.44, the
+    ticker had already been scored and ranked for a cycle.
+
+    Hard-exclusion means: if we can't verify the ticker meets the gate on a
+    given cycle, it's removed from the universe entirely for that cycle.
+    It can re-enter via a future injection with valid data, or via a
+    successful liquidity-gate upsert. This is stricter than the previous
+    "3 strikes and you're out" for rows we can actually evaluate, because
+    NaN isn't a failure of the ticker — it's a failure of our data on the
+    ticker, and we shouldn't treat those the same.
+    """
+    if "gate_failures" not in master.columns:
+        master["gate_failures"] = 0
+
+    # Step 1: hard-exclude any row with NaN in gate-relevant fields.
+    # NaN in last_price, avg_vol_20d, or market_cap means we cannot evaluate
+    # the gate for this ticker. Remove it now; do not let it flow downstream.
+    unverifiable = (
+        master["last_price"].isna() |
+        master["avg_vol_20d"].isna() |
+        master["market_cap"].isna()
+    )
+    n_unverifiable = int(unverifiable.sum())
+    if n_unverifiable:
+        log.info(f"  Hard-excluded {n_unverifiable} tickers with NaN in price/volume/mcap "
+                 f"(cannot verify gate -- will be re-evaluated if data becomes available)")
+        master = master[~unverifiable].copy()
+
+    # Step 2: strike-based gate for rows we CAN evaluate.
+    # A ticker with real data that fails the gate gets a strike. After
+    # MAX_GATE_FAILURES consecutive strikes, it's removed. This preserves
+    # tolerance for transient data issues while hard-removing unverifiable rows.
+    failing = (
+        (master["last_price"]    < MIN_PRICE)      |
+        (master["avg_vol_20d"]   < MIN_AVG_VOL)    |
+        (master["market_cap"]    < MIN_MARKET_CAP)
+    )
+    master.loc[failing,  "gate_failures"] += 1
+    master.loc[~failing, "gate_failures"]  = 0
+    before  = len(master)
+    master  = master[master["gate_failures"] < MAX_GATE_FAILURES].copy()
+    removed = before - len(master)
+    if removed:
+        log.info(f"  Removed {removed} symbols after {MAX_GATE_FAILURES} consecutive gate failures")
     return master
 
 def find_new_symbols(raw_df, master):
