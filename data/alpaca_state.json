@@ -13,7 +13,8 @@
       "is_fallback": false,
       "phase": 1,
       "high_water_mark": 40.86,
-      "order_id": "73204ed3-b36d-4786-9ffc-2a2efa563448"
+      "order_id": "73204ed3-b36d-4786-9ffc-2a2efa563448",
+      "hard_stop_order_id": "ec31f21b-059b-40e2-99ee-2c6fac622f88"
     },
     "CAEP": {
       "shares": 968,
@@ -27,7 +28,8 @@
       "is_fallback": false,
       "phase": 1,
       "high_water_mark": 10.33,
-      "order_id": "ab7b8ec6-5e71-46b8-8975-bed63b533656"
+      "order_id": "ab7b8ec6-5e71-46b8-8975-bed63b533656",
+      "hard_stop_order_id": "6e595020-7e4a-4b43-a98a-f9e0b9b60936"
     },
     "PRCT": {
       "shares": 431,
@@ -55,7 +57,8 @@
       "is_fallback": false,
       "phase": 1,
       "high_water_mark": 23.05,
-      "order_id": "cbe2c32b-8f16-4e5b-9981-471362b57e0b"
+      "order_id": "cbe2c32b-8f16-4e5b-9981-471362b57e0b",
+      "hard_stop_order_id": "f8f5e4c3-639e-488d-b4d5-4c5e11bc9c40"
     },
     "FOLD": {
       "shares": 691,
@@ -69,7 +72,8 @@
       "is_fallback": false,
       "phase": 1,
       "high_water_mark": 14.46,
-      "order_id": "9d7c4e94-080c-4460-bc21-c1bbfa8e40ca"
+      "order_id": "9d7c4e94-080c-4460-bc21-c1bbfa8e40ca",
+      "hard_stop_order_id": "a4a77f7e-5c90-49e6-9a7d-de241221f5a6"
     },
     "DSGN": {
       "shares": 822,
@@ -125,7 +129,8 @@
       "is_fallback": false,
       "phase": 1,
       "high_water_mark": 10.26,
-      "order_id": "f89c2eca-55e3-4540-aef8-1b58d9862a93"
+      "order_id": "f89c2eca-55e3-4540-aef8-1b58d9862a93",
+      "hard_stop_order_id": "3c276210-8b69-47c2-8f52-f8d69e228e6c"
     }
   },
   "entry_date": "2026-04-20"
