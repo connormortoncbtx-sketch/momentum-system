@@ -96,14 +96,21 @@ def compute_suggested_stops(df: pd.DataFrame) -> pd.DataFrame:
 
     Logic (vectorized mirror of the original report-time computation):
       hard_stop  = 7 if vol<10 else 10 if vol<20 else min(vol*0.5, 15)
-      activation = avg_win * 0.75
+      activation = max(MIN_ACTIVATION_FLOOR, avg_win * 0.75)
       trail      = min(vol*0.5, 15)
+
+    Activation floor rationale: avg_win_magnitude is a historical mean that can
+    be arbitrarily small for low-volatility tickers. SPAC-class names had
+    avg_win < 0.5% producing activation thresholds of 0.1-0.3% after the 0.75
+    multiplier. These thresholds are below bid-ask spread and normal fill-price
+    variance, so Phase 2 upgrade triggered immediately on the first monitor
+    poll after entry -- reproducing the 2026-04-20 incident where 4 positions
+    hit Phase 2 within seconds. A 3% floor puts activation safely above market
+    microstructure noise.
 
     Rows missing avg_win or vol (or where either is <= 0) get NaN for all three.
     These parameters are PERSISTED here so downstream consumers — weekend_refresh,
     alpaca_trader, HTML report — can all read consistent stop values from one source.
-    Previously they were computed only at HTML-render time in stage 6, which meant
-    alpaca_trader saw them as None via row.get() and never placed hard stops.
     """
     if "avg_win_magnitude" not in df.columns or "weekly_vol" not in df.columns:
         df["suggested_hard_stop_pct"]   = np.nan
@@ -121,7 +128,12 @@ def compute_suggested_stops(df: pd.DataFrame) -> pd.DataFrame:
     hard[valid & vol.ge(10) & vol.lt(20)]     = 10.0
     hard[valid & vol.ge(20)]                  = (vol * 0.50).clip(upper=15.0).round(1)
 
-    activation = (avg_win * 0.75).round(1)
+    # Activation: avg_win-derived with a safety floor to stay above market noise.
+    # MIN_ACTIVATION_PCT_FLOOR = 3.0% -- chosen to exceed typical bid-ask spreads
+    # and intraday noise on liquid mid-caps, which are where the system trades.
+    MIN_ACTIVATION_PCT_FLOOR = 3.0
+    activation_raw = (avg_win * 0.75)
+    activation     = activation_raw.clip(lower=MIN_ACTIVATION_PCT_FLOOR).round(1)
     activation[~valid] = np.nan
 
     trail = (vol * 0.50).clip(upper=15.0).round(1)
@@ -284,26 +296,72 @@ def compute_weekly_ev(symbols: list[str], alpha_scores: pd.Series) -> pd.DataFra
     """
     import yfinance as yf
     from datetime import datetime, timedelta
+    import time as _time
 
     log.info("Computing expected value scores...")
     end   = datetime.today()
     start = end - timedelta(weeks=16)   # 12-16 weeks of history
+    start_str = start.strftime("%Y-%m-%d")
+    end_str   = end.strftime("%Y-%m-%d")
 
     results = []
-    batch_size = 100
 
-    for i in range(0, len(symbols), batch_size):
-        batch = symbols[i:i+batch_size]
-        try:
-            raw_dl = yf.download(
-                batch,
-                start=start.strftime("%Y-%m-%d"),
-                end=end.strftime("%Y-%m-%d"),
-                auto_adjust=True,
-                progress=False,
-                threads=True,
-            )
+    # Throttling config -- matches momentum fetcher's config for consistency.
+    # Smaller batches and inter-batch sleep to reduce rate-limit failures.
+    # Pipeline has no real-time deadline; trading runtime for coverage is fine.
+    EV_BATCH_SIZE     = 100
+    EV_BATCH_SLEEP    = 5.0
+    EV_RETRY_WAITS    = [30.0, 60.0]   # wait times before retry attempts 1 and 2
 
+    def _fetch_ev_batch(batch):
+        """yfinance batch download with retry on empty/exception response."""
+        attempts = [0] + EV_RETRY_WAITS  # first attempt no wait, then retries
+        for attempt_idx, wait_before in enumerate(attempts):
+            if wait_before > 0:
+                log.info(f"    Retry attempt {attempt_idx} after {wait_before:.0f}s wait...")
+                _time.sleep(wait_before)
+            try:
+                raw = yf.download(
+                    batch,
+                    start=start_str,
+                    end=end_str,
+                    auto_adjust=True,
+                    progress=False,
+                    threads=True,
+                )
+                if raw is None or raw.empty:
+                    continue
+                # Sanity: does this batch have ANY real data? Empty-but-shaped
+                # responses are the typical rate-limit signature.
+                if isinstance(raw.columns, pd.MultiIndex) and "Close" in raw.columns.get_level_values(0):
+                    if not raw["Close"].notna().any().any():
+                        continue
+                elif "Close" in raw.columns and not raw["Close"].notna().any():
+                    continue
+                return raw
+            except Exception as e:
+                log.warning(f"    EV batch attempt {attempt_idx} error: {e}")
+                continue
+        return None
+
+    n_batches = (len(symbols) + EV_BATCH_SIZE - 1) // EV_BATCH_SIZE
+    log.info(f"  EV fetch: {len(symbols):,} symbols in {n_batches} batches "
+             f"(batch={EV_BATCH_SIZE}, sleep={EV_BATCH_SLEEP}s)")
+
+    for batch_idx, i in enumerate(range(0, len(symbols), EV_BATCH_SIZE), start=1):
+        batch = symbols[i:i+EV_BATCH_SIZE]
+
+        if batch_idx % 10 == 0:
+            log.info(f"    Batch {batch_idx}/{n_batches} ({len(results):,} tickers processed)")
+
+        raw_dl = _fetch_ev_batch(batch)
+
+        if raw_dl is None:
+            # All retries exhausted -- every symbol in batch gets empty result
+            log.warning(f"    Batch {batch_idx}: all retries failed ({len(batch)} symbols)")
+            for sym in batch:
+                results.append({"symbol": sym, "_raw_wins": [], "_raw_losses": [], "_vol": None})
+        else:
             # Handle yfinance MultiIndex columns
             if isinstance(raw_dl.columns, pd.MultiIndex):
                 raw = raw_dl["Close"]
@@ -334,10 +392,13 @@ def compute_weekly_ev(symbols: list[str], alpha_scores: pd.Series) -> pd.DataFra
                 except Exception:
                     results.append({"symbol": sym, "_raw_wins": [], "_raw_losses": [], "_vol": None})
 
-        except Exception as e:
-            log.warning(f"  EV batch error: {e}")
-            for sym in batch:
-                results.append({"symbol": sym, "_raw_wins": [], "_raw_losses": [], "_vol": None})
+        # Inter-batch pause (not after last batch)
+        if batch_idx < n_batches:
+            _time.sleep(EV_BATCH_SLEEP)
+
+    n_captured = sum(1 for r in results if r["_vol"] is not None)
+    log.info(f"  EV fetch complete: {n_captured:,}/{len(symbols):,} tickers with usable history "
+             f"({100*n_captured/max(1,len(symbols)):.1f}%)")
 
     # Build EV scores
     ev_rows = []
@@ -411,7 +472,10 @@ def build_output(df: pd.DataFrame, raw_scores: pd.Series,
 
     out["alpha_score"]    = raw_scores.round(6)
     out["alpha_pct_rank"] = raw_scores.rank(pct=True).round(4)
-    out["alpha_rank"]     = raw_scores.rank(ascending=False, method="min").astype(int)
+    # Int64 (nullable) instead of int -- raw_scores may contain NaN for rows
+    # excluded by the coverage gate, and pandas .astype(int) crashes on NaN.
+    # Nullable Int64 preserves the NaN for gated-out rows.
+    out["alpha_rank"]     = raw_scores.rank(ascending=False, method="min").astype("Int64")
 
     # Merge EV scores if available
     if ev_df is not None:
@@ -579,14 +643,63 @@ def run():
     # ── SCORE ─────────────────────────────────────────────────────────────────
     log.info(f"Scoring {len(df):,} tickers...")
 
+    # Signal coverage gate: upstream signal generators fillna with 0.5 (neutral)
+    # rather than leaving NaN. So "populated" sub-signal columns don't mean
+    # real data -- they may just be 0.5 placeholders. The real coverage measure
+    # is how many sub-signals are NON-NEUTRAL (i.e., carry actual information).
+    #
+    # Rows where most sub-signals are exactly 0.5 are essentially blank input
+    # rows -- the model output is dominated by whatever small perturbations
+    # the remaining real signals provide, which is noise.
+    #
+    # Uses sub-signals only (not composite_adj columns, which are derived
+    # from the sub-signals and would double-count).
+    #
+    # Throttling in momentum/EV fetchers should reduce the frequency of
+    # fallback-to-0.5 upstream. This gate is the safety net for residual cases.
+    SUB_SIGNAL_COLS = [
+        "sig_momentum_rs", "sig_momentum_trend", "sig_momentum_vol_surge",
+        "sig_momentum_breakout",
+        "sig_catalyst_earnings", "sig_catalyst_insider", "sig_catalyst_analyst",
+        "sig_fund_growth", "sig_fund_quality", "sig_fund_profitability", "sig_fund_value",
+        "sig_sentiment_news", "sig_sentiment_analyst", "sig_sentiment_short",
+    ]
+    MIN_REAL_SIGNALS = 10   # of 14 sub-signals must be non-neutral (not 0.5)
+
+    available_subs = [c for c in SUB_SIGNAL_COLS if c in df.columns]
+    if len(available_subs) < MIN_REAL_SIGNALS:
+        log.warning(f"  Only {len(available_subs)}/{len(SUB_SIGNAL_COLS)} sub-signal columns "
+                    f"exist in df -- coverage gate effectively disabled for this run")
+        coverage_gate_active = False
+    else:
+        coverage_gate_active = True
+        # A signal is "real" if it's populated AND not exactly 0.5 (neutral fillna)
+        sub_df = df[available_subs]
+        real_count = (sub_df.notna() & (sub_df != 0.5)).sum(axis=1)
+        insufficient_coverage = real_count < MIN_REAL_SIGNALS
+        n_excluded = int(insufficient_coverage.sum())
+        log.info(f"  Coverage gate: {n_excluded:,} rows have < {MIN_REAL_SIGNALS} "
+                 f"of {len(available_subs)} non-neutral sub-signals (will not be scored)")
+        if n_excluded > 0:
+            log.info(f"  Median non-neutral signal count in universe: {int(real_count.median())}/14")
+
     try:
         X          = df[features].fillna(0.5).values
         raw_scores = pd.Series(model.predict_proba(X)[:, 1], index=df.index)
         log.info(f"  LightGBM scores: mean={raw_scores.mean():.4f}  "
                  f"std={raw_scores.std():.4f}")
+
+        # Apply coverage gate: score NaN for insufficient-coverage rows.
+        # NaN alpha_score propagates through alpha_pct_rank (NaN stays NaN in
+        # pandas rank()) and composite_rank (our null-out logic handles it).
+        # These rows effectively fall off the bottom of all rankings.
+        if coverage_gate_active:
+            raw_scores = raw_scores.where(~insufficient_coverage)
     except Exception as e:
         log.warning(f"  LightGBM scoring failed ({e}) — using weighted fallback")
         raw_scores = weighted_composite_score(df, weights, regime)
+        if coverage_gate_active:
+            raw_scores = raw_scores.where(~insufficient_coverage)
 
     # ── BUILD OUTPUT ──────────────────────────────────────────────────────────
     log.info("Computing expected value scores...")
