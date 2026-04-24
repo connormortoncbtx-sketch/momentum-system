@@ -2,24 +2,24 @@
   "_meta": {
     "description": "Signal weights and regime multipliers. This is the ONLY file the self-refinement pass may modify.",
     "schema_version": "1.0",
-    "last_modified": "2026-04-18",
+    "last_modified": "2026-04-24",
     "modified_by": "self_refine.py",
     "philosophy": "There are always winners in any market. The regime determines WHERE they are, not WHETHER they exist. Never reduce to zero \u2014 redirect."
   },
   "signal_weights": {
-    "momentum": 0.15,
+    "momentum": 0.05,
     "technicals": 0.15,
-    "catalyst": 0.4,
+    "catalyst": 0.45,
     "fundamentals": 0.05,
-    "sentiment": 0.25
+    "sentiment": 0.3
   },
   "regime_multipliers": {
     "risk_on": {
-      "momentum": 1.2,
+      "momentum": 1.0,
       "technicals": 1.1,
-      "catalyst": 1.0,
+      "catalyst": 1.1,
       "fundamentals": 0.8,
-      "sentiment": 1.0,
+      "sentiment": 1.2,
       "note": "Broad momentum works. High RS, high beta, breakouts. Winners are everywhere."
     },
     "trending_mixed": {

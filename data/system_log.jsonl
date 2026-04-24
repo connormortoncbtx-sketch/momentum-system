@@ -80,3 +80,10 @@
 {"timestamp": "2026-04-24T21:27:31.909879+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=exit", "metrics": {}, "errors": []}
 {"timestamp": "2026-04-24T22:09:53.530959+00:00", "workflow": "health_check", "status": "warning", "message": "Weekly health check complete", "metrics": {"entries_reviewed": 73, "workflows_covered": 11, "errors_in_period": 1, "warnings_in_period": 4, "result": "issues_found"}, "errors": []}
 {"timestamp": "2026-04-24T23:04:24.061020+00:00", "workflow": "health_check", "status": "warning", "message": "Weekly health check complete", "metrics": {"entries_reviewed": 74, "workflows_covered": 11, "errors_in_period": 1, "warnings_in_period": 5, "result": "issues_found"}, "errors": []}
+{"timestamp": "2026-04-24T23:42:16.789084+00:00", "workflow": "execution_tracker", "status": "info", "message": "Starting execution tracking", "metrics": {}, "errors": []}
+{"timestamp": "2026-04-24T23:42:17.499245+00:00", "workflow": "execution_tracker", "status": "info", "message": "Skipped: no execution data for week 2026-04-17", "metrics": {"fills_count": 0, "state_positions": 0}, "errors": []}
+{"timestamp": "2026-04-24T23:42:18.322802+00:00", "workflow": "analyze_winners", "status": "info", "message": "Starting weekly winners analysis", "metrics": {}, "errors": []}
+{"timestamp": "2026-04-24T23:42:18.519398+00:00", "workflow": "analyze_winners", "status": "info", "message": "Skipped: analysis already exists for week 2026-04-10", "metrics": {}, "errors": []}
+{"timestamp": "2026-04-24T23:42:28.325369+00:00", "workflow": "self_refine", "status": "success", "message": "Refinement complete: 6 weight changes", "metrics": {"weeks_analyzed": 29, "data_points": 85995, "n_changes": 6}, "errors": []}
+{"timestamp": "2026-04-24T23:42:28.864563+00:00", "workflow": "retrain", "status": "info", "message": "Starting retrain", "metrics": {}, "errors": []}
+{"timestamp": "2026-04-24T23:42:29.129858+00:00", "workflow": "retrain", "status": "warning", "message": "Skipped: no training rows passed feature/label mask", "metrics": {"weeks": 29, "raw_rows": 85346}, "errors": []}
