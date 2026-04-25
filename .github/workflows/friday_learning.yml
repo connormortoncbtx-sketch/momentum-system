@@ -33,18 +33,12 @@ jobs:
           python-version: '3.11'
           cache: 'pip'
       - name: Install dependencies
+        # alpaca-py is now in requirements.txt; the old explicit
+        # `pip install alpaca-trade-api` step has been removed because
+        # alpaca-trade-api pinned websockets<11 which conflicted with
+        # yfinance>=0.2.40 (needs websockets>=12). Migrated to alpaca-py
+        # 2026-04. See alpaca_trader.py header comment.
         run: pip install -r requirements.txt
-      # execution_tracker.py imports alpaca_trade_api to query realized fills.
-      # Not in requirements.txt (intentional -- most workflows don't need it),
-      # so install it explicitly here. Without this, execution_tracker warns
-      # "No module named 'alpaca_trade_api'" and records zero fills even when
-      # real fills exist in Alpaca.
-      # websockets>=12.0 also pinned here as belt-and-suspenders against the
-      # yfinance/websockets.sync silent-failure incident -- if the
-      # requirements.txt pin is ever lost in a merge, this line keeps the
-      # learning loop alive.
-      - name: Install Alpaca SDK
-        run: pip install "alpaca-trade-api>=3.0.0" "aiohttp>=3.9.0" "websockets>=12.0"
       # Capture run-start epoch so post-run verification can check whether
       # collect_returns.py actually wrote to performance_log.csv. Without
       # this, continue-on-error swallows import failures and we'd never
@@ -90,6 +84,10 @@ jobs:
         run: |
           PERF_LOG="data/performance_log.csv"
           RUN_START="${{ steps.run_start.outputs.epoch }}"
+          if [ -z "$RUN_START" ]; then
+            echo "::error::Run start timestamp missing -- earlier step likely failed"
+            exit 1
+          fi
           if [ ! -f "$PERF_LOG" ]; then
             echo "::error::performance_log.csv missing -- collect_returns.py never wrote output"
             exit 1
