@@ -121,3 +121,17 @@
 {"timestamp": "2026-04-25T05:06:18.646681+00:00", "workflow": "weekly_pipeline", "status": "success", "message": "Pipeline complete (73.7 min)", "metrics": {"elapsed_min": 73.7, "stages_run": 6}, "errors": []}
 {"timestamp": "2026-04-25T14:45:56.025256+00:00", "workflow": "weekly_pipeline", "status": "info", "message": "Pipeline invoked (from=01, only=None, force=False)", "metrics": {}, "errors": []}
 {"timestamp": "2026-04-25T14:45:56.025634+00:00", "workflow": "weekly_pipeline", "status": "info", "message": "Skipped: ghost run prevention (last run 9.7h ago)", "metrics": {"last_run_hours_ago": 9.66, "threshold_hours": 18}, "errors": []}
+{"timestamp": "2026-04-25T14:48:55.967988+00:00", "workflow": "weekly_pipeline", "status": "info", "message": "Pipeline invoked (from=01, only=None, force=True)", "metrics": {}, "errors": []}
+{"timestamp": "2026-04-25T14:48:55.971526+00:00", "workflow": "weekly_pipeline", "status": "info", "message": "Starting Stage 01: Universe builder", "metrics": {}, "errors": []}
+{"timestamp": "2026-04-25T14:48:57.239328+00:00", "workflow": "weekly_pipeline", "status": "success", "message": "Stage 01: Universe builder complete", "metrics": {"stage": "01", "elapsed_sec": 1.3}, "errors": []}
+{"timestamp": "2026-04-25T14:48:57.239631+00:00", "workflow": "weekly_pipeline", "status": "info", "message": "Starting Stage 02: Regime classifier", "metrics": {}, "errors": []}
+{"timestamp": "2026-04-25T14:48:58.203705+00:00", "workflow": "weekly_pipeline", "status": "success", "message": "Stage 02: Regime classifier complete", "metrics": {"stage": "02", "elapsed_sec": 1.0}, "errors": []}
+{"timestamp": "2026-04-25T14:48:58.203983+00:00", "workflow": "weekly_pipeline", "status": "info", "message": "Starting Stage 03: Signal engine", "metrics": {}, "errors": []}
+{"timestamp": "2026-04-25T15:23:46.516016+00:00", "workflow": "weekly_pipeline", "status": "success", "message": "Stage 03: Signal engine complete", "metrics": {"stage": "03", "elapsed_sec": 2088.3}, "errors": []}
+{"timestamp": "2026-04-25T15:23:46.516625+00:00", "workflow": "weekly_pipeline", "status": "info", "message": "Starting Stage 04: Scoring model", "metrics": {}, "errors": []}
+{"timestamp": "2026-04-25T15:27:41.349137+00:00", "workflow": "weekly_pipeline", "status": "success", "message": "Stage 04: Scoring model complete", "metrics": {"stage": "04", "elapsed_sec": 234.8}, "errors": []}
+{"timestamp": "2026-04-25T15:27:41.349443+00:00", "workflow": "weekly_pipeline", "status": "info", "message": "Starting Stage 05: LLM synthesis", "metrics": {}, "errors": []}
+{"timestamp": "2026-04-25T15:29:44.973242+00:00", "workflow": "weekly_pipeline", "status": "success", "message": "Stage 05: LLM synthesis complete", "metrics": {"stage": "05", "elapsed_sec": 123.6}, "errors": []}
+{"timestamp": "2026-04-25T15:29:44.973529+00:00", "workflow": "weekly_pipeline", "status": "info", "message": "Starting Stage 06: Report generator", "metrics": {}, "errors": []}
+{"timestamp": "2026-04-25T15:29:45.612444+00:00", "workflow": "weekly_pipeline", "status": "success", "message": "Stage 06: Report generator complete", "metrics": {"stage": "06", "elapsed_sec": 0.6}, "errors": []}
+{"timestamp": "2026-04-25T15:29:45.612802+00:00", "workflow": "weekly_pipeline", "status": "success", "message": "Pipeline complete (40.8 min)", "metrics": {"elapsed_min": 40.8, "stages_run": 6}, "errors": []}
