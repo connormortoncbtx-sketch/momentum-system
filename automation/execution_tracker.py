@@ -187,12 +187,21 @@ def compute_execution_metrics(
         if actual_exit and fri_close and fri_close > 0:
             exit_slippage_pct = (actual_exit - fri_close) / fri_close
 
+        # score_row is used both for ADV calculation and composite_rank lookup
+        # below. Compute it up front (unconditionally) so the rank lookup is
+        # safe regardless of whether the ADV branch fires. Previously this
+        # lived inside `if actual_entry and shares:` and the rank lookup
+        # referenced it outside that block -- worked fine while every symbol
+        # had pos_state["composite_rank"] (which short-circuited the rank
+        # `or` expression before reaching score_row), but exploded the moment
+        # the loop saw a fills-only symbol with no state entry.
+        score_row = scores_df[scores_df["symbol"] == sym] \
+            if not scores_df.empty else pd.DataFrame()
+
         adv_utilization = None
         shares = pos_state.get("shares") or fill_data.get("entry_qty")
         if actual_entry and shares:
             position_dollar = float(shares) * float(actual_entry)
-            score_row = scores_df[scores_df["symbol"] == sym] \
-                if not scores_df.empty else pd.DataFrame()
             avg_vol = float(score_row["avg_vol_20d"].iloc[0]) \
                 if not score_row.empty and "avg_vol_20d" in score_row.columns else None
             if avg_vol and avg_vol > 0 and actual_entry:
@@ -204,10 +213,13 @@ def compute_execution_metrics(
         if not sym_perf.empty and "forward_return_1w" in sym_perf.columns:
             forward_return = float(sym_perf["forward_return_1w"].iloc[0])
 
-        composite_rank = pos_state.get("composite_rank") or (
-            int(score_row["composite_rank"].iloc[0])
-            if not score_row.empty and "composite_rank" in score_row.columns else None
-        ) if not scores_df.empty else None
+        # Rank from state takes precedence; fall back to scores-file lookup.
+        # Previously this was a nested ternary that conflated the two paths
+        # and depended on score_row being conditionally assigned -- replaced
+        # with explicit checks for clarity and to fix the UnboundLocalError.
+        composite_rank = pos_state.get("composite_rank")
+        if composite_rank is None and not score_row.empty and "composite_rank" in score_row.columns:
+            composite_rank = int(score_row["composite_rank"].iloc[0])
 
         alpha_score = pos_state.get("alpha_score")
         weekly_vol  = pos_state.get("weekly_vol")
