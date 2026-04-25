@@ -7,11 +7,11 @@
     "philosophy": "There are always winners in any market. The regime determines WHERE they are, not WHETHER they exist. Never reduce to zero \u2014 redirect."
   },
   "signal_weights": {
-    "momentum": 0.15,
+    "momentum": 0.2,
     "technicals": 0.15,
-    "catalyst": 0.35,
-    "fundamentals": 0.15,
-    "sentiment": 0.2
+    "catalyst": 0.25,
+    "fundamentals": 0.25,
+    "sentiment": 0.15
   },
   "regime_multipliers": {
     "risk_on": {

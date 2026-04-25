@@ -1,0 +1,10 @@
+week_of,symbol,composite_rank,alpha_score,weekly_vol,intended_entry_price,actual_entry_price,entry_slippage_pct,intended_exit_price,actual_exit_price,exit_slippage_pct,adv_utilization_pct,forward_return_1w,phase_reached,partial_sell_pct,position_size_usd
+2026-04-24,CGCT,35,,,,10.3,,,10.31,,0.7604,,1,,10032.2
+2026-04-24,ALMS,7,,,,,,,25.5398,,,,1,,0.0
+2026-04-24,MYGN,25,,,,5.15,,,5.17,,0.1024,,1,,11834.7
+2026-04-24,CLOV,26,,,,,,,2.39,,,,1,,0.0
+2026-04-24,PRCT,5,,,,25.74,,,25.54,,0.0329,,1,,11093.94
+2026-04-24,LINC,3,,,,,,,39.03,,,,1,,0.0
+2026-04-24,DSGN,24,,,,,,,12.9,,,,1,,0.0
+2026-04-24,CAEP,4,,,,10.35,,,10.44,,0.9127,,1,,10018.8
+2026-04-24,FOLD,18,,,,,,,14.49,,,,1,,0.0
