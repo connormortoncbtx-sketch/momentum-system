@@ -210,9 +210,18 @@ def insider_score(symbol: str, ticker_obj=None) -> float:
         if tx.empty:
             return 0.0
 
-        # Buy/sell classification. Common column names across yfinance versions.
+        # Buy/sell classification. CRITICAL: yfinance's `Transaction` column is
+        # mostly empty in practice; the actual transaction description lives in
+        # the `Text` column as natural-language strings like:
+        #   "Purchase at price 397.35 per share."
+        #   "Sale at price 255.12 - 255.82 per share."
+        #   "Conversion of Exercise of derivative security at price 20.57 per share."
+        #   "Stock Award(Grant) at price 0.00 per share."
+        # Matching on Text gracefully filters out non-trade events (awards,
+        # gifts, option conversions, tax withholdings) which are noise for
+        # the buy/sell signal.
         txn_col = None
-        for cand in ("Transaction", "Transaction Type", "Type"):
+        for cand in ("Text", "Transaction", "Transaction Type", "Type"):
             if cand in tx.columns:
                 txn_col = cand
                 break
@@ -221,8 +230,9 @@ def insider_score(symbol: str, ticker_obj=None) -> float:
             return 0.0
 
         txn_strs = tx[txn_col].astype(str).str.lower()
-        # yfinance commonly emits "Purchase" / "Sale" / "Sale (Multiple)" /
-        # "Purchase at price" / "Stock Gift" etc. Match on substrings.
+        # Open-market transactions only. "Purchase" and "Sale" are the
+        # canonical Yahoo descriptions for Form 4 codes P and S respectively.
+        # Awards, conversions, gifts, and tax events do not match either.
         buys  = tx[txn_strs.str.contains("purchase", na=False)]
         sells = tx[txn_strs.str.contains("sale",     na=False)]
 
@@ -247,8 +257,11 @@ def insider_score(symbol: str, ticker_obj=None) -> float:
 
         if position_col is not None:
             positions = buys[position_col].astype(str).str.lower()
+            # `chief.*officer` catches CEO, CFO, COO, CTO, CPO, etc. without
+            # needing to enumerate every C-suite role. President, Chairman,
+            # and Director (board members) are listed individually.
             senior_mask = positions.str.contains(
-                "ceo|chief executive|cfo|chief financial|president|chairman|director",
+                r"chief.*officer|president|chairman|director",
                 na=False, regex=True,
             )
             ceo_cfo_buys = int(senior_mask.sum())
