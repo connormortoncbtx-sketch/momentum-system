@@ -39,12 +39,24 @@ jobs:
       # so install it explicitly here. Without this, execution_tracker warns
       # "No module named 'alpaca_trade_api'" and records zero fills even when
       # real fills exist in Alpaca.
+      # websockets>=12.0 also pinned here as belt-and-suspenders against the
+      # yfinance/websockets.sync silent-failure incident -- if the
+      # requirements.txt pin is ever lost in a merge, this line keeps the
+      # learning loop alive.
       - name: Install Alpaca SDK
-        run: pip install "alpaca-trade-api>=3.0.0" "aiohttp>=3.9.0"
-      # Each learning step uses continue-on-error so one failure doesn't kill the
-      # remaining steps. Historically a bad collect_returns run meant no
-      # self_refine, no retrain, no analyze_winners for the week. Now each runs
-      # independently and its own log_event/notify_error surfaces problems.
+        run: pip install "alpaca-trade-api>=3.0.0" "aiohttp>=3.9.0" "websockets>=12.0"
+      # Capture run-start epoch so post-run verification can check whether
+      # collect_returns.py actually wrote to performance_log.csv. Without
+      # this, continue-on-error swallows import failures and we'd never
+      # know the learning loop silently no-op'd.
+      - name: Record run start time
+        id: run_start
+        run: echo "epoch=$(date +%s)" >> $GITHUB_OUTPUT
+      # Each learning step uses continue-on-error so one failure doesn't kill
+      # the remaining steps. The verify step at the end fails the workflow
+      # loud if collect_returns.py didn't update performance_log.csv, so
+      # silent failures (like the websockets.sync ModuleNotFoundError that
+      # masked weeks of missing data) can't recur unnoticed.
       - name: Collect actual returns
         continue-on-error: true
         run: python automation/collect_returns.py
@@ -68,7 +80,31 @@ jobs:
       - name: Retrain model if enough data
         continue-on-error: true
         run: python automation/retrain.py
+      - name: Verify collect_returns actually ran
+        # collect_returns.py writes to performance_log.csv. If its mtime
+        # hasn't advanced past the run-start epoch, the step silently
+        # failed (most likely an import error that continue-on-error
+        # swallowed). Fail the workflow loud so we get a notification.
+        # This step does NOT use continue-on-error -- it is the canary.
+        if: always()
+        run: |
+          PERF_LOG="data/performance_log.csv"
+          RUN_START="${{ steps.run_start.outputs.epoch }}"
+          if [ ! -f "$PERF_LOG" ]; then
+            echo "::error::performance_log.csv missing -- collect_returns.py never wrote output"
+            exit 1
+          fi
+          FILE_MTIME=$(stat -c %Y "$PERF_LOG")
+          if [ "$FILE_MTIME" -lt "$RUN_START" ]; then
+            echo "::error::performance_log.csv was not updated this run."
+            echo "::error::collect_returns.py likely failed silently (continue-on-error masking an exception)."
+            echo "File mtime: $(date -d @$FILE_MTIME -u)"
+            echo "Run start:  $(date -d @$RUN_START -u)"
+            exit 1
+          fi
+          echo "performance_log.csv updated this run -- collect_returns.py succeeded"
       - name: Commit results
+        if: always()
         run: |
           git config user.name  "momentum-bot"
           git config user.email "momentum-bot@users.noreply.github.com"
