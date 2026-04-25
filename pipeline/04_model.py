@@ -431,11 +431,17 @@ def compute_weekly_ev(symbols: list[str], alpha_scores: pd.Series) -> pd.DataFra
             avg_loss = -0.03
 
         # EV formula
+        # NOTE: alpha may be NaN for rows excluded by the upstream coverage gate
+        # (run() in main does `raw_scores.where(~insufficient_coverage)`). NaN
+        # propagates through arithmetic, producing NaN ev_score for those rows.
+        # That is intended -- those rows shouldn't get a score -- but it means
+        # the rank() call below produces NaN ranks, so ev_rank MUST be Int64
+        # (nullable integer) not int. See fix at the .astype call below.
         ev = alpha * avg_win + (1 - alpha) * avg_loss   # avg_loss is negative
 
         ev_rows.append({
             "symbol":            sym,
-            "ev_score":          round(float(ev), 6),
+            "ev_score":          round(float(ev), 6) if not np.isnan(ev) else np.nan,
             "avg_win_magnitude": round(avg_win * 100, 2),
             "avg_loss_magnitude": round(avg_loss * 100, 2),
             "weekly_vol":        round(vol * 100, 2) if vol else None,
@@ -443,7 +449,15 @@ def compute_weekly_ev(symbols: list[str], alpha_scores: pd.Series) -> pd.DataFra
 
     ev_df = pd.DataFrame(ev_rows)
     ev_df["ev_pct_rank"] = ev_df["ev_score"].rank(pct=True).round(4)
-    ev_df["ev_rank"]     = ev_df["ev_score"].rank(ascending=False, method="min").astype(int)
+    # FIX 2026-04-25: was .astype(int), which crashes when ev_score has NaN
+    # entries (which it now does whenever the coverage gate excludes any rows
+    # from scoring -- see compute_weekly_ev docstring + EV formula comment).
+    # Int64 (nullable integer) preserves NaN ranks for gate-excluded rows,
+    # matching the same convention used for alpha_rank in build_output().
+    # Without this fix the entire EV stage crashes silently and scores_final.csv
+    # ships with all 7 EV columns + all 3 stop-suggestion columns NaN, leading
+    # to naked positions on the Monday entry workflow.
+    ev_df["ev_rank"]     = ev_df["ev_score"].rank(ascending=False, method="min").astype("Int64")
 
     # EV conviction tier
     p = ev_df["ev_pct_rank"]
@@ -702,7 +716,8 @@ def run():
             raw_scores = raw_scores.where(~insufficient_coverage)
 
     # ── BUILD OUTPUT ──────────────────────────────────────────────────────────
-    log.info("Computing expected value scores...")
+    # NB: compute_weekly_ev() also logs "Computing expected value scores..." at
+    # its top. Removed the duplicate log line that used to live here.
     try:
         ev_df = compute_weekly_ev(df["symbol"].tolist(), raw_scores)
     except Exception as e:
