@@ -13,6 +13,9 @@
 #
 # PAPER_MODE controlled by ALPACA_PAPER environment variable.
 # Set ALPACA_PAPER=true for paper trading (default).
+#
+# Migrated from `alpaca-trade-api` to `alpaca-py` (2026-04). Polling-only
+# (no streaming); the migration is largely mechanical for this file.
 
 import argparse
 import json
@@ -35,7 +38,6 @@ logging.basicConfig(
 )
 
 PAPER_MODE  = os.environ.get("ALPACA_PAPER", "true").lower() != "false"
-BASE_URL    = "https://paper-api.alpaca.markets" if PAPER_MODE else "https://api.alpaca.markets"
 DATA_DIR    = Path("data")
 TRADE_STATE = DATA_DIR / "alpaca_state.json"
 POLL_INTERVAL_SECS = 60
@@ -45,9 +47,9 @@ POLL_INTERVAL_SECS = 60
 
 def get_alpaca():
     try:
-        import alpaca_trade_api as tradeapi
+        from alpaca.trading.client import TradingClient
     except ImportError:
-        log.error("alpaca-trade-api not installed")
+        log.error("alpaca-py not installed")
         sys.exit(1)
 
     key    = os.environ.get("ALPACA_API_KEY")
@@ -56,9 +58,9 @@ def get_alpaca():
         log.error("ALPACA_API_KEY and ALPACA_SECRET_KEY must be set")
         sys.exit(1)
 
-    api = tradeapi.REST(key, secret, BASE_URL, api_version="v2")
+    client = TradingClient(api_key=key, secret_key=secret, paper=PAPER_MODE)
     log.info(f"Alpaca connected [{'PAPER' if PAPER_MODE else 'LIVE'}]")
-    return api
+    return client
 
 
 # ── STATE ─────────────────────────────────────────────────────────────────────
@@ -78,7 +80,7 @@ def save_state(state: dict):
 
 # ── PHASE 2 UPGRADE ───────────────────────────────────────────────────────────
 
-def ensure_phase1_stop(api, symbol: str, state: dict) -> bool:
+def ensure_phase1_stop(client, symbol: str, state: dict) -> bool:
     """
     Ensure a Phase 1 position has a hard stop order on file.
 
@@ -87,7 +89,7 @@ def ensure_phase1_stop(api, symbol: str, state: dict) -> bool:
     so the stop is aligned with the realized entry.
 
     Why this lives in the monitor rather than alpaca_trader's run_entry:
-    - alpaca_trader submits buy orders at 2:30pm CT with time_in_force="cls" -- they fill
+    - alpaca_trader submits buy orders at 2:30pm CT with time_in_force=CLS -- they fill
       at 3:00pm CT market close. An inline stop submitted at 2:30pm would risk firing
       before the buy fills, creating a short position. Waiting until after fill is safer.
     - Monitor's first poll runs 8:30am CT Tuesday. The fill has been confirmed overnight.
@@ -96,15 +98,16 @@ def ensure_phase1_stop(api, symbol: str, state: dict) -> bool:
 
     Returns True if a stop was placed this call, False otherwise.
     """
+    from alpaca.trading.requests import StopOrderRequest, GetOrdersRequest
+    from alpaca.trading.enums import OrderSide, OrderType, TimeInForce, QueryOrderStatus
+
     pos_state = state.get("positions", {}).get(symbol, {})
     if not pos_state:
         return False
 
-    # Only Phase 1 positions need a hard stop. Phase 2 uses the trailing stop instead.
     if pos_state.get("phase", 1) != 1:
         return False
 
-    # Already placed? state records the order id
     if pos_state.get("hard_stop_order_id"):
         return False
 
@@ -117,13 +120,13 @@ def ensure_phase1_stop(api, symbol: str, state: dict) -> bool:
     # manually or by a previous run that didn't persist the id), adopt it rather than
     # creating a duplicate.
     try:
-        open_orders = api.list_orders(status="open")
+        open_orders = client.get_orders(filter=GetOrdersRequest(status=QueryOrderStatus.OPEN))
         for order in open_orders:
             if (order.symbol == symbol and
-                    order.order_type in ("stop", "stop_limit") and
-                    order.side == "sell"):
+                    order.order_type in (OrderType.STOP, OrderType.STOP_LIMIT) and
+                    order.side == OrderSide.SELL):
                 log.info(f"  {symbol}: found existing stop {order.id} -- adopting")
-                state["positions"][symbol]["hard_stop_order_id"] = order.id
+                state["positions"][symbol]["hard_stop_order_id"] = str(order.id)
                 return True
     except Exception as e:
         log.warning(f"  {symbol}: list_orders check failed: {e} -- proceeding to submit")
@@ -131,11 +134,11 @@ def ensure_phase1_stop(api, symbol: str, state: dict) -> bool:
     # Need the actual fill price. Use the live position's avg_entry_price -- this
     # reflects what Alpaca actually paid, including any slippage on the MOC fill.
     try:
-        pos = api.get_position(symbol)
+        pos = client.get_open_position(symbol)
         actual_entry = float(pos.avg_entry_price)
         shares       = int(float(pos.qty))
     except Exception as e:
-        log.warning(f"  {symbol}: get_position failed: {e} -- stop not placed this poll")
+        log.warning(f"  {symbol}: get_open_position failed: {e} -- stop not placed this poll")
         return False
 
     if actual_entry <= 0 or shares < 1:
@@ -144,17 +147,18 @@ def ensure_phase1_stop(api, symbol: str, state: dict) -> bool:
     stop_price = round(actual_entry * (1 - hard_stop_pct / 100), 2)
 
     try:
-        order = api.submit_order(
-            symbol        = symbol,
-            qty           = shares,
-            side          = "sell",
-            type          = "stop",
-            stop_price    = stop_price,
-            time_in_force = "gtc",
+        order = client.submit_order(
+            order_data=StopOrderRequest(
+                symbol        = symbol,
+                qty           = shares,
+                side          = OrderSide.SELL,
+                time_in_force = TimeInForce.GTC,
+                stop_price    = stop_price,
+            )
         )
         log.info(f"  HARD STOP {symbol}: {shares} shares @ stop=${stop_price:.2f} "
                  f"(entry=${actual_entry:.2f} -{hard_stop_pct:.1f}%)  order_id={order.id}")
-        state["positions"][symbol]["hard_stop_order_id"] = order.id
+        state["positions"][symbol]["hard_stop_order_id"] = str(order.id)
         state["positions"][symbol]["hard_stop_price"]    = stop_price
         state["positions"][symbol]["entry_price_actual"] = actual_entry
         log_event("alpaca_monitor", LogStatus.SUCCESS,
@@ -172,15 +176,13 @@ def ensure_phase1_stop(api, symbol: str, state: dict) -> bool:
         log_event("alpaca_monitor", LogStatus.ERROR,
                   f"Hard stop submission failed for {symbol}",
                   errors=[str(e)])
-        # This is capital-at-risk. If a stop can't be placed, the position is
-        # naked. Alert immediately.
         notify_error("alpaca_monitor",
                      f"Failed to place hard stop for {symbol}: {e}\n"
                      f"Position is NAKED until stop is placed.")
         return False
 
 
-def check_and_upgrade(api, symbol: str, current_price: float, state: dict) -> bool:
+def check_and_upgrade(client, symbol: str, current_price: float, state: dict) -> bool:
     pos_state = state.get("positions", {}).get(symbol)
     if not pos_state:
         return False
@@ -193,7 +195,6 @@ def check_and_upgrade(api, symbol: str, current_price: float, state: dict) -> bo
     if not entry or not activation_pct or not trail_pct:
         return False
 
-    # Update high water mark
     hwm = pos_state.get("high_water_mark", entry)
     if current_price > hwm:
         state["positions"][symbol]["high_water_mark"] = current_price
@@ -212,18 +213,15 @@ def check_and_upgrade(api, symbol: str, current_price: float, state: dict) -> bo
             import datetime as _dt
             entry_date = _dt.date.fromisoformat(entry_date_str)
             if _dt.date.today() <= entry_date:
-                # Today is the entry day -- Phase 2 not eligible yet
                 return False
         except Exception:
-            # Malformed entry_date -- proceed without cooldown guard rather
-            # than refusing all upgrades
             pass
 
     if phase == 1 and current_price >= activation_price:
         log.info(f"PHASE 2 TRIGGERED: {symbol} @ ${current_price:.2f} "
                  f"(entry=${entry:.2f} activation=${activation_price:.2f} "
                  f"+{activation_pct:.1f}%)")
-        return upgrade_to_phase2(api, symbol, current_price, trail_pct, state)
+        return upgrade_to_phase2(client, symbol, current_price, trail_pct, state)
 
     return False
 
@@ -255,7 +253,7 @@ def compute_partial_sell_pct(alpha_score: float, weekly_vol: float) -> float:
     return max(0.25, min(0.75, round(pct, 4)))
 
 
-def upgrade_to_phase2(api, symbol: str, current_price: float,
+def upgrade_to_phase2(client, symbol: str, current_price: float,
                       trail_pct: float, state: dict) -> bool:
     """Phase 2 upgrade: lock in gains with partial sell + trailing stop.
 
@@ -294,14 +292,18 @@ def upgrade_to_phase2(api, symbol: str, current_price: float,
     sell is an additive realization of gains, not a replacement for stop
     coverage. This makes every intermediate state safe.
     """
+    from alpaca.trading.requests import (
+        MarketOrderRequest, TrailingStopOrderRequest, GetOrdersRequest
+    )
+    from alpaca.trading.enums import OrderSide, OrderType, TimeInForce, QueryOrderStatus
+
     try:
         pos_state   = state.get("positions", {}).get(symbol, {})
         alpha_score = pos_state.get("alpha_score", 0.75)
         weekly_vol  = pos_state.get("weekly_vol", 0.20)
 
-        # Get current position qty
         try:
-            pos = api.get_position(symbol)
+            pos = client.get_open_position(symbol)
             total_qty = int(float(pos.qty))
         except Exception:
             log.error(f"  Could not get position for {symbol} -- skipping")
@@ -313,13 +315,14 @@ def upgrade_to_phase2(api, symbol: str, current_price: float,
 
         # STEP 1: Place trailing stop on the FULL position.
         # Coverage exists before we touch anything else.
-        trail_order = api.submit_order(
-            symbol        = symbol,
-            qty           = total_qty,
-            side          = "sell",
-            type          = "trailing_stop",
-            time_in_force = "gtc",
-            trail_percent = str(trail_pct),
+        trail_order = client.submit_order(
+            order_data=TrailingStopOrderRequest(
+                symbol        = symbol,
+                qty           = total_qty,
+                side          = OrderSide.SELL,
+                time_in_force = TimeInForce.GTC,
+                trail_percent = str(trail_pct),
+            )
         )
         log.info(f"  Step 1: Trailing stop placed: {symbol} {total_qty} shares "
                  f"trail={trail_pct}% order_id={trail_order.id}")
@@ -327,7 +330,7 @@ def upgrade_to_phase2(api, symbol: str, current_price: float,
         # STEP 2: Mark state phase=2 and save IMMEDIATELY.
         # This prevents re-upgrade even if the remaining steps fail.
         state["positions"][symbol]["phase"]                = 2
-        state["positions"][symbol]["trail_order_id"]       = trail_order.id
+        state["positions"][symbol]["trail_order_id"]       = str(trail_order.id)
         state["positions"][symbol]["phase2_activated_at"]  = current_price
         state["positions"][symbol]["trail_qty"]            = total_qty
         state["positions"][symbol]["partial_order_id"]     = None
@@ -336,16 +339,16 @@ def upgrade_to_phase2(api, symbol: str, current_price: float,
         log.info(f"  Step 2: State marked phase=2 and saved")
 
         # STEP 3: Cancel old hard stops. Trailing stop already covers position.
-        orders = api.list_orders(status="open")
+        orders = client.get_orders(filter=GetOrdersRequest(status=QueryOrderStatus.OPEN))
         cancelled = []
         for order in orders:
             if (order.symbol == symbol and
-                    order.order_type in ("stop", "stop_limit") and
-                    order.side == "sell" and
+                    order.order_type in (OrderType.STOP, OrderType.STOP_LIMIT) and
+                    order.side == OrderSide.SELL and
                     order.id != trail_order.id):
                 try:
-                    api.cancel_order(order.id)
-                    cancelled.append(order.id)
+                    client.cancel_order_by_id(order.id)
+                    cancelled.append(str(order.id))
                 except Exception as cancel_err:
                     log.warning(f"  Could not cancel stop {order.id}: {cancel_err}")
         if cancelled:
@@ -357,21 +360,21 @@ def upgrade_to_phase2(api, symbol: str, current_price: float,
         sell_pct   = compute_partial_sell_pct(alpha_score, weekly_vol)
         sell_qty   = int(total_qty * sell_pct)
 
-        # Guard: don't submit if split is degenerate
         if sell_qty < 1 or (total_qty - sell_qty) < 1:
             log.info(f"  Step 4: Partial sell skipped -- split {total_qty}×{sell_pct:.2f} "
                      f"produces degenerate qty ({sell_qty}/{total_qty - sell_qty})")
             partial_order_id = None
         else:
             try:
-                partial_order = api.submit_order(
-                    symbol        = symbol,
-                    qty           = sell_qty,
-                    side          = "sell",
-                    type          = "market",
-                    time_in_force = "day",
+                partial_order = client.submit_order(
+                    order_data=MarketOrderRequest(
+                        symbol        = symbol,
+                        qty           = sell_qty,
+                        side          = OrderSide.SELL,
+                        time_in_force = TimeInForce.DAY,
+                    )
                 )
-                partial_order_id = partial_order.id
+                partial_order_id = str(partial_order.id)
                 log.info(f"  Step 4: Partial sell: {symbol} {sell_qty} shares @ market "
                          f"(~${current_price:.2f})  order_id={partial_order.id}  "
                          f"(alpha={alpha_score:.3f} vol={weekly_vol:.3f} pct={sell_pct*100:.1f}%)")
@@ -383,12 +386,7 @@ def upgrade_to_phase2(api, symbol: str, current_price: float,
             except Exception as sell_err:
                 log.warning(f"  Step 4: Partial sell failed (non-fatal): {sell_err}")
                 partial_order_id = None
-                # Trailing stop already covers full position; partial sell
-                # is gain-realization optimization, not safety-critical.
 
-        # Phase 2 upgrade is the single most important intraday event -- send a
-        # high-priority notification since it means the position hit the profit
-        # threshold and we're locking in gains.
         entry = pos_state.get("entry_price_est") or pos_state.get("entry_price_actual", 0)
         gain_pct = ((current_price / entry) - 1) * 100 if entry else 0
         log_event("alpaca_monitor", LogStatus.SUCCESS,
@@ -431,7 +429,6 @@ def run(duration_minutes: int = 180):
               f"Starting monitor (duration={duration_minutes}min, "
               f"mode={'PAPER' if PAPER_MODE else 'LIVE'})")
 
-    # Holiday check -- no point monitoring on a closed market
     try:
         from automation.tz_utils import is_trading_day
         import datetime as dt
@@ -444,7 +441,7 @@ def run(duration_minutes: int = 180):
     except Exception as e:
         log.debug(f"Holiday check unavailable: {e} -- proceeding")
 
-    api        = get_alpaca()
+    client     = get_alpaca()
     end_time   = datetime.datetime.now() + datetime.timedelta(minutes=duration_minutes)
     poll_count = 0
     upgrades   = 0
@@ -457,8 +454,7 @@ def run(duration_minutes: int = 180):
             state   = load_state()
             tracked = state.get("positions", {})
 
-            # Get live positions from Alpaca
-            live_positions = {p.symbol: p for p in api.list_positions()}
+            live_positions = {p.symbol: p for p in client.get_all_positions()}
 
             if not live_positions:
                 log.info(f"Poll {poll_count}: No open positions in Alpaca account")
@@ -474,17 +470,13 @@ def run(duration_minutes: int = 180):
             changed = False
             for symbol, pos in live_positions.items():
                 try:
-                    # Use current_price from position object -- no extra API call needed
                     current_price = float(pos.current_price)
 
-                    # Ensure Phase 1 positions have their hard stop placed. On first poll
-                    # after entry, this submits the stop using the actual fill price. Called
-                    # before check_and_upgrade because Phase 2 upgrade cancels the hard stop.
-                    if ensure_phase1_stop(api, symbol, state):
+                    if ensure_phase1_stop(client, symbol, state):
                         changed = True
                         stops_placed += 1
 
-                    upgraded = check_and_upgrade(api, symbol, current_price, state)
+                    upgraded = check_and_upgrade(client, symbol, current_price, state)
                     if upgraded:
                         upgrades += 1
                         changed = True
@@ -518,8 +510,6 @@ def run(duration_minutes: int = 180):
 
     log.info(f"Monitor complete -- {poll_count} polls, {upgrades} Phase 2 upgrades")
 
-    # End-of-session summary. We don't notify on every monitor run (too noisy),
-    # but do notify if anything material happened or if error rate was high.
     metrics = {
         "polls":        poll_count,
         "upgrades":     upgrades,
@@ -535,7 +525,6 @@ def run(duration_minutes: int = 180):
                   f"Session quiet: {poll_count} polls, no phase transitions",
                   metrics=metrics)
 
-    # Alert if poll error rate is suspiciously high (>10% of polls failed)
     if poll_count > 10 and poll_errors > 0.10 * poll_count:
         notify_alert("alpaca_monitor",
                      f"High poll error rate: {poll_errors}/{poll_count} polls "

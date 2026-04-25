@@ -19,6 +19,11 @@
 #   ALPACA_WITHDRAWAL_AMOUNT   -- flat dollar amount to withdraw (e.g. "5000")
 #   ALPACA_WITHDRAWAL_PCT      -- % of weekly gains to withdraw (e.g. "0.50")
 #   (if both set, flat amount takes precedence)
+#
+# Migrated from `alpaca-trade-api` to `alpaca-py` (2026-04). The old SDK pinned
+# websockets<11 which conflicted with yfinance>=0.2.40 (needs websockets>=12).
+# alpaca-py uses request objects + enums; old string-based comparisons have
+# been converted to enum comparisons throughout.
 
 import json
 import logging
@@ -32,9 +37,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from automation.system_logger import log_event, LogStatus
 from automation.notifier import notify_alert, notify_error, notify_success
 
-# Ensure repo root on path
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-
 log = logging.getLogger(__name__)
 logging.basicConfig(
     level=logging.INFO,
@@ -45,10 +47,6 @@ logging.basicConfig(
 # ── CONFIGURATION ─────────────────────────────────────────────────────────────
 
 PAPER_MODE = os.environ.get("ALPACA_PAPER", "true").lower() != "false"
-
-PAPER_BASE_URL = "https://paper-api.alpaca.markets"
-LIVE_BASE_URL  = "https://api.alpaca.markets"
-BASE_URL       = PAPER_BASE_URL if PAPER_MODE else LIVE_BASE_URL
 
 DATA_DIR   = Path("data")
 SCORES_CSV = DATA_DIR / "scores_final.csv"
@@ -69,38 +67,13 @@ TRADE_STATE = DATA_DIR / "alpaca_state.json"  # tracks open positions
 #
 # For now: 10 positions is the fixed target. MIN_POSITIONS = 10 is a hard floor.
 
-# Target number of positions at the baseline deployment
 DEFAULT_POSITIONS = 10
-
-# Minimum positions to deploy. Below this, we still deploy what we have but
-# log a warning -- the qualifying pool was too narrow to hit the floor.
-# The system does not refuse to trade below this; it just surfaces the
-# condition via the observability layer so you can investigate the universe.
 MIN_POSITIONS = 10
-
-# Minimum dollar value per position. Transaction-cost floor: below this,
-# spread + commission drag dominates expected weekly return. At baseline
-# 10 positions, binds only for very small accounts (< $5000).
 MIN_POSITION_SIZE = 500.0
-
-# Maximum single position as % of total portfolio. Hard cap to prevent any
-# one position from dominating portfolio risk, even if sizing math would
-# otherwise produce a larger allocation.
 MAX_POSITION_PCT = 0.15
-
-# Minimum composite rank percentile to qualify for entry
-# Names below this threshold are excluded regardless of position count
-MIN_COMPOSITE_PERCENTILE = 0.70   # top 30% of universe
-
-# Maximum position size as % of stock's average daily volume
-# Prevents moving the market on entry/exit
-# At current capital this won't bind -- matters at $500k+
-MAX_ADV_PCT = 0.01   # 1% of average daily volume
-
-# Minimum stock price -- hard gate, no sub-$1 stocks
+MIN_COMPOSITE_PERCENTILE = 0.70
+MAX_ADV_PCT = 0.01
 MIN_PRICE = 1.00
-
-# Minimum average daily volume -- ensures basic liquidity
 MIN_AVG_VOLUME = 50000
 
 # Capital deployment buffer -- hold back this fraction of portfolio value when
@@ -120,22 +93,24 @@ CAPITAL_BUFFER_PCT = 0.05
 CIRCUIT_BREAKER_PCT = None   # e.g. 0.08 = exit if down 8% from Monday open
 
 # -- WITHDRAWAL PARAMETERS ----------------------------------------------------
-# Controlled by environment variables / GitHub secrets.
-# ALPACA_WITHDRAWAL_ENABLED = "true" to activate
-# ALPACA_WITHDRAWAL_AMOUNT  = flat dollar amount (e.g. "5000")
-# ALPACA_WITHDRAWAL_PCT     = fraction of weekly gains (e.g. "0.50" for 50%)
-# Minimum portfolio floor -- never withdraw if it would drop below this
 WITHDRAWAL_FLOOR = 10000.0
 
 
 # ── ALPACA CLIENT ─────────────────────────────────────────────────────────────
 
 def get_alpaca():
+    """Construct an alpaca-py TradingClient.
+
+    Returns the client directly. Order placement is via request objects
+    (MarketOrderRequest, StopOrderRequest, etc.) -- see the order helpers
+    below. Paper vs live is selected via the `paper` constructor arg, not
+    a base URL.
+    """
     try:
-        import alpaca_trade_api as tradeapi
+        from alpaca.trading.client import TradingClient
     except ImportError:
-        log.error("alpaca-trade-api not installed. Add to requirements.txt:")
-        log.error("  alpaca-trade-api>=3.0.0")
+        log.error("alpaca-py not installed. Add to requirements.txt:")
+        log.error("  alpaca-py>=0.30.0")
         sys.exit(1)
 
     key    = os.environ.get("ALPACA_API_KEY")
@@ -145,10 +120,10 @@ def get_alpaca():
         log.error("ALPACA_API_KEY and ALPACA_SECRET_KEY must be set")
         sys.exit(1)
 
-    api = tradeapi.REST(key, secret, BASE_URL, api_version="v2")
+    client = TradingClient(api_key=key, secret_key=secret, paper=PAPER_MODE)
     mode = "PAPER" if PAPER_MODE else "LIVE"
     log.info(f"Alpaca connected [{mode}]")
-    return api
+    return client
 
 
 # ── STATE MANAGEMENT ──────────────────────────────────────────────────────────
@@ -179,14 +154,11 @@ def compute_positions(scores: pd.DataFrame, portfolio_value: float) -> list[dict
 
     Returns list of dicts: {symbol, dollar_amount, shares, price}
     """
-    # Filter gates
     df = scores.copy()
 
-    # Price gate -- no sub-$1 stocks
     if "last_price" in df.columns:
         df = df[df["last_price"].notna() & (df["last_price"] >= MIN_PRICE)]
 
-    # Volume gate
     if "avg_vol_20d" in df.columns:
         df = df[df["avg_vol_20d"].notna() & (df["avg_vol_20d"] >= MIN_AVG_VOLUME)]
 
@@ -205,11 +177,9 @@ def compute_positions(scores: pd.DataFrame, portfolio_value: float) -> list[dict
         df = df[df["alpha_pct_rank"] >= MIN_COMPOSITE_PERCENTILE]
         log.warning("  composite_rank missing from scores -- falling back to alpha_pct_rank gate")
 
-    # Conviction gate -- very_high and high only
     if "conviction" in df.columns:
         df = df[df["conviction"].isin(["very_high", "high"])]
 
-    # Sort by composite rank (ascending = best first)
     sort_col = "composite_rank" if "composite_rank" in df.columns else "alpha_rank"
     df = df.sort_values(sort_col).reset_index(drop=True)
 
@@ -217,25 +187,9 @@ def compute_positions(scores: pd.DataFrame, portfolio_value: float) -> list[dict
         log.warning("No qualifying tickers after filters")
         return []
 
-    # Position count: baseline is DEFAULT_POSITIONS (10 @ 10% of capital).
-    # This is the canonical deployment shape; dynamic liquidity-driven growth
-    # beyond 10 will be added post-paper-trading once calibration data exists.
-    #
-    # Four bounds define the final count, applied in order:
-    #   1. max_by_capital   -- transaction-cost floor ($500/position). Only
-    #                          binds on very small accounts where 10 positions
-    #                          at 10% each would be < $500/position.
-    #   2. qualifying pool  -- can't hold more names than qualify for entry.
-    #   3. DEFAULT_POSITIONS -- target count (10).
-    #   4. MIN_POSITIONS    -- hard floor. If 1-3 drive count below this, we
-    #                          deploy below-floor and log a warning rather than
-    #                          refuse to trade. The alert surfaces "narrow
-    #                          qualifying pool" as a condition to investigate.
     max_by_capital = int(portfolio_value / MIN_POSITION_SIZE)
 
-    # Liquidity filter: the target position size (10% of capital) must be
-    # absorbable for every name in the deployed pool. Drop names where our
-    # position would exceed MAX_ADV_PCT of their average daily volume.
+    # Liquidity filter: target position size must be absorbable for every name.
     # At baseline 10%, this only bites on large capital + micro-cap names.
     if "avg_vol_20d" in df.columns and "last_price" in df.columns:
         target_position = portfolio_value / DEFAULT_POSITIONS
@@ -248,11 +202,8 @@ def compute_positions(scores: pd.DataFrame, portfolio_value: float) -> list[dict
         log.warning("No qualifying tickers after liquidity filter")
         return []
 
-    # Apply the three upper bounds, then check against MIN_POSITIONS floor
     n_positions = min(max_by_capital, len(df), DEFAULT_POSITIONS)
 
-    # Report which constraint bound the position count -- surfaces design
-    # signal every week (did transaction floor bite? qualifying pool? target?)
     if n_positions == max_by_capital and max_by_capital < DEFAULT_POSITIONS:
         bound_by = "transaction cost floor"
     elif n_positions == len(df) and len(df) < DEFAULT_POSITIONS:
@@ -261,13 +212,11 @@ def compute_positions(scores: pd.DataFrame, portfolio_value: float) -> list[dict
         bound_by = f"default target ({DEFAULT_POSITIONS})"
     log.info(f"  Position count bound by: {bound_by}")
 
-    # MIN_POSITIONS floor: do not refuse to trade below this, but surface it
     if n_positions < MIN_POSITIONS:
         log.warning(
             f"  Position count {n_positions} below MIN_POSITIONS={MIN_POSITIONS}; "
             f"deploying what's available. Review qualifying pool."
         )
-        # Notify -- this is a condition you want visibility on, not silence
         try:
             from automation.notifier import notify
             notify(
@@ -278,34 +227,21 @@ def compute_positions(scores: pd.DataFrame, portfolio_value: float) -> list[dict
                 priority="high",
             )
         except Exception:
-            pass  # non-fatal -- we're already in a degraded path
+            pass
 
-    # Build extended candidate pool -- up to 2x target count for fallback coverage.
-    # If primary candidates fail (untradable, halted, etc.) fallbacks ensure capital
-    # stays fully deployed rather than sitting idle.
-    #
-    # Each position is tagged is_primary/is_fallback in-place so run_entry doesn't
-    # have to re-derive the target count from the returned list length. Previously
-    # run_entry did `n_target = len(positions) // 2 or len(positions)` which under-
-    # counted when the qualifying pool was <2x target.
     n_candidates = min(n_positions * 2, len(df))
     df_candidates = df.head(n_candidates)
 
     log.info(f"Position sizing: target={n_positions} positions, "
              f"candidates={n_candidates} (fallback pool)")
-    # Apply capital buffer -- size positions against (portfolio * (1 - buffer))
-    # rather than full portfolio. Leaves headroom for Alpaca's order-submit
-    # reservation overhead and intraday price movement between last_price
-    # and actual fill. See CAPITAL_BUFFER_PCT constant for rationale.
+
     deployable_capital = portfolio_value * (1 - CAPITAL_BUFFER_PCT)
     log.info(f"  Capital: ${portfolio_value:,.0f}  "
              f"Deployable (after {CAPITAL_BUFFER_PCT*100:.0f}% buffer): ${deployable_capital:,.0f}  "
              f"Per position: ${deployable_capital/n_positions:,.0f}")
 
-    # Equal weight based on target count (not candidate count), using buffered capital
     position_size = deployable_capital / n_positions
 
-    # Apply max position cap
     max_position = portfolio_value * MAX_POSITION_PCT
     if position_size > max_position:
         log.warning(f"Position size ${position_size:,.0f} exceeds "
@@ -317,7 +253,7 @@ def compute_positions(scores: pd.DataFrame, portfolio_value: float) -> list[dict
         price = float(row.get("last_price", 0))
         if price <= 0:
             continue
-        shares = int(position_size / price)  # whole shares only
+        shares = int(position_size / price)
         if shares < 1:
             continue
         actual_size = shares * price
@@ -334,17 +270,10 @@ def compute_positions(scores: pd.DataFrame, portfolio_value: float) -> list[dict
             "suggested_hard_stop_pct":   row.get("suggested_hard_stop_pct"),
             "suggested_activation_pct":  row.get("suggested_activation_pct"),
             "suggested_trail_pct":       row.get("suggested_trail_pct"),
-            # Primary / fallback flag. First n_positions are primaries; remainder are fallbacks.
             "is_primary":  idx < n_positions,
             "is_fallback": idx >= n_positions,
         })
 
-    # Compute deployment stats separately for primaries (what will actually
-    # get submitted absent failures) and total including fallbacks.
-    # Previously the log reported the total-including-fallbacks and showed
-    # "199.8% deployed" which was alarming but cosmetically wrong -- the
-    # actual deployment target is primaries only; fallbacks only replace
-    # failed primaries.
     primary_deployed = sum(p["dollar_size"] for p in positions if p["is_primary"])
     total_planned    = sum(p["dollar_size"] for p in positions)
     log.info(f"  Primaries deploy: ${primary_deployed:,.0f} / ${portfolio_value:,.0f} "
@@ -358,14 +287,16 @@ def compute_positions(scores: pd.DataFrame, portfolio_value: float) -> list[dict
 # ── ENTRY (MONDAY 2:30 PM CT) ─────────────────────────────────────────────────
 
 def run_entry():
+    from alpaca.trading.requests import MarketOrderRequest
+    from alpaca.trading.enums import OrderSide, TimeInForce
+
     log.info("=" * 60)
     log.info("ALPACA TRADER -- MONDAY ENTRY")
     log.info(f"MODE: {'PAPER' if PAPER_MODE else '*** LIVE ***'}")
     log.info("=" * 60)
 
-    api = get_alpaca()
+    client = get_alpaca()
 
-    # Load scores
     if not SCORES_CSV.exists():
         log.error("No scores_final.csv -- run weekly pipeline first")
         return
@@ -373,7 +304,6 @@ def run_entry():
     scores = pd.read_csv(SCORES_CSV)
     log.info(f"Loaded {len(scores):,} scored tickers")
 
-    # Load regime
     regime = "unknown"
     if REGIME_JSON.exists():
         with open(REGIME_JSON) as f:
@@ -381,27 +311,22 @@ def run_entry():
         regime = regime_data.get("regime", "unknown")
     log.info(f"Regime: {regime}")
 
-    # Get portfolio value
-    account = api.get_account()
+    account = client.get_account()
     portfolio_value = float(account.portfolio_value)
     cash            = float(account.cash)
     log.info(f"Portfolio: ${portfolio_value:,.2f}  Cash: ${cash:,.2f}")
 
-    # MARGIN GUARD -- always deploy cash only, never margin
-    # Cash < portfolio_value means margin is available but we never touch it
     deployable = cash
     if cash <= 0:
         log.warning("No settled cash available -- skipping entry")
         return
     if cash < portfolio_value * 0.45:
-        # Sanity check -- if cash is less than 45% of portfolio value something is wrong
         log.warning(f"Cash ${cash:,.2f} is unusually low vs portfolio ${portfolio_value:,.2f} "
                     f"-- possible unsettled trades or margin usage. Skipping entry.")
         return
     log.info(f"Deployable (cash only, no margin): ${deployable:,.2f}")
 
-    # Check for existing positions -- don't double-enter
-    existing = {p.symbol for p in api.list_positions()}
+    existing = {p.symbol for p in client.get_all_positions()}
     if existing:
         log.warning(f"Already holding {len(existing)} positions: {existing}")
         log.warning("Skipping entry -- close existing positions first")
@@ -413,17 +338,12 @@ def run_entry():
         log.warning("No positions to enter")
         return
 
-    # Partition positions using the is_primary/is_fallback tags set by compute_positions.
-    # Do not re-derive n_target from len(positions)//2 -- that silently under-counts when
-    # the qualifying pool was smaller than 2x target (which is common on narrow universes
-    # or after restrictive gates).
     primaries = [p for p in positions if p.get("is_primary")]
     fallbacks = [p for p in positions if p.get("is_fallback")]
     n_target  = len(primaries) if primaries else len(positions)
 
     log.info(f"Entry plan: {n_target} primary targets + {len(fallbacks)} fallbacks")
 
-    # Place orders -- use fallbacks if primaries fail
     filled    = []
     failed    = []
     skipped   = []
@@ -436,19 +356,20 @@ def run_entry():
 
     for p in candidates_queue:
         if len(filled) >= n_target:
-            break  # reached target -- stop even if fallbacks remain
+            break
 
         sym    = p["symbol"]
         shares = p["shares"]
         is_fallback = p.get("is_fallback", False)
 
         try:
-            order = api.submit_order(
-                symbol        = sym,
-                qty           = shares,
-                side          = "buy",
-                type          = "market",
-                time_in_force = "cls",
+            order = client.submit_order(
+                order_data=MarketOrderRequest(
+                    symbol        = sym,
+                    qty           = shares,
+                    side          = OrderSide.BUY,
+                    time_in_force = TimeInForce.CLS,
+                )
             )
             tag = " [FALLBACK]" if is_fallback else ""
             log.info(f"  ORDER{tag} {sym:<8} {shares:>4} shares @ ~${p['price']:.2f}  "
@@ -467,7 +388,7 @@ def run_entry():
                 "is_fallback":          is_fallback,
                 "phase":                1,
                 "high_water_mark":      p["price"],
-                "order_id":             order.id,
+                "order_id":             str(order.id),
             }
         except Exception as e:
             log.error(f"  FAILED {sym}: {e}")
@@ -475,7 +396,6 @@ def run_entry():
             if is_fallback:
                 log.warning(f"  Fallback {sym} also failed -- continuing to next")
 
-    # Log any unused fallbacks
     unused = [p["symbol"] for p in fallbacks if p["symbol"] not in filled and p["symbol"] not in failed]
     if unused:
         skipped = unused
@@ -491,8 +411,6 @@ def run_entry():
     if failed:
         log.warning(f"  Failed: {failed}")
 
-    # Capital-at-risk: always notify on entry completion. Success/failure asymmetry:
-    # a normal entry is info-level, any failure is alert-level.
     if failed:
         log_event("alpaca_trader", LogStatus.WARNING,
                   f"Entry: {len(filled)} filled, {len(failed)} FAILED",
@@ -520,7 +438,7 @@ def run_entry():
                        f"{('Fallbacks used: ' + ', '.join(fallback_used)) if fallback_used else ''}")
 
 
-# ── EXIT (FRIDAY 2:30 PM CT) ──────────────────────────────────────────────────
+# ── PLACE STOPS (MONDAY 3:10 PM CT) ───────────────────────────────────────────
 
 def run_place_stops():
     """Place Phase 1 hard stops on Monday-entered positions.
@@ -540,15 +458,17 @@ def run_place_stops():
     Mondays. Idempotent: if run again, adopts existing stops rather than
     duplicating.
     """
+    from alpaca.trading.requests import StopOrderRequest, GetOrdersRequest
+    from alpaca.trading.enums import OrderSide, OrderType, TimeInForce, QueryOrderStatus
+
     log.info("=" * 60)
     log.info("ALPACA TRADER -- MONDAY POST-CLOSE STOP PLACEMENT")
     log.info(f"MODE: {'PAPER' if PAPER_MODE else '*** LIVE ***'}")
     log.info("=" * 60)
 
-    api = get_alpaca()
+    client = get_alpaca()
 
-    # Need live positions to get actual fill prices
-    live_positions = api.list_positions()
+    live_positions = client.get_all_positions()
     if not live_positions:
         log.info("No open positions -- nothing to stop")
         return
@@ -569,13 +489,18 @@ def run_place_stops():
     skipped   = []
     failed    = []
 
+    # Pull all open orders once -- used to check for existing stops we should adopt
+    try:
+        open_orders = client.get_orders(filter=GetOrdersRequest(status=QueryOrderStatus.OPEN))
+    except Exception as e:
+        log.warning(f"  list open orders failed: {e} -- proceeding without adoption check")
+        open_orders = []
+
     for symbol, pos_state in state_positions.items():
-        # Skip if already tracked
         if pos_state.get("hard_stop_order_id"):
             skipped.append((symbol, "already_tracked"))
             continue
 
-        # Must be in live positions
         live = live_by_symbol.get(symbol)
         if not live:
             log.warning(f"  {symbol}: in state but not in Alpaca live positions -- skipping")
@@ -588,25 +513,20 @@ def run_place_stops():
             skipped.append((symbol, "no_pct"))
             continue
 
-        # Check for existing stop orders (adopt rather than duplicate)
-        try:
-            open_orders = api.list_orders(status="open")
-            adopted_id = None
-            for order in open_orders:
-                if (order.symbol == symbol and
-                        order.order_type in ("stop", "stop_limit") and
-                        order.side == "sell"):
-                    adopted_id = order.id
-                    break
-            if adopted_id:
-                log.info(f"  {symbol}: adopting existing stop {adopted_id}")
-                state["positions"][symbol]["hard_stop_order_id"] = adopted_id
-                adopted.append(symbol)
-                continue
-        except Exception as e:
-            log.warning(f"  {symbol}: list_orders check failed: {e} -- proceeding to submit")
+        # Check for existing stop orders for this symbol (adopt rather than duplicate)
+        adopted_id = None
+        for order in open_orders:
+            if (order.symbol == symbol and
+                    order.order_type in (OrderType.STOP, OrderType.STOP_LIMIT) and
+                    order.side == OrderSide.SELL):
+                adopted_id = str(order.id)
+                break
+        if adopted_id:
+            log.info(f"  {symbol}: adopting existing stop {adopted_id}")
+            state["positions"][symbol]["hard_stop_order_id"] = adopted_id
+            adopted.append(symbol)
+            continue
 
-        # Submit new stop using actual fill price
         try:
             actual_entry = float(live.avg_entry_price)
             shares       = int(float(live.qty))
@@ -623,17 +543,18 @@ def run_place_stops():
         stop_price = round(actual_entry * (1 - hard_stop_pct / 100), 2)
 
         try:
-            order = api.submit_order(
-                symbol        = symbol,
-                qty           = shares,
-                side          = "sell",
-                type          = "stop",
-                stop_price    = stop_price,
-                time_in_force = "gtc",
+            order = client.submit_order(
+                order_data=StopOrderRequest(
+                    symbol        = symbol,
+                    qty           = shares,
+                    side          = OrderSide.SELL,
+                    time_in_force = TimeInForce.GTC,
+                    stop_price    = stop_price,
+                )
             )
             log.info(f"  HARD STOP {symbol}: {shares} shares @ stop=${stop_price:.2f} "
                      f"(entry=${actual_entry:.2f} -{hard_stop_pct:.1f}%)  order_id={order.id}")
-            state["positions"][symbol]["hard_stop_order_id"] = order.id
+            state["positions"][symbol]["hard_stop_order_id"] = str(order.id)
             state["positions"][symbol]["hard_stop_price"]    = stop_price
             state["positions"][symbol]["entry_price_actual"] = actual_entry
             placed.append(symbol)
@@ -679,17 +600,19 @@ def run_exit():
     next week's entry saw empty state but Alpaca still had open positions,
     requiring manual intervention.
     """
+    from alpaca.trading.requests import MarketOrderRequest, GetOrdersRequest
+    from alpaca.trading.enums import OrderSide, OrderType, TimeInForce, QueryOrderStatus
+
     log.info("=" * 60)
     log.info("ALPACA TRADER -- FRIDAY EXIT")
     log.info(f"MODE: {'PAPER' if PAPER_MODE else '*** LIVE ***'}")
     log.info("=" * 60)
 
-    api = get_alpaca()
+    client = get_alpaca()
 
-    positions = api.list_positions()
+    positions = client.get_all_positions()
     if not positions:
         log.info("No open positions to close")
-        # Still clear state -- nothing to close means nothing to track
         state = load_state()
         state["positions"]       = {}
         state["entry_date"]      = None
@@ -697,7 +620,7 @@ def run_exit():
         save_state(state)
         return
 
-    account          = api.get_account()
+    account          = client.get_account()
     portfolio_value  = float(account.portfolio_value)
     state            = load_state()
     week_open        = state.get("week_open_value") or portfolio_value
@@ -705,21 +628,15 @@ def run_exit():
     log.info(f"Week return: {week_return*100:+.2f}%  "
              f"(${week_open:,.0f} -> ${portfolio_value:,.0f})")
 
-    # Circuit breaker check (informational -- does not alter behavior since
-    # we're already exiting all positions. Kept for observability parity with
-    # the non-exit circuit breaker path.)
     if CIRCUIT_BREAKER_PCT and week_return < -CIRCUIT_BREAKER_PCT:
         log.warning(f"CIRCUIT BREAKER: down {week_return*100:.1f}% on exit day "
                     f"(threshold {CIRCUIT_BREAKER_PCT*100:.1f}%)")
 
     # ── STEP 1: CANCEL ALL OUTSTANDING STOPS ─────────────────────────────
-    # Collect all open orders, identify the ones that overlap with our
-    # positions, cancel them. MOC sells would otherwise collide with active
-    # stop orders (same symbol, same side).
     position_symbols = {p.symbol for p in positions}
 
     try:
-        open_orders = api.list_orders(status="open")
+        open_orders = client.get_orders(filter=GetOrdersRequest(status=QueryOrderStatus.OPEN))
     except Exception as e:
         log.error(f"Could not list open orders: {e} -- proceeding to sells "
                   f"but some may fail on stop collision")
@@ -728,15 +645,15 @@ def run_exit():
     stops_to_cancel = [
         o for o in open_orders
         if o.symbol in position_symbols
-        and o.side == "sell"
-        and o.order_type in ("stop", "stop_limit", "trailing_stop")
+        and o.side == OrderSide.SELL
+        and o.order_type in (OrderType.STOP, OrderType.STOP_LIMIT, OrderType.TRAILING_STOP)
     ]
 
     cancelled_stops = []
     for order in stops_to_cancel:
         try:
-            api.cancel_order(order.id)
-            cancelled_stops.append((order.symbol, order.order_type, order.id))
+            client.cancel_order_by_id(order.id)
+            cancelled_stops.append((order.symbol, str(order.order_type), str(order.id)))
             log.info(f"  Cancelled {order.order_type} {order.id} for {order.symbol}")
         except Exception as e:
             log.warning(f"  Could not cancel {order.id} for {order.symbol}: {e}")
@@ -751,15 +668,15 @@ def run_exit():
 
     for pos in positions:
         sym    = pos.symbol
-        # int(float(...)) handles both "1723" and "1723.0" responses
         shares = int(float(pos.qty))
         try:
-            api.submit_order(
-                symbol        = sym,
-                qty           = shares,
-                side          = "sell",
-                type          = "market",
-                time_in_force = "cls",   # market-on-close
+            client.submit_order(
+                order_data=MarketOrderRequest(
+                    symbol        = sym,
+                    qty           = shares,
+                    side          = OrderSide.SELL,
+                    time_in_force = TimeInForce.CLS,
+                )
             )
             ret_pct = float(pos.unrealized_plpc) * 100
             log.info(f"  CLOSE {sym:<8} {shares:>4} shares  "
@@ -776,33 +693,24 @@ def run_exit():
 
     log.info(f"Exit complete: {len(closed)} closed, {len(failed)} failed")
 
-    # Handle withdrawal if enabled
-    run_withdrawal(api, portfolio_value, week_return, week_open)
+    run_withdrawal(client, portfolio_value, week_return, week_open)
 
     # ── STEP 3: UPDATE STATE ──────────────────────────────────────────────
-    # Remove successfully-closed positions from state. Leave failed positions
-    # in state so next week's entry sees them (and its existing-positions
-    # check will refuse to enter until they're manually resolved).
     if state.get("positions"):
         for sym in closed:
             state["positions"].pop(sym, None)
 
     if not failed and not state.get("positions"):
-        # All cleared -- full reset
         state["positions"]       = {}
         state["entry_date"]      = None
         state["week_open_value"] = None
     elif failed:
-        # Partial failure -- keep entry_date/week_open so we preserve context
-        # for the failed symbols. Next week's entry check will halt and alert.
         log.warning(f"  {len(failed)} positions failed to close -- "
                     f"state retains these symbols for next-week reconciliation")
 
     save_state(state)
 
     # ── STEP 4: NOTIFY ─────────────────────────────────────────────────────
-    # Capital-at-risk: notify on every exit completion. Weekly P&L is the
-    # single most important number to surface.
     metrics = {
         "closed":             len(closed),
         "failed":             len(failed),
@@ -848,19 +756,23 @@ def run_exit():
 #
 # Floor: WITHDRAWAL_FLOOR = $10,000 -- never withdraw below this portfolio value
 # Income pct: ALPACA_WITHDRAWAL_PCT = "0.25" for 25% of weekly gains
+#
+# NOTE: The actual ACH transfer call is commented out below. alpaca-py exposes
+# transfers only through BrokerClient (for broker accounts), not TradingClient
+# (standard self-directed). This was already a placeholder in the prior SDK.
+# Live this when account type is confirmed and the right SDK surface is wired.
 
-def execute_ach(api, amount: float, reason: str):
+def execute_ach(client, amount: float, reason: str):
     """Execute ACH transfer to linked bank account."""
     try:
         log.info(f"WITHDRAWAL [{reason}]: ${amount:,.2f} -> linked bank account")
-        log.info("  (ACH transfer API call placeholder -- uncomment when bank linked)")
-        # Uncomment when ready:
-        # api.initiate_transfer(
-        #     transfer_type="ach",
-        #     direction="outgoing",
-        #     timing="immediate",
-        #     amount=str(round(amount, 2)),
-        # )
+        log.info("  (ACH transfer API call placeholder -- requires BrokerClient + broker account)")
+        # Standard TradingClient does not expose ACH initiation. For broker
+        # accounts, use:
+        #   from alpaca.broker.client import BrokerClient
+        #   from alpaca.broker.requests import CreateACHTransferRequest
+        #   broker = BrokerClient(api_key=..., secret_key=..., sandbox=PAPER_MODE)
+        #   broker.create_ach_transfer_for_account(account_id, CreateACHTransferRequest(...))
     except Exception as e:
         log.error(f"ACH transfer failed: {e}")
 
@@ -880,21 +792,19 @@ def apply_floor(amount: float, portfolio_value: float, reason: str) -> float:
     return amount
 
 
-def run_withdrawal(api, portfolio_value: float, week_return: float, week_open: float):
+def run_withdrawal(client, portfolio_value: float, week_return: float, week_open: float):
     week_gains = portfolio_value - week_open
 
-    # ── LUMP SUM (fires regardless of mode, one-time) ──────────────────────
     lump_str = os.environ.get("ALPACA_LUMP_SUM_AMOUNT", "").strip()
     if lump_str and float(lump_str) > 0:
         lump = apply_floor(float(lump_str), portfolio_value, "Lump sum")
         if lump > 0:
-            execute_ach(api, lump, "lump sum")
+            execute_ach(client, lump, "lump sum")
             log.info("  Clear ALPACA_LUMP_SUM_AMOUNT secret manually to prevent re-firing")
-            portfolio_value -= lump  # update for subsequent floor checks
+            portfolio_value -= lump
     else:
         log.info("Lump sum: not set")
 
-    # ── WEEKLY MODE ────────────────────────────────────────────────────────
     mode = os.environ.get("ALPACA_WITHDRAWAL_MODE", "off").lower().strip()
     log.info(f"Withdrawal mode: {mode}")
 
@@ -909,7 +819,7 @@ def run_withdrawal(api, portfolio_value: float, week_return: float, week_open: f
         amount = apply_floor(week_gains, portfolio_value, "Debt payoff")
         if amount > 0:
             log.info(f"  Debt mode: withdrawing 100% of gains ${week_gains:,.0f}")
-            execute_ach(api, amount, "debt payoff")
+            execute_ach(client, amount, "debt payoff")
 
     elif mode == "income":
         pct_str = os.environ.get("ALPACA_WITHDRAWAL_PCT", "0.25").strip()
@@ -922,7 +832,7 @@ def run_withdrawal(api, portfolio_value: float, week_return: float, week_open: f
         if amount > 0:
             log.info(f"  Income mode: withdrawing {pct*100:.0f}% of "
                      f"${week_gains:,.0f} gains = ${amount:,.0f}")
-            execute_ach(api, amount, f"income {pct*100:.0f}%")
+            execute_ach(client, amount, f"income {pct*100:.0f}%")
 
     else:
         log.warning(f"  Unknown withdrawal mode '{mode}' -- no withdrawal")
@@ -932,17 +842,20 @@ def run_withdrawal(api, portfolio_value: float, week_return: float, week_open: f
 # ── CIRCUIT BREAKER (MID-WEEK CHECK) ─────────────────────────────────────────
 
 def run_circuit_breaker_check():
+    from alpaca.trading.requests import MarketOrderRequest
+    from alpaca.trading.enums import OrderSide, TimeInForce
+
     if not CIRCUIT_BREAKER_PCT:
         return
 
-    api   = get_alpaca()
-    state = load_state()
+    client = get_alpaca()
+    state  = load_state()
     week_open = state.get("week_open_value")
 
     if not week_open:
         return
 
-    account         = api.get_account()
+    account         = client.get_account()
     portfolio_value = float(account.portfolio_value)
     week_return     = (portfolio_value - week_open) / week_open
 
@@ -952,15 +865,16 @@ def run_circuit_breaker_check():
     if week_return < -CIRCUIT_BREAKER_PCT:
         log.warning(f"CIRCUIT BREAKER TRIGGERED: {week_return*100:.1f}% drawdown")
         log.warning("Closing all positions...")
-        positions = api.list_positions()
+        positions = client.get_all_positions()
         for pos in positions:
             try:
-                api.submit_order(
-                    symbol        = pos.symbol,
-                    qty           = int(pos.qty),
-                    side          = "sell",
-                    type          = "market",
-                    time_in_force = "day",
+                client.submit_order(
+                    order_data=MarketOrderRequest(
+                        symbol        = pos.symbol,
+                        qty           = int(float(pos.qty)),
+                        side          = OrderSide.SELL,
+                        time_in_force = TimeInForce.DAY,
+                    )
                 )
                 log.info(f"  Emergency close: {pos.symbol}")
             except Exception as e:
@@ -979,7 +893,6 @@ def run(mode: str = "entry"):
 
     try:
         if mode == "entry":
-            # Check if today is the correct entry day accounting for holidays
             entry_day = get_entry_day(today)
             if entry_day == "skip":
                 log.info("Both Monday and Tuesday are holidays -- skipping entry this week")
@@ -996,7 +909,6 @@ def run(mode: str = "entry"):
             run_entry()
 
         elif mode == "exit":
-            # Check if today is the correct exit day accounting for holidays
             exit_day = get_exit_day(today)
             if exit_day == "skip":
                 log.info("Both Friday and Thursday are holidays -- skipping exit this week")
@@ -1019,10 +931,6 @@ def run(mode: str = "entry"):
             run_circuit_breaker_check()
 
         elif mode == "place_stops":
-            # Post-entry-day stop placement. Runs ~5 minutes after Monday MOC
-            # close to place hard stops on fresh positions using actual fill
-            # prices. Previously handled only by Tuesday morning monitor;
-            # this closes the ~17 hour exposure gap.
             if not is_trading_day(today):
                 log.info("Market holiday -- skipping stop placement")
                 return
@@ -1039,7 +947,6 @@ def run(mode: str = "entry"):
         log_event("alpaca_trader", LogStatus.ERROR,
                   f"Unhandled exception during {mode}",
                   errors=[str(e)])
-        # Capital-at-risk workflow -- any unhandled error MUST alert immediately.
         notify_error("alpaca_trader", f"{mode.upper()} crashed: {e}")
         raise
 
