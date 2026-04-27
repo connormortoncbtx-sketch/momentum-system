@@ -24,6 +24,16 @@
 # websockets<11 which conflicted with yfinance>=0.2.40 (needs websockets>=12).
 # alpaca-py uses request objects + enums; old string-based comparisons have
 # been converted to enum comparisons throughout.
+#
+# 2026-04-27 PATCH NOTES — capital deployment efficiency:
+#   1. Added PER_POSITION_SLIPPAGE_CUSHION (50 bps) — explicit per-position
+#      target shrinkage replaces accidental rounding-as-cushion. Was leaking
+#      $0-200/position depending on share price; now consistent ~50 bps under.
+#   2. compute_positions param renamed `portfolio_value` → `deployable` to
+#      match what callers actually pass (cash, not portfolio_value). Latent
+#      bug fix: parameter name claimed one thing but contract was the other.
+#      Today's $100k paper run was unaffected (cash == portfolio_value), but
+#      this would have misbehaved with unsettled trades or margin in play.
 
 import json
 import logging
@@ -76,6 +86,24 @@ MAX_ADV_PCT = 0.01
 MIN_PRICE = 1.00
 MIN_AVG_VOLUME = 50000
 
+# Per-position slippage cushion -- shrink each position's target dollar size
+# by this fraction before computing share count. Replaces accidental
+# rounding-as-cushion with an explicit, tunable buffer that handles:
+#
+#   1. The price used for sizing (last_price from scores, or even a fresh
+#      quote) is a snapshot. The actual MOC fill is at the closing print,
+#      which can drift up from the snapshot during the final hour.
+#   2. Without this, share count was int(position_size / price), which floors
+#      to a different leakage on every ticker depending on share price --
+#      a $50 stock leaks $0-50; a $200 stock leaks $0-200. Inconsistent.
+#
+# Calibration: 50 bps fits typical MOC drift on liquid mid-caps. If post-entry
+# review shows the average undeployment is consistently smaller than this,
+# tighten to 30 bps. If fills above-snapshot start showing up frequently,
+# loosen to 75 bps. This constant is independent of CAPITAL_BUFFER_PCT --
+# they protect against different failure modes.
+PER_POSITION_SLIPPAGE_CUSHION = 0.005
+
 # Capital deployment buffer -- hold back this fraction of portfolio value when
 # sizing MOC orders. Rationale: Alpaca reserves estimated cost at order-submit
 # time (not fill time), using last_price as the basis. If market moves up
@@ -86,6 +114,9 @@ MIN_AVG_VOLUME = 50000
 # 2026-04-20 incident: 9 × $10k orders on $100k account -- 10th order failed
 # because Alpaca's $90k reservation + overhead left <$10k for the final order.
 # A 5% buffer ($9.5k target per position) would have allowed all 10 to fill.
+#
+# This is account-level protection. PER_POSITION_SLIPPAGE_CUSHION (above) is
+# per-position protection. Both are needed; they handle different cases.
 CAPITAL_BUFFER_PCT = 0.05
 
 # Circuit breaker -- if portfolio drops this % from week-open value, exit all
@@ -142,15 +173,23 @@ def save_state(state: dict):
 
 # ── POSITION SIZING ───────────────────────────────────────────────────────────
 
-def compute_positions(scores: pd.DataFrame, portfolio_value: float) -> list[dict]:
+def compute_positions(scores: pd.DataFrame, deployable: float) -> list[dict]:
     """
     Dynamically determine position list and sizing.
+
+    `deployable` is the cash actually available for entries (NOT the full
+    portfolio value). Caller is responsible for passing settled cash to
+    avoid over-sizing against unsettled trades or margin. Renamed from
+    `portfolio_value` (2026-04-27) -- the prior name was misleading because
+    contract was always cash, never total value.
 
     Logic:
     1. Filter to tradable, qualifying names
     2. Compute max positions from capital / min position size
     3. Equal-weight capital across qualifying positions
     4. Apply individual position caps
+    5. Per-position slippage cushion (bottom of loop) leaves explicit ~50 bps
+       under target on every position rather than relying on integer rounding
 
     Returns list of dicts: {symbol, dollar_amount, shares, price}
     """
@@ -187,12 +226,12 @@ def compute_positions(scores: pd.DataFrame, portfolio_value: float) -> list[dict
         log.warning("No qualifying tickers after filters")
         return []
 
-    max_by_capital = int(portfolio_value / MIN_POSITION_SIZE)
+    max_by_capital = int(deployable / MIN_POSITION_SIZE)
 
     # Liquidity filter: target position size must be absorbable for every name.
     # At baseline 10%, this only bites on large capital + micro-cap names.
     if "avg_vol_20d" in df.columns and "last_price" in df.columns:
-        target_position = portfolio_value / DEFAULT_POSITIONS
+        target_position = deployable / DEFAULT_POSITIONS
         df["adv_dollar"] = df["avg_vol_20d"] * df["last_price"]
         df["max_by_liquidity"] = df["adv_dollar"] * MAX_ADV_PCT
         df["liquidity_ok"] = df["max_by_liquidity"] >= target_position
@@ -235,25 +274,36 @@ def compute_positions(scores: pd.DataFrame, portfolio_value: float) -> list[dict
     log.info(f"Position sizing: target={n_positions} positions, "
              f"candidates={n_candidates} (fallback pool)")
 
-    deployable_capital = portfolio_value * (1 - CAPITAL_BUFFER_PCT)
-    log.info(f"  Capital: ${portfolio_value:,.0f}  "
-             f"Deployable (after {CAPITAL_BUFFER_PCT*100:.0f}% buffer): ${deployable_capital:,.0f}  "
-             f"Per position: ${deployable_capital/n_positions:,.0f}")
+    deployable_capital = deployable * (1 - CAPITAL_BUFFER_PCT)
+    log.info(f"  Deployable cash: ${deployable:,.0f}  "
+             f"After {CAPITAL_BUFFER_PCT*100:.0f}% account buffer: ${deployable_capital:,.0f}  "
+             f"Per position target: ${deployable_capital/n_positions:,.0f}  "
+             f"After {PER_POSITION_SLIPPAGE_CUSHION*100:.1f}% slippage cushion: "
+             f"${(deployable_capital/n_positions)*(1-PER_POSITION_SLIPPAGE_CUSHION):,.0f}")
 
     position_size = deployable_capital / n_positions
 
-    max_position = portfolio_value * MAX_POSITION_PCT
+    max_position = deployable * MAX_POSITION_PCT
     if position_size > max_position:
         log.warning(f"Position size ${position_size:,.0f} exceeds "
                     f"{MAX_POSITION_PCT*100:.0f}% cap -- using ${max_position:,.0f}")
         position_size = max_position
+
+    # Apply per-position slippage cushion AFTER caps. The cushion shrinks the
+    # target by a fixed fraction; integer floor of (target / price) gives us a
+    # share count whose actual dollar deployment lands consistently ~50 bps
+    # under the cushioned target on every ticker, regardless of share price.
+    sized_target = position_size * (1 - PER_POSITION_SLIPPAGE_CUSHION)
 
     positions = []
     for idx, (_, row) in enumerate(df_candidates.iterrows()):
         price = float(row.get("last_price", 0))
         if price <= 0:
             continue
-        shares = int(position_size / price)
+        # int() of a positive float is equivalent to floor(); intent is floor.
+        # Result: actual_size <= sized_target <= position_size in all cases,
+        # which is what we want for a "stay under the cap" deployment policy.
+        shares = int(sized_target / price)
         if shares < 1:
             continue
         actual_size = shares * price
@@ -276,8 +326,8 @@ def compute_positions(scores: pd.DataFrame, portfolio_value: float) -> list[dict
 
     primary_deployed = sum(p["dollar_size"] for p in positions if p["is_primary"])
     total_planned    = sum(p["dollar_size"] for p in positions)
-    log.info(f"  Primaries deploy: ${primary_deployed:,.0f} / ${portfolio_value:,.0f} "
-             f"({primary_deployed/portfolio_value*100:.1f}% of capital)")
+    log.info(f"  Primaries deploy: ${primary_deployed:,.0f} / ${deployable:,.0f} "
+             f"({primary_deployed/deployable*100:.1f}% of deployable cash)")
     log.info(f"  Fallback pool:    ${total_planned - primary_deployed:,.0f} "
              f"(used only if primaries fail)")
 
