@@ -30,13 +30,38 @@ on:
 permissions:
   contents: write
 
-# NOTE: three overlapping jobs (8:30, 11:15, 14:00 CT) are by DESIGN to cover
-# the full market session. Concurrency group must allow them to coexist, so we
-# group by the cron hour to only prevent the same job from double-firing on a
-# DST boundary day.
+# CONCURRENCY DESIGN (revised 2026-04-27):
+#
+# Previous design parameterised the group by github.event.schedule, intending
+# to let the three time-of-day jobs (8:30/11:15/14:00 CT) coexist while
+# preventing same-job double-fire on DST boundaries. That design was broken:
+# the dual-cron pattern fires both CDT and CST variants every weekday (not
+# just on DST boundary days), and each cron string is a unique group key,
+# so the CDT and CST variants of the SAME logical job ran simultaneously.
+# Result: up to 6 simultaneous monitor runs per day, racing on the alpaca
+# state file and creating order placement hazards.
+#
+# Revised design: ONE workflow-wide concurrency group, cancel-in-progress.
+# This collapses behavior to "exactly one monitor running at any moment":
+#   - At 8:30 CT, the CDT cron fires (CST equivalent fires at 9:30 CT, gets
+#     cancelled by next scheduled run anyway -- see below).
+#   - At 11:15 CT, the existing 8:30 monitor (still polling under its 180min
+#     duration) is cancelled, and a fresh monitor starts that recalculates
+#     remaining-to-close as ~3hr 45min.
+#   - At 14:00 CT, the 11:15 monitor is cancelled and a new short run starts
+#     for the final hour.
+#   - In CST, the 9:30/12:15/15:00 UTC-derived crons replace those, but the
+#     same cancel-in-progress flow applies.
+#
+# Cancellation is safe here: the monitor's main loop holds no in-flight
+# orders -- each iteration is a self-contained get-positions/check/save
+# sequence. Worst case is a partially-saved alpaca_state.json, which the
+# next monitor reads on startup. Phase 2 upgrades atomically save state
+# immediately after placing the trail (see upgrade_to_phase2 docstring),
+# so even mid-upgrade cancellation can't strand a position.
 concurrency:
-  group: alpaca-monitor-${{ github.event.schedule || github.run_id }}
-  cancel-in-progress: false
+  group: alpaca-monitor
+  cancel-in-progress: true
 
 jobs:
   monitor:
