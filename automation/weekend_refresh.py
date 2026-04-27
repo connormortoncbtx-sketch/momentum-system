@@ -25,6 +25,29 @@ DOES re-run:
 
 Net result: ranking can shift significantly if a major catalyst
 event happened since Friday's run.
+
+──────────────────────────────────────────────────────────────────────────────
+2026-04-26 PATCH NOTES — Sunday weekend_refresh crash + latent issues:
+
+1. alpha_rank crash: `.astype(int)` on rank() output crashes when raw_scores
+   contains NaN (which it now does, since the upstream coverage gate in
+   04_model.py marks ~30 tickers as NaN-scored each week). Same root cause
+   and same one-character fix as the EV stage in 04_model.py: switch to
+   nullable Int64. This was the proximate cause of the Sunday refresh
+   exploding mid-run.
+
+2. rank_change NA hazard: with alpha_rank now nullable Int64, the rank_change
+   lambda's `int(r["alpha_rank"])` would crash on rows whose rank is <NA>.
+   Rewrote as a vectorized symbol-aligned subtraction with explicit Int64
+   handling — both faster and NA-safe.
+
+3. raw_scores positional assignment: `out["alpha_score"] = raw_scores.values`
+   assumes `out`'s row order matches `raw_scores`' row order. `out` is built
+   from previous_scores; raw_scores is built from signals (via rescore's
+   reindex). Symbol orderings are not guaranteed to match — if they ever
+   diverge, alpha_scores get silently paired with wrong tickers. Fixed by
+   aligning raw_scores to out's symbol order before assignment.
+──────────────────────────────────────────────────────────────────────────────
 """
 
 import json
@@ -241,8 +264,11 @@ def rescore(signals: pd.DataFrame,
     raw_adjustment = delta_catalyst * cat_weight
     adjustment     = raw_adjustment.clip(-MAX_REFRESH_ADJUSTMENT, MAX_REFRESH_ADJUSTMENT)
 
-    # Apply to Friday's alpha, then clip score to valid [0, 1] range
-    new_alpha = (friday_alpha + adjustment).clip(0.0, 1.0)
+    # Apply to Friday's alpha. Preserve NaN: if friday_alpha is NaN (gate-excluded
+    # row from upstream), the result stays NaN -- we do NOT want to replace gate
+    # exclusions with valid scores via the refresh path. Otherwise clip to [0,1].
+    new_alpha_raw = friday_alpha + adjustment
+    new_alpha = new_alpha_raw.where(friday_alpha.isna(), new_alpha_raw.clip(0.0, 1.0))
 
     # Stats for logging
     n_moved_up   = int((adjustment >  0.001).sum())
@@ -259,27 +285,26 @@ def rescore(signals: pd.DataFrame,
         log.info(f"  Clipped at bound: {n_clipped_up} upward, {n_clipped_dn} downward "
                  f"(bound = +/-{MAX_REFRESH_ADJUSTMENT})")
 
-    # Return as a Series in the row order of the original signals DataFrame.
-    # Any symbols in signals but not in previous_scores (rare but possible) get
-    # alpha_score = 0.5 (neutral) -- they have no Friday anchor to tweak from.
-    # These will rank in the middle and almost never reach top 10.
-    result_by_symbol = pd.Series(0.5, index=signals_indexed.index, name="alpha_score")
-    result_by_symbol.loc[common_symbols] = new_alpha
-
-    # Map back to the row order expected by rebuild_scores
-    if "symbol" in signals.columns:
-        result = pd.Series(
-            result_by_symbol.reindex(signals["symbol"].values).values,
-            index=signals.index, name="alpha_score"
-        )
-    else:
-        result = result_by_symbol.reindex(signals.index)
-
+    # Return as a symbol-indexed Series. Callers must align by symbol, NOT
+    # positionally -- previous_scores and signals do not necessarily share row
+    # order. This contract is enforced in rebuild_scores via reindex on symbol.
+    # Rows in signals but not in previous_scores get NaN here, which propagates
+    # to alpha_score = NaN downstream -- they fall off the bottom of all
+    # rankings, same as gate-excluded rows.
+    result = pd.Series(np.nan, index=signals_indexed.index, name="alpha_score")
+    result.loc[common_symbols] = new_alpha
     return result
 
 
 def weighted_rescore(signals: pd.DataFrame) -> pd.Series:
-    """Fallback weighted composite if model unavailable."""
+    """Fallback weighted composite if model unavailable.
+
+    Returns a symbol-indexed Series to match the contract of rescore() -- both
+    must return symbol-indexed so rebuild_scores can align by symbol rather
+    than by positional index. Previous version returned an integer-indexed
+    Series, which silently misaligned when fed into the positional-assignment
+    path in rebuild_scores.
+    """
     with open(Path("config/weights.json")) as f:
         weights = json.load(f)
     with open(REGIME_JSON) as f:
@@ -298,7 +323,12 @@ def weighted_rescore(signals: pd.DataFrame) -> pd.Series:
 
     total_w = sum(base_w.get(s,0.25) * regime_m.get(s,1.0)
                   for s in ["momentum","catalyst","fundamentals","sentiment"])
-    return score / total_w if total_w > 0 else score
+    score = score / total_w if total_w > 0 else score
+
+    # Convert to symbol-indexed for contract consistency with rescore()
+    if "symbol" in signals.columns:
+        score.index = signals["symbol"].values
+    return score
 
 
 # ── BUILD UPDATED SCORES ──────────────────────────────────────────────────────
@@ -375,9 +405,28 @@ def rebuild_scores(signals: pd.DataFrame, raw_scores: pd.Series,
             out[col] = signals.set_index("symbol")[col].reindex(
                 out["symbol"]).values
 
-    out["alpha_score"]    = raw_scores.values
-    out["alpha_pct_rank"] = raw_scores.rank(pct=True).round(4)
-    out["alpha_rank"]     = raw_scores.rank(ascending=False, method="min").astype(int)
+    # ── ALPHA ASSIGNMENT (symbol-aligned, NOT positional) ────────────────────
+    # raw_scores is symbol-indexed (per rescore()'s contract). out's row order
+    # comes from previous_scores, which may not match. Reindex by symbol before
+    # assignment to guarantee each ticker gets paired with its own alpha score.
+    # Previous code did `raw_scores.values` (positional), which would silently
+    # corrupt scores if the orderings ever diverged.
+    if isinstance(raw_scores, pd.Series) and raw_scores.index.name != signals.index.name:
+        # Symbol-indexed: align by symbol
+        aligned_alpha = pd.to_numeric(
+            raw_scores.reindex(out["symbol"]).values, errors="coerce"
+        )
+    else:
+        # Positional fallback (only used if a caller bypassed rescore)
+        aligned_alpha = raw_scores.values
+
+    out["alpha_score"]    = aligned_alpha
+    alpha_series          = pd.Series(aligned_alpha, index=out.index)
+    out["alpha_pct_rank"] = alpha_series.rank(pct=True).round(4)
+    # Int64 (nullable) to handle NaN alpha_scores from the upstream coverage
+    # gate. Same fix as 04_model.py. With plain int, this crashed weekend
+    # refresh whenever any rows were gate-excluded (i.e. every week).
+    out["alpha_rank"]     = alpha_series.rank(ascending=False, method="min").astype("Int64")
 
     p = out["alpha_pct_rank"]
     out["conviction"] = pd.cut(
@@ -398,13 +447,23 @@ def rebuild_scores(signals: pd.DataFrame, raw_scores: pd.Series,
     if "scored_at" not in out.columns or out["scored_at"].isna().all():
         out["scored_at"] = today_str
 
-    # Flag what changed vs Friday
+    # ── RANK CHANGE (NA-safe vectorized) ─────────────────────────────────────
+    # Previous implementation used `.apply(lambda r: int(r["alpha_rank"]) - ...)`
+    # which crashes on the gate-excluded rows whose alpha_rank is now nullable
+    # <NA>. Vectorized symbol-aligned subtraction handles NA correctly: the
+    # arithmetic returns <NA> for rows missing on either side, then we coerce
+    # those to 0 (no rank change recorded for unrankable tickers).
     if "alpha_rank" in previous_scores.columns:
-        prev_ranks = previous_scores.set_index("symbol")["alpha_rank"]
-        out["rank_change"] = out.apply(
-            lambda r: int(prev_ranks.get(r["symbol"], r["alpha_rank"])) - int(r["alpha_rank"]),
-            axis=1
+        prev_ranks = pd.to_numeric(
+            previous_scores.set_index("symbol")["alpha_rank"], errors="coerce"
         )
+        prev_aligned = prev_ranks.reindex(out["symbol"]).values
+        cur_aligned  = pd.to_numeric(out["alpha_rank"], errors="coerce").values
+        # Both sides are nullable; arithmetic preserves NaN. fillna(0) keeps
+        # the schema consistent for downstream consumers (the sorting and
+        # logging expect rank_change to be a regular int column, not Int64).
+        diff = pd.Series(prev_aligned - cur_aligned, index=out.index).fillna(0)
+        out["rank_change"] = diff.astype(int)
     else:
         out["rank_change"] = 0
 
@@ -414,7 +473,9 @@ def rebuild_scores(signals: pd.DataFrame, raw_scores: pd.Series,
     # which caused update_index to display a different top-5 than the system
     # actually traded -- cosmetic bug fixed as part of the refresh rewrite.
     # We'll re-sort after composite_rank is recomputed below.
-    out = out.sort_values("alpha_rank").reset_index(drop=True)
+    # na_position="last" so gate-excluded rows (alpha_rank=<NA>) sort to the
+    # bottom rather than crashing the sort or appearing at the top.
+    out = out.sort_values("alpha_rank", na_position="last").reset_index(drop=True)
 
     # Recompute composite rank if EV data is available (blends updated alpha rank with preserved EV rank)
     # Respect the liquidity exclusion from stage 4 -- tickers marked as
@@ -431,6 +492,10 @@ def rebuild_scores(signals: pd.DataFrame, raw_scores: pd.Series,
         if "excluded_by_liquidity" in out.columns:
             excluded_mask = out["excluded_by_liquidity"].fillna(False).astype(bool)
             composite_score = composite_score.where(~excluded_mask)
+        # Also exclude rows whose alpha_score is NaN (coverage-gated upstream)
+        # from composite ranking. Same convention used in 04_model.py's
+        # build_output: gated rows fall off the bottom of all rankings.
+        composite_score = composite_score.where(out["alpha_score"].notna())
         out["composite_rank"] = composite_score.rank(
             ascending=False, method="min"
         ).astype("Int64")
@@ -452,9 +517,13 @@ def log_notable_changes(scores: pd.DataFrame, run_label: str):
     if "rank_change" not in scores.columns:
         return
 
-    # Big movers — jumped 100+ ranks
-    risers = scores[scores["rank_change"] >= 100].head(10)
-    fallers = scores[scores["rank_change"] <= -100].head(5)
+    # Big movers — jumped 100+ ranks. Cast alpha_rank to numeric for safe
+    # int() conversion -- it's nullable Int64 now and pd.NA can't be int()'d
+    # directly. dropna here is correct: gate-excluded rows have no rank, so
+    # they can't be "movers" in any meaningful sense.
+    rankable = scores.dropna(subset=["alpha_rank"]).copy()
+    risers   = rankable[rankable["rank_change"] >= 100].head(10)
+    fallers  = rankable[rankable["rank_change"] <= -100].head(5)
 
     if not risers.empty:
         log.info(f"\n{run_label} — Notable rank RISERS (new catalyst?):")
