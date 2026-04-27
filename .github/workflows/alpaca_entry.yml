@@ -2,23 +2,33 @@ name: Alpaca Entry (Monday Close)
 
 on:
   schedule:
-    # Monday 2:30 PM CT -- normal entry day
-    # CDT (Mar-Nov): UTC-5 -> 19:30 UTC
-    - cron: '30 19 * * 1'
-    # CST (Nov-Mar): UTC-6 -> 20:30 UTC
-    - cron: '30 20 * * 1'
-    # Tuesday 2:30 PM CT -- fallback when Monday is a holiday
-    # CDT (Mar-Nov): UTC-5 -> 19:30 UTC
-    - cron: '30 19 * * 2'
-    # CST (Nov-Mar): UTC-6 -> 20:30 UTC
-    - cron: '30 20 * * 2'
+    # Monday 2:45 PM CT -- normal entry day
+    # Timing: 15 min before close. Submitting market DAY orders here gives
+    # them time to fill against the live close-ramp book without competing
+    # in the closing auction's pro-rata mechanism. Previously 2:30 CT with
+    # CLS time-in-force, but the auction shorted high-conviction names by
+    # 30-60% on 2026-04-27 (see alpaca_trader.py patch notes).
+    # CDT (Mar-Nov): UTC-5 -> 19:45 UTC
+    - cron: '45 19 * * 1'
+    # CST (Nov-Mar): UTC-6 -> 20:45 UTC
+    - cron: '45 20 * * 1'
+    # Tuesday 2:45 PM CT -- fallback when Monday is a holiday
+    # CDT (Mar-Nov): UTC-5 -> 19:45 UTC
+    - cron: '45 19 * * 2'
+    # CST (Nov-Mar): UTC-6 -> 20:45 UTC
+    - cron: '45 20 * * 2'
   workflow_dispatch:
 
 permissions:
   contents: write
 
 # Prevent the rare case where a manual dispatch overlaps with the scheduled
-# cron -- duplicate orders would be catastrophic.
+# cron -- duplicate orders would be catastrophic. Note: cancel-in-progress
+# is false (queueing semantics) deliberately. If the running workflow is
+# mid-order-placement when a second one arrives, cancelling it could leave
+# the account in a half-traded state. Better to let the first finish; the
+# second's idempotency check (run_entry refuses if any positions exist)
+# will then make it a safe no-op.
 concurrency:
   group: alpaca-entry
   cancel-in-progress: false

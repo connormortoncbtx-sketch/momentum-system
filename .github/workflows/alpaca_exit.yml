@@ -2,23 +2,35 @@ name: Alpaca Exit (Friday Close)
 
 on:
   schedule:
-    # Friday 2:30 PM CT -- normal exit day
-    # CDT (Mar-Nov): UTC-5 -> 19:30 UTC
-    - cron: '30 19 * * 5'
-    # CST (Nov-Mar): UTC-6 -> 20:30 UTC
-    - cron: '30 20 * * 5'
-    # Thursday 2:30 PM CT -- fallback when Friday is a holiday
-    # CDT (Mar-Nov): UTC-5 -> 19:30 UTC
-    - cron: '30 19 * * 4'
-    # CST (Nov-Mar): UTC-6 -> 20:30 UTC
-    - cron: '30 20 * * 4'
+    # Friday 2:45 PM CT -- normal exit day
+    # Timing: 15 min before close. Market DAY orders here fill against the
+    # live close-ramp book reliably. Previously 2:30 CT with CLS time-in-
+    # force; symmetric to the entry-side fix on 2026-04-27. See
+    # alpaca_trader.py run_exit docstring for full reasoning -- sell-side
+    # partial fills are MORE consequential than buy-side because they break
+    # the weekly-cycle abstraction (unfilled remainder carries over the
+    # weekend without stop coverage).
+    # CDT (Mar-Nov): UTC-5 -> 19:45 UTC
+    - cron: '45 19 * * 5'
+    # CST (Nov-Mar): UTC-6 -> 20:45 UTC
+    - cron: '45 20 * * 5'
+    # Thursday 2:45 PM CT -- fallback when Friday is a holiday
+    # CDT (Mar-Nov): UTC-5 -> 19:45 UTC
+    - cron: '45 19 * * 4'
+    # CST (Nov-Mar): UTC-6 -> 20:45 UTC
+    - cron: '45 20 * * 4'
   workflow_dispatch:
 
 permissions:
   contents: write
 
 # Serialize manual dispatch with scheduled cron -- double-exit would mean
-# attempting to sell positions we've already sold.
+# attempting to sell positions we've already sold. Note: cancel-in-progress
+# is false (queueing semantics) deliberately. If the running workflow is
+# mid-sell-placement when a second one arrives, cancelling it could leave
+# positions partly closed and partly open with stops cancelled. Better to
+# let the first finish; the second's idempotency check (run_exit early-
+# returns if no positions exist) will make it a safe no-op.
 concurrency:
   group: alpaca-exit
   cancel-in-progress: false
