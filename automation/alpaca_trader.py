@@ -4,8 +4,8 @@
 # and places orders via the Alpaca API.
 #
 # Runs twice per week via GitHub Actions:
-#   Monday  2:30 PM CT  -- entry orders (Monday close)
-#   Friday  2:30 PM CT  -- exit orders (Friday close MOC)
+#   Monday  2:45 PM CT  -- entry orders (market DAY, fills in close ramp)
+#   Friday  2:45 PM CT  -- exit orders (market DAY, fills in close ramp)
 #
 # PAPER_MODE = True  uses Alpaca paper trading endpoint (default)
 # PAPER_MODE = False uses Alpaca live trading endpoint (flip when ready)
@@ -34,6 +34,19 @@
 #      bug fix: parameter name claimed one thing but contract was the other.
 #      Today's $100k paper run was unaffected (cash == portfolio_value), but
 #      this would have misbehaved with unsettled trades or margin in play.
+#   3. Entry order type CLS → DAY. Closing-auction pro-rata systematically
+#      shorted high-conviction crowd-favorite names. 2026-04-27 entry left
+#      $31k undeployed because OPEN/OWL/AXTI/MXL got 30-60% fills despite
+#      log claiming "10 filled" (which only meant submission was accepted,
+#      not that the auction actually cleared the full qty). DAY market
+#      orders submitted at 2:45 CT fill against the live close-ramp book.
+#   4. Exit order type CLS → DAY (same reasoning, applied to run_exit).
+#      Sell-side partial fills are MORE consequential than buy-side: an
+#      unfilled remainder carries over the weekend with no stop coverage
+#      (since step 1 of run_exit cancelled the trailing stops), and blocks
+#      Monday entry which refuses to run if any positions exist. Weekly-
+#      cycle abstraction requires guaranteed full liquidation Friday.
+#      Workflow cron also moves Fri 2:30 → 2:45 CT to match entry timing.
 
 import json
 import logging
@@ -404,6 +417,31 @@ def run_entry():
 
     candidates_queue = primaries + fallbacks
 
+    # ── ORDER TYPE CHOICE ────────────────────────────────────────────────
+    # 2026-04-27: Switched from TimeInForce.CLS (closing auction) to
+    # TimeInForce.DAY (regular market order) for entries.
+    #
+    # CLS problem: in the closing auction, all buy orders for a symbol get
+    # pro-rated against available sell-side liquidity at the cleared price.
+    # The names this strategy targets (high-RS momentum leaders, in
+    # particular high-conviction crowd-favorites like OPEN, OWL) are
+    # systematically the names with the most closing-auction demand from
+    # index funds, ETFs, and other momentum algos. Result: highest-
+    # conviction positions get the WORST fill rates. The 2026-04-27 entry
+    # showed OPEN filled at 33% of submitted qty, OWL at 32%, AXTI at 49%,
+    # MXL at 59% -- $31k of $100k undeployed across 10 positions purely
+    # from auction pro-rating.
+    #
+    # DAY orders submitted in the final 10-15 minutes of the session fill
+    # against the live order book during the close ramp. Trade: pay ~5-10
+    # bps of bid-ask spread instead of getting the auction-cleared print
+    # price. Benefit: actually get the full requested quantity ~99% of
+    # the time on names with reasonable liquidity.
+    #
+    # Workflow cron should be advanced from 14:30 CT to 14:45 CT to take
+    # advantage of this -- earlier means more liquidity volatility and
+    # wider spreads; later means less time to react if anything fails.
+    # 14:45 lands solidly in the closing-ramp liquidity zone.
     for p in candidates_queue:
         if len(filled) >= n_target:
             break
@@ -413,12 +451,16 @@ def run_entry():
         is_fallback = p.get("is_fallback", False)
 
         try:
+            # NOTE: TimeInForce.DAY (not CLS) -- see comment block above
+            # `for p in candidates_queue:`. Submitting as a regular market
+            # order during the final minutes of the session avoids the
+            # closing-auction pro-rata problem.
             order = client.submit_order(
                 order_data=MarketOrderRequest(
                     symbol        = sym,
                     qty           = shares,
                     side          = OrderSide.BUY,
-                    time_in_force = TimeInForce.CLS,
+                    time_in_force = TimeInForce.DAY,
                 )
             )
             tag = " [FALLBACK]" if is_fallback else ""
@@ -483,7 +525,7 @@ def run_entry():
                       "top_pick":       filled[0] if filled else None,
                   })
         notify_success("alpaca_trader",
-                       f"Entry: {len(filled)} BUY MOC orders placed. "
+                       f"Entry: {len(filled)} BUY orders placed (market DAY). "
                        f"Stops will be submitted at 3:10pm CT via place_stops workflow. "
                        f"{('Fallbacks used: ' + ', '.join(fallback_used)) if fallback_used else ''}")
 
@@ -630,25 +672,35 @@ def run_place_stops():
 # ── EXIT (FRIDAY 2:30 PM CT) ──────────────────────────────────────────────────
 
 def run_exit():
-    """Friday exit: close all open positions via MOC sell orders.
+    """Friday exit: close all open positions via DAY market sell orders.
 
     Order of operations:
       1. Cancel ALL outstanding stop / trailing-stop / stop-limit orders for
-         each open position. Without this step, MOC sells collide with the
-         stops (Alpaca rejects duplicate sell coverage for the same shares).
-      2. Submit MOC sell for each position using the live qty from Alpaca
-         (not state qty, since Phase 2 partial sells may have reduced it).
+         each open position. Without this step, market sells collide with
+         the stops (Alpaca rejects duplicate sell coverage for the same
+         shares).
+      2. Submit DAY market sells for each position using the live qty from
+         Alpaca (not state qty, since Phase 2 partial sells may have
+         reduced it).
       3. Record per-symbol results; don't clear state until exits confirmed.
-      4. Clear state only for positions that successfully submitted. Positions
-         that failed to close stay in state so next week's entry check catches
-         them.
+      4. Clear state only for positions that successfully submitted.
+         Positions that failed to close stay in state so next week's entry
+         check catches them.
 
-    Previously: stops were not cancelled pre-sell, which at worst would cause
-    all MOC sells to fail on "position already has open sell coverage."
+    Order type: DAY market orders submitted at 2:45 PM CT (15 min before
+    close) fill against the live close-ramp book. Previously used
+    TimeInForce.CLS (closing auction); changed 2026-04-27 because the
+    closing-auction pro-rata mechanism produced partial fills, which on
+    the sell side breaks the weekly-cycle abstraction (unfilled shares
+    carry over the weekend without stop coverage and block the next
+    Monday entry). See step 2 comment for full rationale.
 
-    State clearing previously happened unconditionally. If any exits failed,
-    next week's entry saw empty state but Alpaca still had open positions,
-    requiring manual intervention.
+    Previously: stops were not cancelled pre-sell, which would cause all
+    sells to fail on "position already has open sell coverage."
+
+    State clearing previously happened unconditionally. If any exits
+    failed, next week's entry saw empty state but Alpaca still had open
+    positions, requiring manual intervention.
     """
     from alpaca.trading.requests import MarketOrderRequest, GetOrdersRequest
     from alpaca.trading.enums import OrderSide, OrderType, TimeInForce, QueryOrderStatus
@@ -711,7 +763,23 @@ def run_exit():
     if cancelled_stops:
         log.info(f"  Cancelled {len(cancelled_stops)} outstanding stop orders")
 
-    # ── STEP 2: SUBMIT MOC SELLS ──────────────────────────────────────────
+    # ── STEP 2: SUBMIT MARKET SELLS (DAY, not CLS) ─────────────────────────
+    # Mirrors the 2026-04-27 entry-side fix. The same closing-auction
+    # pro-rata problem that shorted Monday buys can short Friday sells --
+    # and the consequences are MUCH worse on the sell side:
+    #   - Partial sell fill leaves stop coverage gone (we just cancelled
+    #     the trailing stop in step 1) on shares we still hold.
+    #   - Unfilled remainder carries over the weekend with no protection.
+    #   - run_entry on Monday refuses to enter if any positions exist, so
+    #     leftover Friday shares block the entire next cycle.
+    #   - alpaca_state.json shows empty positions while Alpaca shows held
+    #     shares -- monitor doesn't know what to do with the strays.
+    #
+    # The system's weekly-cycle abstraction depends on full liquidation by
+    # Friday close. DAY market orders submitted at 2:45 PM CT (per the
+    # advanced cron) fill against the live order book and reliably clear
+    # the position. Tradeoff: ~5-10 bps of bid-ask spread vs. the auction
+    # print, in exchange for ~99% fill certainty.
     closed = []
     failed = []
     per_symbol_results = {}
@@ -725,7 +793,7 @@ def run_exit():
                     symbol        = sym,
                     qty           = shares,
                     side          = OrderSide.SELL,
-                    time_in_force = TimeInForce.CLS,
+                    time_in_force = TimeInForce.DAY,
                 )
             )
             ret_pct = float(pos.unrealized_plpc) * 100
