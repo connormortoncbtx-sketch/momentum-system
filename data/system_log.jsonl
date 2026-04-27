@@ -163,3 +163,5 @@
 {"timestamp": "2026-04-27T14:11:51.501883+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Skipped: DST guard (CT hour=9, expected 6)", "metrics": {}, "errors": []}
 {"timestamp": "2026-04-27T15:22:09.494946+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Starting monitor (duration=185min, mode=PAPER)", "metrics": {}, "errors": []}
 {"timestamp": "2026-04-27T18:27:13.811006+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Session quiet: 185 polls, no phase transitions", "metrics": {"polls": 185, "upgrades": 0, "stops_placed": 0, "poll_errors": 0}, "errors": []}
+{"timestamp": "2026-04-27T19:43:31.181356+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=entry", "metrics": {}, "errors": []}
+{"timestamp": "2026-04-27T19:43:32.013752+00:00", "workflow": "alpaca_trader", "status": "success", "message": "Entry: all 10 orders placed", "metrics": {"filled": 10, "fallbacks_used": 0, "top_pick": "OPEN"}, "errors": []}
