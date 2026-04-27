@@ -254,5 +254,37 @@
         "alpha_rank": 5
       }
     ]
+  },
+  {
+    "run_label": "sunday_night",
+    "timestamp": "2026-04-27T02:10:51.051950",
+    "regime": "risk_on",
+    "top_5": [
+      {
+        "symbol": "OPEN",
+        "alpha_score": 0.856051,
+        "alpha_rank": 2
+      },
+      {
+        "symbol": "LMND",
+        "alpha_score": 0.8085899999999999,
+        "alpha_rank": 4
+      },
+      {
+        "symbol": "IREN",
+        "alpha_score": 0.814505,
+        "alpha_rank": 3
+      },
+      {
+        "symbol": "SII",
+        "alpha_score": 0.894491,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "AXTI",
+        "alpha_score": 0.648107,
+        "alpha_rank": 9
+      }
+    ]
   }
 ]

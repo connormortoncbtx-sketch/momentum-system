@@ -149,3 +149,5 @@
 {"timestamp": "2026-04-25T16:31:07.419048+00:00", "workflow": "weekly_pipeline", "status": "info", "message": "Starting Stage 06: Report generator", "metrics": {}, "errors": []}
 {"timestamp": "2026-04-25T16:31:08.004488+00:00", "workflow": "weekly_pipeline", "status": "success", "message": "Stage 06: Report generator complete", "metrics": {"stage": "06", "elapsed_sec": 0.6}, "errors": []}
 {"timestamp": "2026-04-25T16:31:08.004826+00:00", "workflow": "weekly_pipeline", "status": "success", "message": "Pipeline complete (40.2 min)", "metrics": {"elapsed_min": 40.2, "stages_run": 6}, "errors": []}
+{"timestamp": "2026-04-27T01:49:51.578928+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Starting weekend refresh (sunday_night)", "metrics": {}, "errors": []}
+{"timestamp": "2026-04-27T02:10:51.055940+00:00", "workflow": "weekend_refresh", "status": "success", "message": "Refresh complete (sunday_night)", "metrics": {"run_label": "sunday_night", "symbols": 2980, "regime": "risk_on", "top_pick": "OPEN", "top_score": 0.8561}, "errors": []}
