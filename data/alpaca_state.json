@@ -57,7 +57,7 @@
       "composite_rank": 4,
       "is_fallback": false,
       "phase": 1,
-      "high_water_mark": 76.16,
+      "high_water_mark": 80.24,
       "order_id": "de2dacf9-6f1e-4d3d-8129-bacf3d856253",
       "hard_stop_order_id": "38cdf4f2-03f4-4f98-b737-8c446ecb403d"
     },
@@ -132,9 +132,11 @@
       "composite_rank": 9,
       "is_fallback": false,
       "phase": 1,
-      "high_water_mark": 60.32,
+      "high_water_mark": 70.98,
       "order_id": "58836b4d-2c5c-4f46-98a4-58e5dda4d992",
-      "hard_stop_order_id": "fb951254-0535-4e7e-a763-a9288493f660"
+      "hard_stop_order_id": null,
+      "upgrade_in_progress": true,
+      "upgrade_started_at": "2026-04-30T20:15:22.896130"
     },
     "OWL": {
       "shares": 1038,
