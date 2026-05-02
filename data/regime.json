@@ -1,59 +1,74 @@
 {
   "regime": "risk_on",
   "description": "Strong broad uptrend, risk assets leading, low fear. Full momentum mode.",
-  "composite": 0.7378,
+  "composite": 0.5938,
   "scores": {
-    "trend": 0.7588,
-    "breadth": 0.8805,
-    "sentiment": 0.2,
-    "rotation": 1.0,
-    "safety": 1.0
+    "trend": 0.5735,
+    "breadth": 0.6585,
+    "sentiment": 0.3983,
+    "rotation": 0.5788,
+    "safety": 0.9941
   },
   "weights": {
-    "trend": 0.3,
+    "trend": 0.25,
     "breadth": 0.25,
-    "sentiment": 0.2,
+    "sentiment": 0.25,
     "rotation": 0.15,
     "safety": 0.1
   },
   "details": {
     "trend": {
-      "spy_ret_20d": 0.1259,
-      "spy_ret_50d": 0.0508,
+      "spy_ret_5d": 0.0077,
+      "spy_ret_20d": 0.0937,
+      "spy_ret_50d": 0.0481,
       "spy_above_sma50": true,
       "spy_above_sma200": true,
       "spy_drawdown": 0.0
     },
     "breadth": {
-      "qqq_ret_20d": 0.1801,
-      "iwm_ret_20d": 0.138,
-      "iwm_vs_spy": 0.0121,
+      "qqq_ret_5d": 0.0149,
+      "qqq_ret_20d": 0.1455,
+      "iwm_ret_5d": 0.0077,
+      "iwm_ret_20d": 0.1067,
+      "iwm_vs_spy_5d": 0.0001,
+      "iwm_vs_spy_20d": 0.013,
       "iwm_above_sma50": true
     },
     "sentiment": {
-      "vix": 18.71,
-      "vix_ma20": 21.57,
-      "vix_trend": -2.86,
-      "hyg_vs_spy_20d": -0.0986
+      "vix": 16.99,
+      "vix_ma20": 19.23,
+      "vix_trend": -2.24,
+      "hyg_vs_spy_5d": -0.008,
+      "hyg_vs_spy_20d": -0.0839
     },
     "rotation": {
-      "offensive_ret_20d": 0.2066,
-      "defensive_ret_20d": 0.0124,
-      "rotation_spread": 0.1943,
-      "xlk_slope": 0.010421,
-      "xlu_slope": -0.000467
+      "offensive_ret_5d": 0.0115,
+      "defensive_ret_5d": 0.014,
+      "offensive_ret_20d": 0.1645,
+      "defensive_ret_20d": 0.0063,
+      "rotation_spread_5d": -0.0024,
+      "rotation_spread_20d": 0.1582,
+      "xlk_slope": 0.008128,
+      "xlu_slope": -0.000557
     },
     "safety": {
-      "tlt_ret_20d": 0.0165,
-      "gld_ret_20d": 0.0447,
-      "tlt_vs_spy": -0.1094,
-      "gld_vs_spy": -0.0812
+      "tlt_vs_spy_5d": -0.0118,
+      "tlt_vs_spy_20d": -0.102,
+      "gld_vs_spy_5d": -0.0233,
+      "gld_vs_spy_20d": -0.1041
     }
   },
+  "transition": {
+    "transitioning": false,
+    "direction": null,
+    "composite_delta": -0.144,
+    "prev_composite": 0.7378,
+    "prev_regime": "risk_on"
+  },
   "context": {
-    "spy_realized_vol_20d": 0.1655,
-    "vix": 18.71,
-    "as_of": "2026-04-25"
+    "spy_realized_vol_20d": 0.1191,
+    "vix": 16.99,
+    "as_of": "2026-05-02"
   },
   "playbook": {
     "momentum": 1.2,
