@@ -2,16 +2,16 @@
   "_meta": {
     "description": "Signal weights and regime multipliers. This is the ONLY file the self-refinement pass may modify.",
     "schema_version": "1.0",
-    "last_modified": "2026-05-01",
+    "last_modified": "2026-05-02",
     "modified_by": "self_refine.py",
     "philosophy": "There are always winners in any market. The regime determines WHERE they are, not WHETHER they exist. Never reduce to zero \u2014 redirect."
   },
   "signal_weights": {
-    "momentum": 0.25,
+    "momentum": 0.35,
     "technicals": 0.15,
-    "catalyst": 0.2,
+    "catalyst": 0.15,
     "fundamentals": 0.3,
-    "sentiment": 0.1
+    "sentiment": 0.05
   },
   "regime_multipliers": {
     "risk_on": {
@@ -41,17 +41,17 @@
     "risk_off_mild": {
       "momentum": 0.8,
       "technicals": 0.8,
-      "catalyst": 1.5,
+      "catalyst": 1.6,
       "fundamentals": 1.3,
-      "sentiment": 1.2,
+      "sentiment": 1.3,
       "note": "Sector rotation is the game. Find what IS working \u2014 defensives, commodities, short squeezes, idiosyncratic catalysts. Winners exist, look harder."
     },
     "risk_off_severe": {
-      "momentum": 0.9,
+      "momentum": 1.0,
       "technicals": 0.8,
-      "catalyst": 1.8,
-      "fundamentals": 1.2,
-      "sentiment": 1.5,
+      "catalyst": 1.9,
+      "fundamentals": 1.1,
+      "sentiment": 1.6,
       "note": "The biggest weekly winners often happen in brutal markets. Short squeezes, FDA approvals, takeovers, contra-trend sector pops. Catalyst and sentiment signals lead \u2014 find them."
     }
   },
