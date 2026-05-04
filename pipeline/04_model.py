@@ -16,6 +16,39 @@ making the model progressively more accurate over time.
 
 Reads:   data/signals.csv, data/regime.json, config/weights.json
 Writes:  data/scores.csv, models/lgbm_model.pkl (if training)
+
+──────────────────────────────────────────────────────────────────────────
+2026-05-04 PATCH NOTES — composite ranking redesign:
+
+Two related issues fixed together because they compound to produce the
+rank inversion observed in three weeks of live trade data (rank 1-3 avg
++2.70%, rank 11+ avg +11.73%).
+
+ISSUE 1: EV blended as a positive composite component when it should be
+         a VETO gate.
+  Diagnostic: bottom quintile of EV captured ~45% of actual winners.
+  EV is anti-predictive of winners but predictive of losers. Blending
+  it as 0.5 of composite mathematically dilutes alpha's positive signal.
+  Fix: EV is now a veto -- bottom EV_VETO_PERCENTILE (default 20%) of
+  names are excluded from ranking entirely. Survivors ranked by alpha.
+
+ISSUE 2: Alpha saturation at top of LightGBM predict_proba output.
+  Diagnostic: 50 tickers in the 2026-05-02 scoring run had alpha=1.000
+  (exactly), all sharing alpha_rank=1. With the prior 50/50 alpha+EV
+  composite blend, these 50 tied alpha-saturated names were ordered
+  ENTIRELY by EV. Combined with EV's anti-predictive signal, this
+  systematically placed the worst predictors at the top of composite.
+  Fix: composite_rank now uses alpha_pct_rank as primary, with raw
+  sig_momentum as tiebreaker for alpha-saturated names. Naturally
+  breaks ties by the most informative underlying signal rather than
+  by an anti-predictive one.
+
+Validation criteria: in 6-8 weeks of live data, rank 1-3 should now
+out-perform rank 11+. If rank inversion persists, the diagnosis is
+incomplete and we need to address LightGBM's saturation directly
+(via stricter bootstrap labels, removing class_weight="balanced", or
+using log-odds output instead of predict_proba).
+──────────────────────────────────────────────────────────────────────────
 """
 
 import json
@@ -55,6 +88,27 @@ OUTPUT      = DATA_DIR / "scores.csv"
 MIN_WEEKLY_VOL      = 2.0         # 2% min weekly vol (stored as percent, e.g. 15.65 for 15.65%)
 MIN_AVG_DOLLAR_VOL  = 500_000     # $500k minimum daily dollar volume (liquidity floor)
 MIN_TRADABLE_PRICE  = 1.00        # $1 minimum share price (sub-$1 names aren't reliably tradable
+
+# ── EV VETO GATE ─────────────────────────────────────────────────────────────
+# EV is anti-predictive of winners but predictive of losers (per diagnostic
+# work). Used as a veto: bottom EV_VETO_PERCENTILE of names are excluded from
+# composite ranking, so they cannot make the top picks even if alpha-strong.
+# Survivors are ranked by alpha alone.
+#
+# 0.20 = exclude bottom 20%. This is a calibration starting point; after
+# 6-8 weeks of validation data we may tighten or loosen based on whether
+# rank inversion resolves.
+#
+# Note: tickers excluded by liquidity/price/volatility filters above are
+# excluded BEFORE the EV veto applies, so the 20% EV threshold is computed
+# over the universe of structurally-tradable names, not the full universe.
+EV_VETO_PERCENTILE = 0.20
+
+# ── ALPHA SATURATION DIAGNOSTIC ──────────────────────────────────────────────
+# LightGBM predict_proba can saturate at 1.0 for many tickers when the
+# bootstrap labels create an easy-to-learn positive class. We log when
+# saturation count exceeds this threshold so it stays visible.
+ALPHA_SATURATION_WARN_THRESHOLD = 20
 
 # Feature columns fed to the model
 SIGNAL_FEATURES = [
@@ -481,6 +535,23 @@ def build_output(df: pd.DataFrame, raw_scores: pd.Series,
                  regime_data: dict, ev_df: pd.DataFrame = None) -> pd.DataFrame:
     """
     Build final scored + ranked DataFrame.
+
+    2026-05-04 redesign of composite_rank logic:
+
+    OLD (broken): composite_rank_score = 0.5 * alpha_pct_rank + 0.5 * ev_pct_rank
+    Problem: blended an opposite-signed predictor (EV) into a positive
+    composite, mathematically diluting alpha's signal. Also: when LightGBM
+    saturates alpha at 1.0 for many tickers, those tied-alpha names were
+    ordered ENTIRELY by EV (the anti-predictive component). Net effect:
+    rank inversion observed in live trading data.
+
+    NEW: EV is a veto, not a component. Names with ev_pct_rank below
+    EV_VETO_PERCENTILE are excluded from composite ranking. Survivors get
+    composite_rank from alpha_pct_rank (primary) with raw sig_momentum
+    as tiebreaker for alpha-saturated names. The momentum tiebreaker
+    matters specifically because LightGBM's predict_proba saturates,
+    creating ~50 ties at alpha=1.0; without a tiebreaker the ranking
+    among them is determined by data order (essentially random).
     """
     out = df[META_COLS + [c for c in df.columns if c.startswith("sig_")]].copy()
 
@@ -490,6 +561,21 @@ def build_output(df: pd.DataFrame, raw_scores: pd.Series,
     # excluded by the coverage gate, and pandas .astype(int) crashes on NaN.
     # Nullable Int64 preserves the NaN for gated-out rows.
     out["alpha_rank"]     = raw_scores.rank(ascending=False, method="min").astype("Int64")
+
+    # ── ALPHA SATURATION DIAGNOSTIC ──────────────────────────────────────
+    # LightGBM's predict_proba can produce many tickers at exactly 1.0 when
+    # the bootstrap labels create a too-easy positive class. Log this so it
+    # stays visible. Saturation is harmless if we have a sensible tiebreaker
+    # (sig_momentum), problematic if ranking among saturated names happens
+    # to use an anti-predictive signal (the prior EV-blend behavior).
+    n_saturated = int((out["alpha_score"] >= 0.999).sum())
+    if n_saturated >= ALPHA_SATURATION_WARN_THRESHOLD:
+        log.warning(f"  Alpha saturation: {n_saturated} tickers have alpha_score >= 0.999")
+        log.warning(f"  This is normal for LightGBM predict_proba in strong regimes but")
+        log.warning(f"  means alpha alone cannot differentiate top-N. Tiebreaker (sig_momentum)")
+        log.warning(f"  will determine ordering among saturated names.")
+    else:
+        log.info(f"  Alpha saturation: {n_saturated} tickers >= 0.999 (within normal range)")
 
     # Merge EV scores if available
     if ev_df is not None:
@@ -517,9 +603,9 @@ def build_output(df: pd.DataFrame, raw_scores: pd.Series,
         excluded_weekly_vol   = out["weekly_vol"].fillna(0) < MIN_WEEKLY_VOL
         excluded_dollar_vol   = dollar_vol.fillna(0) < MIN_AVG_DOLLAR_VOL
         excluded_price        = out["last_price"].fillna(0) < MIN_TRADABLE_PRICE
-        excluded              = excluded_weekly_vol | excluded_dollar_vol | excluded_price
+        excluded_liquidity    = excluded_weekly_vol | excluded_dollar_vol | excluded_price
 
-        out["excluded_by_liquidity"] = excluded
+        out["excluded_by_liquidity"] = excluded_liquidity
         out["exclusion_reason"] = None
         # Tag with the most restrictive single reason (priority: price > dollar_vol > weekly_vol)
         # Price floor takes priority because it's a tradability issue, not a signal-quality one.
@@ -527,29 +613,74 @@ def build_output(df: pd.DataFrame, raw_scores: pd.Series,
         out.loc[~excluded_price & excluded_dollar_vol,                   "exclusion_reason"] = "low_dollar_volume"
         out.loc[~excluded_price & ~excluded_dollar_vol & excluded_weekly_vol, "exclusion_reason"] = "low_volatility"
 
-        n_excluded    = int(excluded.sum())
+        n_excluded_liquidity = int(excluded_liquidity.sum())
         n_price       = int(excluded_price.sum())
         n_low_vol     = int(excluded_weekly_vol.sum())
         n_low_dollar  = int(excluded_dollar_vol.sum())
-        log.info(f"  Liquidity exclusions: {n_excluded} tickers "
+        log.info(f"  Liquidity exclusions: {n_excluded_liquidity} tickers "
                  f"(price<${MIN_TRADABLE_PRICE}: {n_price}, "
                  f"low_vol: {n_low_vol}, low_dollar: {n_low_dollar})")
 
-        # Composite rank: blend alpha rank and EV rank 50/50
-        # (adjustable as model matures — EV weight increases with real labels)
-        # Excluded tickers get NaN composite_rank; downstream trading filters
-        # on .notna() so they naturally drop out of position selection.
-        out["composite_rank_score"] = (
-            out["alpha_pct_rank"].fillna(0.5) * 0.50 +
-            out["ev_pct_rank"].fillna(0.5)    * 0.50
-        )
-        # Set excluded rows' composite_rank_score to NaN before ranking,
-        # so they don't occupy rank positions.
-        out.loc[excluded, "composite_rank_score"] = np.nan
-        out["composite_rank"] = out["composite_rank_score"].rank(
-            ascending=False, method="min")
-        # Cast to Int64 (nullable) since excluded rows now have NaN rank
-        out["composite_rank"] = out["composite_rank"].astype("Int64")
+        # ── EV VETO GATE ─────────────────────────────────────────────────
+        # EV is anti-predictive of winners but predictive of losers. Used as
+        # a veto: names with ev_pct_rank below EV_VETO_PERCENTILE are
+        # excluded from composite ranking. Survivors are ranked by alpha
+        # alone, with sig_momentum as tiebreaker for alpha-saturated names.
+        #
+        # Recompute the EV percentile threshold among LIQUIDITY-SURVIVING
+        # tickers only -- so the 20% bottom is measured over names that
+        # could actually be traded, not the full universe (which includes
+        # shells, SPACs, etc. with junk EV scores).
+        liquidity_survivors = ~excluded_liquidity
+        survivor_ev_pct = out.loc[liquidity_survivors, "ev_score"].rank(pct=True)
+        out.loc[liquidity_survivors, "ev_pct_rank_among_survivors"] = survivor_ev_pct
+        out["ev_pct_rank_among_survivors"] = out["ev_pct_rank_among_survivors"].fillna(0)
+
+        excluded_ev_veto = liquidity_survivors & (out["ev_pct_rank_among_survivors"] < EV_VETO_PERCENTILE)
+        n_ev_vetoed = int(excluded_ev_veto.sum())
+        log.info(f"  EV veto: excluded {n_ev_vetoed} tickers in bottom "
+                 f"{EV_VETO_PERCENTILE*100:.0f}% of EV among liquidity survivors")
+
+        # Update exclusion_reason for EV-vetoed names that weren't already
+        # excluded by liquidity. Display priority lower than liquidity
+        # reasons because liquidity is a tradability issue and EV is a
+        # signal-quality issue.
+        out.loc[excluded_ev_veto & out["exclusion_reason"].isna(), "exclusion_reason"] = "ev_veto"
+
+        # Combined exclusion mask for composite ranking
+        excluded = excluded_liquidity | excluded_ev_veto
+        out["excluded_from_ranking"] = excluded
+
+        # ── COMPOSITE RANKING ────────────────────────────────────────────
+        # Composite_rank is now alpha-driven among non-excluded names, with
+        # sig_momentum as tiebreaker. Tied alpha values (LightGBM saturation
+        # at 1.0) get ordered by raw momentum signal -- the most informative
+        # underlying signal we have.
+        #
+        # Mechanics: we build a composite key combining alpha_pct_rank
+        # (primary) with a small fractional bump from sig_momentum percentile.
+        # Using alpha_pct_rank (which is in [0, 1]) gives strict alpha-first
+        # ordering. The 0.001 weight on momentum percentile means it only
+        # disambiguates when alpha values are equal to 3 decimal places --
+        # which is exactly the saturation regime we're addressing.
+        if "sig_momentum" in out.columns:
+            mom_pct = out["sig_momentum"].rank(pct=True).fillna(0.5)
+            composite_key = out["alpha_pct_rank"] + 0.001 * mom_pct
+        else:
+            log.warning("  sig_momentum not available -- using alpha_pct_rank alone "
+                        "(saturated alpha will produce ties)")
+            composite_key = out["alpha_pct_rank"]
+
+        # Set excluded rows to NaN so they don't occupy rank positions
+        composite_key = composite_key.where(~excluded, np.nan)
+        out["composite_rank"] = composite_key.rank(
+            ascending=False, method="min"
+        ).astype("Int64")
+
+        # Keep composite_rank_score for diagnostic visibility (was previously
+        # the blended alpha+EV value; now reflects the alpha+momentum key)
+        out["composite_rank_score"] = composite_key.round(6)
+
     else:
         out["ev_score"]          = np.nan
         out["ev_rank"]           = np.nan
@@ -559,8 +690,10 @@ def build_output(df: pd.DataFrame, raw_scores: pd.Series,
         out["avg_loss_magnitude"]= np.nan
         out["weekly_vol"]        = np.nan
         out["excluded_by_liquidity"] = False
+        out["excluded_from_ranking"] = False
         out["exclusion_reason"]  = None
         out["composite_rank"]    = out["alpha_rank"]
+        out["composite_rank_score"] = out["alpha_pct_rank"]
 
     # Conviction tier (based on alpha score)
     p = out["alpha_pct_rank"]
@@ -580,7 +713,7 @@ def build_output(df: pd.DataFrame, raw_scores: pd.Series,
     out = compute_suggested_stops(out)
 
     # Default sort by composite rank
-    out = out.sort_values("composite_rank").reset_index(drop=True)
+    out = out.sort_values("composite_rank", na_position="last").reset_index(drop=True)
 
     return out
 
@@ -730,16 +863,16 @@ def run():
 
     log.info(f"Scores written → {OUTPUT}  ({len(out):,} rows)")
     log.info(f"Mode: {mode}")
-    log.info("Top 10 by COMPOSITE rank (alpha × EV blend):")
-    top = out.head(10)[["composite_rank", "alpha_rank", "symbol", "sector",
-                         "alpha_score", "ev_score", "avg_win_magnitude",
+    log.info("Top 10 by COMPOSITE rank (alpha-driven, momentum tiebreaker, EV-vetoed):")
+    top = out.head(10)[["composite_rank", "alpha_rank", "ev_rank", "symbol", "sector",
+                         "alpha_score", "ev_score", "sig_momentum",
                          "weekly_vol", "conviction"]]
     for _, row in top.iterrows():
         ev_str  = f"ev={row['ev_score']:.4f}" if pd.notna(row['ev_score']) else "ev=n/a"
-        win_str = f"avg_win={row['avg_win_magnitude']:.1f}%" if pd.notna(row['avg_win_magnitude']) else ""
-        log.info(f"  #{row['composite_rank']:<4} (α#{row['alpha_rank']:<4}) "
+        mom_str = f"mom={row['sig_momentum']:.3f}" if pd.notna(row.get('sig_momentum', np.nan)) else ""
+        log.info(f"  #{row['composite_rank']:<4} (α#{row['alpha_rank']:<4} ev#{row['ev_rank']:<4}) "
                  f"{row['symbol']:<8} "
-                 f"score={row['alpha_score']:.4f}  {ev_str}  {win_str}  "
+                 f"score={row['alpha_score']:.4f}  {mom_str}  {ev_str}  "
                  f"conviction={row['conviction']}")
 
     return out
