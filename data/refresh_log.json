@@ -382,5 +382,37 @@
         "alpha_rank": 8
       }
     ]
+  },
+  {
+    "run_label": "sunday_night",
+    "timestamp": "2026-05-04T01:43:31.902673",
+    "regime": "risk_on",
+    "top_5": [
+      {
+        "symbol": "BAND",
+        "alpha_score": 1.0,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "AXTI",
+        "alpha_score": 1.0,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "AAOI",
+        "alpha_score": 1.0,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "ZIP",
+        "alpha_score": 0.988229,
+        "alpha_rank": 15
+      },
+      {
+        "symbol": "SATL",
+        "alpha_score": 0.9586199999999999,
+        "alpha_rank": 23
+      }
+    ]
   }
 ]
