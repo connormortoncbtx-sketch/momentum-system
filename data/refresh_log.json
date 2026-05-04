@@ -446,5 +446,37 @@
         "alpha_rank": 1
       }
     ]
+  },
+  {
+    "run_label": "monday_morning",
+    "timestamp": "2026-05-04T12:04:34.530747",
+    "regime": "risk_on",
+    "top_5": [
+      {
+        "symbol": "SKLZ",
+        "alpha_score": 1.0,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "BAND",
+        "alpha_score": 1.0,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "AXTI",
+        "alpha_score": 1.0,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "SATL",
+        "alpha_score": 1.0,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "LWLG",
+        "alpha_score": 1.0,
+        "alpha_rank": 1
+      }
+    ]
   }
 ]
