@@ -285,3 +285,4 @@
 {"timestamp": "2026-05-04T20:21:34.835142+00:00", "workflow": "alpaca_monitor", "status": "success", "message": "Session: 0 upgrades, 10 stops placed", "metrics": {"polls": 10, "upgrades": 0, "stops_placed": 10, "poll_errors": 0}, "errors": []}
 {"timestamp": "2026-05-04T20:52:19.454039+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=entry", "metrics": {}, "errors": []}
 {"timestamp": "2026-05-04T21:16:58.804366+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=place_stops", "metrics": {}, "errors": []}
+{"timestamp": "2026-05-04T21:45:40.385526+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=entry", "metrics": {}, "errors": []}
