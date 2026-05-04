@@ -283,3 +283,4 @@
 {"timestamp": "2026-05-04T20:11:34.665827+00:00", "workflow": "alpaca_monitor", "status": "success", "message": "Hard stop placed: TLYS @ $3.99", "metrics": {"symbol": "TLYS", "shares": 2220, "entry_price": 4.53, "stop_price": 3.99, "stop_pct": 12.0}, "errors": []}
 {"timestamp": "2026-05-04T20:11:34.704070+00:00", "workflow": "alpaca_monitor", "status": "success", "message": "Hard stop placed: ZIP @ $2.59", "metrics": {"symbol": "ZIP", "shares": 3161, "entry_price": 2.93, "stop_price": 2.59, "stop_pct": 11.5}, "errors": []}
 {"timestamp": "2026-05-04T20:21:34.835142+00:00", "workflow": "alpaca_monitor", "status": "success", "message": "Session: 0 upgrades, 10 stops placed", "metrics": {"polls": 10, "upgrades": 0, "stops_placed": 10, "poll_errors": 0}, "errors": []}
+{"timestamp": "2026-05-04T20:52:19.454039+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=entry", "metrics": {}, "errors": []}
