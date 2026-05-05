@@ -332,6 +332,175 @@
           "pm_volume": 0
         }
       }
+    },
+    {
+      "check_num": 3,
+      "check_name": "7:00",
+      "timestamp": "12:55:15",
+      "prices": {
+        "SKLZ": {
+          "premarket_price": 6.76,
+          "prior_close": 6.8,
+          "gap_pct": -0.0059,
+          "pm_volume": 0
+        },
+        "BAND": {
+          "premarket_price": 45.14,
+          "prior_close": 45.02,
+          "gap_pct": 0.0027,
+          "pm_volume": 0
+        },
+        "AXTI": {
+          "premarket_price": 105.29,
+          "prior_close": 106.0,
+          "gap_pct": -0.0067,
+          "pm_volume": 0
+        },
+        "SATL": {
+          "premarket_price": 7.15,
+          "prior_close": 7.06,
+          "gap_pct": 0.0127,
+          "pm_volume": 0
+        },
+        "LWLG": {
+          "premarket_price": 16.19,
+          "prior_close": 15.79,
+          "gap_pct": 0.0253,
+          "pm_volume": 0
+        },
+        "AAOI": {
+          "premarket_price": 176.71,
+          "prior_close": 172.98,
+          "gap_pct": 0.0216,
+          "pm_volume": 0
+        },
+        "FSLY": {
+          "premarket_price": 29.7,
+          "prior_close": 27.49,
+          "gap_pct": 0.0804,
+          "pm_volume": 0
+        },
+        "TLYS": {
+          "premarket_price": 4.67,
+          "prior_close": 4.54,
+          "gap_pct": 0.0286,
+          "pm_volume": 0
+        },
+        "CLYM": {
+          "premarket_price": 9.89,
+          "prior_close": 9.69,
+          "gap_pct": 0.0206,
+          "pm_volume": 0
+        },
+        "AMC": {
+          "premarket_price": 1.47,
+          "prior_close": 1.45,
+          "gap_pct": 0.0138,
+          "pm_volume": 0
+        },
+        "SOC": {
+          "premarket_price": 14.31,
+          "prior_close": 14.5,
+          "gap_pct": -0.0131,
+          "pm_volume": 0
+        },
+        "ALTO": {
+          "premarket_price": 5.62,
+          "prior_close": 5.47,
+          "gap_pct": 0.0274,
+          "pm_volume": 0
+        },
+        "SGML": {
+          "premarket_price": 22.88,
+          "prior_close": 22.57,
+          "gap_pct": 0.0137,
+          "pm_volume": 0
+        },
+        "BKSY": {
+          "premarket_price": 36.65,
+          "prior_close": 36.33,
+          "gap_pct": 0.0088,
+          "pm_volume": 0
+        },
+        "INTC": {
+          "premarket_price": 99.72,
+          "prior_close": 95.78,
+          "gap_pct": 0.0411,
+          "pm_volume": 0
+        },
+        "RNG": {
+          "premarket_price": 47.4,
+          "prior_close": 47.25,
+          "gap_pct": 0.0032,
+          "pm_volume": 0
+        },
+        "CRML": {
+          "premarket_price": 13.34,
+          "prior_close": 12.91,
+          "gap_pct": 0.0333,
+          "pm_volume": 0
+        },
+        "LITE": {
+          "premarket_price": 982.9,
+          "prior_close": 976.18,
+          "gap_pct": 0.0069,
+          "pm_volume": 0
+        },
+        "VECO": {
+          "premarket_price": 52.0,
+          "prior_close": 50.93,
+          "gap_pct": 0.021,
+          "pm_volume": 0
+        },
+        "WTI": {
+          "premarket_price": 4.32,
+          "prior_close": 4.38,
+          "gap_pct": -0.0135,
+          "pm_volume": 0
+        },
+        "NBIS": {
+          "premarket_price": 174.75,
+          "prior_close": 176.42,
+          "gap_pct": -0.0095,
+          "pm_volume": 0
+        },
+        "BE": {
+          "premarket_price": 292.0,
+          "prior_close": 288.64,
+          "gap_pct": 0.0116,
+          "pm_volume": 0
+        },
+        "ALM": {
+          "premarket_price": 19.91,
+          "prior_close": 19.54,
+          "gap_pct": 0.0191,
+          "pm_volume": 0
+        },
+        "SITM": {
+          "premarket_price": 575.0,
+          "prior_close": 564.68,
+          "gap_pct": 0.0183,
+          "pm_volume": 0
+        },
+        "TSEM": {
+          "premarket_price": 220.31,
+          "prior_close": 215.06,
+          "gap_pct": 0.0244,
+          "pm_volume": 0
+        },
+        "KLIC": {
+          "premarket_price": 88.5,
+          "prior_close": 87.85,
+          "gap_pct": 0.0074,
+          "pm_volume": 0
+        },
+        "STX": {
+          "premarket_price": 751.93,
+          "prior_close": 738.54,
+          "gap_pct": 0.0181,
+          "pm_volume": 0
+        }
+      }
     }
   ]
 }
