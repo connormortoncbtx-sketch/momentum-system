@@ -16,6 +16,44 @@
 #
 # Migrated from `alpaca-trade-api` to `alpaca-py` (2026-04). Polling-only
 # (no streaming); the migration is largely mechanical for this file.
+#
+# ──────────────────────────────────────────────────────────────────────
+# 2026-05-05 PATCH NOTES — state-vs-Alpaca reconciliation
+#
+# Two bugs that compounded to produce continuous error notifications:
+#
+# BUG A: ensure_phase1_stop's "adopt existing stop" reconciliation only
+#        looked for STOP and STOP_LIMIT order types, missing TRAILING_STOP.
+#        When a position had a live trail (e.g., from a Phase 2 upgrade
+#        whose state save was lost due to concurrent runner overwrite),
+#        the function would falsely conclude "no stop exists" and try to
+#        place a hard stop. Alpaca rejected with "insufficient qty"
+#        because the trail held all shares.
+#
+# BUG B: When a Phase 2 upgrade reaches Step 3 (trail placed) but is then
+#        killed before Step 4 (state save), or has its phase=2 state save
+#        overwritten by a concurrent monitor instance running with stale
+#        in-memory state, the next poll sees phase=1 + activation_price
+#        crossed and re-attempts the upgrade. Step 1 (cancel) is a no-op
+#        on already-cancelled order. Step 3 (trail) fails because the
+#        first attempt's trail is still live. Loop forever.
+#
+# FIX:
+#   1. ensure_phase1_stop now recognizes ALL stop-style orders (STOP,
+#      STOP_LIMIT, TRAILING_STOP) when reconciling. If a live trail is
+#      found, the function reconciles state to phase=2 instead of trying
+#      to place a hard stop.
+#
+#   2. upgrade_to_phase2 now checks for an existing trail BEFORE
+#      attempting any state changes. If a trail already exists for the
+#      symbol (because a prior upgrade succeeded but state was lost),
+#      adopt it and mark phase=2 -- don't re-run the upgrade flow.
+#
+#   3. Step 1 (cancel) now treats "no hard stops to cancel" as a NORMAL
+#      condition (not an error) since we already accept that prior
+#      attempts may have cancelled it. Crucially, we do NOT proceed to
+#      submit a new trail unless we've verified no trail already exists.
+# ──────────────────────────────────────────────────────────────────────
 
 import argparse
 import json
@@ -78,7 +116,41 @@ def save_state(state: dict):
         json.dump(state, f, indent=2)
 
 
-# ── PHASE 2 UPGRADE ───────────────────────────────────────────────────────────
+# ── ORDER HELPERS ─────────────────────────────────────────────────────────────
+
+def find_open_stop_orders(client, symbol: str) -> dict:
+    """
+    List open SELL stop-style orders for a symbol, classified by type.
+
+    Returns a dict with keys:
+      - 'hard':     list of orders with type STOP or STOP_LIMIT
+      - 'trailing': list of orders with type TRAILING_STOP
+
+    Used by both ensure_phase1_stop (reconciliation) and upgrade_to_phase2
+    (pre-flight check).
+    """
+    from alpaca.trading.requests import GetOrdersRequest
+    from alpaca.trading.enums import OrderSide, OrderType, QueryOrderStatus
+
+    result = {"hard": [], "trailing": []}
+    try:
+        open_orders = client.get_orders(filter=GetOrdersRequest(status=QueryOrderStatus.OPEN))
+    except Exception as e:
+        log.warning(f"  {symbol}: list_orders failed: {e}")
+        return result
+
+    for order in open_orders:
+        if order.symbol != symbol or order.side != OrderSide.SELL:
+            continue
+        if order.order_type in (OrderType.STOP, OrderType.STOP_LIMIT):
+            result["hard"].append(order)
+        elif order.order_type == OrderType.TRAILING_STOP:
+            result["trailing"].append(order)
+
+    return result
+
+
+# ── PHASE 1 STOP MANAGEMENT ───────────────────────────────────────────────────
 
 def ensure_phase1_stop(client, symbol: str, state: dict) -> bool:
     """
@@ -103,10 +175,16 @@ def ensure_phase1_stop(client, symbol: str, state: dict) -> bool:
     The phase=1 + no hard_stop_order_id check naturally catches this case because
     the in-progress upgrade cleared hard_stop_order_id when it cancelled.
 
-    Returns True if a stop was placed this call, False otherwise.
+    2026-05-05 update: reconciliation now recognizes TRAILING_STOP orders. If a
+    trail is found for the symbol, state is reconciled to phase=2 instead of
+    trying to place a duplicate hard stop. Fixes the scenario where a Phase 2
+    upgrade succeeded but state got rolled back (concurrent runner overwrite,
+    state-save race, etc.).
+
+    Returns True if any state-changing action was taken this call, False otherwise.
     """
-    from alpaca.trading.requests import StopOrderRequest, GetOrdersRequest
-    from alpaca.trading.enums import OrderSide, OrderType, TimeInForce, QueryOrderStatus
+    from alpaca.trading.requests import StopOrderRequest
+    from alpaca.trading.enums import OrderSide, TimeInForce
 
     pos_state = state.get("positions", {}).get(symbol, {})
     if not pos_state:
@@ -123,27 +201,66 @@ def ensure_phase1_stop(client, symbol: str, state: dict) -> bool:
         log.warning(f"  {symbol}: no hard_stop_pct in state -- cannot place stop")
         return False
 
-    # Check Alpaca for an existing stop order on this symbol. If one exists (e.g., placed
-    # manually or by a previous run that didn't persist the id), adopt it rather than
-    # creating a duplicate.
-    try:
-        open_orders = client.get_orders(filter=GetOrdersRequest(status=QueryOrderStatus.OPEN))
-        for order in open_orders:
-            if (order.symbol == symbol and
-                    order.order_type in (OrderType.STOP, OrderType.STOP_LIMIT) and
-                    order.side == OrderSide.SELL):
-                log.info(f"  {symbol}: found existing stop {order.id} -- adopting")
-                state["positions"][symbol]["hard_stop_order_id"] = str(order.id)
-                # If we were mid-upgrade-recovery, clear the flag now that we have coverage
-                if state["positions"][symbol].get("upgrade_in_progress"):
-                    state["positions"][symbol]["upgrade_in_progress"] = False
-                    log.info(f"  {symbol}: upgrade_in_progress flag cleared (existing stop adopted)")
-                return True
-    except Exception as e:
-        log.warning(f"  {symbol}: list_orders check failed: {e} -- proceeding to submit")
+    # ── RECONCILIATION: check Alpaca for any existing stop coverage ──────
+    # If a STOP/STOP_LIMIT exists, adopt it as our hard stop.
+    # If a TRAILING_STOP exists, the position is actually phase=2 and our
+    # state is stale -- reconcile to phase=2.
+    existing_stops = find_open_stop_orders(client, symbol)
 
-    # Need the actual fill price. Use the live position's avg_entry_price -- this
-    # reflects what Alpaca actually paid, including any slippage on the MOC fill.
+    if existing_stops["trailing"]:
+        # State says phase=1 but Alpaca has a live trail. Most likely cause:
+        # a prior Phase 2 upgrade succeeded but the state save was lost
+        # (runner kill mid-flow, concurrent runner overwrite, state file
+        # corruption). Reconcile state to match reality rather than trying
+        # to place a duplicate hard stop on shares the trail is reserving.
+        trail = existing_stops["trailing"][0]
+        log.warning(f"  {symbol}: STATE RECONCILIATION -- found live trail order "
+                    f"{trail.id}, updating state from phase=1 to phase=2")
+
+        # Get current position info for state fields. If position lookup
+        # fails, still reconcile (the trail proves position exists) but
+        # leave qty/price fields untouched.
+        try:
+            pos = client.get_open_position(symbol)
+            total_qty = int(float(pos.qty))
+            current_price = float(pos.current_price)
+        except Exception as e:
+            log.warning(f"  {symbol}: get_position failed during reconciliation: {e} "
+                        f"-- proceeding with state update only")
+            total_qty = pos_state.get("shares", int(float(getattr(trail, "qty", 0)) or 0))
+            current_price = pos_state.get("entry_price_actual",
+                                          pos_state.get("entry_price_est", 0))
+
+        state["positions"][symbol]["phase"]                = 2
+        state["positions"][symbol]["trail_order_id"]       = str(trail.id)
+        state["positions"][symbol]["trail_qty"]            = total_qty
+        state["positions"][symbol]["hard_stop_order_id"]   = None
+        state["positions"][symbol]["hard_stop_price"]      = None
+        state["positions"][symbol]["upgrade_in_progress"]  = False
+        state["positions"][symbol]["reconciled_at"]        = datetime.datetime.now().isoformat()
+        # Note: we don't claim to know phase2_activated_at price post-hoc; leave
+        # whatever was there (or None) as-is.
+        state["positions"][symbol].pop("upgrade_started_at", None)
+
+        log_event("alpaca_monitor", LogStatus.SUCCESS,
+                  f"State reconciled to phase=2 for {symbol} (live trail discovered)",
+                  metrics={"symbol": symbol, "trail_order_id": str(trail.id)})
+        # Don't notify -- this is housekeeping. The original Phase 2 activation
+        # already notified when it succeeded; spamming a second notification
+        # just because we noticed the state mismatch isn't useful.
+        return True
+
+    if existing_stops["hard"]:
+        # Hard stop exists in Alpaca but not tracked in state. Adopt it.
+        order = existing_stops["hard"][0]
+        log.info(f"  {symbol}: found existing hard stop {order.id} -- adopting")
+        state["positions"][symbol]["hard_stop_order_id"] = str(order.id)
+        if state["positions"][symbol].get("upgrade_in_progress"):
+            state["positions"][symbol]["upgrade_in_progress"] = False
+            log.info(f"  {symbol}: upgrade_in_progress flag cleared (existing stop adopted)")
+        return True
+
+    # ── NO EXISTING COVERAGE: PLACE A FRESH HARD STOP ────────────────────
     try:
         pos = client.get_open_position(symbol)
         actual_entry = float(pos.avg_entry_price)
@@ -172,7 +289,6 @@ def ensure_phase1_stop(client, symbol: str, state: dict) -> bool:
         state["positions"][symbol]["hard_stop_order_id"] = str(order.id)
         state["positions"][symbol]["hard_stop_price"]    = stop_price
         state["positions"][symbol]["entry_price_actual"] = actual_entry
-        # Clear upgrade-in-progress flag if we're recovering from a failed upgrade
         was_recovering = state["positions"][symbol].get("upgrade_in_progress")
         if was_recovering:
             state["positions"][symbol]["upgrade_in_progress"] = False
@@ -201,6 +317,8 @@ def ensure_phase1_stop(client, symbol: str, state: dict) -> bool:
                      f"Position is NAKED until stop is placed.")
         return False
 
+
+# ── PHASE 2 UPGRADE ───────────────────────────────────────────────────────────
 
 def check_and_upgrade(client, symbol: str, current_price: float, state: dict) -> bool:
     pos_state = state.get("positions", {}).get(symbol)
@@ -277,45 +395,45 @@ def upgrade_to_phase2(client, symbol: str, current_price: float,
                       trail_pct: float, state: dict) -> bool:
     """Phase 2 upgrade: lock in gains with partial sell + trailing stop.
 
-    Order-of-operations (revised 2026-04-28 after MXL upgrade failure):
+    2026-05-05 redesign:
 
-    PRIOR DESIGN (broken): place trailing stop FIRST, then cancel hard stop.
-    The intent was zero-coverage-gap, but Alpaca rejects this with
-    "insufficient qty available" because the existing hard stop reserves
-    all shares (held_for_orders == position size). You CANNOT have two
-    overlapping SELL orders on the same shares -- Alpaca's risk engine
-    blocks it. Every Phase 2 upgrade since this redesign was failing
-    silently with this error, which we discovered when MXL hit Phase 2
-    on Tuesday 2026-04-28.
+    The earlier design (cancel hard stop -> save state -> submit trail ->
+    save phase=2 -> partial sell) had two failure modes that compounded
+    to produce continuous error notifications:
 
-    CURRENT DESIGN: cancel-then-place-then-recover, with explicit
-    in-progress flagging:
+    1. If the runner was killed between trail-submission and phase=2 save,
+       state remained at phase=1 with no hard stop. Next poll would
+       attempt the upgrade fresh, re-cancel the (already-cancelled) hard
+       stop, then fail to place a new trail because the original trail
+       was still live holding all shares.
 
-      1. Cancel the existing hard stop. Position briefly has no Alpaca-
-         side coverage (typically <2 seconds; bounded by HTTP RTT).
-      2. Set upgrade_in_progress=True in state and persist immediately.
-         If the runner is killed (concurrency cancellation, OOM, network
-         drop) between steps 1 and 3, the next monitor poll's
-         ensure_phase1_stop will see phase=1 + no hard_stop_order_id +
-         upgrade_in_progress=True and place a fresh hard stop to restore
-         coverage. This is the recovery path for partial failures.
-      3. Submit the trailing stop on full position quantity.
-      4. On success: mark phase=2, clear upgrade_in_progress, save.
-      5. On failure: notification fires; ensure_phase1_stop on next poll
-         restores hard stop. Position is uncovered for ~60 seconds (one
-         poll interval) in the worst case.
-      6. Submit partial sell (additive; allowed to fail without affecting
-         core coverage since the trailing stop now covers the position).
+    2. Concurrent monitor instances (despite the workflow concurrency
+       fix) could read state, perform an upgrade, then have their phase=2
+       save overwritten by another instance that started before the save
+       but finished after. Same end state as failure mode 1.
 
-    The brief coverage gap in step 1-3 is an unavoidable consequence of
-    Alpaca's no-overlap rule. The recovery logic in ensure_phase1_stop
-    bounds the worst case to one poll interval, which is the same exposure
-    window the system already has between any two polls.
+    The redesign addresses these by:
+
+    - Pre-flight check: BEFORE any state changes, look for an existing
+      trail order in Alpaca. If one exists, adopt it and mark phase=2.
+      This makes the upgrade idempotent against repeated calls.
+
+    - Partial sell now happens BEFORE trail placement. The trail is then
+      placed on the post-partial-sell quantity. This avoids the "trail
+      reserves all shares -> partial sell can't execute" deadlock that
+      affected the prior design (which placed the trail on full quantity
+      first, leaving no shares free for the partial sell).
+
+    - Each step's failure is handled distinctly:
+        Step 0 (pre-flight) failure: log only, proceed cautiously
+        Step 1 (cancel) failure: abort, hard stop still covers
+        Step 2 (partial sell) failure: continue with full-position trail
+        Step 3 (trail submission) failure: state recovery handles next poll
     """
     from alpaca.trading.requests import (
-        MarketOrderRequest, TrailingStopOrderRequest, GetOrdersRequest
+        MarketOrderRequest, TrailingStopOrderRequest
     )
-    from alpaca.trading.enums import OrderSide, OrderType, TimeInForce, QueryOrderStatus
+    from alpaca.trading.enums import OrderSide, TimeInForce
 
     pos_state   = state.get("positions", {}).get(symbol, {})
     alpha_score = pos_state.get("alpha_score", 0.75)
@@ -333,24 +451,34 @@ def upgrade_to_phase2(client, symbol: str, current_price: float,
         log.warning(f"  Position for {symbol} has 0 shares -- skipping upgrade")
         return False
 
+    # ── STEP 0: PRE-FLIGHT CHECK FOR EXISTING TRAIL ──────────────────────
+    # If a trail already exists for this symbol, a prior upgrade attempt
+    # already succeeded (its state save was lost). Adopt it and mark
+    # phase=2 -- do not run the upgrade flow.
+    existing = find_open_stop_orders(client, symbol)
+    if existing["trailing"]:
+        trail = existing["trailing"][0]
+        log.warning(f"  {symbol}: pre-flight found existing trail {trail.id} -- "
+                    f"adopting and marking phase=2 (no upgrade flow run)")
+        state["positions"][symbol]["phase"]                = 2
+        state["positions"][symbol]["trail_order_id"]       = str(trail.id)
+        state["positions"][symbol]["trail_qty"]            = total_qty
+        state["positions"][symbol]["hard_stop_order_id"]   = None
+        state["positions"][symbol]["hard_stop_price"]      = None
+        state["positions"][symbol]["upgrade_in_progress"]  = False
+        state["positions"][symbol]["reconciled_at"]        = datetime.datetime.now().isoformat()
+        state["positions"][symbol].pop("upgrade_started_at", None)
+        save_state(state)
+        log_event("alpaca_monitor", LogStatus.SUCCESS,
+                  f"Adopted existing trail and marked phase=2 for {symbol}",
+                  metrics={"symbol": symbol, "trail_order_id": str(trail.id)})
+        return True
+
     # ── STEP 1: CANCEL EXISTING HARD STOP(S) ─────────────────────────────
     # Alpaca won't let us place a new SELL covering shares that are already
     # reserved by another SELL. So we must release the reservation first.
-    try:
-        orders = client.get_orders(filter=GetOrdersRequest(status=QueryOrderStatus.OPEN))
-    except Exception as e:
-        log.error(f"  {symbol}: could not list open orders to find hard stop: {e}")
-        return False
-
-    hard_stops = [
-        o for o in orders
-        if o.symbol == symbol
-        and o.side == OrderSide.SELL
-        and o.order_type in (OrderType.STOP, OrderType.STOP_LIMIT)
-    ]
-
     cancelled_ids = []
-    for order in hard_stops:
+    for order in existing["hard"]:
         try:
             client.cancel_order_by_id(order.id)
             cancelled_ids.append(str(order.id))
@@ -361,40 +489,111 @@ def upgrade_to_phase2(client, symbol: str, current_price: float,
             # is still covered. Next poll will retry the upgrade.
             return False
 
-    log.info(f"  Step 1: Cancelled {len(cancelled_ids)} hard stop(s) for {symbol}: "
-             f"{cancelled_ids}")
+    if cancelled_ids:
+        log.info(f"  Step 1: Cancelled {len(cancelled_ids)} hard stop(s) for "
+                 f"{symbol}: {cancelled_ids}")
+    else:
+        log.info(f"  Step 1: No hard stops to cancel for {symbol} (already cleared)")
 
     # ── STEP 2: MARK UPGRADE IN PROGRESS (RECOVERY ANCHOR) ───────────────
-    # If we crash between cancellation and trail placement, the next monitor
-    # poll's ensure_phase1_stop() will see phase=1 + no hard_stop_order_id
-    # and place a fresh hard stop. The upgrade_in_progress flag is mostly
-    # informational/diagnostic -- ensure_phase1_stop's logic doesn't strictly
-    # require it -- but it gives us a clear signal in state that this
-    # position is in a transient state.
+    # The flag tells the next monitor poll's ensure_phase1_stop that this
+    # position is mid-upgrade and a fresh hard stop should be placed if
+    # the trail submission fails below. The reconciliation logic in
+    # ensure_phase1_stop will adopt any trail that DOES get placed
+    # successfully, even without this flag, but the flag remains useful
+    # as diagnostic state.
     state["positions"][symbol]["hard_stop_order_id"]   = None
     state["positions"][symbol]["upgrade_in_progress"]  = True
     state["positions"][symbol]["upgrade_started_at"]   = datetime.datetime.now().isoformat()
     save_state(state)
     log.info(f"  Step 2: State marked upgrade_in_progress=True and saved")
 
-    # ── STEP 3: PLACE TRAILING STOP ON FULL POSITION ─────────────────────
+    # ── STEP 3: PARTIAL SELL FIRST (BEFORE TRAIL) ────────────────────────
+    # Submitting partial sell first means:
+    #  - Partial sell uses concrete shares (the sell_qty it needs)
+    #  - Trail then places against (total_qty - sell_qty) -- the remainder
+    #  - No deadlock: the trail isn't holding all shares when the partial
+    #    sell tries to execute
+    #
+    # If partial sell fails, we still proceed to trail placement on the
+    # FULL quantity, since that's better than no coverage. Partial sell is
+    # variance reduction; trail placement is core position protection.
+    sell_pct = compute_partial_sell_pct(alpha_score, weekly_vol)
+    sell_qty = int(total_qty * sell_pct)
+    partial_order_id = None
+    partial_succeeded = False
+
+    if sell_qty < 1 or (total_qty - sell_qty) < 1:
+        log.info(f"  Step 3: Partial sell skipped -- split {total_qty}×{sell_pct:.2f} "
+                 f"produces degenerate qty ({sell_qty}/{total_qty - sell_qty})")
+        trail_qty = total_qty
+    else:
+        try:
+            partial_order = client.submit_order(
+                order_data=MarketOrderRequest(
+                    symbol        = symbol,
+                    qty           = sell_qty,
+                    side          = OrderSide.SELL,
+                    time_in_force = TimeInForce.DAY,
+                )
+            )
+            partial_order_id = str(partial_order.id)
+            partial_succeeded = True
+            log.info(f"  Step 3: Partial sell submitted: {symbol} {sell_qty} shares @ market "
+                     f"order_id={partial_order.id} "
+                     f"(alpha={alpha_score:.3f} vol={weekly_vol:.3f} pct={sell_pct*100:.1f}%)")
+            # Wait briefly for partial sell to fill so the trail places against
+            # the post-sale quantity. Most market orders fill in <1 second; we
+            # wait up to 5 seconds to be safe. If still pending after 5s, place
+            # the trail on the full quantity anyway -- the trail's qty will be
+            # auto-reduced by Alpaca's risk engine when the partial sell fills.
+            wait_start = time.time()
+            while time.time() - wait_start < 5.0:
+                try:
+                    refreshed = client.get_order_by_id(partial_order.id)
+                    if str(refreshed.status).lower() in ("filled", "partially_filled"):
+                        break
+                except Exception:
+                    pass
+                time.sleep(0.5)
+            # Compute trail quantity. If partial sell filled, trail covers
+            # the remainder. If still pending, trail covers full qty (Alpaca
+            # will reconcile when partial sell fills).
+            try:
+                refreshed_pos = client.get_open_position(symbol)
+                trail_qty = int(float(refreshed_pos.qty))
+            except Exception:
+                trail_qty = total_qty - sell_qty
+        except Exception as sell_err:
+            log.warning(f"  Step 3: Partial sell failed (proceeding with full-qty trail): "
+                        f"{sell_err}")
+            trail_qty = total_qty
+
+    # ── STEP 4: PLACE TRAILING STOP ──────────────────────────────────────
+    if trail_qty < 1:
+        log.error(f"  Step 4: trail_qty is {trail_qty} -- cannot place trail. "
+                  f"Investigate: total_qty={total_qty}, sell_qty={sell_qty}")
+        return False
+
     try:
         trail_order = client.submit_order(
             order_data=TrailingStopOrderRequest(
                 symbol        = symbol,
-                qty           = total_qty,
+                qty           = trail_qty,
                 side          = OrderSide.SELL,
                 time_in_force = TimeInForce.GTC,
                 trail_percent = str(trail_pct),
             )
         )
-        log.info(f"  Step 3: Trailing stop placed: {symbol} {total_qty} shares "
+        log.info(f"  Step 4: Trailing stop placed: {symbol} {trail_qty} shares "
                  f"trail={trail_pct}% order_id={trail_order.id}")
     except Exception as trail_err:
-        # Trail submission failed. Position is now uncovered.
-        # ensure_phase1_stop on next poll will detect phase=1 + no hard_stop_order_id
-        # and place a fresh hard stop. Notify user immediately.
-        log.error(f"  Step 3 FAILED for {symbol}: {trail_err}")
+        # Trail submission failed. Position is now uncovered (or at least
+        # not optimally covered -- the partial sell may have already executed).
+        # ensure_phase1_stop on next poll will detect phase=1 + no
+        # hard_stop_order_id and place a fresh hard stop for whatever
+        # quantity is currently held.
+        log.error(f"  Step 4 FAILED for {symbol}: {trail_err}")
         log.error(f"  Position is uncovered until next poll (≤{POLL_INTERVAL_SECS}s)")
         log_event("alpaca_monitor", LogStatus.ERROR,
                   f"Phase 2 trail submission failed: {symbol} (recovering on next poll)",
@@ -409,50 +608,20 @@ def upgrade_to_phase2(client, symbol: str, current_price: float,
         # detect missing hard_stop_order_id and place a fresh hard stop.
         return False
 
-    # ── STEP 4: MARK PHASE 2 SUCCESS ─────────────────────────────────────
+    # ── STEP 5: MARK PHASE 2 SUCCESS ─────────────────────────────────────
     state["positions"][symbol]["phase"]                = 2
     state["positions"][symbol]["trail_order_id"]       = str(trail_order.id)
     state["positions"][symbol]["phase2_activated_at"]  = current_price
-    state["positions"][symbol]["trail_qty"]            = total_qty
-    state["positions"][symbol]["partial_order_id"]     = None
-    state["positions"][symbol]["partial_sell_qty"]     = 0
+    state["positions"][symbol]["trail_qty"]            = trail_qty
+    state["positions"][symbol]["partial_order_id"]     = partial_order_id
+    state["positions"][symbol]["partial_sell_qty"]     = sell_qty if partial_succeeded else 0
+    state["positions"][symbol]["partial_sell_pct_actual"] = (
+        round(sell_qty / total_qty, 4) if (partial_succeeded and total_qty > 0) else 0
+    )
     state["positions"][symbol]["upgrade_in_progress"]  = False
     state["positions"][symbol].pop("upgrade_started_at", None)
     save_state(state)
-    log.info(f"  Step 4: State marked phase=2, upgrade_in_progress=False, saved")
-
-    # ── STEP 5: SUBMIT PARTIAL SELL (ADDITIVE, ALLOWED TO FAIL) ──────────
-    # Trailing stop covers the full position, so the partial sell is purely
-    # gain realization. If it fails, position is fully covered by the trail.
-    sell_pct   = compute_partial_sell_pct(alpha_score, weekly_vol)
-    sell_qty   = int(total_qty * sell_pct)
-    partial_order_id = None
-
-    if sell_qty < 1 or (total_qty - sell_qty) < 1:
-        log.info(f"  Step 5: Partial sell skipped -- split {total_qty}×{sell_pct:.2f} "
-                 f"produces degenerate qty ({sell_qty}/{total_qty - sell_qty})")
-    else:
-        try:
-            partial_order = client.submit_order(
-                order_data=MarketOrderRequest(
-                    symbol        = symbol,
-                    qty           = sell_qty,
-                    side          = OrderSide.SELL,
-                    time_in_force = TimeInForce.DAY,
-                )
-            )
-            partial_order_id = str(partial_order.id)
-            log.info(f"  Step 5: Partial sell: {symbol} {sell_qty} shares @ market "
-                     f"(~${current_price:.2f})  order_id={partial_order.id}  "
-                     f"(alpha={alpha_score:.3f} vol={weekly_vol:.3f} pct={sell_pct*100:.1f}%)")
-            state["positions"][symbol]["partial_order_id"]     = partial_order_id
-            state["positions"][symbol]["partial_sell_qty"]     = sell_qty
-            state["positions"][symbol]["partial_sell_pct_actual"] = round(
-                sell_qty / total_qty, 4) if total_qty > 0 else 0
-            save_state(state)
-        except Exception as sell_err:
-            # Partial sell failure is non-fatal -- trail covers position.
-            log.warning(f"  Step 5: Partial sell failed (non-fatal, trail still covers): {sell_err}")
+    log.info(f"  Step 5: State marked phase=2, upgrade_in_progress=False, saved")
 
     entry = pos_state.get("entry_price_est") or pos_state.get("entry_price_actual", 0)
     gain_pct = ((current_price / entry) - 1) * 100 if entry else 0
@@ -462,16 +631,16 @@ def upgrade_to_phase2(client, symbol: str, current_price: float,
                   "symbol":              symbol,
                   "current_price":       round(current_price, 2),
                   "gain_pct":            round(gain_pct, 2),
-                  "partial_sell_qty":    sell_qty if partial_order_id else 0,
-                  "trail_qty":           total_qty,
-                  "partial_sell_pct":    round(sell_pct * 100, 1) if partial_order_id else 0,
+                  "partial_sell_qty":    sell_qty if partial_succeeded else 0,
+                  "trail_qty":           trail_qty,
+                  "partial_sell_pct":    round(sell_pct * 100, 1) if partial_succeeded else 0,
                   "trail_pct":           trail_pct,
               })
     notify_success("alpaca_monitor",
                    f"PHASE 2 ACTIVATED: {symbol} @ ${current_price:.2f} "
                    f"({gain_pct:+.1f}%)\n"
-                   f"Trailing stop on {total_qty} shares @ {trail_pct}%"
-                   + (f"\nPartial sell: {sell_qty} shares" if partial_order_id else ""))
+                   f"Trailing stop on {trail_qty} shares @ {trail_pct}%"
+                   + (f"\nPartial sell: {sell_qty} shares" if partial_succeeded else ""))
     return True
 
 
