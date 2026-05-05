@@ -157,22 +157,23 @@
       "entry_price_actual": 4.53
     },
     "CLYM": {
-      "shares": 1096,
-      "entry_price_est": 8.91,
-      "hard_stop_pct": 10.0,
-      "activation_pct": 11.7,
-      "trail_pct": 6.7,
-      "alpha_score": 1.0,
-      "weekly_vol": 13.37,
-      "composite_rank": 10,
-      "is_fallback": false,
-      "phase": 1,
-      "high_water_mark": 9.69,
-      "order_id": "8718e3fe-35e6-4c9c-a2ad-5bcdebd8d241",
-      "hard_stop_order_id": "a43825b4-f06b-4351-b120-3bbeb6f5cf2d",
-      "hard_stop_price": 8.68,
-      "entry_price_actual": 9.64
-    }
-  },
+  "shares": 1096,
+  "entry_price_est": 8.91,
+  "hard_stop_pct": 10.0,
+  "activation_pct": 11.7,
+  "trail_pct": 6.7,
+  "alpha_score": 1.0,
+  "weekly_vol": 13.37,
+  "composite_rank": 10,
+  "is_fallback": false,
+  "phase": 2,
+  "high_water_mark": 10.77,
+  "order_id": "8718e3fe-35e6-4c9c-a2ad-5bcdebd8d241",
+  "hard_stop_order_id": null,
+  "hard_stop_price": null,
+  "entry_price_actual": 9.64,
+  "trail_stop_order_id": "7cfb2dd6-36fe-4148-a49d-7a275f377a42",
+  "phase2_activated_at_price": 10.77
+},
   "entry_date": "2026-05-04"
 }
