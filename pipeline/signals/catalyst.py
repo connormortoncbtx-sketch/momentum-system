@@ -15,6 +15,7 @@ Output columns:
     sig_catalyst_insider    Insider buy signal (Form 4 derived)
     sig_catalyst_analyst    Analyst upgrade momentum
     sig_catalyst            Composite catalyst score (0-1)
+    days_until_earnings     Calendar days to next scheduled earnings (NaN if none)
 
 ──────────────────────────────────────────────────────────────────────────────
 2026-04-25 PATCH NOTES — three independent bugs found via signal distribution
@@ -40,6 +41,29 @@ analysis (sig_catalyst_earnings and sig_catalyst_insider were 0.0 for 100% of
    leaving only the news-count component active. Renamed to `string=` which
    has been canonical since 2015.
 ──────────────────────────────────────────────────────────────────────────────
+2026-05-08 PATCH NOTES — earnings exclusion support.
+
+The earnings_score function rewards proximity to upcoming earnings on the
+hypothesis that pre-earnings drift is bullish. This is a reasonable signal
+on its own, BUT the strategy holds positions Mon-Fri through any earnings
+that fall in that window, and the post-announcement reaction frequently
+overwhelms the pre-announcement drift (see FSLY 2026-05-07: beat earnings,
+gapped down 15% in after-hours, wiping out a +18% intraday gain).
+
+Two changes:
+
+1. earnings_score now returns a TUPLE: (score, days_until_earnings).
+   Callers can use the days_until value to filter at the ranking stage
+   without changing the underlying signal logic.
+
+2. The score function aggregates the days_until_earnings field into the
+   per-ticker output DataFrame, so it's available downstream. NaN when
+   no scheduled earnings.
+
+The actual filter (excluding tickers with earnings in the holding window)
+lives in pipeline/04_model.py where other ranking exclusions are applied.
+This keeps the signal logic clean and the filter logic centralized.
+──────────────────────────────────────────────────────────────────────────────
 """
 
 import time
@@ -63,12 +87,21 @@ REQUEST_SLEEP = 0.5   # courtesy sleep between HTTP requests
 
 # ── EARNINGS CATALYST ─────────────────────────────────────────────────────────
 
-def earnings_score(symbol: str, ticker_obj=None) -> float:
+def earnings_score(symbol: str, ticker_obj=None) -> tuple[float, float]:
     """
     Score based on:
     - Days until next earnings (sweet spot: 5-15 days out)
     - Historical EPS surprise trend
-    Returns 0.0-1.0
+
+    Returns (score, days_until_earnings):
+      score: 0.0-1.0
+      days_until_earnings: int days to next scheduled earnings, or np.nan if
+        no earnings on the calendar / data unavailable / lookup error.
+
+    The days_until_earnings value is exposed separately from the score so
+    that downstream ranking can apply a hard exclusion for earnings during
+    the holding period without changing the score curve. See module patch
+    notes (2026-05-08) for context.
     """
     try:
         t = ticker_obj or yf.Ticker(symbol)
@@ -77,7 +110,7 @@ def earnings_score(symbol: str, ticker_obj=None) -> float:
         # Treat falsy (None, empty dict, empty df) as no data.
         cal = t.calendar
         if not cal:
-            return 0.0
+            return 0.0, float("nan")
 
         next_date = None
 
@@ -114,7 +147,7 @@ def earnings_score(symbol: str, ticker_obj=None) -> float:
                     pass
 
         if next_date is None:
-            return 0.0
+            return 0.0, float("nan")
 
         days_out = (next_date - pd.Timestamp.now()).days
 
@@ -161,10 +194,11 @@ def earnings_score(symbol: str, ticker_obj=None) -> float:
         except Exception:
             pass
 
-        return float(np.clip(proximity * 0.70 + surprise_bonus * 0.30, 0, 1))
+        score = float(np.clip(proximity * 0.70 + surprise_bonus * 0.30, 0, 1))
+        return score, float(days_out)
 
     except Exception:
-        return 0.0
+        return 0.0, float("nan")
 
 
 # ── INSIDER BUYING ────────────────────────────────────────────────────────────
@@ -344,6 +378,14 @@ def score(universe_df: pd.DataFrame) -> pd.DataFrame:
     """
     Score all tickers for catalyst signals.
     Fetches data per ticker — rate-limit aware.
+
+    Output columns:
+      sig_catalyst_earnings, sig_catalyst_insider, sig_catalyst_analyst,
+      sig_catalyst, days_until_earnings
+
+    The days_until_earnings column is downstream metadata for the
+    earnings-exclusion filter in pipeline/04_model.py. NaN means no
+    scheduled earnings or data unavailable.
     """
     symbols = universe_df["symbol"].tolist()
     rows    = []
@@ -362,7 +404,7 @@ def score(universe_df: pd.DataFrame) -> pd.DataFrame:
             # constructing two yfinance handles per symbol.
             t = yf.Ticker(sym)
 
-            earn  = earnings_score(sym, t)
+            earn, days_until_earn = earnings_score(sym, t)
             time.sleep(REQUEST_SLEEP * 0.5)
 
             ins   = insider_score(sym, t)
@@ -383,6 +425,7 @@ def score(universe_df: pd.DataFrame) -> pd.DataFrame:
                 "sig_catalyst_insider":  round(ins,       4),
                 "sig_catalyst_analyst":  round(anal,      4),
                 "sig_catalyst":          round(composite, 4),
+                "days_until_earnings":   days_until_earn,
             })
 
         except Exception as e:
@@ -392,6 +435,7 @@ def score(universe_df: pd.DataFrame) -> pd.DataFrame:
                 "sig_catalyst_insider":  np.nan,
                 "sig_catalyst_analyst":  np.nan,
                 "sig_catalyst":          np.nan,
+                "days_until_earnings":   np.nan,
             })
 
         rows.append(row)
