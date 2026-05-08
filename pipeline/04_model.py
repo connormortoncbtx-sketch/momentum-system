@@ -110,6 +110,27 @@ EV_VETO_PERCENTILE = 0.20
 # saturation count exceeds this threshold so it stays visible.
 ALPHA_SATURATION_WARN_THRESHOLD = 20
 
+# ── EARNINGS EXCLUSION ───────────────────────────────────────────────────────
+# Tickers with earnings announcements during the holding period are excluded
+# from ranking, regardless of how attractive their other signals look. The
+# strategy is a Mon-Fri weekly cycle, so any ticker with earnings within ~6
+# calendar days of Monday entry would announce while we're holding it. The
+# post-announcement reaction (positive or negative) routinely overwhelms any
+# pre-earnings drift the catalyst signal was supposed to capture.
+#
+# Demonstrated case: FSLY 2026-05-07 announced beat earnings, gapped down
+# 15% in after-hours, wiping out a +18% intraday gain. The system held
+# through the announcement because the catalyst signal scored upcoming
+# earnings as a positive proximity bonus -- correctly modeling pre-drift
+# but failing to account for the system's policy of holding through the
+# announcement itself.
+#
+# 6 days covers the full Monday-through-Friday holding window with a small
+# buffer. days_until_earnings is computed in pipeline/signals/catalyst.py
+# from yfinance Ticker.calendar; NaN means no scheduled earnings (no
+# exclusion applies) or data unavailable (best-effort, no exclusion).
+EARNINGS_EXCLUSION_DAYS = 6
+
 # Feature columns fed to the model
 SIGNAL_FEATURES = [
     # Momentum sub-signals
@@ -555,6 +576,14 @@ def build_output(df: pd.DataFrame, raw_scores: pd.Series,
     """
     out = df[META_COLS + [c for c in df.columns if c.startswith("sig_")]].copy()
 
+    # Preserve days_until_earnings for the earnings-exclusion filter below.
+    # Not a sig_ column so it isn't picked up by the startswith filter; carry
+    # it through explicitly. NaN if no scheduled earnings or data unavailable.
+    if "days_until_earnings" in df.columns:
+        out["days_until_earnings"] = df["days_until_earnings"].values
+    else:
+        out["days_until_earnings"] = np.nan
+
     out["alpha_score"]    = raw_scores.round(6)
     out["alpha_pct_rank"] = raw_scores.rank(pct=True).round(4)
     # Int64 (nullable) instead of int -- raw_scores may contain NaN for rows
@@ -647,8 +676,38 @@ def build_output(df: pd.DataFrame, raw_scores: pd.Series,
         # signal-quality issue.
         out.loc[excluded_ev_veto & out["exclusion_reason"].isna(), "exclusion_reason"] = "ev_veto"
 
+        # ── EARNINGS EXCLUSION ───────────────────────────────────────────
+        # Don't hold positions through their earnings announcements. The
+        # system was built to capture momentum, not to make directional bets
+        # on earnings reactions. Any ticker with earnings within the next
+        # EARNINGS_EXCLUSION_DAYS calendar days is excluded from ranking,
+        # even if alpha and EV are otherwise excellent.
+        #
+        # NaN days_until_earnings means no scheduled earnings (or unavailable
+        # data) -- no exclusion applies. Per-ticker errors during catalyst
+        # data fetch already produce NaN, so this is fail-open by default.
+        # That's the correct stance: the cost of holding through an earnings
+        # we didn't know about is bounded by the rest of the risk machinery
+        # (stops, trails), but excluding everything we couldn't verify would
+        # shrink the universe substantially on transient yfinance errors.
+        days_until_earn = pd.to_numeric(out["days_until_earnings"], errors="coerce")
+        excluded_earnings = (
+            days_until_earn.notna() &
+            (days_until_earn >= 0) &  # past earnings already announced -- no exclusion
+            (days_until_earn <= EARNINGS_EXCLUSION_DAYS)
+        )
+        n_earnings_excluded = int(excluded_earnings.sum())
+        log.info(f"  Earnings exclusion: excluded {n_earnings_excluded} tickers "
+                 f"with earnings within {EARNINGS_EXCLUSION_DAYS} days")
+
+        # Update exclusion_reason for earnings-vetoed names that weren't already
+        # excluded by liquidity or EV. Display priority lower than liquidity
+        # (a tradability issue) and EV veto (a signal-quality issue).
+        out.loc[excluded_earnings & out["exclusion_reason"].isna(),
+                "exclusion_reason"] = "earnings_in_holding_period"
+
         # Combined exclusion mask for composite ranking
-        excluded = excluded_liquidity | excluded_ev_veto
+        excluded = excluded_liquidity | excluded_ev_veto | excluded_earnings
         out["excluded_from_ranking"] = excluded
 
         # ── COMPOSITE RANKING ────────────────────────────────────────────
