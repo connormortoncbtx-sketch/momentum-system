@@ -116,6 +116,66 @@ def save_state(state: dict):
         json.dump(state, f, indent=2)
 
 
+def reconcile_state_with_broker(client, state: dict,
+                                 live_symbols: set = None,
+                                 log_orphans: bool = True) -> dict:
+    """Detect and clean divergence between alpaca_state.json and Alpaca's live positions.
+
+    Removes state entries for symbols no longer held in Alpaca ("ghosts" --
+    state has them, broker doesn't). Logs but does NOT remove orphans (broker
+    has them, state doesn't) since auto-adopting them would mask manual
+    interventions or upstream bugs.
+
+    Mutates state in place. Does NOT call save_state() -- caller is responsible
+    for persisting.
+
+    Returns: {"ghosts_removed": [...], "live_orphans": [...]}
+
+    Monitor-specific kwargs (vs the alpaca_trader twin):
+      live_symbols: pre-fetched set of live symbols. The monitor already
+        fetches live_positions every poll, so passing the keys avoids
+        a redundant API call inside this function.
+      log_orphans: if False, the function returns orphan info but does not
+        log a warning. The monitor sets this to False because the same
+        orphan would otherwise warn every 60 seconds for the entire
+        session; the monitor handles its own session-level dedupe.
+
+    See alpaca_trader.reconcile_state_with_broker for the full rationale on
+    when and why state and broker reality diverge.
+    """
+    result = {"ghosts_removed": [], "live_orphans": []}
+
+    if not state.get("positions"):
+        return result
+
+    if live_symbols is None:
+        try:
+            live_symbols = {p.symbol for p in client.get_all_positions()}
+        except Exception as e:
+            log.warning(f"  reconcile: get_all_positions failed: {e} -- skipping")
+            return result
+
+    state_symbols = set(state["positions"].keys())
+    ghosts = sorted(state_symbols - live_symbols)
+    live_orphans = sorted(live_symbols - state_symbols)
+
+    for sym in ghosts:
+        log.info(f"  reconcile: removing state ghost {sym} (not in Alpaca)")
+        state["positions"].pop(sym, None)
+
+    if ghosts:
+        log.info(f"  reconcile: cleaned {len(ghosts)} state ghost(s): {ghosts}")
+
+    if live_orphans and log_orphans:
+        log.warning(f"  reconcile: {len(live_orphans)} live orphan(s) "
+                    f"in Alpaca without state metadata: {live_orphans} -- "
+                    f"manual investigation required")
+
+    result["ghosts_removed"] = ghosts
+    result["live_orphans"] = live_orphans
+    return result
+
+
 # ── ORDER HELPERS ─────────────────────────────────────────────────────────────
 
 def find_open_stop_orders(client, symbol: str) -> dict:
@@ -673,14 +733,35 @@ def run(duration_minutes: int = 180):
     upgrades   = 0
     stops_placed = 0
     poll_errors = 0
+    warned_orphans: set = set()  # session-level dedupe for live-orphan warnings
 
     while datetime.datetime.now() < end_time:
         poll_count += 1
         try:
-            state   = load_state()
-            tracked = state.get("positions", {})
-
+            state          = load_state()
             live_positions = {p.symbol: p for p in client.get_all_positions()}
+
+            # Reconcile state with broker BEFORE early-return checks. Mid-session
+            # stop fires (hard stops, trailing stops) leave ghost entries in
+            # state that aren't cleaned until next Friday's exit. Doing this
+            # every poll keeps state aligned with broker reality at minute
+            # granularity rather than weekly.
+            recon = reconcile_state_with_broker(
+                client, state,
+                live_symbols=set(live_positions.keys()),
+                log_orphans=False,
+            )
+            if recon["ghosts_removed"]:
+                save_state(state)
+
+            new_orphans = set(recon["live_orphans"]) - warned_orphans
+            if new_orphans:
+                log.warning(f"  reconcile: new live orphan(s) in Alpaca without "
+                            f"state metadata: {sorted(new_orphans)} -- manual "
+                            f"investigation required")
+                warned_orphans.update(new_orphans)
+
+            tracked = state.get("positions", {})
 
             if not live_positions:
                 log.info(f"Poll {poll_count}: No open positions in Alpaca account")
