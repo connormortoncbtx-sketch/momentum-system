@@ -60,6 +60,48 @@ CONCENTRATION_WARN   = 0.60    # 60% of return from top 1 name -> consider more 
 RANK_QUALITY_WARN    = 0.50    # rank bucket 6-10 returns less than 50% of rank 1-5
 
 
+def safe_read_csv(path: Path, **read_csv_kwargs) -> pd.DataFrame:
+    """Read a CSV that may not exist, may be zero bytes, or may be malformed.
+
+    Returns an empty DataFrame in all of those cases instead of raising.
+
+    Why: append-mode logs (execution_log.csv, basket_metrics_log.csv) have a
+    chicken-and-egg problem on first run -- something upstream (workflow
+    setup, manual `touch`, a partial write that was killed before to_csv
+    completed) can leave the file existing-but-empty. pd.read_csv on an
+    empty file raises EmptyDataError ("No columns to parse from file"),
+    which crashes the whole tracker even though "no prior data" is the
+    natural starting state.
+
+    Handles three failure modes:
+      - File doesn't exist -> empty DataFrame (was already handled inline)
+      - File exists with 0 bytes -> empty DataFrame (the actual bug)
+      - File exists but is malformed (corrupt write, partial flush) ->
+        empty DataFrame plus a warning so the issue is visible
+
+    Pass any pd.read_csv kwargs through (e.g. low_memory=False).
+    """
+    if not path.exists():
+        return pd.DataFrame()
+    try:
+        if path.stat().st_size == 0:
+            log.warning(f"  {path} exists but is empty -- treating as no prior data")
+            return pd.DataFrame()
+    except OSError as e:
+        log.warning(f"  {path} stat failed: {e} -- treating as no prior data")
+        return pd.DataFrame()
+    try:
+        return pd.read_csv(path, **read_csv_kwargs)
+    except pd.errors.EmptyDataError:
+        log.warning(f"  {path} has no parseable columns -- treating as no prior data")
+        return pd.DataFrame()
+    except pd.errors.ParserError as e:
+        log.warning(f"  {path} is malformed: {e} -- treating as no prior data. "
+                    f"Manual inspection recommended; the run will append a fresh "
+                    f"row but historical data in this file is at risk.")
+        return pd.DataFrame()
+
+
 # ── ALPACA FILL DATA ──────────────────────────────────────────────────────────
 
 def get_alpaca_fills(week_start: str, week_end: str) -> dict:
@@ -398,8 +440,9 @@ def run():
         log.info(f"Processing week: {week_str}")
 
         if EXEC_LOG.exists():
-            exec_df = pd.read_csv(EXEC_LOG, low_memory=False)
-            if "week_of" in exec_df.columns and (exec_df["week_of"].astype(str) == week_str).any():
+            exec_df = safe_read_csv(EXEC_LOG, low_memory=False)
+            if not exec_df.empty and "week_of" in exec_df.columns \
+                    and (exec_df["week_of"].astype(str) == week_str).any():
                 log.info(f"Execution log already has week {week_str} -- skipping")
                 log_event("execution_tracker", LogStatus.INFO,
                           f"Skipped: week {week_str} already in exec log")
@@ -459,8 +502,7 @@ def run():
         log.info(f"Execution log -> {EXEC_LOG} ({len(combined)} total rows)")
 
         basket_log = DATA_DIR / "basket_metrics_log.csv"
-        basket_df_existing = pd.read_csv(basket_log, low_memory=False) \
-            if basket_log.exists() else pd.DataFrame()
+        basket_df_existing = safe_read_csv(basket_log, low_memory=False)
         basket_new = pd.DataFrame([basket])
         basket_combined = pd.concat([basket_df_existing, basket_new], ignore_index=True) \
             if not basket_df_existing.empty else basket_new
