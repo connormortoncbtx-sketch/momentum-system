@@ -7,9 +7,9 @@
     "philosophy": "There are always winners in any market. The regime determines WHERE they are, not WHETHER they exist. Never reduce to zero \u2014 redirect."
   },
   "signal_weights": {
-    "momentum": 0.25,
+    "momentum": 0.3,
     "technicals": 0.15,
-    "catalyst": 0.25,
+    "catalyst": 0.2,
     "fundamentals": 0.3,
     "sentiment": 0.05
   },
@@ -47,11 +47,11 @@
       "note": "Sector rotation is the game. Find what IS working \u2014 defensives, commodities, short squeezes, idiosyncratic catalysts. Winners exist, look harder."
     },
     "risk_off_severe": {
-      "momentum": 1.1,
+      "momentum": 1.2,
       "technicals": 0.8,
       "catalyst": 2.0,
-      "fundamentals": 1.0,
-      "sentiment": 1.7,
+      "fundamentals": 0.9,
+      "sentiment": 1.8,
       "note": "The biggest weekly winners often happen in brutal markets. Short squeezes, FDA approvals, takeovers, contra-trend sector pops. Catalyst and sentiment signals lead \u2014 find them."
     }
   },
