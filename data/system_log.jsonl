@@ -371,3 +371,5 @@
 {"timestamp": "2026-05-09T05:05:56.417890+00:00", "workflow": "weekly_pipeline", "status": "info", "message": "Starting Stage 06: Report generator", "metrics": {}, "errors": []}
 {"timestamp": "2026-05-09T05:05:56.772597+00:00", "workflow": "weekly_pipeline", "status": "success", "message": "Stage 06: Report generator complete", "metrics": {"stage": "06", "elapsed_sec": 0.4}, "errors": []}
 {"timestamp": "2026-05-09T05:05:56.772969+00:00", "workflow": "weekly_pipeline", "status": "success", "message": "Pipeline complete (42.3 min)", "metrics": {"elapsed_min": 42.3, "stages_run": 6}, "errors": []}
+{"timestamp": "2026-05-09T05:21:39.187788+00:00", "workflow": "weekly_pipeline", "status": "info", "message": "Pipeline invoked (from=01, only=None, force=False)", "metrics": {}, "errors": []}
+{"timestamp": "2026-05-09T05:21:39.188313+00:00", "workflow": "weekly_pipeline", "status": "info", "message": "Skipped: ghost run prevention (last run 0.3h ago)", "metrics": {"last_run_hours_ago": 0.26, "threshold_hours": 18}, "errors": []}
