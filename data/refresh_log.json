@@ -510,5 +510,37 @@
         "alpha_rank": 4
       }
     ]
+  },
+  {
+    "run_label": "manual_refresh",
+    "timestamp": "2026-05-11T05:18:36.228169",
+    "regime": "risk_on",
+    "top_5": [
+      {
+        "symbol": "INOD",
+        "alpha_score": 1.0,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "PAYS",
+        "alpha_score": 0.966072,
+        "alpha_rank": 15
+      },
+      {
+        "symbol": "INTC",
+        "alpha_score": 1.0,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "SEDG",
+        "alpha_score": 0.978138,
+        "alpha_rank": 9
+      },
+      {
+        "symbol": "OPEN",
+        "alpha_score": 1.0,
+        "alpha_rank": 1
+      }
+    ]
   }
 ]
