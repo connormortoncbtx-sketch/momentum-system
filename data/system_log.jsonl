@@ -381,3 +381,5 @@
 {"timestamp": "2026-05-11T12:56:43.517449+00:00", "workflow": "weekend_refresh", "status": "success", "message": "Refresh complete (manual_refresh)", "metrics": {"run_label": "manual_refresh", "symbols": 2014, "regime": "risk_on", "top_pick": "PAYS", "top_score": 1.0}, "errors": []}
 {"timestamp": "2026-05-11T13:38:39.841257+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Starting premarket monitor", "metrics": {}, "errors": []}
 {"timestamp": "2026-05-11T13:38:39.844056+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Skipped: DST guard (CT hour=8, expected 6)", "metrics": {}, "errors": []}
+{"timestamp": "2026-05-11T13:41:13.169941+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Starting weekend refresh (manual_refresh)", "metrics": {}, "errors": []}
+{"timestamp": "2026-05-11T13:41:13.170504+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Skipped: manual_refresh already ran today (2026-05-11)", "metrics": {}, "errors": []}
