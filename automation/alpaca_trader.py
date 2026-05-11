@@ -118,19 +118,26 @@ MIN_AVG_VOLUME = 50000
 PER_POSITION_SLIPPAGE_CUSHION = 0.005
 
 # Capital deployment buffer -- hold back this fraction of portfolio value when
-# sizing MOC orders. Rationale: Alpaca reserves estimated cost at order-submit
+# sizing orders. Rationale: Alpaca reserves estimated cost at order-submit
 # time (not fill time), using last_price as the basis. If market moves up
-# between submit and close, or if multiple MOC orders land sequentially with
+# between submit and close, or if multiple orders land sequentially with
 # slight reservation overhead, the last order(s) in a batch can hit
 # "insufficient buying power" even when nominal math says it fits.
 #
 # 2026-04-20 incident: 9 × $10k orders on $100k account -- 10th order failed
 # because Alpaca's $90k reservation + overhead left <$10k for the final order.
-# A 5% buffer ($9.5k target per position) would have allowed all 10 to fill.
+#
+# 2026-05-11 reduction: 5% → 2%. The original 5% was sized against CLS
+# (closing-auction) orders, where Alpaca's reservation logic was more
+# aggressive. Since the 2026-04-27 switch to DAY orders, three weeks of
+# live runs have shown no buying-power rejections and ~$3-5k of headroom
+# remaining at order submission time. Tightening to 2% deploys an extra
+# ~$3k/week with no observed risk to the failure mode the buffer protects.
+# If buying-power rejections ever recur, raise back to 3-4%.
 #
 # This is account-level protection. PER_POSITION_SLIPPAGE_CUSHION (above) is
 # per-position protection. Both are needed; they handle different cases.
-CAPITAL_BUFFER_PCT = 0.05
+CAPITAL_BUFFER_PCT = 0.02
 
 # Circuit breaker -- if portfolio drops this % from week-open value, exit all
 # Set to None to disable. Tune based on backtesting.
@@ -168,6 +175,109 @@ def get_alpaca():
     mode = "PAPER" if PAPER_MODE else "LIVE"
     log.info(f"Alpaca connected [{mode}]")
     return client
+
+
+def refresh_last_prices(scores: pd.DataFrame, symbols: list, key: str, secret: str) -> pd.DataFrame:
+    """Replace the `last_price` column in `scores` with live quotes from Alpaca.
+
+    Why this exists:
+
+    scores_final.csv is written by the Friday-night pipeline using Friday's
+    close. Weekend refresh preserves last_price rather than re-fetching it
+    (bounded-tweak refresh, by design). By the time alpaca_trader runs at
+    Monday 2:45pm CT, that price is roughly 70 hours stale.
+
+    For momentum names -- precisely the names this strategy targets -- a
+    Friday-to-Monday gap is exactly when material price moves are most
+    likely. Empirical example (week of 2026-05-04): AXTI sized at $96.00
+    (Friday close) but filled at $130.85 (Monday MOC) -- a 36% drift over
+    the weekend that the sizer never saw.
+
+    Without this refresh, share counts are computed against three-day-old
+    prices, leading to wildly varying actual deployment sizes. The
+    CAPITAL_BUFFER_PCT can't protect against this -- the drift is on the
+    sizing input, not the buying-power overhead the buffer is calibrated for.
+
+    Implementation notes:
+
+    - Uses Alpaca's StockHistoricalDataClient.get_stock_latest_quote.
+      Authentication is the same Alpaca API key as TradingClient.
+    - Capped at the top N symbols (target positions × buffer). No reason to
+      refresh quotes for the entire 3000-symbol universe when only a few
+      dozen are sizing-eligible.
+    - Falls back gracefully on any error: returns the original DataFrame
+      unchanged. Stale prices are bad but no prices is worse -- sizing logic
+      requires a valid last_price column to work at all.
+    - Uses mid-quote (bid+ask)/2 rather than the latest trade. The latest
+      trade can be from a low-volume off-tape print that misrepresents
+      where size is actually willing to transact. Mid-quote is closer to
+      where the MOC fill will land.
+
+    Returns a new DataFrame with last_price updated where quotes were
+    available. Symbols without a quote keep their Friday-close value
+    (the existing fallback behavior).
+    """
+    try:
+        from alpaca.data.historical import StockHistoricalDataClient
+        from alpaca.data.requests import StockLatestQuoteRequest
+    except ImportError:
+        log.warning("alpaca-py data module unavailable -- skipping price refresh "
+                    "(sizing will use Friday-close prices)")
+        return scores
+
+    if not symbols:
+        return scores
+
+    try:
+        data_client = StockHistoricalDataClient(api_key=key, secret_key=secret)
+        # Cap defensively at 200 symbols to keep the request size sane.
+        # In practice the candidate pool is much smaller.
+        symbols_to_quote = symbols[:200]
+        quote_req = StockLatestQuoteRequest(symbol_or_symbols=symbols_to_quote)
+        quotes = data_client.get_stock_latest_quote(quote_req)
+    except Exception as e:
+        log.warning(f"Live quote fetch failed: {e} -- falling back to Friday-close prices")
+        return scores
+
+    if not quotes:
+        log.warning("Live quote response empty -- falling back to Friday-close prices")
+        return scores
+
+    scores = scores.copy()
+    updated  = 0
+    skipped  = 0
+    no_quote = 0
+
+    for sym in symbols_to_quote:
+        quote = quotes.get(sym)
+        if not quote:
+            no_quote += 1
+            continue
+        try:
+            bid = float(getattr(quote, "bid_price", 0) or 0)
+            ask = float(getattr(quote, "ask_price", 0) or 0)
+        except Exception:
+            skipped += 1
+            continue
+        # Need both sides of a sensible quote. Skip if either is zero
+        # (premarket, halted, illiquid), if ask < bid (crossed/stale book),
+        # or if the spread is unreasonably wide (>10% of mid, suggests stale
+        # or one-sided data we shouldn't trust for sizing).
+        if bid <= 0 or ask <= 0 or ask < bid:
+            skipped += 1
+            continue
+        mid = (bid + ask) / 2
+        spread_pct = (ask - bid) / mid if mid > 0 else 1.0
+        if spread_pct > 0.10:
+            skipped += 1
+            continue
+        scores.loc[scores["symbol"] == sym, "last_price"] = mid
+        updated += 1
+
+    log.info(f"  Live price refresh: {updated} updated, {skipped} skipped "
+             f"(no/wide quote), {no_quote} no response  "
+             f"of {len(symbols_to_quote)} requested")
+    return scores
 
 
 # ── STATE MANAGEMENT ──────────────────────────────────────────────────────────
@@ -366,6 +476,31 @@ def run_entry():
 
     scores = pd.read_csv(SCORES_CSV)
     log.info(f"Loaded {len(scores):,} scored tickers")
+
+    # ── PRE-SIZING PRICE REFRESH ─────────────────────────────────────────
+    # scores_final.csv's last_price is Friday-close at this point (~70hr stale
+    # by Monday 2:45pm CT). Refresh from live Alpaca quotes for the top-ranked
+    # candidates before sizing -- this is the input to share-count math and
+    # the biggest single source of deployment variance we've seen.
+    #
+    # Scope to a generous superset of the sizing-eligible names (top 100 by
+    # composite_rank) rather than refreshing all 3000 universe symbols.
+    # compute_positions will further filter from this set; quotes for names
+    # that won't make it into the basket are wasted API calls.
+    try:
+        rank_col = "composite_rank" if "composite_rank" in scores.columns else "alpha_rank"
+        if rank_col in scores.columns:
+            scores_ranked = scores.dropna(subset=[rank_col]).copy()
+            scores_ranked[rank_col] = pd.to_numeric(scores_ranked[rank_col], errors="coerce")
+            scores_ranked = scores_ranked.dropna(subset=[rank_col])
+            top_symbols = scores_ranked.nsmallest(100, rank_col)["symbol"].astype(str).tolist()
+        else:
+            top_symbols = scores["symbol"].astype(str).head(100).tolist()
+        key    = os.environ.get("ALPACA_API_KEY", "")
+        secret = os.environ.get("ALPACA_SECRET_KEY", "")
+        scores = refresh_last_prices(scores, top_symbols, key, secret)
+    except Exception as e:
+        log.warning(f"Price refresh wrapper failed ({e}) -- continuing with Friday-close prices")
 
     regime = "unknown"
     if REGIME_JSON.exists():
