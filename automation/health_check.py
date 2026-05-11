@@ -116,7 +116,7 @@ def run_health_check() -> dict:
         from anthropic import Anthropic
         client   = Anthropic()
         response = client.messages.create(
-            model      = "claude-sonnet-4-20250514",
+            model      = "claude-sonnet-4-6",
             max_tokens = 1000,
             system     = SYSTEM_PROMPT,
             messages   = [{
