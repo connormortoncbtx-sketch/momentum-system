@@ -542,5 +542,37 @@
         "alpha_rank": 1
       }
     ]
+  },
+  {
+    "run_label": "manual_refresh",
+    "timestamp": "2026-05-11T12:56:43.514263",
+    "regime": "risk_on",
+    "top_5": [
+      {
+        "symbol": "PAYS",
+        "alpha_score": 1.0,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "INOD",
+        "alpha_score": 1.0,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "FSLY",
+        "alpha_score": 1.0,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "TSSI",
+        "alpha_score": 1.0,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "SEDG",
+        "alpha_score": 1.0,
+        "alpha_rank": 1
+      }
+    ]
   }
 ]
