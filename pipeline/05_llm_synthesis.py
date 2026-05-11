@@ -39,7 +39,7 @@ FINAL_CSV     = DATA_DIR / "scores_final.csv"
 
 LLM_TOP_N     = 50       # tickers that get the full Claude pass
 API_SLEEP     = 0.3      # seconds between API calls
-MODEL         = "claude-sonnet-4-20250514"
+MODEL         = "claude-sonnet-4-6"
 MAX_TOKENS    = 300
 
 
