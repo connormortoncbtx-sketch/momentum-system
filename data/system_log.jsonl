@@ -399,3 +399,4 @@
 {"timestamp": "2026-05-11T20:29:25.425338+00:00", "workflow": "alpaca_monitor", "status": "success", "message": "Hard stop placed: SEDG @ $37.52", "metrics": {"symbol": "SEDG", "shares": 237, "entry_price": 41.69, "stop_price": 37.52, "stop_pct": 10.0}, "errors": []}
 {"timestamp": "2026-05-11T20:29:25.492660+00:00", "workflow": "alpaca_monitor", "status": "success", "message": "Hard stop placed: TSSI @ $10.98", "metrics": {"symbol": "TSSI", "shares": 815, "entry_price": 12.2, "stop_price": 10.98, "stop_pct": 10.0}, "errors": []}
 {"timestamp": "2026-05-11T20:39:25.708209+00:00", "workflow": "alpaca_monitor", "status": "success", "message": "Session: 0 upgrades, 10 stops placed", "metrics": {"polls": 10, "upgrades": 0, "stops_placed": 10, "poll_errors": 0}, "errors": []}
+{"timestamp": "2026-05-11T21:06:08.413612+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=entry", "metrics": {}, "errors": []}
