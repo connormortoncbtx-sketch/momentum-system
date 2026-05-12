@@ -97,11 +97,13 @@
       "composite_rank": 8,
       "is_fallback": false,
       "phase": 1,
-      "high_water_mark": 44.23,
+      "high_water_mark": 49.2929,
       "order_id": "3265c9c4-37aa-4d8c-9181-e7ed834dfd5a",
-      "hard_stop_order_id": "195f1392-ab2a-4988-9341-26d88566ed67",
+      "hard_stop_order_id": null,
       "hard_stop_price": 38.73,
-      "entry_price_actual": 43.03
+      "entry_price_actual": 43.03,
+      "upgrade_in_progress": true,
+      "upgrade_started_at": "2026-05-12T21:32:26.909043"
     },
     "OPEN": {
       "shares": 1957,
