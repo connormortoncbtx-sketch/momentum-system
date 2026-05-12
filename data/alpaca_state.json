@@ -18,23 +18,6 @@
       "hard_stop_price": 5.91,
       "entry_price_actual": 6.62
     },
-    "INOD": {
-      "shares": 115,
-      "entry_price_est": 84.89,
-      "hard_stop_pct": 13.4,
-      "activation_pct": 14.8,
-      "trail_pct": 13.4,
-      "alpha_score": 1.0,
-      "weekly_vol": 26.79,
-      "composite_rank": 2,
-      "is_fallback": false,
-      "phase": 1,
-      "high_water_mark": 103.31,
-      "order_id": "1fea7890-6d7e-41ba-bd5c-7ca4b051af78",
-      "hard_stop_order_id": "5c40d33d-373d-4511-b0fb-42512349835e",
-      "hard_stop_price": 89.09,
-      "entry_price_actual": 102.87
-    },
     "FSLY": {
       "shares": 478,
       "entry_price_est": 20.51,
@@ -85,23 +68,6 @@
       "hard_stop_order_id": "fd2fadb8-cb77-4312-a414-1773264447c4",
       "hard_stop_price": 37.52,
       "entry_price_actual": 41.69
-    },
-    "INTC": {
-      "shares": 78,
-      "entry_price_est": 124.92,
-      "hard_stop_pct": 10.0,
-      "activation_pct": 10.3,
-      "trail_pct": 5.7,
-      "alpha_score": 1.0,
-      "weekly_vol": 11.45,
-      "composite_rank": 6,
-      "is_fallback": false,
-      "phase": 1,
-      "high_water_mark": 128.59,
-      "order_id": "baae7e89-cd7a-43d0-a3ae-3a36d2b909b9",
-      "hard_stop_order_id": "e1efa8fa-2457-40ae-97dc-26625faca6b1",
-      "hard_stop_price": 115.52,
-      "entry_price_actual": 128.35
     },
     "DAVE": {
       "shares": 38,
