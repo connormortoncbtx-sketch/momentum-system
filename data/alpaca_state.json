@@ -1,23 +1,6 @@
 {
   "week_open_value": 103763.85,
   "positions": {
-    "PAYS": {
-      "shares": 1576,
-      "entry_price_est": 6.22,
-      "hard_stop_pct": 10.8,
-      "activation_pct": 15.6,
-      "trail_pct": 10.8,
-      "alpha_score": 1.0,
-      "weekly_vol": 21.6,
-      "composite_rank": 1,
-      "is_fallback": false,
-      "phase": 1,
-      "high_water_mark": 6.739,
-      "order_id": "5fc25391-2dd5-4734-8f14-c34e81583429",
-      "hard_stop_order_id": "29e3a04e-4948-4c3b-bb9d-8ed4a7f3fedb",
-      "hard_stop_price": 5.91,
-      "entry_price_actual": 6.62
-    },
     "FSLY": {
       "shares": 478,
       "entry_price_est": 20.51,
@@ -63,7 +46,7 @@
       "composite_rank": 5,
       "is_fallback": false,
       "phase": 1,
-      "high_water_mark": 41.74,
+      "high_water_mark": 42.635,
       "order_id": "172cfdab-abce-4bcc-9953-0c7ba3226c84",
       "hard_stop_order_id": "fd2fadb8-cb77-4312-a414-1773264447c4",
       "hard_stop_price": 37.52,
@@ -96,14 +79,16 @@
       "weekly_vol": 13.69,
       "composite_rank": 8,
       "is_fallback": false,
-      "phase": 1,
-      "high_water_mark": 49.2929,
+      "phase": 2,
+      "high_water_mark": 49.34,
       "order_id": "3265c9c4-37aa-4d8c-9181-e7ed834dfd5a",
       "hard_stop_order_id": null,
-      "hard_stop_price": 38.73,
+      "hard_stop_price": null,
       "entry_price_actual": 43.03,
-      "upgrade_in_progress": true,
-      "upgrade_started_at": "2026-05-12T21:32:26.909043"
+      "upgrade_in_progress": false,
+      "trail_order_id": "725fc0b6-e980-4937-86d3-a69c09f77b4d",
+      "trail_qty": 14,
+      "reconciled_at": "2026-05-13T19:06:21.895243"
     },
     "OPEN": {
       "shares": 1957,
@@ -133,7 +118,7 @@
       "composite_rank": 10,
       "is_fallback": false,
       "phase": 1,
-      "high_water_mark": 8.41,
+      "high_water_mark": 9.68,
       "order_id": "59b35ec9-b350-4c2e-8b70-226e55dd81f8",
       "hard_stop_order_id": "766e66da-9915-4661-a7f0-e807d3978312",
       "hard_stop_price": 7.06,
