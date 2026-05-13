@@ -423,3 +423,5 @@
 {"timestamp": "2026-05-13T19:06:20.770021+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Starting monitor (duration=64min, mode=PAPER)", "metrics": {}, "errors": []}
 {"timestamp": "2026-05-13T19:06:21.895285+00:00", "workflow": "alpaca_monitor", "status": "success", "message": "State reconciled to phase=2 for PENG (live trail discovered)", "metrics": {"symbol": "PENG", "trail_order_id": "725fc0b6-e980-4937-86d3-a69c09f77b4d"}, "errors": []}
 {"timestamp": "2026-05-13T20:10:22.668719+00:00", "workflow": "alpaca_monitor", "status": "success", "message": "Session: 0 upgrades, 1 stops placed", "metrics": {"polls": 64, "upgrades": 0, "stops_placed": 1, "poll_errors": 0}, "errors": []}
+{"timestamp": "2026-05-13T20:28:22.219389+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Starting monitor (duration=10min, mode=PAPER)", "metrics": {}, "errors": []}
+{"timestamp": "2026-05-13T20:38:24.864218+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Session quiet: 10 polls, no phase transitions", "metrics": {"polls": 10, "upgrades": 0, "stops_placed": 0, "poll_errors": 0}, "errors": []}
