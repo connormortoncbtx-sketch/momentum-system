@@ -430,3 +430,5 @@
 {"timestamp": "2026-05-14T19:04:31.416834+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Starting monitor (duration=66min, mode=PAPER)", "metrics": {}, "errors": []}
 {"timestamp": "2026-05-14T19:04:33.222881+00:00", "workflow": "alpaca_monitor", "status": "success", "message": "Adopted existing trail and marked phase=2 for SEDG", "metrics": {"symbol": "SEDG", "trail_order_id": "5318834b-1f0e-4afd-ba48-d447b6e2b1c2"}, "errors": []}
 {"timestamp": "2026-05-14T20:10:34.568152+00:00", "workflow": "alpaca_monitor", "status": "success", "message": "Session: 1 upgrades, 0 stops placed", "metrics": {"polls": 66, "upgrades": 1, "stops_placed": 0, "poll_errors": 0}, "errors": []}
+{"timestamp": "2026-05-14T20:24:26.035585+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Starting monitor (duration=10min, mode=PAPER)", "metrics": {}, "errors": []}
+{"timestamp": "2026-05-14T20:34:27.484755+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Session quiet: 10 polls, no phase transitions", "metrics": {"polls": 10, "upgrades": 0, "stops_placed": 0, "poll_errors": 0}, "errors": []}
