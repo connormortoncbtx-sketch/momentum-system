@@ -18,23 +18,6 @@
       "hard_stop_price": 16.47,
       "entry_price_actual": 19.377322
     },
-    "TSSI": {
-      "shares": 815,
-      "entry_price_est": 12.02,
-      "hard_stop_pct": 10.0,
-      "activation_pct": 13.9,
-      "trail_pct": 8.2,
-      "alpha_score": 1.0,
-      "weekly_vol": 16.31,
-      "composite_rank": 4,
-      "is_fallback": false,
-      "phase": 1,
-      "high_water_mark": 12.2313,
-      "order_id": "fdce1634-dd00-46ea-b744-b4a91e326309",
-      "hard_stop_order_id": "b87acb77-c091-4709-8915-7f40d6acc7a4",
-      "hard_stop_price": 10.98,
-      "entry_price_actual": 12.2
-    },
     "SEDG": {
       "shares": 237,
       "entry_price_est": 41.3,
@@ -55,23 +38,6 @@
       "trail_qty": 60,
       "upgrade_in_progress": false,
       "reconciled_at": "2026-05-14T19:04:33.222500"
-    },
-    "DAVE": {
-      "shares": 38,
-      "entry_price_est": 256.33,
-      "hard_stop_pct": 10.0,
-      "activation_pct": 10.7,
-      "trail_pct": 6.1,
-      "alpha_score": 1.0,
-      "weekly_vol": 12.19,
-      "composite_rank": 7,
-      "is_fallback": false,
-      "phase": 1,
-      "high_water_mark": 256.33,
-      "order_id": "9f21f674-957f-4d3c-ba24-5f51ac80dfc6",
-      "hard_stop_order_id": "baa5166b-b8c6-4be6-8bca-7fdbc672e27d",
-      "hard_stop_price": 225.76,
-      "entry_price_actual": 250.85
     },
     "ATOM": {
       "shares": 1166,
