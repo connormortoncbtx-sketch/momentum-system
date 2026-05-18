@@ -606,5 +606,37 @@
         "alpha_rank": 7
       }
     ]
+  },
+  {
+    "run_label": "manual_refresh",
+    "timestamp": "2026-05-18T05:27:34.657345",
+    "regime": "trending_mixed",
+    "top_5": [
+      {
+        "symbol": "MXL",
+        "alpha_score": 1.0,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "POET",
+        "alpha_score": 1.0,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "AAOI",
+        "alpha_score": 1.0,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "PENG",
+        "alpha_score": 1.0,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "RKLB",
+        "alpha_score": 0.998875,
+        "alpha_rank": 13
+      }
+    ]
   }
 ]
