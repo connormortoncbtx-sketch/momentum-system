@@ -514,3 +514,5 @@
 {"timestamp": "2026-05-19T20:10:30.011511+00:00", "workflow": "alpaca_monitor", "status": "success", "message": "Session: 0 upgrades, 1 stops placed", "metrics": {"polls": 53, "upgrades": 0, "stops_placed": 1, "poll_errors": 0}, "errors": []}
 {"timestamp": "2026-05-19T20:26:13.430713+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Starting monitor (duration=10min, mode=PAPER)", "metrics": {}, "errors": []}
 {"timestamp": "2026-05-19T20:36:14.366874+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Session quiet: 10 polls, no phase transitions", "metrics": {"polls": 10, "upgrades": 0, "stops_placed": 0, "poll_errors": 0}, "errors": []}
+{"timestamp": "2026-05-19T21:07:06.198673+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=entry", "metrics": {}, "errors": []}
+{"timestamp": "2026-05-19T21:07:06.199182+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Skipped: not entry day (expected monday)", "metrics": {}, "errors": []}
