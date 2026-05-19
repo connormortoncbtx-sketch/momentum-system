@@ -12,8 +12,9 @@
       "composite_rank": 1,
       "is_fallback": false,
       "phase": 1,
-      "high_water_mark": 92.34,
-      "order_id": "2722c161-94f9-4497-9a38-ca17d632aee2"
+      "high_water_mark": 95.7,
+      "order_id": "2722c161-94f9-4497-9a38-ca17d632aee2",
+      "hard_stop_order_id": "51711b47-e86c-4c24-9894-986ba4bd1ded"
     }
   },
   "entry_date": "2026-05-18"
