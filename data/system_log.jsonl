@@ -506,3 +506,5 @@
 {"timestamp": "2026-05-18T21:51:03.066406+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=entry", "metrics": {}, "errors": []}
 {"timestamp": "2026-05-18T21:51:05.139847+00:00", "workflow": "alpaca_trader", "status": "warning", "message": "Entry: 1 filled, 19 FAILED", "metrics": {"filled": 1, "failed": 19, "fallbacks_used": 0, "symbols_failed": ["POET", "AAOI", "PENG", "RKLB", "INTC", "FCEL", "VECO", "LITE", "NBIS", "SIMO"]}, "errors": []}
 {"timestamp": "2026-05-18T22:10:35.831387+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=place_stops", "metrics": {}, "errors": []}
+{"timestamp": "2026-05-19T13:50:29.594786+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Starting premarket monitor", "metrics": {}, "errors": []}
+{"timestamp": "2026-05-19T13:50:29.597693+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Skipped: DST guard (CT hour=8, expected 6)", "metrics": {}, "errors": []}
