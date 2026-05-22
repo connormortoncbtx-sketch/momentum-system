@@ -1,21 +1,5 @@
 {
-  "week_open_value": 99125.26,
-  "positions": {
-    "MXL": {
-      "shares": 104,
-      "entry_price_est": 92.34,
-      "hard_stop_pct": 15.0,
-      "activation_pct": 19.3,
-      "trail_pct": 15.0,
-      "alpha_score": 1.0,
-      "weekly_vol": 34.19,
-      "composite_rank": 1,
-      "is_fallback": false,
-      "phase": 1,
-      "high_water_mark": 95.7,
-      "order_id": "2722c161-94f9-4497-9a38-ca17d632aee2",
-      "hard_stop_order_id": "51711b47-e86c-4c24-9894-986ba4bd1ded"
-    }
-  },
-  "entry_date": "2026-05-18"
+  "week_open_value": null,
+  "positions": {},
+  "entry_date": null
 }
