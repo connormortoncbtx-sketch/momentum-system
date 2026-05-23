@@ -560,3 +560,12 @@
 {"timestamp": "2026-05-23T00:13:05.053356+00:00", "workflow": "self_refine", "status": "warning", "message": "Weight validation REJECTED: signal_weight sentiment=0.03 outside [0.05,0.6]", "metrics": {"weeks_analyzed": 34, "reason": "signal_weight sentiment=0.03 outside [0.05,0.6]"}, "errors": []}
 {"timestamp": "2026-05-23T00:13:05.830036+00:00", "workflow": "retrain", "status": "info", "message": "Starting retrain", "metrics": {}, "errors": []}
 {"timestamp": "2026-05-23T00:13:08.108010+00:00", "workflow": "retrain", "status": "success", "message": "Model retrained on 34 weeks, 15,119 samples", "metrics": {"weeks": 34, "samples": 15119, "positive_class_pct": 18.38, "in_sample_ic": 0.2831, "n_features": 18}, "errors": []}
+{"timestamp": "2026-05-23T03:27:59.841104+00:00", "workflow": "collect_returns", "status": "info", "message": "Starting collect_returns", "metrics": {}, "errors": []}
+{"timestamp": "2026-05-23T03:27:59.841683+00:00", "workflow": "collect_returns", "status": "info", "message": "Skipped: already ran today (2026-05-22)", "metrics": {}, "errors": []}
+{"timestamp": "2026-05-23T03:28:00.215349+00:00", "workflow": "execution_tracker", "status": "info", "message": "Starting execution tracking", "metrics": {}, "errors": []}
+{"timestamp": "2026-05-23T03:28:00.218357+00:00", "workflow": "execution_tracker", "status": "info", "message": "Skipped: week 2026-05-22 already in exec log", "metrics": {}, "errors": []}
+{"timestamp": "2026-05-23T03:28:01.017225+00:00", "workflow": "analyze_winners", "status": "info", "message": "Starting weekly winners analysis", "metrics": {}, "errors": []}
+{"timestamp": "2026-05-23T03:28:01.321025+00:00", "workflow": "analyze_winners", "status": "info", "message": "Skipped: analysis already exists for week 2026-05-15", "metrics": {}, "errors": []}
+{"timestamp": "2026-05-23T03:28:12.385048+00:00", "workflow": "self_refine", "status": "success", "message": "Refinement complete: 8 weight changes", "metrics": {"weeks_analyzed": 34, "data_points": 101114, "n_changes": 8}, "errors": []}
+{"timestamp": "2026-05-23T03:28:12.872558+00:00", "workflow": "retrain", "status": "info", "message": "Starting retrain", "metrics": {}, "errors": []}
+{"timestamp": "2026-05-23T03:28:14.896237+00:00", "workflow": "retrain", "status": "success", "message": "Model retrained on 34 weeks, 15,119 samples", "metrics": {"weeks": 34, "samples": 15119, "positive_class_pct": 18.38, "in_sample_ic": 0.2831, "n_features": 18}, "errors": []}
