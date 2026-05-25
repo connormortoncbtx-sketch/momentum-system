@@ -595,3 +595,5 @@
 {"timestamp": "2026-05-25T13:55:10.713011+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Skipped: not a normal trading week", "metrics": {}, "errors": []}
 {"timestamp": "2026-05-25T13:56:43.109860+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Starting weekend refresh (manual_refresh)", "metrics": {}, "errors": []}
 {"timestamp": "2026-05-25T13:56:43.110514+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Skipped: not a normal trading week", "metrics": {}, "errors": []}
+{"timestamp": "2026-05-25T15:20:54.495166+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Starting premarket monitor", "metrics": {}, "errors": []}
+{"timestamp": "2026-05-25T15:20:54.498041+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Skipped: not a normal trading week", "metrics": {}, "errors": []}
