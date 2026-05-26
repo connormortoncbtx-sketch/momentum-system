@@ -621,3 +621,5 @@
 {"timestamp": "2026-05-26T13:48:38.167035+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Skipped: not a normal trading week", "metrics": {}, "errors": []}
 {"timestamp": "2026-05-26T14:30:51.670898+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Starting premarket monitor", "metrics": {}, "errors": []}
 {"timestamp": "2026-05-26T14:30:51.673753+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Skipped: not a normal trading week", "metrics": {}, "errors": []}
+{"timestamp": "2026-05-26T19:28:00.750659+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Starting monitor (duration=42min, mode=PAPER)", "metrics": {}, "errors": []}
+{"timestamp": "2026-05-26T20:10:05.468367+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Session quiet: 42 polls, no phase transitions", "metrics": {"polls": 42, "upgrades": 0, "stops_placed": 0, "poll_errors": 0}, "errors": []}
