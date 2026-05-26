@@ -617,3 +617,5 @@
 {"timestamp": "2026-05-25T22:15:23.337446+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=place_stops", "metrics": {}, "errors": []}
 {"timestamp": "2026-05-25T23:39:56.953477+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Starting weekend refresh (manual_refresh)", "metrics": {}, "errors": []}
 {"timestamp": "2026-05-25T23:39:56.954102+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Skipped: not a normal trading week", "metrics": {}, "errors": []}
+{"timestamp": "2026-05-26T13:48:38.164011+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Starting premarket monitor", "metrics": {}, "errors": []}
+{"timestamp": "2026-05-26T13:48:38.167035+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Skipped: not a normal trading week", "metrics": {}, "errors": []}
