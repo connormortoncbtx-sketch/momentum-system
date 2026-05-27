@@ -631,3 +631,5 @@
 {"timestamp": "2026-05-26T22:11:56.091368+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=entry", "metrics": {}, "errors": []}
 {"timestamp": "2026-05-26T22:11:57.851739+00:00", "workflow": "alpaca_trader", "status": "warning", "message": "Entry: 0 filled, 20 FAILED", "metrics": {"filled": 0, "failed": 20, "fallbacks_used": 0, "symbols_failed": ["AXTI", "AMBQ", "BAND", "RKLB", "POET", "MRAM", "SYNA", "SOC", "ALAB", "PENG"]}, "errors": []}
 {"timestamp": "2026-05-26T22:38:04.301884+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=place_stops", "metrics": {}, "errors": []}
+{"timestamp": "2026-05-27T19:32:44.675587+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Starting monitor (duration=38min, mode=PAPER)", "metrics": {}, "errors": []}
+{"timestamp": "2026-05-27T20:10:47.189510+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Session quiet: 38 polls, no phase transitions", "metrics": {"polls": 38, "upgrades": 0, "stops_placed": 0, "poll_errors": 0}, "errors": []}
