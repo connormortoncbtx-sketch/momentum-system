@@ -686,3 +686,5 @@
 {"timestamp": "2026-05-30T03:36:01.592435+00:00", "workflow": "retrain", "status": "success", "message": "Model retrained on 34 weeks, 15,119 samples", "metrics": {"weeks": 34, "samples": 15119, "positive_class_pct": 18.38, "in_sample_ic": 0.2831, "n_features": 18}, "errors": []}
 {"timestamp": "2026-05-30T04:53:24.998983+00:00", "workflow": "weekly_pipeline", "status": "info", "message": "Pipeline invoked (from=01, only=None, force=False)", "metrics": {}, "errors": []}
 {"timestamp": "2026-05-30T04:53:25.002790+00:00", "workflow": "weekly_pipeline", "status": "info", "message": "Skipped: not a normal trading week", "metrics": {}, "errors": []}
+{"timestamp": "2026-05-30T05:47:49.903233+00:00", "workflow": "weekly_pipeline", "status": "info", "message": "Pipeline invoked (from=01, only=None, force=False)", "metrics": {}, "errors": []}
+{"timestamp": "2026-05-30T05:47:49.906275+00:00", "workflow": "weekly_pipeline", "status": "info", "message": "Skipped: not a normal trading week", "metrics": {}, "errors": []}
