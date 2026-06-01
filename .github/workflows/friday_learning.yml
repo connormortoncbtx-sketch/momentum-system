@@ -8,6 +8,12 @@ on:
     # CST (Nov-Mar): UTC-6 -> 00:00 UTC Saturday
     - cron: '0 0 * * 6'
   workflow_dispatch:
+    inputs:
+      target_week:
+        description: 'Backfill a specific week (YYYY-MM-DD score_friday). Leave blank for normal operation. E.g. "2026-05-22" backfills the Memorial Day week.'
+        required: false
+        default: ''
+        type: string
 permissions:
   contents: write
 # Prevent overlap between scheduled run and manual dispatch (common cause of
@@ -53,7 +59,15 @@ jobs:
       # masked weeks of missing data) can't recur unnoticed.
       - name: Collect actual returns
         continue-on-error: true
-        run: python automation/collect_returns.py
+        run: |
+          # If workflow_dispatch passed a target_week, use it for backfill.
+          # Scheduled cron runs pass empty -> normal operation.
+          if [ -n "${{ inputs.target_week }}" ]; then
+            echo "Backfill mode: targeting week ${{ inputs.target_week }}"
+            python automation/collect_returns.py --week "${{ inputs.target_week }}"
+          else
+            python automation/collect_returns.py
+          fi
       - name: Track execution metrics
         continue-on-error: true
         env:
