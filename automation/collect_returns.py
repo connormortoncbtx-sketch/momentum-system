@@ -30,6 +30,7 @@ Over time self_refine.py analyzes which entry day produces best avg return
 by regime, signal strength, and pre-market conditions.
 """
 
+import argparse
 import logging
 import sys
 import pandas as pd
@@ -39,7 +40,11 @@ from pathlib import Path
 from datetime import datetime, timedelta
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from automation.tz_utils import now_ct, assert_normal_week
+from automation.tz_utils import (
+    now_ct,
+    is_normal_trading_week,
+    n_trading_days_in_week,
+)
 from automation.system_logger import log_event, LogStatus
 from automation.notifier import notify_alert, notify_error
 
@@ -176,6 +181,13 @@ def build_rows(scores, ohlcv_data, week_start_friday):
     dates = get_week_dates(week_start_friday)
     rows  = []
 
+    # n_trading_days for this week's rows. The trading week starts on the
+    # Monday after score_friday (week_start_friday + 3 days). Memorial Day
+    # weeks and similar (Mon-holiday or Fri-holiday) get n_days=4; normal
+    # weeks get n_days=5. Downstream analysis can filter on this column.
+    trading_week_monday = (week_start_friday + timedelta(days=3)).date()
+    n_days = n_trading_days_in_week(trading_week_monday, ref_week="current")
+
     # Sub-signals needed for retrain.py to train the full 18-feature model.
     # Previously only the 4 coarse composites + 4 _adj composites were pulled;
     # retrain.py lists 18 RETRAIN_FEATURES but build_training_data() only used
@@ -209,6 +221,7 @@ def build_rows(scores, ohlcv_data, week_start_friday):
 
         row = {
             "week_of":              week_start_friday.strftime("%Y-%m-%d"),
+            "n_trading_days":       n_days,
             "symbol":               sym,
             "sector":               sr.get("sector"),
             "regime":               sr.get("regime"),
@@ -281,26 +294,78 @@ def build_rows(scores, ohlcv_data, week_start_friday):
     return df
 
 
-def run():
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
-    log_event("collect_returns", LogStatus.INFO, "Starting collect_returns")
+def run(target_week: str = None):
+    """
+    Main entry point.
 
-    if not assert_normal_week("collect_returns"):
+    Args:
+        target_week: Optional YYYY-MM-DD string specifying which week's
+            score_friday to backfill. When None (the normal path), uses
+            today's date to compute score_friday = (this_friday - 1 week).
+            When provided, bypasses the lock-file and 5-day-elapsed guards
+            (since we know the week is in the past) but still respects the
+            idempotency check (won't double-add a week already in perf_log).
+    """
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+    backfill_mode = target_week is not None
+    if backfill_mode:
+        log.info(f"Backfill mode: target_week={target_week}")
+        log_event("collect_returns", LogStatus.INFO,
+                  f"Starting collect_returns in backfill mode (target_week={target_week})")
+    else:
+        log_event("collect_returns", LogStatus.INFO, "Starting collect_returns")
+
+    # Determine score_friday early so the holiday check uses the RIGHT week.
+    # Normal mode: derive from today. Backfill: parse from CLI arg.
+    if backfill_mode:
+        try:
+            score_friday = datetime.strptime(target_week, "%Y-%m-%d")
+        except ValueError as e:
+            log.error(f"Invalid --week format: {target_week!r} (need YYYY-MM-DD)")
+            log_event("collect_returns", LogStatus.ERROR,
+                      f"Invalid --week argument: {target_week!r}",
+                      errors=[str(e)])
+            raise
+    else:
+        today        = datetime.today()
+        this_friday  = last_friday(today)
+        score_friday = this_friday - timedelta(weeks=1)
+
+    # Holiday check -- check the TRADING week this score_friday represents
+    # (the Mon-Fri AFTER score_friday). In normal mode today's calendar
+    # week == that trading week, so the default ref_week='current' works.
+    # In backfill mode we need to pass ref_date explicitly so the check
+    # examines the historical week we're backfilling, not today.
+    trading_week_monday = (score_friday + timedelta(days=3)).date()
+    if not is_normal_trading_week(ref_date=trading_week_monday, ref_week="current"):
+        log.info(f"Holiday week [collect_returns] (trading week of {trading_week_monday}) — "
+                 f"skipping. System resumes next full trading week.")
         log_event("collect_returns", LogStatus.INFO,
                   "Skipped: not a normal trading week (disruptive holiday)")
         return
 
-    today_ct  = now_ct().strftime("%Y-%m-%d")
-    lock_file = DATA_DIR / ".collect_lock"
-    lock_key  = f"friday_learning_{today_ct}"
-    # Lock check: detects a successful prior run today. Write is moved to END of
-    # function (was at top, but that blocked retries after any crash between lock
-    # write and actual work completion).
-    if lock_file.exists() and lock_file.read_text().strip() == lock_key:
-        log.info(f"collect_returns already ran today ({today_ct}) — skipping duplicate")
-        log_event("collect_returns", LogStatus.INFO,
-                  f"Skipped: already ran today ({today_ct})")
-        return
+    # Lock + 5-day guards only apply in NORMAL (not backfill) mode. Backfill
+    # is an explicit operator action against a known-past week, so these
+    # freshness guards would just block legitimate work.
+    if not backfill_mode:
+        today_ct  = now_ct().strftime("%Y-%m-%d")
+        lock_file = DATA_DIR / ".collect_lock"
+        lock_key  = f"friday_learning_{today_ct}"
+        # Lock check: detects a successful prior run today. Write is moved to END of
+        # function (was at top, but that blocked retries after any crash between lock
+        # write and actual work completion).
+        if lock_file.exists() and lock_file.read_text().strip() == lock_key:
+            log.info(f"collect_returns already ran today ({today_ct}) — skipping duplicate")
+            log_event("collect_returns", LogStatus.INFO,
+                      f"Skipped: already ran today ({today_ct})")
+            return
+    else:
+        # Backfill mode: define lock_file/lock_key so the success path below
+        # can no-op the lock write (we don't want to set today's lock when
+        # we're backfilling an old week).
+        lock_file = None
+        lock_key  = None
 
     if not SCORES.exists():
         log.warning("No scores_final.csv — nothing to collect")
@@ -315,35 +380,37 @@ def run():
         scores = pd.read_csv(SCORES)
         log.info(f"Loaded scores: {len(scores):,} tickers")
 
-        today        = datetime.today()
-        this_friday  = last_friday(today)
-        score_friday = this_friday - timedelta(weeks=1)
+        # 5-trading-day guard (normal mode only; backfill targets past weeks
+        # so elapsed-trading-days is irrelevant by construction).
+        if not backfill_mode:
+            scored_at = None
+            if "scored_at" in scores.columns:
+                try:
+                    scored_at = datetime.strptime(str(scores["scored_at"].iloc[0]), "%Y-%m-%d")
+                except Exception:
+                    pass
 
-        # 5-trading-day guard
-        scored_at = None
-        if "scored_at" in scores.columns:
-            try:
-                scored_at = datetime.strptime(str(scores["scored_at"].iloc[0]), "%Y-%m-%d")
-            except Exception:
-                pass
-
-        if scored_at:
-            elapsed = trading_days_since(scored_at)
-            log.info(f"Scores generated: {scored_at.date()}  |  Elapsed: {elapsed} trading days")
-            if elapsed < 5:
-                log.warning(f"Only {elapsed} trading days elapsed (need 5) — skipping")
-                # This was THE silent failure mode that broke the learning loop. Prior
-                # to the Tier 1 fix, weekend_refresh overwrote scored_at to the refresh
-                # date, making elapsed always <5 and causing this guard to skip weekly.
-                # Notification ensures we catch any recurrence immediately.
-                log_event("collect_returns", LogStatus.WARNING,
-                          f"Skipped: only {elapsed} trading days elapsed (need 5)",
-                          metrics={"scored_at": str(scored_at.date()),
-                                   "elapsed_trading_days": elapsed})
-                notify_alert("collect_returns",
-                             f"5-day guard skipped learning loop: "
-                             f"scored_at={scored_at.date()}, elapsed={elapsed} days")
-                return
+            if scored_at:
+                elapsed = trading_days_since(scored_at)
+                log.info(f"Scores generated: {scored_at.date()}  |  Elapsed: {elapsed} trading days")
+                if elapsed < 5:
+                    log.warning(f"Only {elapsed} trading days elapsed (need 5) — skipping")
+                    # This was THE silent failure mode that broke the learning loop. Prior
+                    # to the Tier 1 fix, weekend_refresh overwrote scored_at to the refresh
+                    # date, making elapsed always <5 and causing this guard to skip weekly.
+                    # Notification ensures we catch any recurrence immediately.
+                    log_event("collect_returns", LogStatus.WARNING,
+                              f"Skipped: only {elapsed} trading days elapsed (need 5)",
+                              metrics={"scored_at": str(scored_at.date()),
+                                       "elapsed_trading_days": elapsed})
+                    notify_alert("collect_returns",
+                                 f"5-day guard skipped learning loop: "
+                                 f"scored_at={scored_at.date()}, elapsed={elapsed} days")
+                    return
+        else:
+            # Backfill: log the scores' scored_at for traceability, but don't gate on it.
+            if "scored_at" in scores.columns:
+                log.info(f"Backfill: scores were generated at {scores['scored_at'].iloc[0]}")
 
         # Idempotency check
         week_str = score_friday.strftime("%Y-%m-%d")
@@ -418,8 +485,10 @@ def run():
         log.info(f"\nOutput -> {PERF_LOG}  (total rows: {len(combined):,})")
 
         # Success -- record lock AFTER work completes so partial failures don't
-        # block retries within the same day.
-        lock_file.write_text(lock_key)
+        # block retries within the same day. Only set in normal mode; backfills
+        # are explicit one-off operations and shouldn't claim today's lock.
+        if not backfill_mode and lock_file is not None:
+            lock_file.write_text(lock_key)
 
         log_event("collect_returns", LogStatus.SUCCESS,
                   f"Collected {len(new_df):,} rows for week {week_str}",
@@ -441,4 +510,16 @@ def run():
 
 
 if __name__ == "__main__":
-    run()
+    parser = argparse.ArgumentParser(description=__doc__,
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument(
+        "--week",
+        dest="target_week",
+        default=None,
+        help="Backfill a specific week (YYYY-MM-DD score_friday). When provided, "
+             "bypasses the lock-file and 5-day-elapsed guards (but still respects "
+             "the idempotency check that prevents double-adding). When omitted, "
+             "runs normally based on today's date.",
+    )
+    args = parser.parse_args()
+    run(target_week=args.target_week)
