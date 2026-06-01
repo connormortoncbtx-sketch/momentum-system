@@ -723,3 +723,5 @@
 {"timestamp": "2026-06-01T16:33:34.837526+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Skipped: manual_refresh already ran today (2026-06-01)", "metrics": {}, "errors": []}
 {"timestamp": "2026-06-01T17:54:32.381944+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Starting premarket monitor", "metrics": {}, "errors": []}
 {"timestamp": "2026-06-01T17:54:32.385381+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Skipped: DST guard (CT hour=12, expected 6)", "metrics": {}, "errors": []}
+{"timestamp": "2026-06-01T19:49:25.480261+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=entry", "metrics": {}, "errors": []}
+{"timestamp": "2026-06-01T19:49:27.578900+00:00", "workflow": "alpaca_trader", "status": "success", "message": "Entry: all 10 orders placed", "metrics": {"filled": 10, "fallbacks_used": 0, "top_pick": "REPL"}, "errors": []}
