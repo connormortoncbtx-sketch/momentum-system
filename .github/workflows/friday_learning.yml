@@ -88,6 +88,15 @@ jobs:
       - name: Retrain model if enough data
         continue-on-error: true
         run: python automation/retrain.py
+      - name: Cadence analyzer (study hold-period counterfactuals)
+        # Computes what returns would have looked like with longer hold periods.
+        # Runs in both composite_rank (operational) and alpha_rank (signal)
+        # modes so we accumulate data on both questions.
+        # Continues on error -- this is a research tool, not a critical step.
+        continue-on-error: true
+        run: |
+          python automation/cadence_analyzer.py --rank-col composite_rank
+          python automation/cadence_analyzer.py --rank-col alpha_rank
       - name: Verify collect_returns actually ran
         # collect_returns.py writes to performance_log.csv. If its mtime
         # hasn't advanced past the run-start epoch, the step silently
@@ -124,6 +133,7 @@ jobs:
           git add data/performance_log.csv
           git add data/execution_log.csv || true
           git add data/basket_metrics_log.csv || true
+          git add data/cadence_analysis.csv || true
           git add config/weights.json
           git add models/lgbm_model.pkl || true
           git add refinements/ || true
