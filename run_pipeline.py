@@ -121,13 +121,26 @@ def main():
                                    "threshold_hours":    MIN_RERUN_HOURS})
                 sys.exit(0)
 
-    # Holiday check — skip if not a full 5-day trading week
-    # Bypass with --no-holiday-check for manual mid-week runs
+    # Holiday check — skip if the UPCOMING week (the one we're producing
+    # scores for) isn't a full 5-day trading week.
+    #
+    # The pipeline runs Friday night to generate scores for next week's
+    # trading. So the relevant question is "is next week disrupted by a
+    # holiday," not "was this week disrupted." Without ref_week='upcoming',
+    # the check looked at the just-completed week instead.
+    #
+    # 2026-05-30 incident: pipeline ran Saturday 5/30 after Memorial Day
+    # Monday 5/25. The default check saw "this week had Memorial Day"
+    # and skipped -- producing stale 5/22 scores that would have been
+    # traded into a normal June 1-5 week. ref_week='upcoming' correctly
+    # checks 6/1-6/5 instead and lets the run proceed.
+    #
+    # Bypass with --no-holiday-check for manual mid-week runs.
     if not args.skip_holiday:
         from automation.tz_utils import assert_normal_week
-        if not assert_normal_week("weekly_pipeline"):
+        if not assert_normal_week("weekly_pipeline", ref_week="upcoming"):
             log_event("weekly_pipeline", LogStatus.INFO,
-                      "Skipped: not a normal trading week")
+                      "Skipped: upcoming week is not a normal trading week")
             sys.exit(0)
 
     log.info("=" * 60)
