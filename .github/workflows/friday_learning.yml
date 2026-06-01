@@ -97,6 +97,14 @@ jobs:
         run: |
           python automation/cadence_analyzer.py --rank-col composite_rank
           python automation/cadence_analyzer.py --rank-col alpha_rank
+      - name: Collect intraday 5m bars
+        # Fetches 5m bars for top 50 picks + held positions for the just-
+        # completed trading week. Persists to data/intraday/{week}.csv.
+        # yfinance only retains 5m data for ~60 days, so we capture weekly
+        # while it's available. Continues on error -- research instrumentation,
+        # not operational.
+        continue-on-error: true
+        run: python automation/collect_intraday.py
       - name: Verify collect_returns actually ran
         # collect_returns.py writes to performance_log.csv. If its mtime
         # hasn't advanced past the run-start epoch, the step silently
@@ -134,6 +142,7 @@ jobs:
           git add data/execution_log.csv || true
           git add data/basket_metrics_log.csv || true
           git add data/cadence_analysis.csv || true
+          git add data/intraday/ || true
           git add config/weights.json
           git add models/lgbm_model.pkl || true
           git add refinements/ || true
