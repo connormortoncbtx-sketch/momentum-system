@@ -180,19 +180,57 @@ def is_trading_day(d: date = None) -> bool:
     return d not in holidays
 
 
+def n_trading_days_in_week(ref_date: date = None, ref_week: str = "current") -> int:
+    """
+    Count the number of NYSE trading days (Mon-Fri minus holidays) in the
+    referenced week. Returns 0-5.
+
+    Used by collect_returns to label each week's perf-log rows so downstream
+    analysis can identify 4-day weeks (Memorial Day, Labor Day, July 4 when
+    it falls on a weekday, etc.). 5-day weeks remain the norm.
+    """
+    if ref_date is None:
+        ref_date = now_ct().date()
+    current_monday = ref_date - timedelta(days=ref_date.weekday())
+    if ref_week == "current":
+        monday = current_monday
+    elif ref_week == "upcoming":
+        monday = current_monday + timedelta(days=7)
+    else:
+        raise ValueError(f"ref_week must be 'current' or 'upcoming', got {ref_week!r}")
+    friday = monday + timedelta(days=4)
+    holidays = _nyse_holidays(monday.year)
+    if friday.year != monday.year:
+        holidays = holidays | _nyse_holidays(friday.year)
+    return sum(1 for i in range(5) if (monday + timedelta(days=i)) not in holidays)
+
+
 def is_normal_trading_week(ref_date: date = None, ref_week: str = "current") -> bool:
     """
     Return True if the referenced week is safe to trade and collect data.
 
-    Disruption logic:
-        Monday holiday    → SKIP  (shifts entry window, no valid entry day)
-        Tue/Wed/Thu holiday → SKIP  (irregular hold period, contaminates data)
-        Friday holiday    → OK    (week just ends Thursday, data still valid)
-        No holiday        → OK
+    Policy (as of 2026-05-31): a week is acceptable if it contains either:
+      - 5 consecutive trading days (no holidays), OR
+      - 4 consecutive trading days (Monday-only OR Friday-only holiday).
 
-    This reflects the asymmetric impact of holidays on the weekly cadence.
-    A Friday holiday barely affects the week — prices are ~99% of where
-    they'd be anyway and the Tuesday entry window is unaffected.
+    A holiday on Tue/Wed/Thu splits the week into non-consecutive blocks
+    (e.g. Mon-Tue + Thu-Fri) and is still skipped. Non-consecutive blocks
+    break path-dependent properties momentum signals rely on.
+
+    Day-by-day breakdown:
+        No holiday              → 5 consecutive days → RUN
+        Monday holiday          → Tue-Fri (4 consec)  → RUN, entry bumps to Tue
+        Tuesday holiday         → Mon | Wed-Fri        → SKIP (gap interior)
+        Wednesday holiday       → Mon-Tue | Thu-Fri    → SKIP (gap interior)
+        Thursday holiday        → Mon-Wed | Fri        → SKIP (gap interior)
+        Friday holiday          → Mon-Thu (4 consec)  → RUN, exit bumps to Thu
+
+    Prior to 2026-05-31, Monday holidays caused full week skip. That was too
+    conservative -- it dropped Memorial Day, Labor Day, MLK, Presidents Day,
+    and Juneteenth-on-Monday weeks entirely (~5 weeks/year of data lost),
+    even though those weeks have a clean 4-day trading window the strategy
+    can use normally. The trader's get_entry_day already bumps Monday→Tuesday
+    on Monday holidays, so the operational machinery was already in place.
 
     The `ref_week` parameter controls which week the check is applied to:
 
@@ -205,18 +243,7 @@ def is_normal_trading_week(ref_date: date = None, ref_week: str = "current") -> 
                      output is consumed by next week's trading (the main
                      pipeline). When the pipeline runs Friday/Saturday, it
                      should check whether the *upcoming* Mon-Fri is normal,
-                     not whether the week that just ended was. Without
-                     this, a holiday in the just-ended week (e.g. Memorial
-                     Day Monday 5/25) made the pipeline skip its 5/30 run
-                     -- producing stale scores for the upcoming June 1-5
-                     week, which itself had no holidays.
-
-    The 2026-05-30 incident: Memorial Day was 5/25 (a Monday). The pipeline
-    ran Friday 5/29 evening / Saturday 5/30 UTC. With the prior default of
-    checking ref_date's own week, it saw "Monday 5/25 was a holiday" and
-    skipped. But the relevant week for the scores it was producing was
-    6/1-6/5, which is a normal week. Result: trading on two-week-old
-    momentum signals into a normal trading week.
+                     not whether the week that just ended was.
     """
     if ref_date is None:
         ref_date = now_ct().date()
@@ -237,18 +264,38 @@ def is_normal_trading_week(ref_date: date = None, ref_week: str = "current") -> 
     if friday.year != monday.year:
         holidays = holidays | _nyse_holidays(friday.year)
 
-    for i, day_name in enumerate(["Monday","Tuesday","Wednesday","Thursday","Friday"]):
-        d = monday + timedelta(days=i)
-        if d in holidays:
-            if i < 4:   # Mon-Thu holiday — skip week
-                log.info(f"Disruptive holiday detected: {day_name} {d} is a market holiday — skipping week "
-                         f"(ref_week={ref_week})")
-                return False
-            else:        # Friday holiday — run normally
-                log.info(f"Friday holiday detected: {d} — treating as normal week (Thursday close used as baseline)")
-                return True
+    # Find which weekday(s) are holidays.
+    holiday_indices = [i for i in range(5) if (monday + timedelta(days=i)) in holidays]
 
-    return True
+    if not holiday_indices:
+        return True  # Normal 5-day week.
+
+    if len(holiday_indices) > 1:
+        # Multiple holidays in one week is rare (would only happen on an
+        # unscheduled emergency closure stacked with a regular holiday).
+        # Skip to be safe.
+        log.info(f"Multiple holidays detected in week of {monday} — skipping (ref_week={ref_week})")
+        return False
+
+    h = holiday_indices[0]
+    day_name = ["Monday","Tuesday","Wednesday","Thursday","Friday"][h]
+    holiday_date = monday + timedelta(days=h)
+
+    if h == 0:
+        # Monday holiday: Tue-Fri is 4 consecutive trading days.
+        log.info(f"Monday holiday detected: {holiday_date} — treating as 4-day week "
+                 f"(Tuesday open through Friday close)")
+        return True
+    elif h == 4:
+        # Friday holiday: Mon-Thu is 4 consecutive trading days.
+        log.info(f"Friday holiday detected: {holiday_date} — treating as 4-day week "
+                 f"(Monday open through Thursday close)")
+        return True
+    else:
+        # Interior holiday: non-consecutive trading blocks. Skip.
+        log.info(f"Interior holiday detected: {day_name} {holiday_date} splits the trading week — "
+                 f"skipping (ref_week={ref_week})")
+        return False
 
 
 def assert_normal_week(script_name: str = "", ref_week: str = "current") -> bool:
