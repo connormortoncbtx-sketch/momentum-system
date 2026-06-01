@@ -97,6 +97,15 @@ jobs:
         run: |
           python automation/cadence_analyzer.py --rank-col composite_rank
           python automation/cadence_analyzer.py --rank-col alpha_rank
+      - name: Shadow strategies (A/B test proposed changes)
+        # Evaluates registered "shadow" strategy variants from config/shadows.json
+        # against the same data the champion uses. Outputs per-week deltas and
+        # bootstrap CIs to data/shadow_performance.csv and data/shadow_summary.csv.
+        # Does NOT auto-promote any shadow -- pre-registered criteria must be met
+        # before manual promotion. Runs cleanly with zero active shadows.
+        # Continues on error -- this is research instrumentation.
+        continue-on-error: true
+        run: python automation/shadow_strategies.py
       - name: Collect intraday 5m bars
         # Fetches 5m bars for top 50 picks + held positions for the just-
         # completed trading week. Persists to data/intraday/{week}.csv.
@@ -142,8 +151,11 @@ jobs:
           git add data/execution_log.csv || true
           git add data/basket_metrics_log.csv || true
           git add data/cadence_analysis.csv || true
+          git add data/shadow_performance.csv || true
+          git add data/shadow_summary.csv || true
           git add data/intraday/ || true
           git add config/weights.json
+          git add config/shadows.json || true
           git add models/lgbm_model.pkl || true
           git add refinements/ || true
           git add insights/ || true
