@@ -1,0 +1,38 @@
+{
+  "_schema_documentation": {
+    "description": "Registry of shadow strategies for A/B testing against the live (champion) strategy. Each entry has the keys below. Set 'active': false to keep an entry as documentation without running it.",
+    "max_active": 3,
+    "fields": {
+      "active":            "boolean. If false, the shadow is documented but not evaluated.",
+      "type":              "Implementation type. Must be a key in SHADOW_IMPLEMENTATIONS. Currently: 'hold_through_rerank'.",
+      "description":       "Free-text description of what the shadow is testing.",
+      "active_since":      "YYYY-MM-DD. Only weeks on or after this date are evaluated. Lets you start tracking a hypothesis from a specific cut date.",
+      "params":            "Type-specific parameter overrides (see comments per type).",
+      "promotion_criteria": "Free-text reference to the pre-registered markdown doc with the promote/retire decision criteria. Required reading before promoting."
+    },
+    "shadow_types": {
+      "hold_through_rerank": {
+        "behavior":  "Each week N's top-N picks: hold through weeks N+1, N+2,... as long as the name still ranks in the top-N. Exit at the close of the week it drops out.",
+        "params":    {
+          "top_n":                "int. Default 10.",
+          "rank_col":             "string. 'composite_rank' (default) or 'alpha_rank'.",
+          "max_extension_weeks":  "int. Cap on additional hold weeks beyond entry week. Default 4."
+        },
+        "data_required": "Just perf_log. Available now."
+      }
+    }
+  },
+
+  "shadow_hold_through_rerank_v1": {
+    "active": false,
+    "type": "hold_through_rerank",
+    "description": "Hold positions through future weeks if they re-rank in top-10 (composite). Tests whether the cadence_analyzer's early signal of 'multi-week capture > 1-week capture' translates to operational gains.",
+    "active_since": "2026-04-17",
+    "params": {
+      "top_n": 10,
+      "rank_col": "composite_rank",
+      "max_extension_weeks": 4
+    },
+    "promotion_criteria": "docs/shadow_criteria/hold_through_rerank_v1.md (to be written when activating)"
+  }
+}
