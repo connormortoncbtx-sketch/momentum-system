@@ -180,9 +180,9 @@ def is_trading_day(d: date = None) -> bool:
     return d not in holidays
 
 
-def is_normal_trading_week(ref_date: date = None) -> bool:
+def is_normal_trading_week(ref_date: date = None, ref_week: str = "current") -> bool:
     """
-    Return True if this week is safe to trade and collect data.
+    Return True if the referenced week is safe to trade and collect data.
 
     Disruption logic:
         Monday holiday    → SKIP  (shifts entry window, no valid entry day)
@@ -193,18 +193,56 @@ def is_normal_trading_week(ref_date: date = None) -> bool:
     This reflects the asymmetric impact of holidays on the weekly cadence.
     A Friday holiday barely affects the week — prices are ~99% of where
     they'd be anyway and the Tuesday entry window is unaffected.
+
+    The `ref_week` parameter controls which week the check is applied to:
+
+        "current"  → the week containing ref_date (default; back-compat).
+                     Use for learning-loop scripts that consume the PRIOR
+                     week's data (collect_returns, etc.) -- they care
+                     whether the just-completed week was disrupted.
+
+        "upcoming" → the week AFTER ref_date's week. Use for scripts whose
+                     output is consumed by next week's trading (the main
+                     pipeline). When the pipeline runs Friday/Saturday, it
+                     should check whether the *upcoming* Mon-Fri is normal,
+                     not whether the week that just ended was. Without
+                     this, a holiday in the just-ended week (e.g. Memorial
+                     Day Monday 5/25) made the pipeline skip its 5/30 run
+                     -- producing stale scores for the upcoming June 1-5
+                     week, which itself had no holidays.
+
+    The 2026-05-30 incident: Memorial Day was 5/25 (a Monday). The pipeline
+    ran Friday 5/29 evening / Saturday 5/30 UTC. With the prior default of
+    checking ref_date's own week, it saw "Monday 5/25 was a holiday" and
+    skipped. But the relevant week for the scores it was producing was
+    6/1-6/5, which is a normal week. Result: trading on two-week-old
+    momentum signals into a normal trading week.
     """
     if ref_date is None:
         ref_date = now_ct().date()
 
-    monday   = ref_date - timedelta(days=ref_date.weekday())
-    holidays = _nyse_holidays(ref_date.year)
+    # Resolve the Monday of the week we're actually checking.
+    current_monday = ref_date - timedelta(days=ref_date.weekday())
+    if ref_week == "current":
+        monday = current_monday
+    elif ref_week == "upcoming":
+        monday = current_monday + timedelta(days=7)
+    else:
+        raise ValueError(f"ref_week must be 'current' or 'upcoming', got {ref_week!r}")
+
+    # Holidays can span calendar years if ref_week='upcoming' near year-end,
+    # so pull holidays for both the Monday's year and the Friday's year.
+    friday = monday + timedelta(days=4)
+    holidays = _nyse_holidays(monday.year)
+    if friday.year != monday.year:
+        holidays = holidays | _nyse_holidays(friday.year)
 
     for i, day_name in enumerate(["Monday","Tuesday","Wednesday","Thursday","Friday"]):
         d = monday + timedelta(days=i)
         if d in holidays:
             if i < 4:   # Mon-Thu holiday — skip week
-                log.info(f"Disruptive holiday detected: {day_name} {d} is a market holiday — skipping week")
+                log.info(f"Disruptive holiday detected: {day_name} {d} is a market holiday — skipping week "
+                         f"(ref_week={ref_week})")
                 return False
             else:        # Friday holiday — run normally
                 log.info(f"Friday holiday detected: {d} — treating as normal week (Thursday close used as baseline)")
@@ -213,19 +251,30 @@ def is_normal_trading_week(ref_date: date = None) -> bool:
     return True
 
 
-def assert_normal_week(script_name: str = "") -> bool:
+def assert_normal_week(script_name: str = "", ref_week: str = "current") -> bool:
     """
     Call at the top of any script that should skip on holiday weeks.
     Logs a clear message and returns False if week is disrupted.
 
+    Args:
+        script_name: identifier for the log message
+        ref_week: which week to check -- "current" (default, the week
+                  containing now()) or "upcoming" (the week AFTER, for
+                  scripts whose output drives next week's trading).
+
     Usage:
         from automation.tz_utils import assert_normal_week
-        if not assert_normal_week("weekend_refresh"):
+        # Learning loop: check the week we just observed
+        if not assert_normal_week("collect_returns"):
+            sys.exit(0)
+        # Main pipeline: check the week we're producing scores for
+        if not assert_normal_week("weekly_pipeline", ref_week="upcoming"):
             sys.exit(0)
     """
-    if not is_normal_trading_week():
+    if not is_normal_trading_week(ref_week=ref_week):
         label = f" [{script_name}]" if script_name else ""
-        log.info(f"Holiday week{label} — skipping. System resumes next full trading week.")
+        log.info(f"Holiday week{label} (ref_week={ref_week}) — skipping. "
+                 f"System resumes next full trading week.")
         return False
     return True
 
