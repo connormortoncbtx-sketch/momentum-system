@@ -749,3 +749,6 @@
 {"timestamp": "2026-06-02T14:43:36.649487+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Skipped: DST guard (CT hour=9, expected 6)", "metrics": {}, "errors": []}
 {"timestamp": "2026-06-02T15:51:40.270448+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Starting premarket monitor", "metrics": {}, "errors": []}
 {"timestamp": "2026-06-02T15:51:40.273723+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Skipped: DST guard (CT hour=10, expected 6)", "metrics": {}, "errors": []}
+{"timestamp": "2026-06-02T19:52:27.404101+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Starting monitor (duration=18min, mode=PAPER)", "metrics": {}, "errors": []}
+{"timestamp": "2026-06-02T19:52:29.521869+00:00", "workflow": "alpaca_monitor", "status": "success", "message": "Adopted existing trail and marked phase=2 for ASTS", "metrics": {"symbol": "ASTS", "trail_order_id": "eb85a922-8a40-429b-8c10-19e57b832cec"}, "errors": []}
+{"timestamp": "2026-06-02T20:10:30.839702+00:00", "workflow": "alpaca_monitor", "status": "success", "message": "Session: 1 upgrades, 0 stops placed", "metrics": {"polls": 18, "upgrades": 1, "stops_placed": 0, "poll_errors": 0}, "errors": []}
