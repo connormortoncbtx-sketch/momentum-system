@@ -752,3 +752,5 @@
 {"timestamp": "2026-06-02T19:52:27.404101+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Starting monitor (duration=18min, mode=PAPER)", "metrics": {}, "errors": []}
 {"timestamp": "2026-06-02T19:52:29.521869+00:00", "workflow": "alpaca_monitor", "status": "success", "message": "Adopted existing trail and marked phase=2 for ASTS", "metrics": {"symbol": "ASTS", "trail_order_id": "eb85a922-8a40-429b-8c10-19e57b832cec"}, "errors": []}
 {"timestamp": "2026-06-02T20:10:30.839702+00:00", "workflow": "alpaca_monitor", "status": "success", "message": "Session: 1 upgrades, 0 stops placed", "metrics": {"polls": 18, "upgrades": 1, "stops_placed": 0, "poll_errors": 0}, "errors": []}
+{"timestamp": "2026-06-02T20:17:42.123386+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Starting monitor (duration=10min, mode=PAPER)", "metrics": {}, "errors": []}
+{"timestamp": "2026-06-02T20:27:43.896654+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Session quiet: 10 polls, no phase transitions", "metrics": {"polls": 10, "upgrades": 0, "stops_placed": 0, "poll_errors": 0}, "errors": []}
