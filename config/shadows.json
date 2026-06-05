@@ -29,7 +29,7 @@
   "shadow_hold_through_rerank_v1": {
     "active": false,
     "type": "hold_through_rerank",
-    "description": "Hold positions through future weeks if they re-rank in top-10 (composite). Initial 6-week backtest showed +0.32%/wk delta vs champion, win rate 33%, p=0.65. Effect is small and noisy. Activation deferred until consecutive-top-10 events accumulate.",
+    "description": "Hold positions through future weeks if they re-rank in top-10 (composite). Initial 6-week backtest showed +0.32%/wk delta vs champion, win rate 33%, p=0.65. Effect is small and noisy. Activation deferred until consecutive-top-10 events accumulate -- current rate is ~10% (6 of 60 picks), too sparse to evaluate the cadence hypothesis meaningfully. Cadence is independent of the composite_rank formula, so this shadow remains valid after the 2026-06-05 stage 5 fix.",
     "active_since": "2026-04-17",
     "params": {
       "top_n": 10,
@@ -39,23 +39,23 @@
     "promotion_criteria": "docs/shadow_criteria/hold_through_rerank_v1.md (to be written when activating)"
   },
 
-  "shadow_skip_top_3_v1": {
+  "shadow_skip_top_3_v1_SUPPLANTED": {
     "active": false,
     "type": "rank_window",
-    "description": "Skip composite ranks 1-3, use ranks 4-13 instead. Tests the rank-crowding hypothesis. Initial 6-week backtest: +1.11%/wk delta vs champion, win rate 83% (beats 5/6 weeks). CI [-1.28%, +2.99%] still straddles zero at n=6 but direction is consistent. Structural support: ranks 1-3 have median -7.3% prior-week return, suggesting composite scoring is biased toward mean-reversion candidates.",
+    "description": "SUPPLANTED by 2026-06-05 stage 5 patch. Originally drafted to test the rank-crowding hypothesis (use ranks 4-13 instead of 1-10). Initial 6-week backtest showed +1.11%/wk delta vs champion, win rate 83% (5/6 weeks). However, subsequent investigation revealed the rank-crowding pattern was largely an artifact of a bug in pipeline/05_llm_synthesis.py that overwrote stage 4's correct composite_rank (alpha + momentum tiebreaker) with the old 50/50 alpha+EV blend. The stage 5 fix addresses the root cause directly: the broken ranking concentrated picks at high-EV names which underperformed within the top-100. After the fix, the 'top 3' will be momentum-driven and should perform comparably to ranks 4-13. Activating this shadow on top of the stage 5 fix would double-count the intervention. Kept as-is for documentation. Could be revisited if 4-6 weeks of post-fix data still shows rank-crowding in the new ranking.",
     "active_since": "2026-04-17",
     "params": {
       "start_rank": 4,
       "top_n": 10,
       "rank_col": "composite_rank"
     },
-    "promotion_criteria": "docs/shadow_criteria/skip_top_3_v1.md (to be written when activating)"
+    "promotion_criteria": "n/a -- supplanted by upstream fix"
   },
 
   "shadow_v1_prior_week_filter_v1_DEPRECATED": {
     "active": false,
     "type": "prior_week_filter",
-    "description": "DEPRECATED -- 6-week backtest showed -3.79%/wk delta vs champion (worse), p=0.04, win rate 17%. The V1 bounds (-20% to +10%) do not work as filter for V2's Monday-close entry timing. Likely reasons: (a) V2 model already encodes prior-week behavior in composite scoring; (b) V2 entry timing requires different bounds. Could revisit with reversed asymmetry (e.g. -10% to +20%) as a separate shadow.",
+    "description": "DEPRECATED -- 6-week backtest showed -3.79%/wk delta vs champion (worse), p=0.04, win rate 17%. The V1 bounds (-20% to +10%) do not work as filter for V2's Monday-close entry timing. Likely reasons: (a) V2 model already encodes prior-week behavior in composite scoring; (b) V2 entry timing requires different bounds. Could revisit with reversed asymmetry (e.g. -10% to +20%) as a separate shadow. Note: backtest was against the pre-fix broken ranking; post-fix behavior may differ but unlikely to flip the result given the magnitude.",
     "active_since": "2026-04-17",
     "params": {
       "top_n": 10,
