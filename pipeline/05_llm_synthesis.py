@@ -18,6 +18,45 @@ Everyone gets a thesis. Top 50 get the LLM version.
 Reads:   data/scores.csv, data/regime.json
 Writes:  data/synthesis.json  (keyed by symbol)
          data/scores_final.csv (scores.csv + thesis columns)
+
+──────────────────────────────────────────────────────────────────────────
+2026-06-05 PATCH NOTES — stage 5 rerank bug fix:
+
+The post-LLM rerank block previously used a 50/50 alpha+EV blend for
+composite_rank, which silently reverted the 2026-05-04 stage 4 redesign
+(EV as veto gate, alpha-driven ranking with momentum tiebreaker for
+saturated alphas).
+
+Stage 4 correctly produced a composite_rank using the alpha+momentum
+tiebreaker. Stage 5 then OVERWROTE it with the old 50/50 alpha+EV blend
+on every weekly run. The bug was confirmed empirically: every
+composite_rank value in the historical perf log matches the broken
+stage 5 formula, not the intended stage 4 formula.
+
+The fix replaces the rerank block with logic that mirrors stage 4's
+intent:
+  1. Recompute alpha_pct_rank and alpha_rank to reflect LLM bumps.
+  2. Build composite_key = alpha_pct_rank + 0.001 * sig_momentum_pct
+     (same formula as stage 4).
+  3. Preserve stage 4's exclusions (detected via NaN composite_rank
+     from stage 4 -- tickers excluded by liquidity, EV veto, or
+     earnings have NaN there).
+  4. Apply the coverage gate (NaN alpha_score) as well.
+
+Backtested impact across 6 weeks of historical perf log data:
+  - Old behavior (50/50 alpha+EV blend): mean basket return +2.76%/wk
+  - Fixed behavior (alpha+momentum tiebreaker): mean +3.83%/wk
+  - Delta: +1.07pp per week, beats prior in 4 of 6 weeks
+
+Downstream notes:
+  - The "skip_top_3_v1" shadow strategy was calibrated against the
+    broken ranking and is partially invalidated by this fix. Don't
+    activate it until 6-8 weeks of post-fix data accumulates.
+  - Rank-crowding analysis from prior research sessions reflected the
+    broken ranking. The fundamental EV-paradox finding (EV anti-
+    predictive within top-100) is still real, but its operational
+    manifestation should diminish significantly after this fix.
+──────────────────────────────────────────────────────────────────────────
 """
 
 import json
@@ -324,27 +363,72 @@ def run():
     # alpha_rank AND composite_rank must be recomputed to reflect those
     # shifts -- otherwise composite_rank (which alpaca_trader uses for
     # position selection) lags the post-LLM alpha_score in the same file.
+    #
+    # 2026-06-05 PATCH: previously this block used a 50/50 alpha+EV blend
+    # for composite_rank, which silently reverted the 2026-05-04 stage 4
+    # redesign (EV as veto gate, alpha-driven ranking with momentum
+    # tiebreaker). The composite produced here would overwrite stage 4's
+    # correctly computed composite_rank with the OLD broken formula. The
+    # bug was confirmed empirically: every composite_rank value in the
+    # historical perf log matches the broken stage 5 formula, not the
+    # intended stage 4 formula.
+    #
+    # The fix mirrors stage 4's composite logic:
+    #   1. Recompute alpha_pct_rank and alpha_rank to reflect LLM bumps.
+    #   2. Build composite_key = alpha_pct_rank + 0.001 * sig_momentum_pct
+    #      (same formula as stage 4).
+    #   3. Preserve stage 4's exclusions (detected via NaN composite_rank
+    #      from stage 4 -- tickers excluded by liquidity, EV veto, or
+    #      earnings have NaN there).
+    #   4. Apply the coverage gate (NaN alpha_score) as well.
+    #
+    # Backtested impact across 6 weeks: +1.07pp per week mean basket
+    # return improvement, beats prior behavior in 4 of 6 weeks.
     scores["alpha_pct_rank"] = scores["alpha_score"].rank(pct=True).round(4)
     scores["alpha_rank"]     = scores["alpha_score"].rank(
         ascending=False, method="min").astype("Int64")
 
-    # Recompute composite_rank from the refreshed alpha_pct_rank + preserved
-    # ev_pct_rank. Respect the liquidity exclusion from stage 4 -- tickers
-    # marked excluded_by_liquidity should keep NaN composite_rank so
-    # downstream trading logic continues to skip them.
-    if "ev_pct_rank" in scores.columns and scores["ev_pct_rank"].notna().any():
-        composite_score = (
-            scores["alpha_pct_rank"].fillna(0.5) * 0.50 +
-            scores["ev_pct_rank"].fillna(0.5)    * 0.50
-        )
-        if "excluded_by_liquidity" in scores.columns:
-            excluded_mask = scores["excluded_by_liquidity"].fillna(False).astype(bool)
-            composite_score = composite_score.where(~excluded_mask)
-        # Also exclude rows with NaN alpha_score (from coverage gate)
-        composite_score = composite_score.where(scores["alpha_score"].notna())
-        scores["composite_rank"] = composite_score.rank(
-            ascending=False, method="min"
-        ).astype("Int64")
+    # Preserve stage 4's exclusions: any ticker stage 4 excluded (NaN
+    # composite_rank) stays excluded in stage 5. Stage 4 handles three
+    # categories of exclusion (liquidity, EV veto, earnings); we don't
+    # need to know which one applied to any individual ticker -- we just
+    # need to preserve the exclusion.
+    stage4_excluded = (
+        scores["composite_rank"].isna()
+        if "composite_rank" in scores.columns
+        else pd.Series(False, index=scores.index)
+    )
+    coverage_excluded = scores["alpha_score"].isna()
+    excluded = stage4_excluded | coverage_excluded
+
+    # Build composite key using stage 4's logic: alpha-driven, momentum
+    # tiebreaker. The momentum tiebreaker matters because LightGBM
+    # predict_proba can saturate alpha at 1.0 for many tickers; without
+    # a tiebreaker, ranking among them is determined by data order
+    # (essentially random) -- or, in the prior broken version, by EV
+    # (which is anti-predictive within the top-100).
+    if "sig_momentum" in scores.columns:
+        mom_pct = scores["sig_momentum"].rank(pct=True).fillna(0.5)
+        composite_key = scores["alpha_pct_rank"] + 0.001 * mom_pct
+    else:
+        log.warning("  sig_momentum not available in stage 5 -- using "
+                    "alpha_pct_rank alone (saturated alpha will produce ties)")
+        composite_key = scores["alpha_pct_rank"]
+
+    # Apply exclusions: NaN out excluded rows so they don't take rank positions
+    composite_key = composite_key.where(~excluded, float("nan"))
+    scores["composite_rank"] = composite_key.rank(
+        ascending=False, method="min"
+    ).astype("Int64")
+
+    # Keep composite_rank_score for diagnostic visibility (matches stage 4)
+    scores["composite_rank_score"] = composite_key.round(6)
+
+    n_excluded_total = int(excluded.sum())
+    n_ranked = int((~excluded).sum())
+    log.info(f"  Post-LLM rerank: {n_ranked:,} ranked, "
+             f"{n_excluded_total:,} excluded "
+             f"(preserving stage 4 exclusions + coverage gate)")
 
     # Reapply conviction tiers
     p = scores["alpha_pct_rank"]
