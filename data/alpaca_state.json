@@ -1,23 +1,6 @@
 {
   "week_open_value": 107963.77,
   "positions": {
-    "REPL": {
-      "shares": 1138,
-      "entry_price_est": 9.25,
-      "hard_stop_pct": 15.0,
-      "activation_pct": 18.1,
-      "trail_pct": 15.0,
-      "alpha_score": 1.0,
-      "weekly_vol": 33.63,
-      "composite_rank": 1,
-      "is_fallback": false,
-      "phase": 1,
-      "high_water_mark": 9.25,
-      "order_id": "4527bea7-3587-4f8b-bd92-5d802da5a1c7",
-      "hard_stop_order_id": "cbe4e934-1280-49e5-a6b7-242c2e149dbc",
-      "hard_stop_price": 7.86,
-      "entry_price_actual": 9.25
-    },
     "SEDG": {
       "shares": 137,
       "entry_price_est": 76.39,
@@ -68,23 +51,6 @@
       "hard_stop_order_id": "2e4ac2c8-bea9-45ed-835a-0cbc7d7b4329",
       "hard_stop_price": 8.27,
       "entry_price_actual": 9.67
-    },
-    "VSTS": {
-      "shares": 817,
-      "entry_price_est": 12.88,
-      "hard_stop_pct": 7.0,
-      "activation_pct": 8.5,
-      "trail_pct": 5.0,
-      "alpha_score": 1.0,
-      "weekly_vol": 9.92,
-      "composite_rank": 6,
-      "is_fallback": false,
-      "phase": 1,
-      "high_water_mark": 12.89,
-      "order_id": "219535a6-633a-4c73-ae6e-dbb7a2ac998d",
-      "hard_stop_order_id": "1542ab9f-74f1-4025-ac7a-00975ebbef04",
-      "hard_stop_price": 11.98,
-      "entry_price_actual": 12.88
     },
     "NEXT": {
       "shares": 1258,

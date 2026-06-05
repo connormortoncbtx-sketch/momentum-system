@@ -780,3 +780,5 @@
 {"timestamp": "2026-06-04T21:54:38.526361+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Session quiet: 10 polls, no phase transitions", "metrics": {"polls": 10, "upgrades": 0, "stops_placed": 0, "poll_errors": 0}, "errors": []}
 {"timestamp": "2026-06-04T22:12:42.483582+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=exit", "metrics": {}, "errors": []}
 {"timestamp": "2026-06-04T22:12:42.484106+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Skipped: not exit day (expected friday)", "metrics": {}, "errors": []}
+{"timestamp": "2026-06-05T19:22:02.930178+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=exit", "metrics": {}, "errors": []}
+{"timestamp": "2026-06-05T19:22:03.395336+00:00", "workflow": "alpaca_trader", "status": "warning", "message": "Exit: 2 closed, 1 FAILED (week -5.52%)", "metrics": {"closed": 2, "failed": 1, "cancelled_stops": 3, "week_open": 107963.77, "week_close": 102009.45, "week_return_pct": -5.52, "symbols_failed": ["NEXT"]}, "errors": []}
