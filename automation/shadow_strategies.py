@@ -175,9 +175,100 @@ def shadow_hold_through_rerank(perf: pd.DataFrame, entry_week: str,
     return results
 
 
+def shadow_rank_window(perf: pd.DataFrame, entry_week: str,
+                       ordered_weeks: list, params: dict) -> list:
+    """
+    Rank-window shadow.
+
+    Behavior: pick top_n names from a sliding window of composite_rank
+    starting at start_rank. E.g. start_rank=4 + top_n=10 means use ranks
+    4 through 13 inclusive.
+
+    The point is to test whether skipping the very top of the composite
+    ranking (where consensus crowding may be concentrated) produces
+    better aggregate returns than the unmodified top-N.
+    """
+    start_rank = params.get("start_rank", 1)
+    top_n = params.get("top_n", TOP_N)
+    rank_col = params.get("rank_col", "composite_rank")
+    end_rank = start_rank + top_n - 1
+
+    week_df = perf[perf["week_of"] == entry_week].copy()
+    week_df[rank_col] = pd.to_numeric(week_df[rank_col], errors="coerce")
+    ranked = week_df.dropna(subset=[rank_col])
+    if ranked.empty:
+        return []
+
+    # Select rows where rank is in [start_rank, end_rank]
+    in_window = ranked[(ranked[rank_col] >= start_rank) &
+                       (ranked[rank_col] <= end_rank)]
+    in_window = in_window.sort_values(rank_col).head(top_n)
+
+    results = []
+    for _, row in in_window.iterrows():
+        sym = row["symbol"]
+        ret = row.get("forward_return_1w")
+        if pd.notna(ret):
+            results.append((sym, float(ret)))
+    return results
+
+
+def shadow_prior_week_filter(perf: pd.DataFrame, entry_week: str,
+                              ordered_weeks: list, params: dict) -> list:
+    """
+    Prior-week-return filter shadow (V1-style).
+
+    Behavior: iterate through composite_rank positions starting from 1.
+    Include a pick only if its return_fri_fri (prior-week return) falls
+    in [min_prior_return, max_prior_return]. Stop when top_n picks have
+    been collected or when max_search_depth has been searched.
+
+    The point is to test the V1 approach of filtering names with extreme
+    prior-week returns. V1's original filter was -30% to +10% with
+    Tuesday-open entries; this version uses adjustable bounds for V2.
+    """
+    top_n = params.get("top_n", TOP_N)
+    rank_col = params.get("rank_col", "composite_rank")
+    min_prior = params.get("min_prior_return", -0.20)
+    max_prior = params.get("max_prior_return", 0.10)
+    max_depth = params.get("max_search_depth", 50)
+
+    week_df = perf[perf["week_of"] == entry_week].copy()
+    week_df[rank_col] = pd.to_numeric(week_df[rank_col], errors="coerce")
+    week_df["return_fri_fri"] = pd.to_numeric(week_df.get("return_fri_fri"),
+                                                errors="coerce")
+    ranked = week_df.dropna(subset=[rank_col])
+    if ranked.empty:
+        return []
+
+    # Search up to max_depth ranks for picks that pass the filter
+    candidates = ranked.nsmallest(max_depth, rank_col)
+
+    results = []
+    n_filtered_out = 0
+    for _, row in candidates.iterrows():
+        prior = row.get("return_fri_fri")
+        if pd.isna(prior):
+            # No prior-week data: skip (conservative -- could also pass)
+            n_filtered_out += 1
+            continue
+        if prior < min_prior or prior > max_prior:
+            n_filtered_out += 1
+            continue
+        ret = row.get("forward_return_1w")
+        if pd.notna(ret):
+            results.append((row["symbol"], float(ret)))
+        if len(results) >= top_n:
+            break
+
+    return results
+
+
 # Registry of available shadow types -> implementation
 SHADOW_IMPLEMENTATIONS = {
     "hold_through_rerank": shadow_hold_through_rerank,
+    "rank_window":         shadow_rank_window,
+    "prior_week_filter":   shadow_prior_week_filter,
 }
 
 
