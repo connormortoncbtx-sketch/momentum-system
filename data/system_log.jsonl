@@ -841,3 +841,20 @@
 {"timestamp": "2026-06-06T03:26:31.166104+00:00", "workflow": "shadow_strategies", "status": "info", "message": "No active shadows -- skipping", "metrics": {"config_entries": 3, "active": 0}, "errors": []}
 {"timestamp": "2026-06-06T03:26:31.652435+00:00", "workflow": "collect_intraday", "status": "info", "message": "Starting intraday collection", "metrics": {}, "errors": []}
 {"timestamp": "2026-06-06T03:26:31.653069+00:00", "workflow": "collect_intraday", "status": "info", "message": "Skipped: 2026-05-29.csv already exists", "metrics": {}, "errors": []}
+{"timestamp": "2026-06-06T03:39:49.748723+00:00", "workflow": "collect_returns", "status": "info", "message": "Starting collect_returns", "metrics": {}, "errors": []}
+{"timestamp": "2026-06-06T03:39:49.749378+00:00", "workflow": "collect_returns", "status": "info", "message": "Skipped: already ran today (2026-06-05)", "metrics": {}, "errors": []}
+{"timestamp": "2026-06-06T03:39:50.135133+00:00", "workflow": "execution_tracker", "status": "info", "message": "Starting execution tracking", "metrics": {}, "errors": []}
+{"timestamp": "2026-06-06T03:39:50.138351+00:00", "workflow": "execution_tracker", "status": "info", "message": "Skipped: week 2026-06-05 already in exec log", "metrics": {}, "errors": []}
+{"timestamp": "2026-06-06T03:39:50.958967+00:00", "workflow": "analyze_winners", "status": "info", "message": "Starting weekly winners analysis", "metrics": {}, "errors": []}
+{"timestamp": "2026-06-06T03:39:51.334899+00:00", "workflow": "analyze_winners", "status": "info", "message": "Skipped: analysis already exists for week 2026-05-29", "metrics": {}, "errors": []}
+{"timestamp": "2026-06-06T03:40:04.043448+00:00", "workflow": "self_refine", "status": "success", "message": "Refinement complete: 4 weight changes", "metrics": {"weeks_analyzed": 36, "data_points": 105209, "n_changes": 4}, "errors": []}
+{"timestamp": "2026-06-06T03:40:04.511585+00:00", "workflow": "retrain", "status": "info", "message": "Starting retrain", "metrics": {}, "errors": []}
+{"timestamp": "2026-06-06T03:40:06.859115+00:00", "workflow": "retrain", "status": "success", "message": "Model retrained on 36 weeks, 19,214 samples", "metrics": {"weeks": 36, "samples": 19214, "positive_class_pct": 18.68, "in_sample_ic": 0.3231, "n_features": 18}, "errors": []}
+{"timestamp": "2026-06-06T03:40:07.453265+00:00", "workflow": "cadence_analyzer", "status": "info", "message": "Starting cadence analysis (rank_col=composite_rank)", "metrics": {}, "errors": []}
+{"timestamp": "2026-06-06T03:40:13.060098+00:00", "workflow": "cadence_analyzer", "status": "success", "message": "Analyzed 4 weeks (rank_col=composite_rank)", "metrics": {"rank_col": "composite_rank", "weeks_analyzed": 4, "mean_capture_1wk_recent": 0.02201, "mean_capture_2wk_recent": 0.06294, "mean_capture_3wk_recent": 0.10269}, "errors": []}
+{"timestamp": "2026-06-06T03:40:13.398247+00:00", "workflow": "cadence_analyzer", "status": "info", "message": "Starting cadence analysis (rank_col=alpha_rank)", "metrics": {}, "errors": []}
+{"timestamp": "2026-06-06T03:40:20.601123+00:00", "workflow": "cadence_analyzer", "status": "success", "message": "Analyzed 6 weeks (rank_col=alpha_rank)", "metrics": {"rank_col": "alpha_rank", "weeks_analyzed": 6, "mean_capture_1wk_recent": 0.0245, "mean_capture_2wk_recent": 0.06803, "mean_capture_3wk_recent": 0.08718}, "errors": []}
+{"timestamp": "2026-06-06T03:40:20.943017+00:00", "workflow": "shadow_strategies", "status": "info", "message": "Starting shadow evaluation", "metrics": {}, "errors": []}
+{"timestamp": "2026-06-06T03:40:20.943944+00:00", "workflow": "shadow_strategies", "status": "info", "message": "No active shadows -- skipping", "metrics": {"config_entries": 3, "active": 0}, "errors": []}
+{"timestamp": "2026-06-06T03:40:21.480299+00:00", "workflow": "collect_intraday", "status": "info", "message": "Starting intraday collection", "metrics": {}, "errors": []}
+{"timestamp": "2026-06-06T03:40:21.481127+00:00", "workflow": "collect_intraday", "status": "info", "message": "Skipped: 2026-05-29.csv already exists", "metrics": {}, "errors": []}
