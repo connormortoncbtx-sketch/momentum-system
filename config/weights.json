@@ -7,28 +7,28 @@
     "philosophy": "There are always winners in any market. The regime determines WHERE they are, not WHETHER they exist. Never reduce to zero \u2014 redirect."
   },
   "signal_weights": {
-    "momentum": 0.25,
+    "momentum": 0.22,
     "technicals": 0.15,
-    "catalyst": 0.3,
+    "catalyst": 0.33,
     "fundamentals": 0.25,
     "sentiment": 0.05
   },
   "regime_multipliers": {
     "risk_on": {
-      "momentum": 1.2,
+      "momentum": 1.15,
       "technicals": 1.1,
       "catalyst": 0.5,
-      "fundamentals": 1.45,
+      "fundamentals": 1.5,
       "sentiment": 0.1,
-      "note": "Fundamentals strongest in risk_on (IC=0.0226). Momentum IC weak (0.0086, hit_rate=0.4872) \u2014 trimmed base weight slightly. Sentiment actively harmful (IC=-0.0983, hit_rate=0.3974) \u2014 floor. Catalyst weak in risk_on (IC=0.004). Recent alpha mixed. Holding regime multipliers steady."
+      "note": "Fundamentals strongest in risk_on (IC=0.0226, hit_rate=0.4831 \u2014 modest but consistent). Momentum remains weak (IC=0.0086, hit_rate=0.4872) \u2014 trimmed base weight further. Sentiment actively harmful (IC=-0.0983, hit_rate=0.3974) \u2014 floor maintained. Catalyst weak in risk_on (IC=0.004) \u2014 keeping multiplier low. Recent alpha very mixed (two large negative weeks) \u2014 nudging fundamentals slightly higher."
     },
     "trending_mixed": {
       "momentum": 1.0,
       "technicals": 1.0,
-      "catalyst": 1.7,
+      "catalyst": 1.75,
       "fundamentals": 1.0,
-      "sentiment": 1.6,
-      "note": "Sentiment very strong in trending_mixed (IC=0.1177, hit_rate=0.5625) \u2014 boosted multiplier. Catalyst also strong (IC=0.0738, hit_rate=0.5459) \u2014 nudged up. Weekly alpha +0.0223 confirms direction. Base catalyst weight also increased."
+      "sentiment": 1.65,
+      "note": "Sentiment very strong in trending_mixed (IC=0.1177, hit_rate=0.5625) \u2014 nudged multiplier up slightly. Catalyst also strong (IC=0.0738, hit_rate=0.5459) \u2014 nudged up. Weekly alpha +0.0223 confirms direction. Base catalyst weight increased to 0.33 to reflect overall IC=0.0164."
     },
     "choppy_neutral": {
       "momentum": 0.85,
