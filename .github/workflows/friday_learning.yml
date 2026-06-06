@@ -45,18 +45,16 @@ jobs:
         # yfinance>=0.2.40 (needs websockets>=12). Migrated to alpaca-py
         # 2026-04. See alpaca_trader.py header comment.
         run: pip install -r requirements.txt
-      # Capture run-start epoch so post-run verification can check whether
-      # collect_returns.py actually wrote to performance_log.csv. Without
-      # this, continue-on-error swallows import failures and we'd never
-      # know the learning loop silently no-op'd.
+      # Capture run-start epoch so the verify step can find collect_returns
+      # events from this run window (vs older events in system_log).
       - name: Record run start time
         id: run_start
         run: echo "epoch=$(date +%s)" >> $GITHUB_OUTPUT
       # Each learning step uses continue-on-error so one failure doesn't kill
       # the remaining steps. The verify step at the end fails the workflow
-      # loud if collect_returns.py didn't update performance_log.csv, so
-      # silent failures (like the websockets.sync ModuleNotFoundError that
-      # masked weeks of missing data) can't recur unnoticed.
+      # loud if collect_returns.py crashed silently; legitimate skips
+      # (holiday week, already-ran-today lock, scores too fresh, etc.) are
+      # passed through cleanly.
       - name: Collect actual returns
         continue-on-error: true
         run: |
@@ -114,33 +112,23 @@ jobs:
         # not operational.
         continue-on-error: true
         run: python automation/collect_intraday.py
-      - name: Verify collect_returns actually ran
-        # collect_returns.py writes to performance_log.csv. If its mtime
-        # hasn't advanced past the run-start epoch, the step silently
-        # failed (most likely an import error that continue-on-error
-        # swallowed). Fail the workflow loud so we get a notification.
-        # This step does NOT use continue-on-error -- it is the canary.
+      # 2026-06-06: replaced the old bash mtime-only check with a python
+      # verifier that reads system_log.jsonl. The mtime check produced
+      # false-positive failures for legitimate skips (holiday weeks,
+      # already-ran-today lock, scores not yet 5 trading days old, etc.).
+      # The verifier distinguishes "script crashed silently" from "script
+      # correctly skipped" by looking at the most recent collect_returns
+      # event status. Falls back to mtime if system_log is unreadable so
+      # the original safety net isn't lost.
+      - name: Verify collect_returns ran or skipped legitimately
         if: always()
         run: |
-          PERF_LOG="data/performance_log.csv"
           RUN_START="${{ steps.run_start.outputs.epoch }}"
           if [ -z "$RUN_START" ]; then
             echo "::error::Run start timestamp missing -- earlier step likely failed"
             exit 1
           fi
-          if [ ! -f "$PERF_LOG" ]; then
-            echo "::error::performance_log.csv missing -- collect_returns.py never wrote output"
-            exit 1
-          fi
-          FILE_MTIME=$(stat -c %Y "$PERF_LOG")
-          if [ "$FILE_MTIME" -lt "$RUN_START" ]; then
-            echo "::error::performance_log.csv was not updated this run."
-            echo "::error::collect_returns.py likely failed silently (continue-on-error masking an exception)."
-            echo "File mtime: $(date -d @$FILE_MTIME -u)"
-            echo "Run start:  $(date -d @$RUN_START -u)"
-            exit 1
-          fi
-          echo "performance_log.csv updated this run -- collect_returns.py succeeded"
+          python automation/verify_collect_returns.py "$RUN_START"
       - name: Commit results
         if: always()
         run: |
