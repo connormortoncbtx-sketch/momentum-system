@@ -2,14 +2,14 @@
   "_meta": {
     "description": "Signal weights and regime multipliers. This is the ONLY file the self-refinement pass may modify.",
     "schema_version": "1.0",
-    "last_modified": "2026-06-01",
+    "last_modified": "2026-06-06",
     "modified_by": "self_refine.py",
     "philosophy": "There are always winners in any market. The regime determines WHERE they are, not WHETHER they exist. Never reduce to zero \u2014 redirect."
   },
   "signal_weights": {
-    "momentum": 0.3,
+    "momentum": 0.27,
     "technicals": 0.15,
-    "catalyst": 0.25,
+    "catalyst": 0.28,
     "fundamentals": 0.25,
     "sentiment": 0.05
   },
@@ -20,7 +20,7 @@
       "catalyst": 0.5,
       "fundamentals": 1.45,
       "sentiment": 0.1,
-      "note": "Fundamentals showing strong IC (0.0512) in risk_on \u2014 boosted further. Momentum IC weak overall (0.0064 in risk_on), trimmed slightly. Sentiment actively harmful in risk_on (IC=-0.0798, hit_rate=0.4264) \u2014 keep at floor. Catalyst also weak in risk_on (IC=0.0011)."
+      "note": "Fundamentals remain strongest in risk_on (IC=0.0226, hit_rate=0.4831). Momentum IC weak (0.0086) and hit_rate below 0.49 \u2014 trimmed base weight slightly. Sentiment actively harmful in risk_on (IC=-0.0983, hit_rate=0.3974) \u2014 keep multiplier at floor. Catalyst also weak in risk_on (IC=0.004). Recent alpha mixed \u2014 holding regime multipliers steady."
     },
     "trending_mixed": {
       "momentum": 1.0,
@@ -28,7 +28,7 @@
       "catalyst": 1.6,
       "fundamentals": 1.0,
       "sentiment": 1.5,
-      "note": "Sentiment showing very strong IC (0.1177) and hit_rate (0.5625) in trending_mixed \u2014 boosted. Catalyst also strong (IC=0.0738, hit_rate=0.5459). Both confirmed again this period. Weekly alpha of +0.0223 in trending_mixed confirms direction."
+      "note": "Sentiment showing very strong IC (0.1177) and hit_rate (0.5625) in trending_mixed \u2014 boosted. Catalyst also strong (IC=0.0738, hit_rate=0.5459). Weekly alpha of +0.0223 in trending_mixed confirms direction. Holding current settings."
     },
     "choppy_neutral": {
       "momentum": 0.85,
@@ -52,7 +52,7 @@
       "catalyst": 2.0,
       "fundamentals": 0.5,
       "sentiment": 1.5,
-      "note": "The biggest weekly winners often happen in brutal markets. Short squeezes, FDA approvals, takeovers, contra-trend sector pops. Catalyst (IC=0.0828) and momentum (IC=0.0987) both strong in risk_off_severe. Fundamentals less predictive (IC=-0.0044). Sentiment positive but lower \u2014 maintain current balance."
+      "note": "The biggest weekly winners often happen in brutal markets. Short squeezes, FDA approvals, takeovers, contra-trend sector pops. Catalyst (IC=0.0828) and momentum (IC=0.0987) both strong in risk_off_severe. Fundamentals less predictive (IC=-0.0044). Sentiment positive (IC=0.0622) \u2014 maintain current balance."
     }
   },
   "gates": {
