@@ -18,6 +18,9 @@ How shadows are configured:
     has a name, description, activation date, parameter overrides, and a
     pre-registered "promotion criteria" markdown reference. Max 3 active.
 
+    Keys beginning with underscore (e.g. "_schema_documentation") are
+    treated as documentation/metadata, not shadows, and skipped silently.
+
 How shadows are evaluated:
     Each weekly run computes the shadow's hypothetical basket for each
     historical week (replaying perf_log data with the override applied).
@@ -34,10 +37,9 @@ Currently supported shadow types:
     - "hold_through_rerank": hold positions through week N+1 if they
       re-rank in the top-N. Tests the cadence hypothesis from
       cadence_analyzer.
-
-Future types (when supporting data exists):
-    - "stop_width": different stop loss percentages (needs intraday)
-    - "weight_override": different scoring weights (needs signal replay)
+    - "rank_window": pick top_n from a sliding window of composite_rank
+      starting at start_rank. Tests skip-top-N hypotheses.
+    - "prior_week_filter": filter top-N picks by prior-week return bounds.
 """
 
 import json
@@ -297,12 +299,21 @@ def validate_shadows_config(config: dict) -> dict:
     Filter the config to only active, valid shadows.
 
     Validation:
+      - Keys starting with "_" are treated as documentation/metadata and
+        silently skipped (e.g. "_schema_documentation"). This keeps the
+        JSON self-documenting without polluting the operational log.
       - "active": true (skip otherwise)
       - "type" is in SHADOW_IMPLEMENTATIONS
       - At most MAX_ACTIVE_SHADOWS pass validation
     """
     valid = {}
     for name, spec in config.items():
+        # Filter underscore-prefixed metadata keys (e.g. _schema_documentation).
+        # These are documentation entries in the JSON, not shadows. Skip them
+        # without logging -- the previous behavior was to log them as
+        # "inactive, skipping" which was noise.
+        if name.startswith("_"):
+            continue
         if not spec.get("active", False):
             log.info(f"Shadow '{name}': inactive, skipping")
             continue
@@ -485,9 +496,13 @@ def run():
 
     if not active:
         log.info("No active shadows configured -- nothing to evaluate")
+        # Count non-metadata entries for the log so the "config_entries"
+        # number reflects actual shadow registrations rather than schema
+        # docs that begin with _.
+        n_real_entries = sum(1 for k in config.keys() if not k.startswith("_"))
         log_event("shadow_strategies", LogStatus.INFO,
                   "No active shadows -- skipping",
-                  metrics={"config_entries": len(config), "active": 0})
+                  metrics={"config_entries": n_real_entries, "active": 0})
         # Still write empty outputs to confirm plumbing ran
         return
 

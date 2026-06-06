@@ -28,6 +28,30 @@ Derived return columns:
 
 Over time self_refine.py analyzes which entry day produces best avg return
 by regime, signal strength, and pre-market conditions.
+
+──────────────────────────────────────────────────────────────────────────
+2026-06-06 PATCH NOTES — trading-day counter fix:
+
+The 5-day-elapsed guard was producing false-negative skips in two cases:
+
+1. OFF-BY-ONE: trading_days_since() was excluding scored_at from the count
+   (started iteration at scored_at + 1 day). When scored_at = Monday and the
+   script runs Friday night, the count returned 4 (Tue/Wed/Thu/Fri) — but
+   by Friday close, all 5 trading days (Mon-Fri) of OHLCV data are
+   available. The convention should be "trading days INCLUSIVE of scored_at
+   through today" since scored_at represents the day the pipeline ran AND
+   the day the position was entered (Mon for normal weeks, Tue for
+   Mon-holiday weeks).
+
+2. HARDCODED THRESHOLD: the guard always required 5 elapsed days, but
+   4-day trading weeks (Memorial Day, Labor Day, Mon/Fri-holiday weeks)
+   are fully complete with 4 days. Now the required count is derived
+   dynamically from n_trading_days_in_week_of(scored_at).
+
+The dependency on `n_trading_days_in_week_of` is satisfied by a small
+wrapper around tz_utils.n_trading_days_in_week, computing it for the
+trading week containing scored_at.
+──────────────────────────────────────────────────────────────────────────
 """
 
 import argparse
@@ -66,16 +90,42 @@ def last_friday(from_date=None) -> datetime:
         hour=0, minute=0, second=0, microsecond=0)
 
 
-def trading_days_since(from_date: datetime) -> int:
+def trading_days_elapsed(from_date: datetime) -> int:
+    """
+    Count NYSE trading days (Mon-Fri minus federal holidays) from from_date
+    THROUGH today, INCLUSIVE of from_date itself.
+
+    Previously this function (named trading_days_since) excluded from_date
+    from the count, producing an off-by-one. The convention scored_at uses
+    is "the day the pipeline ran and trading entered" -- e.g. Monday for
+    normal weeks, Tuesday for Mon-holiday weeks. By the time we want to
+    collect returns (after Friday close), all days from scored_at through
+    Friday have completed and their OHLCV is available. So all of them
+    should count.
+
+    Holidays inside the [from_date, today] interval are excluded so that
+    Memorial Day, July 4 mid-week, etc. don't inflate the count.
+
+    Returns 0 if from_date is in the future.
+    """
     today = datetime.today()
-    if from_date >= today:
+    if from_date.date() > today.date():
         return 0
+
+    # Build the set of holiday dates spanning the relevant calendar years.
+    # _nyse_holidays is a private helper in tz_utils but we can compute
+    # holiday-exclusion using the public n_trading_days_in_week if we want
+    # to avoid the import. Here we inline the holiday check by iterating
+    # day-by-day; for small intervals (max ~7 days) this is fast.
+    from automation.tz_utils import is_trading_day
+
     days = 0
-    current = from_date + timedelta(days=1)
-    while current <= today:
-        if current.weekday() < 5:
+    current = from_date.date()
+    end = today.date()
+    while current <= end:
+        if is_trading_day(current):
             days += 1
-        current += timedelta(days=1)
+        current = current + timedelta(days=1)
     return days
 
 
@@ -302,7 +352,7 @@ def run(target_week: str = None):
         target_week: Optional YYYY-MM-DD string specifying which week's
             score_friday to backfill. When None (the normal path), uses
             today's date to compute score_friday = (this_friday - 1 week).
-            When provided, bypasses the lock-file and 5-day-elapsed guards
+            When provided, bypasses the lock-file and elapsed-days guards
             (since we know the week is in the past) but still respects the
             idempotency check (won't double-add a week already in perf_log).
     """
@@ -345,9 +395,9 @@ def run(target_week: str = None):
                   "Skipped: not a normal trading week (disruptive holiday)")
         return
 
-    # Lock + 5-day guards only apply in NORMAL (not backfill) mode. Backfill
-    # is an explicit operator action against a known-past week, so these
-    # freshness guards would just block legitimate work.
+    # Lock + elapsed-days guards only apply in NORMAL (not backfill) mode.
+    # Backfill is an explicit operator action against a known-past week, so
+    # these freshness guards would just block legitimate work.
     if not backfill_mode:
         today_ct  = now_ct().strftime("%Y-%m-%d")
         lock_file = DATA_DIR / ".collect_lock"
@@ -380,8 +430,8 @@ def run(target_week: str = None):
         scores = pd.read_csv(SCORES)
         log.info(f"Loaded scores: {len(scores):,} tickers")
 
-        # 5-trading-day guard (normal mode only; backfill targets past weeks
-        # so elapsed-trading-days is irrelevant by construction).
+        # Elapsed-trading-days guard (normal mode only; backfill targets past
+        # weeks so elapsed-trading-days is irrelevant by construction).
         if not backfill_mode:
             scored_at = None
             if "scored_at" in scores.columns:
@@ -391,21 +441,33 @@ def run(target_week: str = None):
                     pass
 
             if scored_at:
-                elapsed = trading_days_since(scored_at)
-                log.info(f"Scores generated: {scored_at.date()}  |  Elapsed: {elapsed} trading days")
-                if elapsed < 5:
-                    log.warning(f"Only {elapsed} trading days elapsed (need 5) — skipping")
+                # The 2026-06-06 fix: count elapsed trading days INCLUSIVE of
+                # scored_at (was: exclusive, producing off-by-one), and derive
+                # the required threshold from the trading week's actual
+                # length (was: hardcoded 5). Memorial Day / Labor Day / other
+                # Mon-or-Fri-holiday weeks have 4 trading days and complete
+                # in 4 days, not 5.
+                elapsed  = trading_days_elapsed(scored_at)
+                required = n_trading_days_in_week(scored_at.date(), ref_week="current")
+                log.info(f"Scores generated: {scored_at.date()}  |  "
+                         f"Elapsed: {elapsed} trading days  |  Required: {required}")
+                if elapsed < required:
+                    log.warning(f"Only {elapsed} trading days elapsed "
+                                f"(need {required}) — skipping")
                     # This was THE silent failure mode that broke the learning loop. Prior
                     # to the Tier 1 fix, weekend_refresh overwrote scored_at to the refresh
-                    # date, making elapsed always <5 and causing this guard to skip weekly.
-                    # Notification ensures we catch any recurrence immediately.
+                    # date, making elapsed always too low and causing this guard to skip
+                    # weekly. Notification ensures we catch any recurrence immediately.
                     log_event("collect_returns", LogStatus.WARNING,
-                              f"Skipped: only {elapsed} trading days elapsed (need 5)",
+                              f"Skipped: only {elapsed} trading days elapsed "
+                              f"(need {required})",
                               metrics={"scored_at": str(scored_at.date()),
-                                       "elapsed_trading_days": elapsed})
+                                       "elapsed_trading_days": elapsed,
+                                       "required_trading_days": required})
                     notify_alert("collect_returns",
-                                 f"5-day guard skipped learning loop: "
-                                 f"scored_at={scored_at.date()}, elapsed={elapsed} days")
+                                 f"Elapsed-days guard skipped learning loop: "
+                                 f"scored_at={scored_at.date()}, elapsed={elapsed}/"
+                                 f"{required} days")
                     return
         else:
             # Backfill: log the scores' scored_at for traceability, but don't gate on it.
@@ -517,7 +579,7 @@ if __name__ == "__main__":
         dest="target_week",
         default=None,
         help="Backfill a specific week (YYYY-MM-DD score_friday). When provided, "
-             "bypasses the lock-file and 5-day-elapsed guards (but still respects "
+             "bypasses the lock-file and elapsed-days guards (but still respects "
              "the idempotency check that prevents double-adding). When omitted, "
              "runs normally based on today's date.",
     )
