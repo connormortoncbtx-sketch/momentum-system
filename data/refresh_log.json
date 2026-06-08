@@ -1,37 +1,5 @@
 [
   {
-    "run_label": "monday_morning",
-    "timestamp": "2026-04-13T11:36:12.063566",
-    "regime": "risk_on",
-    "top_5": [
-      {
-        "symbol": "FOX",
-        "alpha_score": 0.9866089682544572,
-        "alpha_rank": 1
-      },
-      {
-        "symbol": "XRAY",
-        "alpha_score": 0.967714822660304,
-        "alpha_rank": 2
-      },
-      {
-        "symbol": "BHFAN",
-        "alpha_score": 0.9635282080919055,
-        "alpha_rank": 3
-      },
-      {
-        "symbol": "RSSS",
-        "alpha_score": 0.9631633386355714,
-        "alpha_rank": 4
-      },
-      {
-        "symbol": "ISBA",
-        "alpha_score": 0.9508394138038188,
-        "alpha_rank": 5
-      }
-    ]
-  },
-  {
     "run_label": "sunday_night",
     "timestamp": "2026-04-20T01:39:24.442597",
     "regime": "risk_on",
@@ -636,6 +604,38 @@
         "symbol": "AXTI",
         "alpha_score": 0.9242729999999999,
         "alpha_rank": 9
+      }
+    ]
+  },
+  {
+    "run_label": "manual_refresh",
+    "timestamp": "2026-06-08T06:09:09.887247",
+    "regime": "risk_off_mild",
+    "top_5": [
+      {
+        "symbol": "MXL",
+        "alpha_score": 1.0,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "BAND",
+        "alpha_score": 1.0,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "AXTI",
+        "alpha_score": 1.0,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "VPG",
+        "alpha_score": 1.0,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "PENG",
+        "alpha_score": 1.0,
+        "alpha_rank": 1
       }
     ]
   }
