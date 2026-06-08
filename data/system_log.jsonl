@@ -908,3 +908,5 @@
 {"timestamp": "2026-06-06T20:50:35.970252+00:00", "workflow": "shadow_strategies", "status": "info", "message": "No active shadows -- skipping", "metrics": {"config_entries": 3, "active": 0}, "errors": []}
 {"timestamp": "2026-06-06T20:50:36.485427+00:00", "workflow": "collect_intraday", "status": "info", "message": "Starting intraday collection", "metrics": {}, "errors": []}
 {"timestamp": "2026-06-06T20:50:36.486165+00:00", "workflow": "collect_intraday", "status": "info", "message": "Skipped: 2026-05-29.csv already exists", "metrics": {}, "errors": []}
+{"timestamp": "2026-06-08T02:08:32.181169+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Starting weekend refresh (manual_refresh)", "metrics": {}, "errors": []}
+{"timestamp": "2026-06-08T02:28:23.710057+00:00", "workflow": "weekend_refresh", "status": "success", "message": "Refresh complete (manual_refresh)", "metrics": {"run_label": "manual_refresh", "symbols": 2041, "regime": "risk_off_mild", "top_pick": "MXL", "top_score": 1.0}, "errors": []}
