@@ -27,7 +27,7 @@
   },
 
   "shadow_hold_through_rerank_v1": {
-    "active": false,
+    "active": true,
     "type": "hold_through_rerank",
     "description": "Hold positions through future weeks if they re-rank in top-10 (composite). Initial 6-week backtest showed +0.32%/wk delta vs champion, win rate 33%, p=0.65. Effect is small and noisy. Activation deferred until consecutive-top-10 events accumulate -- current rate is ~10% (6 of 60 picks), too sparse to evaluate the cadence hypothesis meaningfully. Cadence is independent of the composite_rank formula, so this shadow remains valid after the 2026-06-05 stage 5 fix.",
     "active_since": "2026-04-17",
