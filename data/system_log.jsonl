@@ -1038,3 +1038,5 @@
 {"timestamp": "2026-06-15T16:13:08.626622+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Skipped: DST guard (CT hour=11, expected 6)", "metrics": {}, "errors": []}
 {"timestamp": "2026-06-15T17:23:03.092415+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Starting premarket monitor", "metrics": {}, "errors": []}
 {"timestamp": "2026-06-15T17:23:03.095504+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Skipped: DST guard (CT hour=12, expected 6)", "metrics": {}, "errors": []}
+{"timestamp": "2026-06-15T19:50:00.529227+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=entry", "metrics": {}, "errors": []}
+{"timestamp": "2026-06-15T19:50:01.987363+00:00", "workflow": "alpaca_trader", "status": "success", "message": "Entry: all 10 orders placed", "metrics": {"filled": 10, "fallbacks_used": 0, "top_pick": "VECO"}, "errors": []}
