@@ -86,23 +86,6 @@
       "hard_stop_price": 40.56,
       "entry_price_actual": 43.618117
     },
-    "ACLS": {
-      "shares": 54,
-      "entry_price_est": 180.12,
-      "hard_stop_pct": 7.0,
-      "activation_pct": 8.5,
-      "trail_pct": 4.8,
-      "alpha_score": 1.0,
-      "weekly_vol": 9.68,
-      "composite_rank": 6,
-      "is_fallback": false,
-      "phase": 1,
-      "high_water_mark": 191.15,
-      "order_id": "f7d91a11-2443-49cb-8138-17f0da4fd679",
-      "hard_stop_order_id": "4dfdcad2-560d-412f-96dc-f6b9549e3f22",
-      "hard_stop_price": 176.39,
-      "entry_price_actual": 189.67
-    },
     "KLIC": {
       "shares": 84,
       "entry_price_est": 115.72,
