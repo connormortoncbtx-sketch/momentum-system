@@ -136,23 +136,6 @@
       "hard_stop_order_id": "5d8a9bd5-9adb-4d43-a4fa-546c0d5206a8",
       "hard_stop_price": 940.99,
       "entry_price_actual": 1011.82
-    },
-    "STM": {
-      "shares": 123,
-      "entry_price_est": 79.36,
-      "hard_stop_pct": 7.0,
-      "activation_pct": 5.8,
-      "trail_pct": 3.2,
-      "alpha_score": 1.0,
-      "weekly_vol": 6.32,
-      "composite_rank": 10,
-      "is_fallback": false,
-      "phase": 1,
-      "high_water_mark": 79.36,
-      "order_id": "55e6f45a-d24c-4327-8547-41ee8a533e2b",
-      "hard_stop_order_id": "4d30fdc6-f671-4031-a7b0-48e99917ef78",
-      "hard_stop_price": 73.81,
-      "entry_price_actual": 79.36252
     }
   },
   "entry_date": "2026-06-15"
