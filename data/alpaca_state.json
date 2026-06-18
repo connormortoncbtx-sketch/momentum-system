@@ -35,23 +35,6 @@
       "hard_stop_price": 362.27,
       "entry_price_actual": 389.5404
     },
-    "UCTT": {
-      "shares": 90,
-      "entry_price_est": 108.9,
-      "hard_stop_pct": 10.0,
-      "activation_pct": 7.8,
-      "trail_pct": 6.0,
-      "alpha_score": 1.0,
-      "weekly_vol": 12.07,
-      "composite_rank": 3,
-      "is_fallback": false,
-      "phase": 1,
-      "high_water_mark": 113.39,
-      "order_id": "9d6f816d-7706-4219-8626-53dd7418dffc",
-      "hard_stop_order_id": "bc55915c-c82f-4e21-b909-94318300646d",
-      "hard_stop_price": 101.66,
-      "entry_price_actual": 112.959889
-    },
     "VPG": {
       "shares": 70,
       "entry_price_est": 139.52,
@@ -68,23 +51,6 @@
       "hard_stop_order_id": "9c2c6b14-ff12-49ac-a7e5-01369ee44237",
       "hard_stop_price": 132.06,
       "entry_price_actual": 146.73
-    },
-    "AIP": {
-      "shares": 239,
-      "entry_price_est": 41.0,
-      "hard_stop_pct": 7.0,
-      "activation_pct": 7.3,
-      "trail_pct": 4.5,
-      "alpha_score": 1.0,
-      "weekly_vol": 9.02,
-      "composite_rank": 5,
-      "is_fallback": false,
-      "phase": 1,
-      "high_water_mark": 43.45,
-      "order_id": "bab5f982-bda5-4497-bcca-256189a0b217",
-      "hard_stop_order_id": "d0f395ff-a27a-40b9-b758-3a0b1d01277b",
-      "hard_stop_price": 40.56,
-      "entry_price_actual": 43.618117
     },
     "KLIC": {
       "shares": 84,
