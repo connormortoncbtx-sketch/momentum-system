@@ -1106,3 +1106,5 @@
 {"timestamp": "2026-06-19T20:56:05.350438+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Skipped: not exit day (expected thursday)", "metrics": {}, "errors": []}
 {"timestamp": "2026-06-19T21:12:55.625277+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Starting monitor (duration=10min, mode=PAPER)", "metrics": {}, "errors": []}
 {"timestamp": "2026-06-19T21:12:55.628449+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Skipped: market holiday 2026-06-19", "metrics": {}, "errors": []}
+{"timestamp": "2026-06-19T21:49:42.713401+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=exit", "metrics": {}, "errors": []}
+{"timestamp": "2026-06-19T21:49:42.714390+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Skipped: not exit day (expected thursday)", "metrics": {}, "errors": []}
