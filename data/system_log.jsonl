@@ -1096,3 +1096,5 @@
 {"timestamp": "2026-06-19T16:16:08.840123+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Skipped: market holiday 2026-06-19", "metrics": {}, "errors": []}
 {"timestamp": "2026-06-19T16:56:18.068175+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Starting monitor (duration=185min, mode=PAPER)", "metrics": {}, "errors": []}
 {"timestamp": "2026-06-19T16:56:18.071951+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Skipped: market holiday 2026-06-19", "metrics": {}, "errors": []}
+{"timestamp": "2026-06-19T18:06:18.546223+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Starting monitor (duration=124min, mode=PAPER)", "metrics": {}, "errors": []}
+{"timestamp": "2026-06-19T18:06:18.549370+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Skipped: market holiday 2026-06-19", "metrics": {}, "errors": []}
