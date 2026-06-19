@@ -1092,3 +1092,5 @@
 {"timestamp": "2026-06-18T22:26:20.200494+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Session quiet: 10 polls, no phase transitions", "metrics": {"polls": 10, "upgrades": 0, "stops_placed": 0, "poll_errors": 0}, "errors": []}
 {"timestamp": "2026-06-18T22:34:21.860139+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=exit", "metrics": {}, "errors": []}
 {"timestamp": "2026-06-18T22:34:22.554987+00:00", "workflow": "alpaca_trader", "status": "warning", "message": "Exit: 0 closed, 6 FAILED (week +0.00%)", "metrics": {"closed": 0, "failed": 6, "cancelled_stops": 0, "week_open": 100453.79, "week_close": 100453.79, "week_return_pct": 0.0, "symbols_failed": ["KLIC", "LRCX", "PDFS", "STX", "VECO", "VPG"]}, "errors": []}
+{"timestamp": "2026-06-19T16:16:08.836454+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Starting monitor (duration=185min, mode=PAPER)", "metrics": {}, "errors": []}
+{"timestamp": "2026-06-19T16:16:08.840123+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Skipped: market holiday 2026-06-19", "metrics": {}, "errors": []}
