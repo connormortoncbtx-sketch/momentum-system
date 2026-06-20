@@ -7,10 +7,10 @@
     "philosophy": "There are always winners in any market. The regime determines WHERE they are, not WHETHER they exist. Never reduce to zero \u2014 redirect."
   },
   "signal_weights": {
-    "momentum": 0.16,
+    "momentum": 0.15,
     "technicals": 0.15,
-    "catalyst": 0.43,
-    "fundamentals": 0.21,
+    "catalyst": 0.46,
+    "fundamentals": 0.19,
     "sentiment": 0.05
   },
   "regime_multipliers": {
@@ -20,7 +20,7 @@
       "catalyst": 0.5,
       "fundamentals": 1.55,
       "sentiment": 0.1,
-      "note": "Fundamentals best signal in risk_on (IC=0.0226, hit_rate=0.4831). Momentum weak (IC=0.0086, hit_rate=0.4872). Sentiment actively harmful (IC=-0.0983, hit_rate=0.3974) \u2014 kept at floor. Catalyst weak in risk_on (IC=0.004) \u2014 keeping multiplier low. Recent alpha mixed \u2014 holding regime multipliers stable."
+      "note": "Fundamentals best signal in risk_on (IC=0.0226, hit_rate=0.4831). Sentiment actively harmful (IC=-0.0983, hit_rate=0.3974) \u2014 kept at floor. Catalyst weak in risk_on (IC=0.004) \u2014 keeping multiplier low. Recent alpha mixed but majority of weeks positive \u2014 holding regime multipliers stable."
     },
     "trending_mixed": {
       "momentum": 1.0,
@@ -41,10 +41,10 @@
     "risk_off_mild": {
       "momentum": 0.75,
       "technicals": 0.8,
-      "catalyst": 1.85,
-      "fundamentals": 1.05,
+      "catalyst": 1.9,
+      "fundamentals": 1.0,
       "sentiment": 1.45,
-      "note": "Catalyst strong in risk_off_mild (IC=0.0531, hit_rate=0.5436) \u2014 nudged multiplier up further. Fundamentals weak (IC=0.0056, hit_rate=0.3916) \u2014 trimmed slightly more. Momentum weak with poor hit_rate context \u2014 maintaining trim. Recent week showed negative alpha in risk_off_mild \u2014 shifting further toward catalyst."
+      "note": "Catalyst strong in risk_off_mild (IC=0.0531, hit_rate=0.5436) \u2014 nudged multiplier up slightly. Fundamentals very weak (IC=0.0056, hit_rate=0.3916) \u2014 trimmed multiplier further. Momentum weak \u2014 maintaining trim. Recent week showed negative alpha in risk_off_mild \u2014 shifting further toward catalyst. Fundamentals hit_rate 0.3916 warrants additional reduction."
     },
     "risk_off_severe": {
       "momentum": 1.6,
