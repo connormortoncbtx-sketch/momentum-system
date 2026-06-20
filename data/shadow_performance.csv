@@ -1,0 +1,9 @@
+shadow,week_of,n_picks_champion,n_picks_shadow,champion_return,shadow_return,delta
+shadow_hold_through_rerank_v1,2026-04-17,10,10,-0.03275,-0.03275,0.0
+shadow_hold_through_rerank_v1,2026-04-24,10,10,0.11314,0.12609,0.01295
+shadow_hold_through_rerank_v1,2026-05-01,10,10,0.00757,-0.00211,-0.00969
+shadow_hold_through_rerank_v1,2026-05-08,10,10,8e-05,0.03153,0.03145
+shadow_hold_through_rerank_v1,2026-05-15,10,10,0.14081,0.125,-0.0158
+shadow_hold_through_rerank_v1,2026-05-22,10,10,-0.06325,-0.06325,0.0
+shadow_hold_through_rerank_v1,2026-05-29,10,10,-0.0877,-0.0877,-0.0
+shadow_hold_through_rerank_v1,2026-06-05,10,10,-0.01441,-0.01441,0.0
