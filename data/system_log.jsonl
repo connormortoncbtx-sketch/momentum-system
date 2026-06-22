@@ -1179,3 +1179,5 @@
 {"timestamp": "2026-06-22T21:50:11.972281+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=entry", "metrics": {}, "errors": []}
 {"timestamp": "2026-06-22T21:50:13.077248+00:00", "workflow": "alpaca_trader", "status": "success", "message": "Entry: all 10 orders placed", "metrics": {"filled": 10, "fallbacks_used": 0, "top_pick": "ALAB"}, "errors": []}
 {"timestamp": "2026-06-22T22:11:46.452110+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=place_stops", "metrics": {}, "errors": []}
+{"timestamp": "2026-06-22T22:25:30.720511+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=entry", "metrics": {}, "errors": []}
+{"timestamp": "2026-06-22T22:25:32.200412+00:00", "workflow": "alpaca_trader", "status": "warning", "message": "Entry: 0 filled, 20 FAILED", "metrics": {"filled": 0, "failed": 20, "fallbacks_used": 0, "symbols_failed": ["ALAB", "AIP", "AMBQ", "BE", "AMAT", "ARM", "SNDK", "NBIS", "VPG", "STX"]}, "errors": []}
