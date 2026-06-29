@@ -1,37 +1,5 @@
 [
   {
-    "run_label": "monday_morning",
-    "timestamp": "2026-04-27T11:51:31.839867",
-    "regime": "risk_on",
-    "top_5": [
-      {
-        "symbol": "OPEN",
-        "alpha_score": 1.0,
-        "alpha_rank": 1
-      },
-      {
-        "symbol": "LMND",
-        "alpha_score": 0.98859,
-        "alpha_rank": 4
-      },
-      {
-        "symbol": "IREN",
-        "alpha_score": 0.994505,
-        "alpha_rank": 3
-      },
-      {
-        "symbol": "SII",
-        "alpha_score": 1.0,
-        "alpha_rank": 1
-      },
-      {
-        "symbol": "AXTI",
-        "alpha_score": 0.8481069999999999,
-        "alpha_rank": 8
-      }
-    ]
-  },
-  {
     "run_label": "manual_refresh",
     "timestamp": "2026-04-27T12:40:05.965514",
     "regime": "risk_on",
@@ -636,6 +604,38 @@
         "symbol": "RIOT",
         "alpha_score": 1.0,
         "alpha_rank": 1
+      }
+    ]
+  },
+  {
+    "run_label": "manual_refresh",
+    "timestamp": "2026-06-29T06:10:39.932965",
+    "regime": "choppy_neutral",
+    "top_5": [
+      {
+        "symbol": "SYRE",
+        "alpha_score": 1.0,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "HUT",
+        "alpha_score": 1.0,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "DASH",
+        "alpha_score": 1.0,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "ALOY",
+        "alpha_score": 0.946405,
+        "alpha_rank": 21
+      },
+      {
+        "symbol": "WYFI",
+        "alpha_score": 0.94192,
+        "alpha_rank": 24
       }
     ]
   }
