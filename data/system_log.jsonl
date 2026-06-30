@@ -1296,3 +1296,5 @@
 {"timestamp": "2026-06-29T21:59:57.478223+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=entry", "metrics": {}, "errors": []}
 {"timestamp": "2026-06-29T21:59:58.350893+00:00", "workflow": "alpaca_trader", "status": "warning", "message": "Entry: 0 filled, 20 FAILED", "metrics": {"filled": 0, "failed": 20, "fallbacks_used": 0, "symbols_failed": ["RIOT", "SNDK", "PACK", "HUT", "DRTS", "EWTX", "LRCX", "SYRE", "DYN", "WYFI"]}, "errors": []}
 {"timestamp": "2026-06-29T22:16:43.005938+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=place_stops", "metrics": {}, "errors": []}
+{"timestamp": "2026-06-30T13:04:36.115676+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Starting premarket monitor", "metrics": {}, "errors": []}
+{"timestamp": "2026-06-30T13:04:36.119104+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Skipped: DST guard (CT hour=8, expected 6)", "metrics": {}, "errors": []}
