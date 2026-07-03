@@ -1343,3 +1343,4 @@
 {"timestamp": "2026-07-03T21:45:24.767846+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=exit", "metrics": {}, "errors": []}
 {"timestamp": "2026-07-03T21:45:24.768887+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Skipped: not exit day (expected thursday)", "metrics": {}, "errors": []}
 {"timestamp": "2026-07-03T22:34:03.056210+00:00", "workflow": "health_check", "status": "warning", "message": "Weekly health check complete", "metrics": {"entries_reviewed": 120, "workflows_covered": 14, "errors_in_period": 0, "warnings_in_period": 4, "result": "issues_found"}, "errors": []}
+{"timestamp": "2026-07-03T23:32:45.764340+00:00", "workflow": "health_check", "status": "warning", "message": "Weekly health check complete", "metrics": {"entries_reviewed": 120, "workflows_covered": 14, "errors_in_period": 0, "warnings_in_period": 4, "result": "issues_found"}, "errors": []}
