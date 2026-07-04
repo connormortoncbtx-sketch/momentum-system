@@ -1,13 +1,13 @@
 {
-  "regime": "choppy_neutral",
-  "description": "No clear trend. Inconsistent breadth. Raise the bar, reduce size.",
-  "composite": -0.1657,
+  "regime": "trending_mixed",
+  "description": "Uptrend intact but mixed breadth. Be selective \u2014 only strongest setups.",
+  "composite": 0.1492,
   "scores": {
-    "trend": -0.4235,
-    "breadth": 0.2564,
-    "sentiment": 0.2019,
-    "rotation": -1.0,
-    "safety": -0.2438
+    "trend": 0.3799,
+    "breadth": 0.1278,
+    "sentiment": 0.5537,
+    "rotation": -0.9911,
+    "safety": 0.3255
   },
   "weights": {
     "trend": 0.25,
@@ -18,64 +18,64 @@
   },
   "details": {
     "trend": {
-      "spy_ret_5d": -0.0207,
-      "spy_ret_20d": -0.0339,
-      "spy_ret_50d": 0.0292,
-      "spy_above_sma50": false,
+      "spy_ret_5d": 0.0051,
+      "spy_ret_20d": 0.0124,
+      "spy_ret_50d": 0.0459,
+      "spy_above_sma50": true,
       "spy_above_sma200": true,
-      "spy_drawdown": -0.0378
+      "spy_drawdown": -0.0169
     },
     "breadth": {
-      "qqq_ret_5d": -0.0426,
-      "qqq_ret_20d": -0.042,
-      "iwm_ret_5d": 0.0055,
-      "iwm_ret_20d": 0.0348,
-      "iwm_vs_spy_5d": 0.0262,
-      "iwm_vs_spy_20d": 0.0687,
+      "qqq_ret_5d": -0.0159,
+      "qqq_ret_20d": 0.0118,
+      "iwm_ret_5d": -0.0046,
+      "iwm_ret_20d": 0.0591,
+      "iwm_vs_spy_5d": -0.0098,
+      "iwm_vs_spy_20d": 0.0467,
       "iwm_above_sma50": true
     },
     "sentiment": {
-      "vix": 18.41,
-      "vix_ma20": 17.92,
-      "vix_trend": 0.49,
-      "hyg_vs_spy_5d": 0.0193,
-      "hyg_vs_spy_20d": 0.033
+      "vix": 15.81,
+      "vix_ma20": 18.12,
+      "vix_trend": -2.31,
+      "hyg_vs_spy_5d": -0.0042,
+      "hyg_vs_spy_20d": -0.0042
     },
     "rotation": {
-      "offensive_ret_5d": -0.05,
-      "defensive_ret_5d": 0.0441,
-      "offensive_ret_20d": -0.0464,
-      "defensive_ret_20d": 0.051,
-      "rotation_spread_5d": -0.0942,
-      "rotation_spread_20d": -0.0974,
-      "xlk_slope": -0.002364,
-      "xlu_slope": 0.002775
+      "offensive_ret_5d": -0.0209,
+      "defensive_ret_5d": 0.0068,
+      "offensive_ret_20d": 0.0073,
+      "defensive_ret_20d": 0.0463,
+      "rotation_spread_5d": -0.0277,
+      "rotation_spread_20d": -0.039,
+      "xlk_slope": 0.000578,
+      "xlu_slope": 0.002807
     },
     "safety": {
-      "tlt_vs_spy_5d": 0.0354,
-      "tlt_vs_spy_20d": 0.0565,
-      "gld_vs_spy_5d": -0.0078,
-      "gld_vs_spy_20d": -0.0704
+      "tlt_vs_spy_5d": -0.0237,
+      "tlt_vs_spy_20d": -0.0034,
+      "gld_vs_spy_5d": 0.0208,
+      "gld_vs_spy_20d": -0.0581
     }
   },
   "transition": {
     "transitioning": true,
-    "direction": "weakening",
-    "composite_delta": -0.4306,
-    "prev_composite": 0.2649,
-    "prev_regime": "trending_mixed"
+    "direction": "strengthening",
+    "composite_delta": 0.3149,
+    "prev_composite": -0.1657,
+    "prev_regime": "choppy_neutral"
   },
   "context": {
-    "spy_realized_vol_20d": 0.1694,
-    "vix": 18.41,
-    "as_of": "2026-06-27"
+    "spy_realized_vol_20d": 0.1806,
+    "vix": 15.81,
+    "as_of": "2026-07-04"
   },
   "playbook": {
-    "momentum": 0.85,
-    "technicals": 0.9,
-    "catalyst": 1.4,
-    "fundamentals": 1.2,
-    "sentiment": 1.1,
-    "note": "Pure momentum fades. Winners have specific catalysts or strong fundamentals driving them independent of market."
+    "momentum": 0.75,
+    "technicals": 1.0,
+    "catalyst": 2.0,
+    "fundamentals": 0.65,
+    "sentiment": 2.0,
+    "note": "Sentiment very strong in trending_mixed (IC=0.1257, hit_rate=0.5792). Catalyst also strong (IC=0.0635, hit_rate=0.5847). Fundamentals harmful (IC=-0.0909) \u2014 trimmed further. Momentum negative IC (-0.0546) \u2014 reduced. Both at cap to reflect consistent outperformance. Weekly alpha +0.0223 and +0.0058 confirm direction."
   }
 }
