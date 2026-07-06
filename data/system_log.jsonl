@@ -1400,3 +1400,5 @@
 {"timestamp": "2026-07-06T05:29:02.852760+00:00", "workflow": "weekend_refresh", "status": "success", "message": "Refresh complete (manual_refresh)", "metrics": {"run_label": "manual_refresh", "symbols": 2035, "regime": "trending_mixed", "top_pick": "SLS", "top_score": 1.0}, "errors": []}
 {"timestamp": "2026-07-06T13:37:49.266100+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Starting weekend refresh (manual_refresh)", "metrics": {}, "errors": []}
 {"timestamp": "2026-07-06T13:37:49.267176+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Skipped: manual_refresh already ran today (2026-07-06)", "metrics": {}, "errors": []}
+{"timestamp": "2026-07-06T14:22:22.796160+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Starting weekend refresh (manual_refresh)", "metrics": {}, "errors": []}
+{"timestamp": "2026-07-06T14:22:22.797150+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Skipped: manual_refresh already ran today (2026-07-06)", "metrics": {}, "errors": []}
