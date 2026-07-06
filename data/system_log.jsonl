@@ -1404,3 +1404,5 @@
 {"timestamp": "2026-07-06T14:22:22.797150+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Skipped: manual_refresh already ran today (2026-07-06)", "metrics": {}, "errors": []}
 {"timestamp": "2026-07-06T15:47:35.892564+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Starting premarket monitor", "metrics": {}, "errors": []}
 {"timestamp": "2026-07-06T15:47:35.895668+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Skipped: DST guard (CT hour=10, expected 6)", "metrics": {}, "errors": []}
+{"timestamp": "2026-07-06T19:04:18.478181+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Starting monitor (duration=66min, mode=PAPER)", "metrics": {}, "errors": []}
+{"timestamp": "2026-07-06T20:10:24.785159+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Session quiet: 66 polls, no phase transitions", "metrics": {"polls": 66, "upgrades": 0, "stops_placed": 0, "poll_errors": 0}, "errors": []}
