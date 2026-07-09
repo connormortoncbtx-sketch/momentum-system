@@ -1436,3 +1436,5 @@
 {"timestamp": "2026-07-08T20:26:51.825544+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Session quiet: 10 polls, no phase transitions", "metrics": {"polls": 10, "upgrades": 0, "stops_placed": 0, "poll_errors": 0}, "errors": []}
 {"timestamp": "2026-07-08T21:12:11.870709+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Starting monitor (duration=10min, mode=PAPER)", "metrics": {}, "errors": []}
 {"timestamp": "2026-07-08T21:22:13.300541+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Session quiet: 10 polls, no phase transitions", "metrics": {"polls": 10, "upgrades": 0, "stops_placed": 0, "poll_errors": 0}, "errors": []}
+{"timestamp": "2026-07-09T18:59:26.814603+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Starting monitor (duration=71min, mode=PAPER)", "metrics": {}, "errors": []}
+{"timestamp": "2026-07-09T20:10:30.173509+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Session quiet: 71 polls, no phase transitions", "metrics": {"polls": 71, "upgrades": 0, "stops_placed": 0, "poll_errors": 0}, "errors": []}
