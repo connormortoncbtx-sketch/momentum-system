@@ -23,12 +23,12 @@
       "note": "Fundamentals best signal in risk_on (IC=0.0226, hit_rate=0.4831). Sentiment actively harmful (IC=-0.0983, hit_rate=0.3974) \u2014 kept at floor. Catalyst weak in risk_on (IC=0.004) \u2014 keeping multiplier low. Momentum weak overall \u2014 held. Technicals steady. Recent risk_on weekly alpha mixed."
     },
     "trending_mixed": {
-      "momentum": 0.7,
+      "momentum": 0.65,
       "technicals": 1.0,
-      "catalyst": 1.9,
-      "fundamentals": 0.65,
+      "catalyst": 1.8,
+      "fundamentals": 0.6,
       "sentiment": 2.0,
-      "note": "Sentiment strong in trending_mixed (IC=0.0668, hit_rate=0.5541) \u2014 kept at cap. Catalyst now showing IC=-0.1505, hit_rate=0.3087 \u2014 significant deterioration, trimmed multiplier down from 2.0. Fundamentals harmful (IC=-0.0616) \u2014 held low. Momentum negative IC (-0.0368) \u2014 trimmed slightly. Weekly alpha +0.0223 and +0.0058 but -0.0081 most recent."
+      "note": "Sentiment strong in trending_mixed (IC=0.0668, hit_rate=0.5541) \u2014 kept at cap. Catalyst showing IC=-0.1505, hit_rate=0.3087 \u2014 continued deterioration, trimmed multiplier further from 1.9 to 1.80. Fundamentals harmful (IC=-0.0616) \u2014 trimmed slightly. Momentum negative IC (-0.0368) \u2014 trimmed slightly. Most recent weekly alpha -0.0081 warrants caution."
     },
     "choppy_neutral": {
       "momentum": 0.85,
@@ -42,17 +42,17 @@
       "momentum": 0.6,
       "technicals": 0.8,
       "catalyst": 2.0,
-      "fundamentals": 0.6,
-      "sentiment": 1.6,
-      "note": "Catalyst strong in risk_off_mild (IC=0.0531, hit_rate=0.5436) \u2014 at cap. Fundamentals very weak (IC=0.0056, hit_rate=0.3916) \u2014 trimmed slightly more. Momentum weak \u2014 held. Sentiment positive (IC=0.0064) \u2014 held. Recent negative alpha in risk_off_mild confirms continued shift toward catalyst/sentiment."
+      "fundamentals": 0.55,
+      "sentiment": 1.65,
+      "note": "Catalyst strong in risk_off_mild (IC=0.0531, hit_rate=0.5436) \u2014 at cap. Fundamentals very weak (IC=0.0056, hit_rate=0.3916) \u2014 trimmed slightly more. Momentum weak \u2014 held. Sentiment positive (IC=0.0064) \u2014 nudged up slightly. Recent negative alpha in risk_off_mild confirms continued shift toward catalyst/sentiment."
     },
     "risk_off_severe": {
-      "momentum": 1.7,
+      "momentum": 1.75,
       "technicals": 0.8,
       "catalyst": 2.0,
       "fundamentals": 0.5,
-      "sentiment": 1.65,
-      "note": "Biggest weekly winners often happen in brutal markets. Catalyst (IC=0.0828) and momentum (IC=0.0987) both strong in risk_off_severe. Fundamentals less predictive (IC=-0.0044) \u2014 held at low. Sentiment positive (IC=0.0622) \u2014 nudged up slightly from 1.60. Momentum multiplier held at 1.7 reflecting strong IC."
+      "sentiment": 1.7,
+      "note": "Biggest weekly winners often happen in brutal markets. Catalyst (IC=0.0828) and momentum (IC=0.0987) both strong in risk_off_severe. Fundamentals less predictive (IC=-0.0044) \u2014 held at low. Sentiment positive (IC=0.0622) \u2014 nudged up slightly from 1.65. Momentum multiplier nudged up to 1.75 reflecting strong IC=0.0987 and hit_rate=0.567."
     }
   },
   "gates": {
