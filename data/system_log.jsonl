@@ -1526,3 +1526,5 @@
 {"timestamp": "2026-07-13T21:35:45.286958+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=entry", "metrics": {}, "errors": []}
 {"timestamp": "2026-07-13T21:35:47.613353+00:00", "workflow": "alpaca_trader", "status": "warning", "message": "Entry: 0 filled, 20 FAILED", "metrics": {"filled": 0, "failed": 20, "fallbacks_used": 0, "symbols_failed": ["AMD", "EWTX", "AMBQ", "ALAB", "ORKA", "SLS", "AMN", "CEVA", "BFLY", "CADL"]}, "errors": []}
 {"timestamp": "2026-07-13T22:03:40.909727+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=place_stops", "metrics": {}, "errors": []}
+{"timestamp": "2026-07-14T12:05:42.158506+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Starting premarket monitor", "metrics": {}, "errors": []}
+{"timestamp": "2026-07-14T12:05:42.162294+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Skipped: DST guard (CT hour=7, expected 6)", "metrics": {}, "errors": []}
