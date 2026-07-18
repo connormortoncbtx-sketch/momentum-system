@@ -1,13 +1,13 @@
 {
-  "regime": "trending_mixed",
-  "description": "Uptrend intact but mixed breadth. Be selective \u2014 only strongest setups.",
-  "composite": 0.2895,
+  "regime": "risk_off_mild",
+  "description": "Defensive rotation underway. Favor quality/defensives. Reduce exposure.",
+  "composite": -0.2921,
   "scores": {
-    "trend": 0.45,
-    "breadth": 0.0109,
-    "sentiment": 0.3798,
-    "rotation": -0.1372,
-    "safety": 0.999
+    "trend": -0.1843,
+    "breadth": -0.1506,
+    "sentiment": -0.1661,
+    "rotation": -1.0,
+    "safety": -0.1688
   },
   "weights": {
     "trend": 0.25,
@@ -18,64 +18,64 @@
   },
   "details": {
     "trend": {
-      "spy_ret_5d": 0.0049,
-      "spy_ret_20d": 0.0259,
-      "spy_ret_50d": 0.0532,
-      "spy_above_sma50": true,
+      "spy_ret_5d": -0.0078,
+      "spy_ret_20d": -0.0046,
+      "spy_ret_50d": 0.0186,
+      "spy_above_sma50": false,
       "spy_above_sma200": true,
-      "spy_drawdown": -0.0035
+      "spy_drawdown": -0.0189
     },
     "breadth": {
-      "qqq_ret_5d": 0.0037,
-      "qqq_ret_20d": 0.0128,
-      "iwm_ret_5d": -0.0097,
-      "iwm_ret_20d": 0.0216,
-      "iwm_vs_spy_5d": -0.0146,
-      "iwm_vs_spy_20d": -0.0043,
+      "qqq_ret_5d": -0.0231,
+      "qqq_ret_20d": -0.0601,
+      "iwm_ret_5d": 0.0019,
+      "iwm_ret_20d": -0.0052,
+      "iwm_vs_spy_5d": 0.0098,
+      "iwm_vs_spy_20d": -0.0006,
       "iwm_above_sma50": true
     },
     "sentiment": {
-      "vix": 15.03,
-      "vix_ma20": 17.18,
-      "vix_trend": -2.15,
-      "hyg_vs_spy_5d": -0.0069,
-      "hyg_vs_spy_20d": -0.0242
+      "vix": 18.77,
+      "vix_ma20": 17.01,
+      "vix_trend": 1.76,
+      "hyg_vs_spy_5d": 0.0095,
+      "hyg_vs_spy_20d": 0.0047
     },
     "rotation": {
-      "offensive_ret_5d": 0.0079,
-      "defensive_ret_5d": -0.0014,
-      "offensive_ret_20d": 0.014,
-      "defensive_ret_20d": 0.0264,
-      "rotation_spread_5d": 0.0093,
-      "rotation_spread_20d": -0.0124,
-      "xlk_slope": -0.001238,
-      "xlu_slope": 0.001641
+      "offensive_ret_5d": -0.0272,
+      "defensive_ret_5d": -0.0023,
+      "offensive_ret_20d": -0.0709,
+      "defensive_ret_20d": 0.0428,
+      "rotation_spread_5d": -0.0249,
+      "rotation_spread_20d": -0.1137,
+      "xlk_slope": -0.002714,
+      "xlu_slope": 0.000296
     },
     "safety": {
-      "tlt_vs_spy_5d": -0.0164,
-      "tlt_vs_spy_20d": -0.0399,
-      "gld_vs_spy_5d": -0.0183,
-      "gld_vs_spy_20d": -0.05
+      "tlt_vs_spy_5d": 0.0144,
+      "tlt_vs_spy_20d": -0.0175,
+      "gld_vs_spy_5d": 0.0113,
+      "gld_vs_spy_20d": -0.0437
     }
   },
   "transition": {
-    "transitioning": false,
-    "direction": null,
-    "composite_delta": 0.1403,
-    "prev_composite": 0.1492,
+    "transitioning": true,
+    "direction": "weakening",
+    "composite_delta": -0.5816,
+    "prev_composite": 0.2895,
     "prev_regime": "trending_mixed"
   },
   "context": {
-    "spy_realized_vol_20d": 0.1477,
-    "vix": 15.03,
-    "as_of": "2026-07-11"
+    "spy_realized_vol_20d": 0.1224,
+    "vix": 18.77,
+    "as_of": "2026-07-18"
   },
   "playbook": {
-    "momentum": 0.65,
-    "technicals": 1.0,
-    "catalyst": 1.8,
-    "fundamentals": 0.6,
-    "sentiment": 2.0,
-    "note": "Sentiment strong in trending_mixed (IC=0.0668, hit_rate=0.5541) \u2014 kept at cap. Catalyst showing IC=-0.1505, hit_rate=0.3087 \u2014 continued deterioration, trimmed multiplier further from 1.9 to 1.80. Fundamentals harmful (IC=-0.0616) \u2014 trimmed slightly. Momentum negative IC (-0.0368) \u2014 trimmed slightly. Most recent weekly alpha -0.0081 warrants caution."
+    "momentum": 0.6,
+    "technicals": 0.8,
+    "catalyst": 2.0,
+    "fundamentals": 0.5,
+    "sentiment": 1.75,
+    "note": "Catalyst strong in risk_off_mild (IC=0.0531, hit_rate=0.5436) \u2014 at cap. Fundamentals very weak (IC=0.0056, hit_rate=0.3916) \u2014 held at 0.50. Momentum weak \u2014 held. Sentiment positive (IC=0.0064) \u2014 nudged up slightly from 1.70 to 1.75. Recent negative alpha in risk_off_mild confirms continued shift toward catalyst/sentiment."
   }
 }
