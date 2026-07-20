@@ -1610,3 +1610,5 @@
 {"timestamp": "2026-07-18T04:35:00.852604+00:00", "workflow": "weekly_pipeline", "status": "success", "message": "Pipeline complete (39.9 min)", "metrics": {"elapsed_min": 39.9, "stages_run": 6}, "errors": []}
 {"timestamp": "2026-07-18T04:48:15.610747+00:00", "workflow": "weekly_pipeline", "status": "info", "message": "Pipeline invoked (from=01, only=None, force=False)", "metrics": {}, "errors": []}
 {"timestamp": "2026-07-18T04:48:15.612012+00:00", "workflow": "weekly_pipeline", "status": "info", "message": "Skipped: ghost run prevention (last run 0.2h ago)", "metrics": {"last_run_hours_ago": 0.22, "threshold_hours": 18}, "errors": []}
+{"timestamp": "2026-07-20T01:17:47.246479+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Starting weekend refresh (sunday_night)", "metrics": {}, "errors": []}
+{"timestamp": "2026-07-20T01:42:51.652914+00:00", "workflow": "weekend_refresh", "status": "success", "message": "Refresh complete (sunday_night)", "metrics": {"run_label": "sunday_night", "symbols": 2114, "regime": "risk_off_mild", "top_pick": "ARM", "top_score": 0.7791}, "errors": []}
