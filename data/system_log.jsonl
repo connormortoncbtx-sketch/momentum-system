@@ -1629,3 +1629,5 @@
 {"timestamp": "2026-07-20T20:53:39.534416+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=entry", "metrics": {}, "errors": []}
 {"timestamp": "2026-07-20T20:53:40.361625+00:00", "workflow": "alpaca_trader", "status": "success", "message": "Entry: all 10 orders placed", "metrics": {"filled": 10, "fallbacks_used": 0, "top_pick": "RVMD"}, "errors": []}
 {"timestamp": "2026-07-20T21:18:58.852515+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=place_stops", "metrics": {}, "errors": []}
+{"timestamp": "2026-07-20T21:48:40.698454+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=entry", "metrics": {}, "errors": []}
+{"timestamp": "2026-07-20T21:48:41.429213+00:00", "workflow": "alpaca_trader", "status": "warning", "message": "Entry: 0 filled, 20 FAILED", "metrics": {"filled": 0, "failed": 20, "fallbacks_used": 0, "symbols_failed": ["RVMD", "LQDA", "AMRX", "TXG", "MPC", "ATEX", "AMN", "CYRX", "DFTX", "BJRI"]}, "errors": []}
