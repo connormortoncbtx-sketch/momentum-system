@@ -1,37 +1,5 @@
 [
   {
-    "run_label": "manual_refresh",
-    "timestamp": "2026-05-11T12:56:43.514263",
-    "regime": "risk_on",
-    "top_5": [
-      {
-        "symbol": "PAYS",
-        "alpha_score": 1.0,
-        "alpha_rank": 1
-      },
-      {
-        "symbol": "INOD",
-        "alpha_score": 1.0,
-        "alpha_rank": 1
-      },
-      {
-        "symbol": "FSLY",
-        "alpha_score": 1.0,
-        "alpha_rank": 1
-      },
-      {
-        "symbol": "TSSI",
-        "alpha_score": 1.0,
-        "alpha_rank": 1
-      },
-      {
-        "symbol": "SEDG",
-        "alpha_score": 1.0,
-        "alpha_rank": 1
-      }
-    ]
-  },
-  {
     "run_label": "sunday_night",
     "timestamp": "2026-05-18T02:17:14.015991",
     "regime": "trending_mixed",
@@ -636,6 +604,38 @@
         "symbol": "AMN",
         "alpha_score": 0.847216,
         "alpha_rank": 14
+      }
+    ]
+  },
+  {
+    "run_label": "manual_refresh",
+    "timestamp": "2026-07-20T04:59:49.767695",
+    "regime": "risk_off_mild",
+    "top_5": [
+      {
+        "symbol": "ARM",
+        "alpha_score": 0.859096,
+        "alpha_rank": 22
+      },
+      {
+        "symbol": "DELL",
+        "alpha_score": 0.923583,
+        "alpha_rank": 15
+      },
+      {
+        "symbol": "DFTX",
+        "alpha_score": 0.852001,
+        "alpha_rank": 24
+      },
+      {
+        "symbol": "AMN",
+        "alpha_score": 0.947216,
+        "alpha_rank": 10
+      },
+      {
+        "symbol": "OKTA",
+        "alpha_score": 0.8754789999999999,
+        "alpha_rank": 20
       }
     ]
   }
