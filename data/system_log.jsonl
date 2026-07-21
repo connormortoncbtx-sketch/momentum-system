@@ -1632,3 +1632,5 @@
 {"timestamp": "2026-07-20T21:48:40.698454+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=entry", "metrics": {}, "errors": []}
 {"timestamp": "2026-07-20T21:48:41.429213+00:00", "workflow": "alpaca_trader", "status": "warning", "message": "Entry: 0 filled, 20 FAILED", "metrics": {"filled": 0, "failed": 20, "fallbacks_used": 0, "symbols_failed": ["RVMD", "LQDA", "AMRX", "TXG", "MPC", "ATEX", "AMN", "CYRX", "DFTX", "BJRI"]}, "errors": []}
 {"timestamp": "2026-07-20T22:09:16.539763+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=place_stops", "metrics": {}, "errors": []}
+{"timestamp": "2026-07-21T12:19:48.375313+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Starting premarket monitor", "metrics": {}, "errors": []}
+{"timestamp": "2026-07-21T12:19:48.378836+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Skipped: DST guard (CT hour=7, expected 6)", "metrics": {}, "errors": []}
