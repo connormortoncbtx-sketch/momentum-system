@@ -1741,3 +1741,4 @@
 {"timestamp": "2026-07-27T21:20:12.149253+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=place_stops", "metrics": {}, "errors": []}
 {"timestamp": "2026-07-27T21:47:21.067732+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=entry", "metrics": {}, "errors": []}
 {"timestamp": "2026-07-27T21:47:23.273307+00:00", "workflow": "alpaca_trader", "status": "warning", "message": "Entry: 0 filled, 20 FAILED", "metrics": {"filled": 0, "failed": 20, "fallbacks_used": 0, "symbols_failed": ["SYRE", "VSTS", "DK", "TXG", "MBX", "ORKA", "ELVN", "CLMT", "SLN", "BCAX"]}, "errors": []}
+{"timestamp": "2026-07-27T22:14:15.439384+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=place_stops", "metrics": {}, "errors": []}
