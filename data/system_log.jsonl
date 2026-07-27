@@ -1736,3 +1736,5 @@
 {"timestamp": "2026-07-27T20:10:57.933291+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Session quiet: 86 polls, no phase transitions", "metrics": {"polls": 86, "upgrades": 0, "stops_placed": 0, "poll_errors": 0}, "errors": []}
 {"timestamp": "2026-07-27T20:15:06.530128+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Starting monitor (duration=10min, mode=PAPER)", "metrics": {}, "errors": []}
 {"timestamp": "2026-07-27T20:25:07.751973+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Session quiet: 10 polls, no phase transitions", "metrics": {"polls": 10, "upgrades": 0, "stops_placed": 0, "poll_errors": 0}, "errors": []}
+{"timestamp": "2026-07-27T20:54:51.533932+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=entry", "metrics": {}, "errors": []}
+{"timestamp": "2026-07-27T20:54:52.161104+00:00", "workflow": "alpaca_trader", "status": "success", "message": "Entry: all 10 orders placed", "metrics": {"filled": 10, "fallbacks_used": 0, "top_pick": "SYRE"}, "errors": []}
