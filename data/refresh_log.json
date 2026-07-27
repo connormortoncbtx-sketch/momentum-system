@@ -1,37 +1,5 @@
 [
   {
-    "run_label": "sunday_night",
-    "timestamp": "2026-05-25T02:19:49.821945",
-    "regime": "risk_on",
-    "top_5": [
-      {
-        "symbol": "AMBQ",
-        "alpha_score": 0.939013,
-        "alpha_rank": 3
-      },
-      {
-        "symbol": "AXTI",
-        "alpha_score": 0.894658,
-        "alpha_rank": 8
-      },
-      {
-        "symbol": "BAND",
-        "alpha_score": 0.884988,
-        "alpha_rank": 10
-      },
-      {
-        "symbol": "RKLB",
-        "alpha_score": 0.937732,
-        "alpha_rank": 4
-      },
-      {
-        "symbol": "SYNA",
-        "alpha_score": 1.0,
-        "alpha_rank": 1
-      }
-    ]
-  },
-  {
     "run_label": "manual_refresh",
     "timestamp": "2026-06-01T02:30:25.458404",
     "regime": "risk_on",
@@ -636,6 +604,38 @@
         "symbol": "ATEX",
         "alpha_score": 0.842033,
         "alpha_rank": 11
+      }
+    ]
+  },
+  {
+    "run_label": "manual_refresh",
+    "timestamp": "2026-07-27T05:03:27.572652",
+    "regime": "risk_off_mild",
+    "top_5": [
+      {
+        "symbol": "AVTX",
+        "alpha_score": 0.973516,
+        "alpha_rank": 4
+      },
+      {
+        "symbol": "SYRE",
+        "alpha_score": 0.957613,
+        "alpha_rank": 6
+      },
+      {
+        "symbol": "MBX",
+        "alpha_score": 0.8761129999999999,
+        "alpha_rank": 19
+      },
+      {
+        "symbol": "MEI",
+        "alpha_score": 1.0,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "TXG",
+        "alpha_score": 1.0,
+        "alpha_rank": 1
       }
     ]
   }
