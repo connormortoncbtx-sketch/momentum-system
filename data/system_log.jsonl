@@ -1744,3 +1744,5 @@
 {"timestamp": "2026-07-27T22:14:15.439384+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=place_stops", "metrics": {}, "errors": []}
 {"timestamp": "2026-07-28T12:48:40.277278+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Starting premarket monitor", "metrics": {}, "errors": []}
 {"timestamp": "2026-07-28T12:48:40.281037+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Skipped: DST guard (CT hour=7, expected 6)", "metrics": {}, "errors": []}
+{"timestamp": "2026-07-28T13:24:17.454451+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Starting premarket monitor", "metrics": {}, "errors": []}
+{"timestamp": "2026-07-28T13:24:17.458262+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Skipped: DST guard (CT hour=8, expected 6)", "metrics": {}, "errors": []}
