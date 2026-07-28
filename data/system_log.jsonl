@@ -1746,3 +1746,5 @@
 {"timestamp": "2026-07-28T12:48:40.281037+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Skipped: DST guard (CT hour=7, expected 6)", "metrics": {}, "errors": []}
 {"timestamp": "2026-07-28T13:24:17.454451+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Starting premarket monitor", "metrics": {}, "errors": []}
 {"timestamp": "2026-07-28T13:24:17.458262+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Skipped: DST guard (CT hour=8, expected 6)", "metrics": {}, "errors": []}
+{"timestamp": "2026-07-28T18:42:02.187159+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Starting monitor (duration=88min, mode=PAPER)", "metrics": {}, "errors": []}
+{"timestamp": "2026-07-28T20:10:09.549446+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Session quiet: 88 polls, no phase transitions", "metrics": {"polls": 88, "upgrades": 0, "stops_placed": 0, "poll_errors": 0}, "errors": []}
