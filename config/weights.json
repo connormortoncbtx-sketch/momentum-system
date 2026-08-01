@@ -2,15 +2,15 @@
   "_meta": {
     "description": "Signal weights and regime multipliers. This is the ONLY file the self-refinement pass may modify.",
     "schema_version": "1.0",
-    "last_modified": "2026-07-25",
+    "last_modified": "2026-08-01",
     "modified_by": "self_refine.py",
     "philosophy": "There are always winners in any market. The regime determines WHERE they are, not WHETHER they exist. Never reduce to zero \u2014 redirect."
   },
   "signal_weights": {
     "momentum": 0.1,
-    "technicals": 0.2,
-    "catalyst": 0.45,
-    "fundamentals": 0.15,
+    "technicals": 0.25,
+    "catalyst": 0.35,
+    "fundamentals": 0.2,
     "sentiment": 0.1
   },
   "regime_multipliers": {
@@ -20,15 +20,15 @@
       "catalyst": 0.5,
       "fundamentals": 1.7,
       "sentiment": 0.1,
-      "note": "Fundamentals best signal in risk_on (IC=0.0226, hit_rate=0.4831) \u2014 held at 1.70. Sentiment actively harmful (IC=-0.0983, hit_rate=0.3974) \u2014 kept at floor. Catalyst weak in risk_on (IC=0.004) \u2014 keeping multiplier low. Momentum weak overall \u2014 nudged up slightly. Recent risk_on weekly alpha mixed including -0.0262 on 2026-05-29."
+      "note": "Fundamentals best signal in risk_on (IC=0.0226, hit_rate=0.4831) \u2014 held at 1.70. Sentiment actively harmful (IC=-0.0983, hit_rate=0.3974) \u2014 kept at floor. Catalyst weak in risk_on (IC=0.004) \u2014 keeping multiplier low. Momentum weak overall \u2014 held. Recent risk_on weekly alpha mixed including -0.0262 on 2026-05-29."
     },
     "trending_mixed": {
       "momentum": 0.4,
-      "technicals": 1.0,
-      "catalyst": 1.4,
+      "technicals": 1.1,
+      "catalyst": 1.3,
       "fundamentals": 0.6,
       "sentiment": 2.0,
-      "note": "Sentiment strong in trending_mixed (IC=0.019, hit_rate=0.5176) \u2014 kept at cap. Catalyst severely negative (IC=-0.1651, hit_rate=0.4177) \u2014 trimmed further from 1.50 to 1.40. Momentum deeply negative IC (-0.0478) \u2014 trimmed from 0.50 to 0.40. Three consecutive weeks of negative alpha warrant continued caution. Fundamentals weak (IC=-0.0394) \u2014 held at 0.60."
+      "note": "Sentiment strong in trending_mixed (IC=0.019, hit_rate=0.5176) \u2014 kept at cap. Catalyst severely negative (IC=-0.1651, hit_rate=0.4177) \u2014 trimmed further from 1.40 to 1.30. Momentum deeply negative IC (-0.0478) \u2014 held at 0.40. Three consecutive weeks of negative alpha warrant continued caution. Technicals nudged up to 1.10 as diversifier. Fundamentals weak (IC=-0.0394) \u2014 held at 0.60."
     },
     "choppy_neutral": {
       "momentum": 0.85,
@@ -40,11 +40,11 @@
     },
     "risk_off_mild": {
       "momentum": 0.6,
-      "technicals": 0.8,
-      "catalyst": 1.8,
-      "fundamentals": 0.5,
+      "technicals": 0.9,
+      "catalyst": 1.6,
+      "fundamentals": 0.6,
       "sentiment": 1.75,
-      "note": "Catalyst IC in risk_off_mild has turned severely negative (-0.1709, hit_rate=0.4169) \u2014 trimmed from 2.0 to 1.8. This is a significant concern; catalyst multiplier reduced to reflect persistent negative IC. Fundamentals very weak (IC=-0.0429, hit_rate=0.3754) \u2014 held at 0.50. Momentum weak \u2014 held. Sentiment mildly positive (hit_rate=0.5011) \u2014 held at 1.75. Latest alpha was -0.0039."
+      "note": "Catalyst IC in risk_off_mild has turned severely negative (-0.1064, hit_rate=0.4737) \u2014 trimmed further from 1.80 to 1.60. Fundamentals mildly positive (IC=0.0249) \u2014 nudged up from 0.50 to 0.60. Technicals nudged up slightly as diversifier. Sentiment mildly positive (hit_rate=0.4835) \u2014 held at 1.75. Latest alphas mixed: -0.0039, +0.0033."
     },
     "risk_off_severe": {
       "momentum": 1.85,
