@@ -1,13 +1,13 @@
 {
-  "regime": "risk_off_mild",
-  "description": "Defensive rotation underway. Favor quality/defensives. Reduce exposure.",
-  "composite": -0.3747,
+  "regime": "trending_mixed",
+  "description": "Uptrend intact but mixed breadth. Be selective \u2014 only strongest setups.",
+  "composite": 0.1065,
   "scores": {
-    "trend": -0.1196,
-    "breadth": -0.4469,
-    "sentiment": -0.4901,
-    "rotation": -0.9406,
-    "safety": 0.306
+    "trend": 0.3727,
+    "breadth": -0.474,
+    "sentiment": 0.3532,
+    "rotation": -0.3,
+    "safety": 0.8855
   },
   "weights": {
     "trend": 0.25,
@@ -18,64 +18,64 @@
   },
   "details": {
     "trend": {
-      "spy_ret_5d": -0.0043,
-      "spy_ret_20d": 0.0136,
-      "spy_ret_50d": -0.0098,
-      "spy_above_sma50": false,
+      "spy_ret_5d": 0.0107,
+      "spy_ret_20d": -0.0057,
+      "spy_ret_50d": 0.0084,
+      "spy_above_sma50": true,
       "spy_above_sma200": true,
-      "spy_drawdown": -0.0247
+      "spy_drawdown": -0.014
     },
     "breadth": {
-      "qqq_ret_5d": -0.017,
-      "qqq_ret_20d": -0.0315,
-      "iwm_ret_5d": -0.0039,
-      "iwm_ret_20d": -0.0289,
-      "iwm_vs_spy_5d": 0.0004,
-      "iwm_vs_spy_20d": -0.0425,
-      "iwm_above_sma50": true
+      "qqq_ret_5d": 0.0086,
+      "qqq_ret_20d": -0.0482,
+      "iwm_ret_5d": -0.0058,
+      "iwm_ret_20d": -0.0258,
+      "iwm_vs_spy_5d": -0.0166,
+      "iwm_vs_spy_20d": -0.0201,
+      "iwm_above_sma50": false
     },
     "sentiment": {
-      "vix": 18.58,
-      "vix_ma20": 16.96,
-      "vix_trend": 1.62,
-      "hyg_vs_spy_5d": -0.0014,
-      "hyg_vs_spy_20d": -0.0166
+      "vix": 15.99,
+      "vix_ma20": 17.23,
+      "vix_trend": -1.24,
+      "hyg_vs_spy_5d": -0.0081,
+      "hyg_vs_spy_20d": 0.0008
     },
     "rotation": {
-      "offensive_ret_5d": -0.008,
-      "defensive_ret_5d": 0.0141,
-      "offensive_ret_20d": -0.0302,
-      "defensive_ret_20d": 0.003,
-      "rotation_spread_5d": -0.0221,
-      "rotation_spread_20d": -0.0332,
-      "xlk_slope": -0.002481,
-      "xlu_slope": 7.9e-05
+      "offensive_ret_5d": 0.0073,
+      "defensive_ret_5d": -0.0126,
+      "offensive_ret_20d": -0.0465,
+      "defensive_ret_20d": -0.002,
+      "rotation_spread_5d": 0.02,
+      "rotation_spread_20d": -0.0445,
+      "xlk_slope": -0.003561,
+      "xlu_slope": -0.000409
     },
     "safety": {
-      "tlt_vs_spy_5d": -0.0034,
-      "tlt_vs_spy_20d": -0.0572,
-      "gld_vs_spy_5d": 0.016,
-      "gld_vs_spy_20d": -0.0183
+      "tlt_vs_spy_5d": -0.0287,
+      "tlt_vs_spy_20d": -0.0318,
+      "gld_vs_spy_5d": -0.019,
+      "gld_vs_spy_20d": -0.0221
     }
   },
   "transition": {
-    "transitioning": false,
-    "direction": null,
-    "composite_delta": -0.0826,
-    "prev_composite": -0.2921,
+    "transitioning": true,
+    "direction": "strengthening",
+    "composite_delta": 0.4812,
+    "prev_composite": -0.3747,
     "prev_regime": "risk_off_mild"
   },
   "context": {
-    "spy_realized_vol_20d": 0.1166,
-    "vix": 18.58,
-    "as_of": "2026-07-25"
+    "spy_realized_vol_20d": 0.1269,
+    "vix": 15.99,
+    "as_of": "2026-08-01"
   },
   "playbook": {
-    "momentum": 0.6,
-    "technicals": 0.8,
-    "catalyst": 1.8,
-    "fundamentals": 0.5,
-    "sentiment": 1.75,
-    "note": "Catalyst IC in risk_off_mild has turned severely negative (-0.1709, hit_rate=0.4169) \u2014 trimmed from 2.0 to 1.8. This is a significant concern; catalyst multiplier reduced to reflect persistent negative IC. Fundamentals very weak (IC=-0.0429, hit_rate=0.3754) \u2014 held at 0.50. Momentum weak \u2014 held. Sentiment mildly positive (hit_rate=0.5011) \u2014 held at 1.75. Latest alpha was -0.0039."
+    "momentum": 0.4,
+    "technicals": 1.2,
+    "catalyst": 1.2,
+    "fundamentals": 0.6,
+    "sentiment": 2.0,
+    "note": "Sentiment strong in trending_mixed (IC=0.019, hit_rate=0.5176) \u2014 kept at cap. Catalyst severely negative (IC=-0.1651, hit_rate=0.4177) \u2014 trimmed further from 1.30 to 1.20. Momentum deeply negative IC (-0.0478) \u2014 held at 0.40. Technicals nudged up to 1.20 as best available diversifier. Fundamentals weak (IC=-0.0394) \u2014 held at 0.60. Three negative alpha weeks demand continued caution on catalyst."
   }
 }
