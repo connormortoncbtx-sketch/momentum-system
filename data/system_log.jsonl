@@ -1851,3 +1851,5 @@
 {"timestamp": "2026-08-03T20:47:08.444329+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=entry", "metrics": {}, "errors": []}
 {"timestamp": "2026-08-03T20:47:09.359919+00:00", "workflow": "alpaca_trader", "status": "success", "message": "Entry: all 10 orders placed", "metrics": {"filled": 10, "fallbacks_used": 0, "top_pick": "ORKA"}, "errors": []}
 {"timestamp": "2026-08-03T21:15:34.085449+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=place_stops", "metrics": {}, "errors": []}
+{"timestamp": "2026-08-03T21:48:19.658180+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=entry", "metrics": {}, "errors": []}
+{"timestamp": "2026-08-03T21:48:20.821602+00:00", "workflow": "alpaca_trader", "status": "warning", "message": "Entry: 0 filled, 20 FAILED", "metrics": {"filled": 0, "failed": 20, "fallbacks_used": 0, "symbols_failed": ["ORKA", "TXG", "FTRE", "KSS", "NVCT", "FSLY", "HPP", "SPSC", "MNTN", "TASK"]}, "errors": []}
