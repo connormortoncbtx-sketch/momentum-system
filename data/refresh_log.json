@@ -1,38 +1,6 @@
 [
   {
     "run_label": "manual_refresh",
-    "timestamp": "2026-06-01T06:25:45.986632",
-    "regime": "risk_on",
-    "top_5": [
-      {
-        "symbol": "REPL",
-        "alpha_score": 0.995531,
-        "alpha_rank": 2
-      },
-      {
-        "symbol": "SEDG",
-        "alpha_score": 0.934335,
-        "alpha_rank": 3
-      },
-      {
-        "symbol": "ASTS",
-        "alpha_score": 1.0,
-        "alpha_rank": 1
-      },
-      {
-        "symbol": "FLNC",
-        "alpha_score": 0.8674479999999999,
-        "alpha_rank": 10
-      },
-      {
-        "symbol": "ATOM",
-        "alpha_score": 0.881886,
-        "alpha_rank": 7
-      }
-    ]
-  },
-  {
-    "run_label": "manual_refresh",
     "timestamp": "2026-06-08T02:28:23.706027",
     "regime": "risk_off_mild",
     "top_5": [
@@ -636,6 +604,38 @@
         "symbol": "ATEX",
         "alpha_score": 0.997525,
         "alpha_rank": 11
+      }
+    ]
+  },
+  {
+    "run_label": "sunday_night",
+    "timestamp": "2026-08-03T01:44:26.732101",
+    "regime": "trending_mixed",
+    "top_5": [
+      {
+        "symbol": "FTRE",
+        "alpha_score": 0.879628,
+        "alpha_rank": 2
+      },
+      {
+        "symbol": "ALIT",
+        "alpha_score": 0.902171,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "BKKT",
+        "alpha_score": 0.803157,
+        "alpha_rank": 21
+      },
+      {
+        "symbol": "CNXC",
+        "alpha_score": 0.81565,
+        "alpha_rank": 14
+      },
+      {
+        "symbol": "HPP",
+        "alpha_score": 0.784905,
+        "alpha_rank": 30
       }
     ]
   }
