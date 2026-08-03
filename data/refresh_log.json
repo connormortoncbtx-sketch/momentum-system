@@ -1,38 +1,6 @@
 [
   {
     "run_label": "manual_refresh",
-    "timestamp": "2026-06-08T06:09:09.887247",
-    "regime": "risk_off_mild",
-    "top_5": [
-      {
-        "symbol": "MXL",
-        "alpha_score": 1.0,
-        "alpha_rank": 1
-      },
-      {
-        "symbol": "BAND",
-        "alpha_score": 1.0,
-        "alpha_rank": 1
-      },
-      {
-        "symbol": "AXTI",
-        "alpha_score": 1.0,
-        "alpha_rank": 1
-      },
-      {
-        "symbol": "VPG",
-        "alpha_score": 1.0,
-        "alpha_rank": 1
-      },
-      {
-        "symbol": "PENG",
-        "alpha_score": 1.0,
-        "alpha_rank": 1
-      }
-    ]
-  },
-  {
-    "run_label": "manual_refresh",
     "timestamp": "2026-06-15T02:30:56.005741",
     "regime": "trending_mixed",
     "top_5": [
@@ -636,6 +604,38 @@
         "symbol": "HPP",
         "alpha_score": 0.8649049999999999,
         "alpha_rank": 18
+      }
+    ]
+  },
+  {
+    "run_label": "manual_refresh",
+    "timestamp": "2026-08-03T13:20:51.653991",
+    "regime": "trending_mixed",
+    "top_5": [
+      {
+        "symbol": "FTRE",
+        "alpha_score": 1.0,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "NVCT",
+        "alpha_score": 0.901578,
+        "alpha_rank": 22
+      },
+      {
+        "symbol": "ALIT",
+        "alpha_score": 1.0,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "QURE",
+        "alpha_score": 0.8138429999999999,
+        "alpha_rank": 34
+      },
+      {
+        "symbol": "BKKT",
+        "alpha_score": 0.983157,
+        "alpha_rank": 14
       }
     ]
   }
