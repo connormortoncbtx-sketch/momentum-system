@@ -10,5 +10,6 @@ shadow_hold_through_rerank_v1,2026-06-05,10,10,-0.01441,-0.0164,-0.00199
 shadow_hold_through_rerank_v1,2026-06-19,10,10,-0.03473,-0.04418,-0.00945
 shadow_hold_through_rerank_v1,2026-07-03,10,10,-0.02728,-0.03912,-0.01184
 shadow_hold_through_rerank_v1,2026-07-10,10,10,-0.06254,-0.06504,-0.0025
-shadow_hold_through_rerank_v1,2026-07-17,10,10,0.00666,0.00985,0.00318
-shadow_hold_through_rerank_v1,2026-07-24,10,10,0.01027,0.01027,-0.0
+shadow_hold_through_rerank_v1,2026-07-17,10,10,0.00666,0.0217,0.01504
+shadow_hold_through_rerank_v1,2026-07-24,10,10,0.01027,0.02437,0.01409
+shadow_hold_through_rerank_v1,2026-07-31,10,10,0.03727,0.03727,-0.0
