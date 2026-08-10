@@ -1955,3 +1955,4 @@
 {"timestamp": "2026-08-10T20:55:20.427923+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=place_stops", "metrics": {}, "errors": []}
 {"timestamp": "2026-08-10T21:25:43.549576+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=entry", "metrics": {}, "errors": []}
 {"timestamp": "2026-08-10T21:25:45.974661+00:00", "workflow": "alpaca_trader", "status": "warning", "message": "Entry: 0 filled, 20 FAILED", "metrics": {"filled": 0, "failed": 20, "fallbacks_used": 0, "symbols_failed": ["BBY", "CNA", "CVBF", "OPTX", "GEN", "CNC", "STE", "TRAX", "EBAY", "PSNL"]}, "errors": []}
+{"timestamp": "2026-08-10T21:52:32.894974+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=place_stops", "metrics": {}, "errors": []}
