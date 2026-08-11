@@ -1958,3 +1958,5 @@
 {"timestamp": "2026-08-10T21:52:32.894974+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=place_stops", "metrics": {}, "errors": []}
 {"timestamp": "2026-08-11T12:34:55.258674+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Starting premarket monitor", "metrics": {}, "errors": []}
 {"timestamp": "2026-08-11T12:34:55.262570+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Skipped: DST guard (CT hour=7, expected 6)", "metrics": {}, "errors": []}
+{"timestamp": "2026-08-11T19:56:28.287302+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Starting monitor (duration=14min, mode=PAPER)", "metrics": {}, "errors": []}
+{"timestamp": "2026-08-11T20:10:29.866767+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Session quiet: 14 polls, no phase transitions", "metrics": {"polls": 14, "upgrades": 0, "stops_placed": 0, "poll_errors": 0}, "errors": []}
