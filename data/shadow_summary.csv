@@ -1,2 +1,2 @@
 shadow,type,n_weeks,champion_mean,champion_ci_low,champion_ci_high,shadow_mean,shadow_ci_low,shadow_ci_high,delta_mean,delta_ci_low,delta_ci_high,win_rate,p_value_paired
-shadow_hold_through_rerank_v1,hold_through_rerank,14,-0.00049,-0.03052,0.03327,0.0011,-0.03062,0.03555,0.00159,-0.00461,0.00805,0.286,0.642
+shadow_hold_through_rerank_v1,hold_through_rerank,15,0.00056,-0.02767,0.03419,0.00184,-0.02692,0.03556,0.00128,-0.00468,0.00774,0.267,0.6891
