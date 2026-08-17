@@ -1,38 +1,6 @@
 [
   {
     "run_label": "manual_refresh",
-    "timestamp": "2026-06-29T02:23:24.005349",
-    "regime": "choppy_neutral",
-    "top_5": [
-      {
-        "symbol": "SYRE",
-        "alpha_score": 0.96216,
-        "alpha_rank": 4
-      },
-      {
-        "symbol": "HUT",
-        "alpha_score": 0.94138,
-        "alpha_rank": 5
-      },
-      {
-        "symbol": "DASH",
-        "alpha_score": 0.924726,
-        "alpha_rank": 8
-      },
-      {
-        "symbol": "HTFL",
-        "alpha_score": 0.978242,
-        "alpha_rank": 3
-      },
-      {
-        "symbol": "RIOT",
-        "alpha_score": 1.0,
-        "alpha_rank": 1
-      }
-    ]
-  },
-  {
-    "run_label": "manual_refresh",
     "timestamp": "2026-06-29T06:10:39.932965",
     "regime": "choppy_neutral",
     "top_5": [
@@ -636,6 +604,38 @@
         "symbol": "ONTO",
         "alpha_score": 0.485151,
         "alpha_rank": 25
+      }
+    ]
+  },
+  {
+    "run_label": "manual_refresh",
+    "timestamp": "2026-08-17T02:45:39.144144",
+    "regime": "risk_on",
+    "top_5": [
+      {
+        "symbol": "ZIM",
+        "alpha_score": 0.785819,
+        "alpha_rank": 2
+      },
+      {
+        "symbol": "CBRL",
+        "alpha_score": 0.6591099999999999,
+        "alpha_rank": 5
+      },
+      {
+        "symbol": "WVE",
+        "alpha_score": 0.8269099999999999,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "LRCX",
+        "alpha_score": 0.61191,
+        "alpha_rank": 9
+      },
+      {
+        "symbol": "ONTO",
+        "alpha_score": 0.565151,
+        "alpha_rank": 16
       }
     ]
   }
