@@ -2051,3 +2051,4 @@
 {"timestamp": "2026-08-17T20:36:56.549184+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=place_stops", "metrics": {}, "errors": []}
 {"timestamp": "2026-08-17T21:02:26.313910+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=entry", "metrics": {}, "errors": []}
 {"timestamp": "2026-08-17T21:02:27.894274+00:00", "workflow": "alpaca_trader", "status": "warning", "message": "Entry: 0 filled, 20 FAILED", "metrics": {"filled": 0, "failed": 20, "fallbacks_used": 0, "symbols_failed": ["ZIM", "WVE", "MKSI", "CBRL", "SPRY", "LWLG", "LRCX", "ASML", "SKYT", "UMC"]}, "errors": []}
+{"timestamp": "2026-08-17T21:34:41.497691+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=place_stops", "metrics": {}, "errors": []}
