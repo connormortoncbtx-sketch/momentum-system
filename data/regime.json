@@ -1,13 +1,13 @@
 {
-  "regime": "risk_on",
-  "description": "Strong broad uptrend, risk assets leading, low fear. Full momentum mode.",
-  "composite": 0.5945,
+  "regime": "trending_mixed",
+  "description": "Uptrend intact but mixed breadth. Be selective \u2014 only strongest setups.",
+  "composite": 0.1344,
   "scores": {
-    "trend": 0.4538,
-    "breadth": 0.7628,
-    "sentiment": 0.5347,
-    "rotation": 0.8105,
-    "safety": 0.3514
+    "trend": 0.1608,
+    "breadth": -0.0681,
+    "sentiment": 0.4247,
+    "rotation": 0.3,
+    "safety": -0.4
   },
   "weights": {
     "trend": 0.25,
@@ -18,64 +18,64 @@
   },
   "details": {
     "trend": {
-      "spy_ret_5d": 0.0043,
-      "spy_ret_20d": 0.0462,
-      "spy_ret_50d": 0.0281,
+      "spy_ret_5d": -0.009,
+      "spy_ret_20d": 0.036,
+      "spy_ret_50d": 0.0406,
       "spy_above_sma50": true,
       "spy_above_sma200": true,
-      "spy_drawdown": -0.002
+      "spy_drawdown": -0.0156
     },
     "breadth": {
-      "qqq_ret_5d": 0.0141,
-      "qqq_ret_20d": 0.0503,
-      "iwm_ret_5d": 0.017,
-      "iwm_ret_20d": 0.0437,
-      "iwm_vs_spy_5d": 0.0128,
-      "iwm_vs_spy_20d": -0.0024,
+      "qqq_ret_5d": -0.0225,
+      "qqq_ret_20d": 0.0459,
+      "iwm_ret_5d": -0.0135,
+      "iwm_ret_20d": 0.0241,
+      "iwm_vs_spy_5d": -0.0045,
+      "iwm_vs_spy_20d": -0.012,
       "iwm_above_sma50": true
     },
     "sentiment": {
-      "vix": 14.25,
-      "vix_ma20": 16.63,
-      "vix_trend": -2.38,
-      "hyg_vs_spy_5d": -0.0014,
-      "hyg_vs_spy_20d": -0.0409
+      "vix": 15.13,
+      "vix_ma20": 16.0,
+      "vix_trend": -0.87,
+      "hyg_vs_spy_5d": 0.009,
+      "hyg_vs_spy_20d": -0.0269
     },
     "rotation": {
-      "offensive_ret_5d": 0.017,
-      "defensive_ret_5d": 0.0115,
-      "offensive_ret_20d": 0.0658,
-      "defensive_ret_20d": 0.0172,
-      "rotation_spread_5d": 0.0055,
-      "rotation_spread_20d": 0.0487,
-      "xlk_slope": 0.004512,
-      "xlu_slope": -0.002848
+      "offensive_ret_5d": -0.0297,
+      "defensive_ret_5d": 0.0096,
+      "offensive_ret_20d": 0.0488,
+      "defensive_ret_20d": 0.0041,
+      "rotation_spread_5d": -0.0393,
+      "rotation_spread_20d": 0.0447,
+      "xlk_slope": 0.004409,
+      "xlu_slope": -0.001905
     },
     "safety": {
-      "tlt_vs_spy_5d": -0.0045,
-      "tlt_vs_spy_20d": -0.0643,
-      "gld_vs_spy_5d": -0.0069,
-      "gld_vs_spy_20d": 0.046
+      "tlt_vs_spy_5d": 0.0176,
+      "tlt_vs_spy_20d": -0.0524,
+      "gld_vs_spy_5d": 0.0531,
+      "gld_vs_spy_20d": 0.094
     }
   },
   "transition": {
-    "transitioning": false,
-    "direction": null,
-    "composite_delta": 0.055,
-    "prev_composite": 0.5395,
+    "transitioning": true,
+    "direction": "weakening",
+    "composite_delta": -0.4601,
+    "prev_composite": 0.5945,
     "prev_regime": "risk_on"
   },
   "context": {
-    "spy_realized_vol_20d": 0.1336,
-    "vix": 14.25,
-    "as_of": "2026-08-15"
+    "spy_realized_vol_20d": 0.1318,
+    "vix": 15.13,
+    "as_of": "2026-08-22"
   },
   "playbook": {
-    "momentum": 1.1,
-    "technicals": 1.4,
-    "catalyst": 0.5,
-    "fundamentals": 1.7,
-    "sentiment": 0.1,
-    "note": "Fundamentals best signal in risk_on (IC=0.0277, hit_rate=0.4938) \u2014 held at 1.70. Sentiment actively harmful (IC=-0.0858, hit_rate=0.4044) \u2014 kept at floor. Catalyst weak in risk_on (IC=0.0113) \u2014 kept low. Technicals held at 1.40 as diversifier. Momentum weak overall \u2014 held."
+    "momentum": 0.15,
+    "technicals": 1.45,
+    "catalyst": 0.6,
+    "fundamentals": 0.55,
+    "sentiment": 2.0,
+    "note": "Sentiment strong in trending_mixed (IC=0.0363, hit_rate=0.5258) \u2014 held at cap. Catalyst severely negative (IC=-0.131, hit_rate=0.4222) \u2014 trimmed further from 0.70 to 0.60. Momentum deeply negative IC (-0.0638) \u2014 trimmed further from 0.20 to 0.15. Technicals nudged up to 1.45 as best available diversifier given poor alpha. Fundamentals weak (IC=-0.0343) \u2014 trimmed slightly to 0.55."
   }
 }
