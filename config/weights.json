@@ -2,33 +2,33 @@
   "_meta": {
     "description": "Signal weights and regime multipliers. This is the ONLY file the self-refinement pass may modify.",
     "schema_version": "1.0",
-    "last_modified": "2026-08-21",
+    "last_modified": "2026-08-22",
     "modified_by": "self_refine.py",
     "philosophy": "There are always winners in any market. The regime determines WHERE they are, not WHETHER they exist. Never reduce to zero \u2014 redirect."
   },
   "signal_weights": {
-    "momentum": 0.1,
+    "momentum": 0.09,
     "technicals": 0.35,
-    "catalyst": 0.08,
-    "fundamentals": 0.42,
+    "catalyst": 0.07,
+    "fundamentals": 0.44,
     "sentiment": 0.05
   },
   "regime_multipliers": {
     "risk_on": {
       "momentum": 1.1,
       "technicals": 1.4,
-      "catalyst": 0.6,
-      "fundamentals": 1.7,
+      "catalyst": 0.65,
+      "fundamentals": 1.75,
       "sentiment": 0.1,
-      "note": "Fundamentals best signal in risk_on (IC=0.0193, hit_rate=0.5333) \u2014 held at 1.70. Sentiment actively harmful (IC=-0.0718, hit_rate=0.4187) \u2014 kept at floor. Catalyst mildly positive (IC=0.008, hit_rate=0.5277) \u2014 nudged up from 0.50 to 0.60. Technicals held at 1.40 as diversifier. Momentum near flat in risk_on \u2014 held."
+      "note": "Fundamentals best signal in risk_on (IC=0.0193, hit_rate=0.5333) \u2014 nudged up to 1.75. Sentiment actively harmful (IC=-0.0718, hit_rate=0.4187) \u2014 kept at floor. Catalyst mildly positive (IC=0.008, hit_rate=0.5277) \u2014 nudged up slightly to 0.65. Technicals held at 1.40 as diversifier. Momentum near flat in risk_on \u2014 held."
     },
     "trending_mixed": {
-      "momentum": 0.2,
-      "technicals": 1.4,
-      "catalyst": 0.7,
-      "fundamentals": 0.6,
+      "momentum": 0.15,
+      "technicals": 1.45,
+      "catalyst": 0.6,
+      "fundamentals": 0.55,
       "sentiment": 2.0,
-      "note": "Sentiment strong in trending_mixed (IC=0.0363, hit_rate=0.5258) \u2014 held at cap. Catalyst severely negative (IC=-0.131, hit_rate=0.4222) \u2014 trimmed from 0.80 to 0.70. Momentum deeply negative IC (-0.0638) \u2014 trimmed further from 0.30 to 0.20. Technicals held at 1.40 as best available diversifier. Fundamentals weak (IC=-0.0343) \u2014 held at 0.60."
+      "note": "Sentiment strong in trending_mixed (IC=0.0363, hit_rate=0.5258) \u2014 held at cap. Catalyst severely negative (IC=-0.131, hit_rate=0.4222) \u2014 trimmed further from 0.70 to 0.60. Momentum deeply negative IC (-0.0638) \u2014 trimmed further from 0.20 to 0.15. Technicals nudged up to 1.45 as best available diversifier given poor alpha. Fundamentals weak (IC=-0.0343) \u2014 trimmed slightly to 0.55."
     },
     "choppy_neutral": {
       "momentum": 0.85,
@@ -40,11 +40,11 @@
     },
     "risk_off_mild": {
       "momentum": 0.6,
-      "technicals": 1.2,
-      "catalyst": 1.0,
-      "fundamentals": 1.2,
-      "sentiment": 1.45,
-      "note": "Catalyst IC in risk_off_mild severely negative (-0.1064, hit_rate=0.4737) \u2014 trimmed further from 1.10 to 1.00. Fundamentals mildly positive (IC=0.0249) \u2014 nudged up from 1.10 to 1.20. Technicals held at 1.20 as diversifier. Sentiment overall IC negative, hit_rate modest \u2014 trimmed from 1.55 to 1.45. Momentum weak in this regime (IC=0.0103) \u2014 held at 0.60."
+      "technicals": 1.25,
+      "catalyst": 0.9,
+      "fundamentals": 1.25,
+      "sentiment": 1.4,
+      "note": "Catalyst IC in risk_off_mild severely negative (-0.1064, hit_rate=0.4737) \u2014 trimmed further from 1.00 to 0.90. Fundamentals mildly positive (IC=0.0249) \u2014 nudged up from 1.20 to 1.25. Technicals nudged up to 1.25 as diversifier. Sentiment overall IC negative, hit_rate modest \u2014 trimmed slightly from 1.45 to 1.40. Momentum weak but positive IC in this regime (IC=0.0103) \u2014 held at 0.60."
     },
     "risk_off_severe": {
       "momentum": 1.9,
