@@ -1,37 +1,5 @@
 [
   {
-    "run_label": "manual_refresh",
-    "timestamp": "2026-07-06T05:29:02.848395",
-    "regime": "trending_mixed",
-    "top_5": [
-      {
-        "symbol": "SLS",
-        "alpha_score": 1.0,
-        "alpha_rank": 1
-      },
-      {
-        "symbol": "ACHV",
-        "alpha_score": 1.0,
-        "alpha_rank": 1
-      },
-      {
-        "symbol": "SYRE",
-        "alpha_score": 1.0,
-        "alpha_rank": 1
-      },
-      {
-        "symbol": "PSNL",
-        "alpha_score": 1.0,
-        "alpha_rank": 1
-      },
-      {
-        "symbol": "ORKA",
-        "alpha_score": 1.0,
-        "alpha_rank": 1
-      }
-    ]
-  },
-  {
     "run_label": "sunday_night",
     "timestamp": "2026-07-13T01:37:52.862964",
     "regime": "trending_mixed",
@@ -636,6 +604,38 @@
         "symbol": "FND",
         "alpha_score": 0.808446,
         "alpha_rank": 17
+      }
+    ]
+  },
+  {
+    "run_label": "manual_refresh",
+    "timestamp": "2026-08-24T02:49:33.031004",
+    "regime": "trending_mixed",
+    "top_5": [
+      {
+        "symbol": "RGNX",
+        "alpha_score": 0.909503,
+        "alpha_rank": 8
+      },
+      {
+        "symbol": "DRTS",
+        "alpha_score": 0.917074,
+        "alpha_rank": 7
+      },
+      {
+        "symbol": "LCID",
+        "alpha_score": 0.908966,
+        "alpha_rank": 9
+      },
+      {
+        "symbol": "FWRD",
+        "alpha_score": 0.8712789999999999,
+        "alpha_rank": 22
+      },
+      {
+        "symbol": "FND",
+        "alpha_score": 0.888446,
+        "alpha_rank": 16
       }
     ]
   }
