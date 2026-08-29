@@ -1,13 +1,13 @@
 {
-  "regime": "trending_mixed",
-  "description": "Uptrend intact but mixed breadth. Be selective \u2014 only strongest setups.",
-  "composite": 0.1344,
+  "regime": "risk_on",
+  "description": "Strong broad uptrend, risk assets leading, low fear. Full momentum mode.",
+  "composite": 0.3684,
   "scores": {
-    "trend": 0.1608,
-    "breadth": -0.0681,
-    "sentiment": 0.4247,
-    "rotation": 0.3,
-    "safety": -0.4
+    "trend": 0.4854,
+    "breadth": 0.3235,
+    "sentiment": 0.1498,
+    "rotation": 0.8888,
+    "safety": -0.0461
   },
   "weights": {
     "trend": 0.25,
@@ -18,64 +18,64 @@
   },
   "details": {
     "trend": {
-      "spy_ret_5d": -0.009,
-      "spy_ret_20d": 0.036,
-      "spy_ret_50d": 0.0406,
+      "spy_ret_5d": 0.007,
+      "spy_ret_20d": 0.0322,
+      "spy_ret_50d": 0.0434,
       "spy_above_sma50": true,
       "spy_above_sma200": true,
-      "spy_drawdown": -0.0156
+      "spy_drawdown": -0.0087
     },
     "breadth": {
-      "qqq_ret_5d": -0.0225,
-      "qqq_ret_20d": 0.0459,
-      "iwm_ret_5d": -0.0135,
-      "iwm_ret_20d": 0.0241,
-      "iwm_vs_spy_5d": -0.0045,
-      "iwm_vs_spy_20d": -0.012,
+      "qqq_ret_5d": 0.0108,
+      "qqq_ret_20d": 0.0481,
+      "iwm_ret_5d": -0.0005,
+      "iwm_ret_20d": 0.0296,
+      "iwm_vs_spy_5d": -0.0075,
+      "iwm_vs_spy_20d": -0.0027,
       "iwm_above_sma50": true
     },
     "sentiment": {
-      "vix": 15.13,
-      "vix_ma20": 16.0,
-      "vix_trend": -0.87,
-      "hyg_vs_spy_5d": 0.009,
-      "hyg_vs_spy_20d": -0.0269
+      "vix": 14.51,
+      "vix_ma20": 15.32,
+      "vix_trend": -0.81,
+      "hyg_vs_spy_5d": -0.0038,
+      "hyg_vs_spy_20d": -0.0224
     },
     "rotation": {
-      "offensive_ret_5d": -0.0297,
-      "defensive_ret_5d": 0.0096,
-      "offensive_ret_20d": 0.0488,
-      "defensive_ret_20d": 0.0041,
-      "rotation_spread_5d": -0.0393,
-      "rotation_spread_20d": 0.0447,
-      "xlk_slope": 0.004409,
-      "xlu_slope": -0.001905
+      "offensive_ret_5d": 0.0198,
+      "defensive_ret_5d": -0.0061,
+      "offensive_ret_20d": 0.0619,
+      "defensive_ret_20d": 0.0098,
+      "rotation_spread_5d": 0.026,
+      "rotation_spread_20d": 0.052,
+      "xlk_slope": 0.000384,
+      "xlu_slope": -0.000874
     },
     "safety": {
-      "tlt_vs_spy_5d": 0.0176,
-      "tlt_vs_spy_20d": -0.0524,
-      "gld_vs_spy_5d": 0.0531,
-      "gld_vs_spy_20d": 0.094
+      "tlt_vs_spy_5d": 0.0061,
+      "tlt_vs_spy_20d": -0.0175,
+      "gld_vs_spy_5d": -0.0088,
+      "gld_vs_spy_20d": 0.1052
     }
   },
   "transition": {
     "transitioning": true,
-    "direction": "weakening",
-    "composite_delta": -0.4601,
-    "prev_composite": 0.5945,
-    "prev_regime": "risk_on"
+    "direction": "strengthening",
+    "composite_delta": 0.234,
+    "prev_composite": 0.1344,
+    "prev_regime": "trending_mixed"
   },
   "context": {
-    "spy_realized_vol_20d": 0.1318,
-    "vix": 15.13,
-    "as_of": "2026-08-22"
+    "spy_realized_vol_20d": 0.1054,
+    "vix": 14.51,
+    "as_of": "2026-08-29"
   },
   "playbook": {
-    "momentum": 0.15,
-    "technicals": 1.45,
-    "catalyst": 0.6,
-    "fundamentals": 0.55,
-    "sentiment": 2.0,
-    "note": "Sentiment strong in trending_mixed (IC=0.0363, hit_rate=0.5258) \u2014 held at cap. Catalyst severely negative (IC=-0.131, hit_rate=0.4222) \u2014 trimmed further from 0.70 to 0.60. Momentum deeply negative IC (-0.0638) \u2014 trimmed further from 0.20 to 0.15. Technicals nudged up to 1.45 as best available diversifier given poor alpha. Fundamentals weak (IC=-0.0343) \u2014 trimmed slightly to 0.55."
+    "momentum": 1.1,
+    "technicals": 1.4,
+    "catalyst": 0.65,
+    "fundamentals": 1.75,
+    "sentiment": 0.1,
+    "note": "Fundamentals best signal in risk_on (IC=0.0193, hit_rate=0.5333) \u2014 held at 1.75. Sentiment actively harmful (IC=-0.0718, hit_rate=0.4187) \u2014 kept at floor. Catalyst mildly positive (IC=0.008, hit_rate=0.5277) \u2014 held at 0.65. Technicals held at 1.40 as diversifier. Momentum near flat in risk_on \u2014 held. Recent weeks show negative alpha in risk_on \u2014 monitoring."
   }
 }
