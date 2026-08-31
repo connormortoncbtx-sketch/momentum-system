@@ -1,38 +1,6 @@
 [
   {
     "run_label": "manual_refresh",
-    "timestamp": "2026-07-13T04:52:18.637543",
-    "regime": "trending_mixed",
-    "top_5": [
-      {
-        "symbol": "SLS",
-        "alpha_score": 1.0,
-        "alpha_rank": 1
-      },
-      {
-        "symbol": "SNDK",
-        "alpha_score": 1.0,
-        "alpha_rank": 1
-      },
-      {
-        "symbol": "INTC",
-        "alpha_score": 1.0,
-        "alpha_rank": 1
-      },
-      {
-        "symbol": "ALAB",
-        "alpha_score": 1.0,
-        "alpha_rank": 1
-      },
-      {
-        "symbol": "CRDO",
-        "alpha_score": 1.0,
-        "alpha_rank": 1
-      }
-    ]
-  },
-  {
-    "run_label": "manual_refresh",
     "timestamp": "2026-07-13T12:45:54.308851",
     "regime": "trending_mixed",
     "top_5": [
@@ -636,6 +604,38 @@
         "symbol": "AMPL",
         "alpha_score": 0.950241,
         "alpha_rank": 22
+      }
+    ]
+  },
+  {
+    "run_label": "sunday_night",
+    "timestamp": "2026-08-31T02:17:55.732894",
+    "regime": "risk_on",
+    "top_5": [
+      {
+        "symbol": "DFTX",
+        "alpha_score": 0.871958,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "ZURA",
+        "alpha_score": 0.8168369999999999,
+        "alpha_rank": 4
+      },
+      {
+        "symbol": "HRB",
+        "alpha_score": 0.8246249999999999,
+        "alpha_rank": 3
+      },
+      {
+        "symbol": "ABCL",
+        "alpha_score": 0.742108,
+        "alpha_rank": 17
+      },
+      {
+        "symbol": "AVAH",
+        "alpha_score": 0.76558,
+        "alpha_rank": 12
       }
     ]
   }
