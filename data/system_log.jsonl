@@ -2243,3 +2243,5 @@
 {"timestamp": "2026-08-31T02:17:55.735945+00:00", "workflow": "weekend_refresh", "status": "success", "message": "Refresh complete (sunday_night)", "metrics": {"run_label": "sunday_night", "symbols": 1919, "regime": "risk_on", "top_pick": "DFTX", "top_score": 0.872}, "errors": []}
 {"timestamp": "2026-08-31T06:40:22.055641+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Starting weekend refresh (manual_refresh)", "metrics": {}, "errors": []}
 {"timestamp": "2026-08-31T07:07:28.632798+00:00", "workflow": "weekend_refresh", "status": "success", "message": "Refresh complete (manual_refresh)", "metrics": {"run_label": "manual_refresh", "symbols": 1919, "regime": "risk_on", "top_pick": "DFTX", "top_score": 0.992}, "errors": []}
+{"timestamp": "2026-08-31T17:18:28.811680+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Starting weekend refresh (manual_refresh)", "metrics": {}, "errors": []}
+{"timestamp": "2026-08-31T17:18:28.812756+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Skipped: manual_refresh already ran today (2026-08-31)", "metrics": {}, "errors": []}
