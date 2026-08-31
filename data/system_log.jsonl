@@ -2247,3 +2247,5 @@
 {"timestamp": "2026-08-31T17:18:28.812756+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Skipped: manual_refresh already ran today (2026-08-31)", "metrics": {}, "errors": []}
 {"timestamp": "2026-08-31T17:46:14.882061+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Starting premarket monitor", "metrics": {}, "errors": []}
 {"timestamp": "2026-08-31T17:46:14.885386+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Skipped: DST guard (CT hour=12, expected 6)", "metrics": {}, "errors": []}
+{"timestamp": "2026-08-31T19:01:18.589452+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Starting premarket monitor", "metrics": {}, "errors": []}
+{"timestamp": "2026-08-31T19:01:18.593290+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Skipped: DST guard (CT hour=14, expected 6)", "metrics": {}, "errors": []}
