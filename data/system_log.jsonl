@@ -2265,3 +2265,5 @@
 {"timestamp": "2026-09-01T00:04:59.515377+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=entry", "metrics": {}, "errors": []}
 {"timestamp": "2026-09-01T00:05:00.138582+00:00", "workflow": "alpaca_trader", "status": "warning", "message": "Entry: 0 filled, 20 FAILED", "metrics": {"filled": 0, "failed": 20, "fallbacks_used": 0, "symbols_failed": ["DFTX", "EWTX", "STTK", "ZURA", "HRB", "IDYA", "IMMX", "CYTK", "SMTC", "SRRK"]}, "errors": []}
 {"timestamp": "2026-09-01T00:33:05.805376+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=place_stops", "metrics": {}, "errors": []}
+{"timestamp": "2026-09-01T15:19:13.925457+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Starting premarket monitor", "metrics": {}, "errors": []}
+{"timestamp": "2026-09-01T15:19:13.929247+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Skipped: DST guard (CT hour=10, expected 6)", "metrics": {}, "errors": []}
