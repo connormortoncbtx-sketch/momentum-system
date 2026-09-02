@@ -2279,3 +2279,5 @@
 {"timestamp": "2026-09-01T22:49:33.963806+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=entry", "metrics": {}, "errors": []}
 {"timestamp": "2026-09-01T22:49:33.964860+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Skipped: not entry day (expected monday)", "metrics": {}, "errors": []}
 {"timestamp": "2026-09-01T23:15:36.199677+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=place_stops", "metrics": {}, "errors": []}
+{"timestamp": "2026-09-02T19:46:48.210741+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Starting monitor (duration=24min, mode=PAPER)", "metrics": {}, "errors": []}
+{"timestamp": "2026-09-02T20:10:49.845364+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Session quiet: 24 polls, no phase transitions", "metrics": {"polls": 24, "upgrades": 0, "stops_placed": 0, "poll_errors": 0}, "errors": []}
