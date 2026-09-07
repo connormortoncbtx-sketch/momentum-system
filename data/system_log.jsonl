@@ -2371,3 +2371,5 @@
 {"timestamp": "2026-09-07T17:38:05.967423+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Skipped: DST guard (CT hour=12, expected 6)", "metrics": {}, "errors": []}
 {"timestamp": "2026-09-07T18:17:41.053982+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Starting monitor (duration=113min, mode=PAPER)", "metrics": {}, "errors": []}
 {"timestamp": "2026-09-07T18:17:41.058451+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Skipped: market holiday 2026-09-07", "metrics": {}, "errors": []}
+{"timestamp": "2026-09-07T18:47:43.483665+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Starting monitor (duration=83min, mode=PAPER)", "metrics": {}, "errors": []}
+{"timestamp": "2026-09-07T18:47:43.487197+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Skipped: market holiday 2026-09-07", "metrics": {}, "errors": []}
