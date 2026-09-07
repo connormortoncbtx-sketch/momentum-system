@@ -1,38 +1,6 @@
 [
   {
     "run_label": "manual_refresh",
-    "timestamp": "2026-07-20T04:59:49.767695",
-    "regime": "risk_off_mild",
-    "top_5": [
-      {
-        "symbol": "ARM",
-        "alpha_score": 0.859096,
-        "alpha_rank": 22
-      },
-      {
-        "symbol": "DELL",
-        "alpha_score": 0.923583,
-        "alpha_rank": 15
-      },
-      {
-        "symbol": "DFTX",
-        "alpha_score": 0.852001,
-        "alpha_rank": 24
-      },
-      {
-        "symbol": "AMN",
-        "alpha_score": 0.947216,
-        "alpha_rank": 10
-      },
-      {
-        "symbol": "OKTA",
-        "alpha_score": 0.8754789999999999,
-        "alpha_rank": 20
-      }
-    ]
-  },
-  {
-    "run_label": "manual_refresh",
     "timestamp": "2026-07-20T12:38:39.425926",
     "regime": "risk_off_mild",
     "top_5": [
@@ -636,6 +604,38 @@
         "symbol": "BAX",
         "alpha_score": 0.011554000000000002,
         "alpha_rank": 36
+      }
+    ]
+  },
+  {
+    "run_label": "manual_refresh",
+    "timestamp": "2026-09-07T06:03:53.455743",
+    "regime": "trending_mixed",
+    "top_5": [
+      {
+        "symbol": "MFC",
+        "alpha_score": 0.022864,
+        "alpha_rank": 5
+      },
+      {
+        "symbol": "PFE",
+        "alpha_score": 0.0159384999999999,
+        "alpha_rank": 21
+      },
+      {
+        "symbol": "IBN",
+        "alpha_score": 0.0085449999999999,
+        "alpha_rank": 134
+      },
+      {
+        "symbol": "BAX",
+        "alpha_score": 0.011554,
+        "alpha_rank": 35
+      },
+      {
+        "symbol": "HTGC",
+        "alpha_score": 0.008914,
+        "alpha_rank": 123
       }
     ]
   }
