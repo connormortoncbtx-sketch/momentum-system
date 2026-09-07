@@ -1,37 +1,5 @@
 [
   {
-    "run_label": "sunday_night",
-    "timestamp": "2026-07-20T01:42:51.648882",
-    "regime": "risk_off_mild",
-    "top_5": [
-      {
-        "symbol": "ARM",
-        "alpha_score": 0.779096,
-        "alpha_rank": 27
-      },
-      {
-        "symbol": "DELL",
-        "alpha_score": 0.823583,
-        "alpha_rank": 19
-      },
-      {
-        "symbol": "CYRX",
-        "alpha_score": 0.9320689999999999,
-        "alpha_rank": 1
-      },
-      {
-        "symbol": "IMVT",
-        "alpha_score": 0.833178,
-        "alpha_rank": 17
-      },
-      {
-        "symbol": "AMN",
-        "alpha_score": 0.847216,
-        "alpha_rank": 14
-      }
-    ]
-  },
-  {
     "run_label": "manual_refresh",
     "timestamp": "2026-07-20T04:59:49.767695",
     "regime": "risk_off_mild",
@@ -636,6 +604,38 @@
         "symbol": "AVAH",
         "alpha_score": 0.84558,
         "alpha_rank": 12
+      }
+    ]
+  },
+  {
+    "run_label": "sunday_night",
+    "timestamp": "2026-09-07T01:45:43.295729",
+    "regime": "trending_mixed",
+    "top_5": [
+      {
+        "symbol": "MFC",
+        "alpha_score": 0.022864,
+        "alpha_rank": 5
+      },
+      {
+        "symbol": "CVBF",
+        "alpha_score": 0.012623000000000004,
+        "alpha_rank": 28
+      },
+      {
+        "symbol": "PFE",
+        "alpha_score": 0.015903499999999997,
+        "alpha_rank": 21
+      },
+      {
+        "symbol": "IBN",
+        "alpha_score": 0.008544999999999999,
+        "alpha_rank": 135
+      },
+      {
+        "symbol": "BAX",
+        "alpha_score": 0.011554000000000002,
+        "alpha_rank": 36
       }
     ]
   }
