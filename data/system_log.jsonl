@@ -2377,3 +2377,5 @@
 {"timestamp": "2026-09-07T19:55:58.089693+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Skipped: market holiday 2026-09-07", "metrics": {}, "errors": []}
 {"timestamp": "2026-09-07T20:33:12.877089+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Starting monitor (duration=10min, mode=PAPER)", "metrics": {}, "errors": []}
 {"timestamp": "2026-09-07T20:33:12.880546+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Skipped: market holiday 2026-09-07", "metrics": {}, "errors": []}
+{"timestamp": "2026-09-07T21:51:33.987802+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Starting monitor (duration=10min, mode=PAPER)", "metrics": {}, "errors": []}
+{"timestamp": "2026-09-07T21:51:33.991966+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Skipped: market holiday 2026-09-07", "metrics": {}, "errors": []}
