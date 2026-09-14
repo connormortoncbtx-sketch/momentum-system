@@ -1,37 +1,5 @@
 [
   {
-    "run_label": "sunday_night",
-    "timestamp": "2026-07-27T01:47:14.526367",
-    "regime": "risk_off_mild",
-    "top_5": [
-      {
-        "symbol": "AVTX",
-        "alpha_score": 0.893516,
-        "alpha_rank": 4
-      },
-      {
-        "symbol": "SYRE",
-        "alpha_score": 0.857613,
-        "alpha_rank": 9
-      },
-      {
-        "symbol": "MEI",
-        "alpha_score": 0.90343,
-        "alpha_rank": 1
-      },
-      {
-        "symbol": "TXG",
-        "alpha_score": 0.893947,
-        "alpha_rank": 3
-      },
-      {
-        "symbol": "ATEX",
-        "alpha_score": 0.842033,
-        "alpha_rank": 11
-      }
-    ]
-  },
-  {
     "run_label": "manual_refresh",
     "timestamp": "2026-07-27T05:03:27.572652",
     "regime": "risk_off_mild",
@@ -610,6 +578,38 @@
   {
     "run_label": "sunday_night",
     "timestamp": "2026-09-14T02:11:02.959133",
+    "regime": "choppy_neutral",
+    "top_5": [
+      {
+        "symbol": "SLN",
+        "alpha_score": 0.735204,
+        "alpha_rank": 3
+      },
+      {
+        "symbol": "SNDK",
+        "alpha_score": 0.682582,
+        "alpha_rank": 14
+      },
+      {
+        "symbol": "AMLX",
+        "alpha_score": 0.662255,
+        "alpha_rank": 29
+      },
+      {
+        "symbol": "AMPL",
+        "alpha_score": 0.68554,
+        "alpha_rank": 13
+      },
+      {
+        "symbol": "DNA",
+        "alpha_score": 0.695071,
+        "alpha_rank": 10
+      }
+    ]
+  },
+  {
+    "run_label": "manual_refresh",
+    "timestamp": "2026-09-14T06:08:36.369142",
     "regime": "choppy_neutral",
     "top_5": [
       {
