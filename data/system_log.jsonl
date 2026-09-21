@@ -2597,3 +2597,5 @@
 {"timestamp": "2026-09-19T06:09:13.117061+00:00", "workflow": "weekly_pipeline", "status": "success", "message": "Pipeline complete (37.5 min)", "metrics": {"elapsed_min": 37.5, "stages_run": 6}, "errors": []}
 {"timestamp": "2026-09-19T07:03:04.487550+00:00", "workflow": "weekly_pipeline", "status": "info", "message": "Pipeline invoked (from=01, only=None, force=False)", "metrics": {}, "errors": []}
 {"timestamp": "2026-09-19T07:03:04.488624+00:00", "workflow": "weekly_pipeline", "status": "info", "message": "Skipped: ghost run prevention (last run 0.9h ago)", "metrics": {"last_run_hours_ago": 0.9, "threshold_hours": 18}, "errors": []}
+{"timestamp": "2026-09-21T01:48:05.978668+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Starting weekend refresh (sunday_night)", "metrics": {}, "errors": []}
+{"timestamp": "2026-09-21T02:09:11.094086+00:00", "workflow": "weekend_refresh", "status": "success", "message": "Refresh complete (sunday_night)", "metrics": {"run_label": "sunday_night", "symbols": 1838, "regime": "trending_mixed", "top_pick": "TECH", "top_score": 0.0113}, "errors": []}
