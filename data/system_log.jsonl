@@ -2741,3 +2741,5 @@
 {"timestamp": "2026-09-28T22:41:42.311115+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Session quiet: 10 polls, no phase transitions", "metrics": {"polls": 10, "upgrades": 0, "stops_placed": 0, "poll_errors": 0}, "errors": []}
 {"timestamp": "2026-09-28T23:36:29.612596+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Starting monitor (duration=10min, mode=PAPER)", "metrics": {}, "errors": []}
 {"timestamp": "2026-09-28T23:46:30.965478+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Session quiet: 10 polls, no phase transitions", "metrics": {"polls": 10, "upgrades": 0, "stops_placed": 0, "poll_errors": 0}, "errors": []}
+{"timestamp": "2026-09-28T23:57:54.428976+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=entry", "metrics": {}, "errors": []}
+{"timestamp": "2026-09-28T23:57:54.996081+00:00", "workflow": "alpaca_trader", "status": "success", "message": "Entry: all 10 orders placed", "metrics": {"filled": 10, "fallbacks_used": 0, "top_pick": "CDNL"}, "errors": []}
