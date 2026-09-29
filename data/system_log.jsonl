@@ -2747,3 +2747,5 @@
 {"timestamp": "2026-09-29T00:34:00.373283+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=entry", "metrics": {}, "errors": []}
 {"timestamp": "2026-09-29T00:34:02.563416+00:00", "workflow": "alpaca_trader", "status": "warning", "message": "Entry: 0 filled, 20 FAILED", "metrics": {"filled": 0, "failed": 20, "fallbacks_used": 0, "symbols_failed": ["CDNL", "DUOT", "HOMB", "JMIA", "CLS", "VIA", "MDA", "NEOG", "TRI", "INTC"]}, "errors": []}
 {"timestamp": "2026-09-29T00:56:51.890463+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=place_stops", "metrics": {}, "errors": []}
+{"timestamp": "2026-09-29T16:41:50.342494+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Starting premarket monitor", "metrics": {}, "errors": []}
+{"timestamp": "2026-09-29T16:41:50.346477+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Skipped: DST guard (CT hour=11, expected 6)", "metrics": {}, "errors": []}
