@@ -2744,3 +2744,5 @@
 {"timestamp": "2026-09-28T23:57:54.428976+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=entry", "metrics": {}, "errors": []}
 {"timestamp": "2026-09-28T23:57:54.996081+00:00", "workflow": "alpaca_trader", "status": "success", "message": "Entry: all 10 orders placed", "metrics": {"filled": 10, "fallbacks_used": 0, "top_pick": "CDNL"}, "errors": []}
 {"timestamp": "2026-09-29T00:20:00.742795+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=place_stops", "metrics": {}, "errors": []}
+{"timestamp": "2026-09-29T00:34:00.373283+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=entry", "metrics": {}, "errors": []}
+{"timestamp": "2026-09-29T00:34:02.563416+00:00", "workflow": "alpaca_trader", "status": "warning", "message": "Entry: 0 filled, 20 FAILED", "metrics": {"filled": 0, "failed": 20, "fallbacks_used": 0, "symbols_failed": ["CDNL", "DUOT", "HOMB", "JMIA", "CLS", "VIA", "MDA", "NEOG", "TRI", "INTC"]}, "errors": []}
