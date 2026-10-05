@@ -1,37 +1,5 @@
 [
   {
-    "run_label": "sunday_night",
-    "timestamp": "2026-08-10T01:03:12.128329",
-    "regime": "risk_on",
-    "top_5": [
-      {
-        "symbol": "TRAX",
-        "alpha_score": 0.643686,
-        "alpha_rank": 10
-      },
-      {
-        "symbol": "OPTX",
-        "alpha_score": 0.634342,
-        "alpha_rank": 13
-      },
-      {
-        "symbol": "MANE",
-        "alpha_score": 0.5921799999999999,
-        "alpha_rank": 28
-      },
-      {
-        "symbol": "BBY",
-        "alpha_score": 0.7133599999999999,
-        "alpha_rank": 2
-      },
-      {
-        "symbol": "WGS",
-        "alpha_score": 0.603937,
-        "alpha_rank": 22
-      }
-    ]
-  },
-  {
     "run_label": "manual_refresh",
     "timestamp": "2026-08-10T03:33:48.550524",
     "regime": "risk_on",
@@ -610,6 +578,38 @@
   {
     "run_label": "manual_refresh",
     "timestamp": "2026-10-05T02:48:08.156765",
+    "regime": "trending_mixed",
+    "top_5": [
+      {
+        "symbol": "AAOI",
+        "alpha_score": 0.771201,
+        "alpha_rank": 3
+      },
+      {
+        "symbol": "DNA",
+        "alpha_score": 0.817134,
+        "alpha_rank": 2
+      },
+      {
+        "symbol": "FCEL",
+        "alpha_score": 0.817709,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "QMCO",
+        "alpha_score": 0.675392,
+        "alpha_rank": 7
+      },
+      {
+        "symbol": "PGEN",
+        "alpha_score": 0.670271,
+        "alpha_rank": 8
+      }
+    ]
+  },
+  {
+    "run_label": "manual_refresh",
+    "timestamp": "2026-10-05T06:51:54.245096",
     "regime": "trending_mixed",
     "top_5": [
       {
