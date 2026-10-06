@@ -1,1 +1,1 @@
-intraday 5m: 16,592 bars, 45 symbol-weeks, missing 0
+intraday 5m: 2,655,862 bars, 7,600 symbol-weeks, missing 20
