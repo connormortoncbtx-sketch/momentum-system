@@ -303,3 +303,28 @@ Robustness is mixed:
 **Conclusion:** promising enough to track live, not proven enough to trade.
 The regime labels as currently built do not carry predictive information for
 stock selection. Weekly re-tuning of regime multipliers fits noise.
+
+---
+
+# Actions taken (Oct 6, 2026)
+
+1. **Weights frozen** (on `main`). `self_refine.py` now only logs proposals
+   to `refinements/`. Switch back with `_meta.self_refine_mode: "apply"`.
+2. **Shadow #2 live:** the contrarian regime switch
+   (`automation/shadow_regime_switch.py`), running beside shadow #1
+   (large-cap monthly momentum) in `shadow_lc.yml`. It reuses the research
+   code exactly (verified to match on 6 historical weeks). Ledgers:
+   `data/shadow_regime_ledger.jsonl` and `data/shadow_lc_ledger.jsonl`.
+   First reading (Oct 5): **OFF / in SPY** (momentum factor +5.0% over the
+   trailing 8 weeks).
+3. **PR #2, pending approval:**
+   - Regime multipliers set to neutral.
+   - The four `*_adj` inputs removed from LightGBM.
+   - One-time retrain on 14 stable signals, then retraining is report-only.
+
+   Walk-forward IC is about zero for both old and new models; the change
+   removes a distortion rather than adding an edge.
+
+**Review date:** after about 12 weeks (early January 2027), compare the live
+system, both shadows and SPY on the same Monday closes. Any regime rule that
+gets promoted must also hold up in the 10-year history.
