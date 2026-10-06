@@ -2879,3 +2879,4 @@
 {"timestamp": "2026-10-06T01:28:32.002605+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=entry", "metrics": {}, "errors": []}
 {"timestamp": "2026-10-06T01:28:32.599342+00:00", "workflow": "alpaca_trader", "status": "warning", "message": "Entry: 0 filled, 20 FAILED", "metrics": {"filled": 0, "failed": 20, "fallbacks_used": 0, "symbols_failed": ["FCEL", "AAOI", "DNA", "DBX", "POET", "MXL", "QMCO", "PGEN", "DXC", "BRZE"]}, "errors": []}
 {"timestamp": "2026-10-06T01:43:40.607607+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=place_stops", "metrics": {}, "errors": []}
+{"timestamp": "2026-10-06T19:20:20.965943+00:00", "workflow": "shadow_lc", "status": "success", "message": "Shadow LC momentum 2026-10-05: 99.8 | live 100.0 | SPY 100.0 | rebalanced", "metrics": {"shadow_nav": 99.85, "live_index": 100.0, "spy_index": 100.0}, "errors": []}
