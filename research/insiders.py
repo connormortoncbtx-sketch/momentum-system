@@ -164,6 +164,11 @@ print("Top 10 insider designs on DEV:")
 print(dev.head(10).round(2).to_string(index=False))
 print("Dev Sharpe spread:", dev.Sharpe.describe().round(2).to_dict())
 
+# A design must be investable: at least 90% of dev weeks with a portfolio.
+# (Sparse signals, e.g. large-cap officer buys, otherwise win on a few cherry weeks.)
+dev = dev[dev.weeks >= 0.9 * dev.weeks.max()].sort_values("Sharpe", ascending=False)
+print("Eligible (>=90% weeks invested) top 3:")
+print(dev.head(3).round(2).to_string(index=False))
 best = dev.iloc[0]
 s = score(best.score, int(best.window_w)).loc[HOLD[0]:HOLD[1]]
 B.simulate.missing = 0
@@ -173,6 +178,6 @@ print("\n=== HOLDOUT (2024-01 -> 2026-09), pre-registered pick:",
       dict(best[["score", "window_w", "k", "n", "weights"]]))
 print("INSIDER:", {k: round(v, 2) for k, v in B.stats(hold).items()}, "| missing fills:", B.simulate.missing)
 print("SPY    :", {k: round(v, 2) for k, v in B.stats(spy_r.loc[HOLD[0]:HOLD[1]]).items()})
-print("by year:", B.by_year(hold).round(1).to_dict(),
+print("by year:", B.by_year(hold).round(1).to_dict() if len(hold) else {},
       " SPY:", B.by_year(spy_r.loc[HOLD[0]:HOLD[1]].dropna()).round(1).to_dict())
 pd.DataFrame({"insider": hold, "SPY": spy_r.reindex(hold.index)}).to_csv(OUT / f"insider_holdout_weekly{SFX}.csv")

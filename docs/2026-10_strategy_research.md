@@ -131,3 +131,56 @@ exceeds 1, so there is no detectable stock-picking skill.
 Data added to the `research-data` branch:
 - `earnings_events.parquet`: 126k events, 4,165 companies.
 - `insider_buys.parquet`: 293k purchases, 8,585 tickers.
+
+---
+
+# Round 3: large caps, simulator fix, AI news test
+
+## Simulator fix (applies to every portfolio search)
+
+Holdings whose next-week price was missing had been booked at −50%.
+Checking showed these were almost all **acquisitions** (Acceleron, Pivotal,
+Genesee & Wyoming, Ellie Mae and others), which stop trading near the deal
+price. They now book 0%. Dev results rose (momentum best dev Sharpe 0.74 →
+0.85), but every pre-chosen design and its holdout score was unchanged.
+
+## Large caps only (500 most-traded names each week)
+
+| Family | Dev Sharpe (SPY 0.76) | Holdout CAGR | SPY | Beta | Alpha vs SPY, beta-adjusted |
+|---|---|---|---|---|---|
+| Momentum (live proxy, 30 names, monthly) | 0.81 | **33.2%** | 20.6% | 1.46 | +5.2%/yr (t 0.34) |
+| Insider $ + 12-1 momentum (20 names) | 0.81 | 24.2% | 21.3% | 1.25 | −1.1%/yr (t −0.12) |
+| Earnings drift (gap-up reactions) | 0.68 | 15.8% | 20.6% | 1.08 | −3.9%/yr (t −0.59) |
+
+- **Large-cap momentum** beat SPY in raw return every holdout year (56.5% /
+  17.8% / 18.7% vs 27.1% / 16.9% / 12.2%). However, SPY held at the same
+  1.46× exposure would have made 30.3%. It is mostly amplified market
+  exposure. Gains were spread across rotating leaders (APP, PLTR, MSTR in
+  2024; BE, KGC, HOOD in 2025; WDC, LITE, CIEN in 2026), not one lucky name.
+- **Large-cap insider pick:** the first pick (officer buys) was investable
+  in only 199 of 365 dev weeks. A rule requiring ≥90% of weeks invested
+  was added before any holdout return existed, and the pick was redone.
+- **Large-cap event studies:** no earnings drift. Officer purchases were
+  followed by *under*performance (8 weeks, t = −2.3).
+
+## AI news classification: partial
+
+Sample: 2,200 events chosen at random in advance. Claude Sonnet 5.5 read
+anonymized headlines and summaries.
+
+- **Status:** 1,458 events labeled for $5.20 before the Anthropic account ran
+  out of credit. Dev is complete; 169 of 500 holdout and 0 of 300
+  post-cutoff events are done. The run resumes from where it stopped.
+- **Dev results** (can be inflated by the model remembering outcomes):
+  - H1, the fundamental score: +0.61% per point at 8 weeks (t 1.89).
+  - H2, "under-reacted" plus a strong score: −2.2% vs −0.35% for the rest.
+    This is the wrong direction.
+  - H3, raised vs lowered guidance: +0.2% vs −1.9%.
+- **Partial holdout** (n = 168): the H1 coefficient flips to −1.33 (t −1.31).
+- Not conclusive until the post-cutoff group runs.
+
+## Holdout looks so far
+
+Six designs have been scored on the holdout (3 families × 2 universes). With
+that many looks, one beating SPY on raw return by luck is expected. None
+shows beta-adjusted alpha with t > 1.
