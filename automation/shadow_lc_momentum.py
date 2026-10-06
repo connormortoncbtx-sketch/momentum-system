@@ -91,9 +91,25 @@ def live_equity_on(date: dt.date):
     return None
 
 
+import re
+FUND_HARD = re.compile(r"\b(ETF|ETN|FUND|PROSHARES|ISHARES|DIREXION|SPDR|VANGUARD|WISDOMTREE|"
+                       r"WARRANTS?|RIGHTS?|UNITS?|PREFERRED|NOTES?|BITCOIN|ETHER)\b", re.I)
+FUND_SOFT = re.compile(r"\b(TRUST|INVESCO|INDEX|PORTFOLIO)\b", re.I)
+CORP = re.compile(r"\b(CORP(ORATION)?|INC|LTD|LIMITED|COMPANY|CO|PLC|HOLDINGS?|GROUP|BANCORP|BANK|REALTY|PROPERTIES)\b", re.I)
+
+
+def is_fund(name, sector) -> bool:
+    """Same fund rule as research/backtest.py; ETFs also carry no sector."""
+    name = name if isinstance(name, str) else ""
+    if not isinstance(sector, str) or FUND_HARD.search(name):
+        return True
+    return bool(FUND_SOFT.search(name)) and not CORP.search(name)
+
+
 def target_basket(held: list[str]) -> list[str]:
     s = pd.read_csv(SCORES, low_memory=False)
     s = s[(s.last_price >= 5)].copy()
+    s = s[~s.apply(lambda r: is_fund(r.get("name"), r.get("sector")), axis=1)]
     s["dollar_vol"] = s.last_price * s.avg_vol_20d
     s = s.nlargest(TOP_UNIVERSE, "dollar_vol")
     r = lambda c: s[c].rank(pct=True)
