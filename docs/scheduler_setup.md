@@ -40,10 +40,14 @@ builds aren't being charged.
 1. Netlify → Logs → Functions → `dispatch`. Within ~15 minutes on a weekday
    between 6 AM and 3:10 PM CT you'll see lines like
    `Chicago Tue 10:45 -> nothing due`. That confirms the schedule is live.
-2. Off-hours safety check: in GitHub → Actions → Alpaca Entry → **Run
-   workflow**. It should **refuse** ("outside pre-close window") and send a
-   phone alert. That proves the clock guard without placing orders.
-3. First real dispatch: watch the Actions tab at 2:00 PM CT for the monitor run.
+2. First real dispatch: at the next slot (8:30 / 11:15 / 2:00 CT) an
+   "Alpaca Intraday Monitor" run should appear in GitHub → Actions within
+   about a minute, with event **workflow_dispatch**.
+3. Optional clock-guard check (**Monday after 3:00 PM CT only**): Actions →
+   Alpaca Entry → Run workflow. It should **refuse** ("outside pre-close
+   window") and send a phone alert. On other days the script exits earlier
+   with "not entry day", which doesn't exercise the guard. Never run it by
+   hand on Mon/Tue between 2:15 and 2:56 PM CT; that is the live window.
 
 ## Schedule (edit `SCHEDULE` in `dispatch.mjs` to change)
 
