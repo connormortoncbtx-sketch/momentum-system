@@ -1,0 +1,11 @@
+# Momentum Alpha dispatcher site. Set the Netlify site's BASE DIRECTORY to
+# `netlify-dispatcher`. The ignore rule below skips every build unless a file
+# in this folder changed, so the bot's frequent data commits never deploy
+# (free plan: each production deploy costs credits).
+[build]
+  command = "echo 'no build step'"
+  publish = "public"
+  ignore  = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- ."
+
+[functions]
+  directory = "netlify/functions"

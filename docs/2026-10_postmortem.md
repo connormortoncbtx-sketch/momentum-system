@@ -54,7 +54,7 @@ strategy would also have lost money in this stretch.
 
 ## Fixes shipped 2026-10-06
 
-- Entry/monitor/premarket moved to an exact-time external dispatcher
+- Entry/monitor/premarket moved to an exact-time Netlify scheduled-function dispatcher
   (`docs/scheduler_setup.md`); exit and place_stops keep crons as backstop.
 - Market-clock guard on entry/exit; entry idempotent on working BUY orders;
   exit idempotent on working SELL orders.
