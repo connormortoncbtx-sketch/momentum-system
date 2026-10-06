@@ -27,6 +27,7 @@ import json
 import logging
 import os
 import time
+import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -50,6 +51,7 @@ def sec_get(url, tries=4):
         except urllib.error.HTTPError as e:
             if e.code == 404:
                 return None
+            log.warning(f"SEC HTTP {e.code} for {url}")
             time.sleep(2 * (i + 1))
         except Exception:
             time.sleep(2 * (i + 1))
@@ -209,4 +211,11 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception:
+        import traceback
+        # Annotations are readable via the API even when job logs aren't.
+        for line in traceback.format_exc().strip().splitlines()[-12:]:
+            print(f"::error::{line}")
+        raise
