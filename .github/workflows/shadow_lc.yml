@@ -1,4 +1,4 @@
-name: Shadow LC Momentum (no orders)
+name: Shadow Portfolios (no orders)
 
 # Side-by-side shadow of the large-cap monthly momentum design. Uses the
 # entry day's official close fetched after the fact, so GitHub cron drift is
@@ -40,13 +40,23 @@ jobs:
           ALPACA_PAPER: ${{ secrets.ALPACA_PAPER || 'true' }}
         run: python automation/shadow_lc_momentum.py
 
+      - name: Update shadow regime switch
+        continue-on-error: true
+        env:
+          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+          ALPACA_PAPER: ${{ secrets.ALPACA_PAPER || 'true' }}
+        run: |
+          pip install pyarrow
+          python automation/shadow_regime_switch.py
+
       - name: Commit ledger
         run: |
           git config user.name  "momentum-bot"
           git config user.email "momentum-bot@users.noreply.github.com"
-          git add data/shadow_lc_state.json data/shadow_lc_ledger.jsonl data/system_log.jsonl 2>/dev/null || true
+          git add data/shadow_lc_state.json data/shadow_lc_ledger.jsonl data/shadow_regime_state.json data/shadow_regime_ledger.jsonl data/system_log.jsonl 2>/dev/null || true
           git diff --cached --quiet && exit 0
-          git commit -q -m "shadow-lc: $(date +%Y-%m-%d) update"
+          git commit -q -m "shadows: $(date +%Y-%m-%d) update"
           for attempt in 1 2 3 4 5; do
             if git pull --rebase origin main && git push; then break; fi
             git rebase --abort 2>/dev/null || true
