@@ -64,7 +64,7 @@ def list_symbols(status_filter="all"):
     return df
 
 
-def fetch_daily(symbols, start, end, feed):
+def fetch_daily(symbols, start, end, feed, raw=False):
     from alpaca.data.historical import StockHistoricalDataClient
     from alpaca.data.requests import StockBarsRequest
     from alpaca.data.timeframe import TimeFrame
@@ -79,12 +79,12 @@ def fetch_daily(symbols, start, end, feed):
         for attempt in range(3 if depth == 0 else 2):
             try:
                 req = StockBarsRequest(symbol_or_symbols=batch, timeframe=TimeFrame.Day,
-                                       start=start, end=end, adjustment=Adjustment.ALL,
+                                       start=start, end=end, adjustment=Adjustment.RAW if raw else Adjustment.ALL,
                                        feed=DataFeed(feed))
                 df = client.get_stock_bars(req).df
                 if len(df):
                     df = df.reset_index()[["symbol", "timestamp", "open", "high", "low", "close", "volume"]]
-                    frames.append(weekly(df))
+                    frames.append(weekly_raw(df) if raw else weekly(df))
                 return
             except Exception as e:
                 msg = str(e)
@@ -136,12 +136,27 @@ def weekly(d: pd.DataFrame) -> pd.DataFrame:
     return out
 
 
+def weekly_raw(d: pd.DataFrame) -> pd.DataFrame:
+    """Unadjusted first/last close per symbol-week -- for price filters only.
+    Adjusted history inflates old prices of reverse-splitters (a $0.20 stock
+    shows as $25,000), so filters must use what actually traded."""
+    d = d.copy()
+    d["date"] = pd.to_datetime(d["timestamp"]).dt.tz_convert("America/New_York").dt.tz_localize(None).dt.normalize()
+    d["week"] = d["date"] + pd.to_timedelta(4 - d["date"].dt.weekday, unit="D")
+    d = d.sort_values(["symbol", "date"])
+    out = d.groupby(["symbol", "week"]).agg(raw_d1_close=("close", "first"), raw_close=("close", "last")).reset_index()
+    out[["raw_d1_close", "raw_close"]] = out[["raw_d1_close", "raw_close"]].astype("float32")
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--start", default="2016-01-01")
     ap.add_argument("--feed", default="sip")
     ap.add_argument("--out", default="research_data")
     ap.add_argument("--limit", type=int, default=0, help="debug: only first N symbols")
+    ap.add_argument("--raw", action="store_true",
+                    help="fetch UNADJUSTED closes and merge raw_close/raw_d1_close into existing --out files")
     ap.add_argument("--status", default="all", choices=["all", "inactive"],
                     help="inactive = fetch delisted names only and MERGE into existing --out files")
     a = ap.parse_args()
@@ -160,7 +175,20 @@ def main():
     end = dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=1)
     start = dt.datetime.fromisoformat(a.start).replace(tzinfo=dt.timezone.utc)
     t0 = time.time()
-    panel, failed = fetch_daily(syms, start, end, a.feed)
+    panel, failed = fetch_daily(syms, start, end, a.feed, raw=a.raw)
+    if a.raw:
+        if not len(panel):
+            raise SystemExit("raw fetch returned nothing")
+        for path in sorted(out.glob("weekly_*.parquet")):
+            base = pd.read_parquet(path).drop(columns=["raw_d1_close", "raw_close"], errors="ignore")
+            base = base.merge(panel, on=["symbol", "week"], how="left")
+            base.to_parquet(path, index=False, compression="zstd")
+            log.info(f"  merged raw closes into {path.name}: "
+                     f"{base.raw_close.notna().mean() * 100:.1f}% coverage")
+        (out / "README_raw.md").write_text(
+            f"raw closes merged {dt.datetime.utcnow():%Y-%m-%d %H:%M} UTC; "
+            f"symbols={panel.symbol.nunique()} failed={len(failed)}\n")
+        return
     log.info(f"Fetched {panel.symbol.nunique():,} symbols, {len(panel):,} symbol-weeks "
              f"in {(time.time() - t0) / 60:.1f} min")
 

@@ -33,13 +33,22 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-FUND_PAT = re.compile(
-    r"\b(ETF|ETN|FUND|TRUST|PROSHARES|ISHARES|DIREXION|SPDR|INVESCO|VANGUARD|WISDOMTREE|"
-    r"WARRANTS?|RIGHTS?|UNITS?|PREFERRED|NOTES?|DEBENTURES?|PORTFOLIO|INDEX|BITCOIN|ETHER)\b",
+# Always a fund / non-common instrument
+FUND_HARD = re.compile(
+    r"\b(ETF|ETN|FUND|PROSHARES|ISHARES|DIREXION|SPDR|VANGUARD|WISDOMTREE|"
+    r"WARRANTS?|RIGHTS?|UNITS?|PREFERRED|NOTES?|DEBENTURES?|BITCOIN|ETHER)\b",
     re.I,
 )
-# Operating REITs / business trusts we don't want to drop just for the word "trust"
-KEEP_PAT = re.compile(r"\b(REALTY|PROPERTIES|PROPERTY|HOSPITALITY|RESIDENTIAL|BANCORP|BANK)\b", re.I)
+# A fund only if the name has no corporate suffix ("Northern Trust Corporation" is a bank)
+FUND_SOFT = re.compile(r"\b(TRUST|INVESCO|INDEX|PORTFOLIO)\b", re.I)
+CORP_PAT = re.compile(r"\b(CORP(ORATION)?|INC|LTD|LIMITED|COMPANY|CO|PLC|N\.?V|S\.?A|HOLDINGS?|GROUP|"
+                      r"BANCORP|BANK|REALTY|PROPERTIES|COMMON STOCK|ORDINARY SHARES)\b", re.I)
+
+
+def is_fund_name(name: str) -> bool:
+    if FUND_HARD.search(name):
+        return True
+    return bool(FUND_SOFT.search(name)) and not CORP_PAT.search(name)
 
 
 # ── DATA ──────────────────────────────────────────────────────────────────────
@@ -69,7 +78,7 @@ def load_panel(data_dir: str, last_complete_week: str | None = None) -> Panel:
     for c in cols:
         p.m[c] = wide[c].reindex(index=weeks, columns=symbols).to_numpy(dtype="float64")
     names = assets.reindex(symbols)["name"].fillna("").astype(str)
-    p.is_fund = np.array([bool(FUND_PAT.search(n)) and not KEEP_PAT.search(n) for n in names])
+    p.is_fund = np.array([is_fund_name(n) for n in names])
     return p
 
 
