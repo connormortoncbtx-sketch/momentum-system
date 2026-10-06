@@ -245,6 +245,9 @@ def top_n_buffered(p: Panel, score: pd.DataFrame, mask: pd.DataFrame, n=10, buff
     return pd.Series(out, dtype=float)
 
 
+MISSING_RETURN = 0.0
+
+
 def simulate(p: Panel, score: pd.DataFrame, mask: pd.DataFrame, n=25, buffer=50, k=4,
              cost_bps=15.0, weighting="equal", vol: pd.DataFrame | None = None) -> pd.Series:
     """General persistent portfolio, held continuously (weekends included).
@@ -288,17 +291,19 @@ def simulate(p: Panel, score: pd.DataFrame, mask: pd.DataFrame, n=25, buffer=50,
         r = wk_ret.loc[wk, w.index]
         if r.notna().mean() < 0.5:
             break                          # end of data, not a mass delisting
-        # names with no next-week return (halted/delisted): assume -50% and drop
-        simulate.missing += int(r.isna().sum())
-        r = r.fillna(-0.5)
+        # Names with no next-week return: in this liquid universe these are almost
+        # all acquisitions (checked: Acceleron, Pivotal, Genesee & Wyoming, Ellie Mae
+        # ...), which stop trading near the deal price -> book 0% and exit.
+        # (Earlier -50% assumption biased every simulate() result downward.)
+        missing = r.isna()
+        simulate.missing += int(missing.sum())
+        r = r.fillna(MISSING_RETURN)
         port = float((w * r).sum())
         out[wk] = port - cost
         w = w * (1 + r)
+        w = w.drop(missing[missing].index, errors="ignore")    # exited (cash, redistributed)
         w = w[w > 0]
         w = w / w.sum() if w.sum() > 0 else w
-        if r.isna().any() or (r == -0.5).any():
-            w = w.drop(r[r == -0.5].index, errors="ignore")
-            w = w / w.sum() if w.sum() > 0 else w
     return pd.Series(out, dtype=float)
 
 

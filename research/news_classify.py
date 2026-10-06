@@ -114,8 +114,10 @@ class Budget:
             self.spent += c
             return self.spent
 
+    halted = False
+
     def exceeded(self):
-        return self.spent >= self.cap
+        return self.halted or self.spent >= self.cap
 
 
 def label(client, budget, row):
@@ -151,7 +153,7 @@ def label(client, budget, row):
         except Exception as e:
             log.warning(f"  claude {row.symbol} {row.week}: {e}")
             if "credit" in str(e).lower() or "authentication" in str(e).lower():
-                budget.spent = budget.cap      # stop everything; not retryable
+                budget.halted = True           # stop everything; not retryable
                 return {**base, "status": f"fatal: {str(e)[:120]}"}
             time.sleep(4 * (attempt + 1))
     return {**base, "status": "llm_error"}
@@ -164,6 +166,16 @@ def main():
     lim = int(os.environ.get("LIMIT", "0") or 0)
     if lim:
         sample = sample.groupby("split").head(lim)
+    prev = None
+    if (data / "news_labels.parquet").exists():
+        # Resume: keep finished rows, only redo events that never completed
+        prev = pd.read_parquet(data / "news_labels.parquet")
+        prev["week"] = pd.to_datetime(prev["week"])
+        done = prev[prev.status.isin(["ok", "no_news"])]
+        key = set(zip(done.symbol, done.week))
+        sample = sample[[(s_, w) not in key for s_, w in zip(sample.symbol, sample.week)]]
+        prev = done
+        log.info(f"Resuming: {len(done):,} already labelled, {len(sample):,} to go")
     client = anthropic.Anthropic()
     budget = Budget(BUDGET_USD)
     log.info(f"Labelling {len(sample):,} events with {MODEL}, budget ${BUDGET_USD:.0f}")
@@ -177,6 +189,8 @@ def main():
             if i % 100 == 0:
                 log.info(f"  {i:,}/{len(futs):,}  spent ${budget.spent:.2f}")
     out = pd.DataFrame(rows)
+    if prev is not None:
+        out = pd.concat([prev, out], ignore_index=True)
     out.to_parquet(data / "news_labels.parquet", index=False)
     st = out.status.value_counts().to_dict()
     log.info(f"Done. statuses={st} total spend ${budget.spent:.2f}")

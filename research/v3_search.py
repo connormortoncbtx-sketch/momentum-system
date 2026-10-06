@@ -56,6 +56,7 @@ print("\nSpread of dev Sharpe across all designs:", dev.Sharpe.describe().round(
 
 best = dev.iloc[0]
 s = signals[best.signal].loc[HOLD[0]:HOLD[1]]
+B.simulate.missing = 0
 hold = B.simulate(p, s, U.loc[s.index], n=int(best.n), buffer=int(best.buffer), k=int(best.k),
                   cost_bps=15, weighting=best.weights, vol=f["vol12"])
 print("\n=== HOLDOUT (2024-01 -> 2026-09), pre-registered pick:", dict(best[["signal","k","n","buffer","weights"]]))
