@@ -337,6 +337,11 @@ def run():
         log.warning(f"  Anthropic client unavailable: {e} — skipping LLM pass")
         llm_available = False
 
+    # 2026-10-06: API failures (e.g. "credit balance too low", from ~Sep 4)
+    # used to fall back to neutral per ticker with only a log warning, so the
+    # stage silently stopped doing anything for weeks. Now: stop after 3
+    # consecutive API errors and raise a system_log ERROR + phone alert.
+    api_errors_in_a_row = 0
     if llm_available:
         for i, (idx, row) in enumerate(top_n.iterrows()):
             sym = row.get("symbol", "?")
@@ -344,6 +349,15 @@ def run():
 
             result = llm_synthesis(row, regime_data, client)
             synthesis_results[sym] = result
+
+            if result.get("source") == "fallback_api_error":
+                api_errors_in_a_row += 1
+                if api_errors_in_a_row >= 3:
+                    log.error("  3 consecutive API errors -- aborting LLM pass "
+                              "(rule-based thesis kept, no conviction adjustments)")
+                    break
+                continue
+            api_errors_in_a_row = 0
 
             # Apply conviction adjustment to alpha score
             adj = result["conviction_adjustment"]
@@ -357,6 +371,21 @@ def run():
             scores.loc[idx, "thesis_source"]         = result["source"]
 
             time.sleep(API_SLEEP)
+
+    n_ok = sum(1 for r in synthesis_results.values() if r.get("source") == "llm")
+    if not llm_available or n_ok == 0 or api_errors_in_a_row >= 3:
+        msg = (f"LLM synthesis produced 0/{LLM_TOP_N} results -- stage ran as "
+               f"rule-based only. Check Anthropic API credits/key.")
+        log.error(f"  {msg}")
+        try:
+            from automation.system_logger import log_event, LogStatus
+            from automation.notifier import notify_error
+            log_event("llm_synthesis", LogStatus.ERROR, msg)
+            notify_error("llm_synthesis", msg)
+        except Exception as e:
+            log.warning(f"  could not raise alert: {e}")
+    else:
+        log.info(f"  LLM synthesis OK for {n_ok}/{len(synthesis_results)} tickers")
 
     # ── RE-RANK AFTER LLM ADJUSTMENTS ────────────────────────────────────────
     # LLM synthesis can shift alpha_score via conviction_adjustment. Both
