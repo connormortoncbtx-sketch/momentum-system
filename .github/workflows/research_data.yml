@@ -1,0 +1,61 @@
+name: Research Data (price history for backtests)
+
+# Manual only. Pulls ~10 yrs of adjusted daily bars from Alpaca, condenses
+# to a weekly panel, and force-pushes it to the orphan `research-data`
+# branch so main (and Pages) never carry the data.
+on:
+  workflow_dispatch:
+    inputs:
+      start:
+        description: 'History start date'
+        required: false
+        default: '2016-01-01'
+      feed:
+        description: 'Alpaca data feed (sip or iex)'
+        required: false
+        default: 'sip'
+      limit:
+        description: 'Debug: only first N symbols (0 = all)'
+        required: false
+        default: '0'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: research-data
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install
+        run: pip install "alpaca-py>=0.30.0" "pandas>=2.0" pyarrow
+
+      - name: Fetch history
+        env:
+          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+        run: |
+          python research/fetch_history.py \
+            --start "${{ inputs.start }}" --feed "${{ inputs.feed }}" \
+            --limit "${{ inputs.limit }}" --out research_data
+
+      - name: Push to research-data branch
+        run: |
+          cd research_data
+          git init -q
+          git config user.name  "momentum-bot"
+          git config user.email "momentum-bot@users.noreply.github.com"
+          git checkout -q -b research-data
+          git add -A
+          git commit -q -m "research data $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" research-data
