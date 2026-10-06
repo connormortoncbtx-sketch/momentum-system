@@ -101,3 +101,33 @@ optimistic.
 - Catalyst, fundamental and sentiment signals are untested (their 17 live
   weeks showed IC ≈ 0).
 - Monday-close fills are assumed to be at the closing print.
+
+---
+
+# Round 2 (same day): restructured core + new data
+
+**Rule:** every design was chosen on 2017–2023 data and scored once on
+2024–2026 (insiders: through Jun 2026, when the SEC data ends).
+
+| Family (best of grid) | Designs tried | Dev Sharpe | Dev SPY | Holdout CAGR | Holdout SPY |
+|---|---|---|---|---|---|
+| Momentum v3 (RS, 20 names, monthly, inv-vol) | 144 | 0.74 | 0.76 | 8.9% | 20.6% |
+| Earnings drift (SEC 8-K 2.02, gap-up reactions, 13-wk window) | 144 | 0.77 | 0.76 | 19.1% | 20.6% |
+| Insider purchases (Form 4 $/volume + 12-1 momentum) | 120 | 0.66 | 0.76 | 9.7% | 21.3% |
+
+**Event studies (dev years):**
+- Earnings drift: the best-reaction fifth trails SPY by 0.7% over 12 weeks;
+  the worst fifth trails by 0.8%. There is no meaningful spread.
+- Insiders: cluster buys show +1.2–1.6% at 12 weeks, but negative at 8 and
+  26 weeks. The sign flips, so this is noise (no t-stat above 2).
+
+**Company size explains part of the gap to SPY.** The equal-weight
+universe trailed SPY by 3.7%/yr in dev and 7.2%/yr in the holdout
+(mega-caps dominated the decade). Measured against the universe the
+strategies actually pick from, holdout alphas are momentum −7.0%/yr,
+earnings drift +4.6%/yr and insiders −6.7%/yr. None of the t-stats
+exceeds 1, so there is no detectable stock-picking skill.
+
+Data added to the `research-data` branch:
+- `earnings_events.parquet`: 126k events, 4,165 companies.
+- `insider_buys.parquet`: 293k purchases, 8,585 tickers.
