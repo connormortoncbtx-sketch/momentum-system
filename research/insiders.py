@@ -31,6 +31,12 @@ HOLD = ("2024-01-05", "2026-07-03")   # SEC insider data ends 2026-06-30
 p = B.load_panel(DATA, "2026-10-02")
 f = B.features(p)
 U = B.universe(p, f, 5.0, 2e6)
+import os
+SFX = ""
+if os.environ.get("UNIV") == "top500":
+    # large caps: 500 most-traded names (4-wk avg $ volume) among the base universe
+    U = U & (f["adv"].where(U).rank(axis=1, ascending=False) <= 500)
+    SFX = "_top500"
 ib = pd.read_parquet(f"{DATA}/insider_buys.parquet")
 ib = ib[(ib.value_usd > 0) & ib.symbol.isin(p.symbols)]
 avail = ib.filing_date + pd.Timedelta(days=1)
@@ -115,7 +121,7 @@ print(t.round(2).to_string())
 for k, v in grp.items():
     x = v["abn_8w"].dropna()
     print(f"  {k:<26} 8w t-stat {x.mean()/x.std()*np.sqrt(len(x)):.1f}")
-es.to_parquet(OUT / "insider_event_study.parquet", index=False)
+es.to_parquet(OUT / f"insider_event_study{SFX}.parquet", index=False)
 
 # ── STAGE 2: portfolio grid ──────────────────────────────────────────────────
 rk = lambda x: B.xrank(x, U)
@@ -148,9 +154,9 @@ if "--holdout-only" not in sys.argv:
         rows.append({"score": name, "window_w": L, "k": k, "n": n, "weights": wt, **B.stats(r)})
     print(f"\n{len(grid)} dev runs in {(time.time()-t0)/60:.1f} min")
     dev = pd.DataFrame(rows).sort_values("Sharpe", ascending=False)
-    dev.to_csv(OUT / "insider_dev_grid.csv", index=False)
+    dev.to_csv(OUT / f"insider_dev_grid{SFX}.csv", index=False)
 else:
-    dev = pd.read_csv(OUT / "insider_dev_grid.csv")
+    dev = pd.read_csv(OUT / f"insider_dev_grid{SFX}.csv")
 
 spy_r = (d1c["SPY"].shift(-2) / d1c["SPY"].shift(-1) - 1)
 print("\nSPY dev:", {k: round(v, 2) for k, v in B.stats(spy_r.loc[DEV[0]:DEV[1]]).items()})
@@ -169,4 +175,4 @@ print("INSIDER:", {k: round(v, 2) for k, v in B.stats(hold).items()}, "| missing
 print("SPY    :", {k: round(v, 2) for k, v in B.stats(spy_r.loc[HOLD[0]:HOLD[1]]).items()})
 print("by year:", B.by_year(hold).round(1).to_dict(),
       " SPY:", B.by_year(spy_r.loc[HOLD[0]:HOLD[1]].dropna()).round(1).to_dict())
-pd.DataFrame({"insider": hold, "SPY": spy_r.reindex(hold.index)}).to_csv(OUT / "insider_holdout_weekly.csv")
+pd.DataFrame({"insider": hold, "SPY": spy_r.reindex(hold.index)}).to_csv(OUT / f"insider_holdout_weekly{SFX}.csv")

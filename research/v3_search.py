@@ -16,6 +16,12 @@ HOLD = ("2024-01-05", "2026-09-18")   # last formation week with a full Mon->Mon
 p = B.load_panel(DATA, "2026-10-02")
 f = B.features(p)
 U = B.universe(p, f, 5.0, 2e6)
+import os
+SFX = ""
+if os.environ.get("UNIV") == "top500":
+    # large caps: 500 most-traded names (4-wk avg $ volume) among the base universe
+    U = U & (f["adv"].where(U).rank(axis=1, ascending=False) <= 500)
+    SFX = "_top500"
 rk = lambda x: B.xrank(x, U)
 signals = {
     "live_proxy": (0.35 * rk(f["rs_live"]) + 0.25 * rk(f["trend"]) + 0.20 * rk(f["hi52"])) / 0.80,
@@ -26,7 +32,7 @@ signals = {
     "m12_1+hi52+reversal": rk(f["m12_1"]) + rk(f["hi52"]) + rk(-f["r1w"]),
 }
 grid = list(itertools.product(signals, (2, 4, 8), (20, 30), (1, 2), ("equal", "invvol")))
-if "--holdout-only" in sys.argv and (OUT / "v3_dev_grid.csv").exists():
+if "--holdout-only" in sys.argv and (OUT / f"v3_dev_grid{SFX}.csv").exists():
     grid = []
 rows = []
 t0 = time.time()
@@ -38,9 +44,9 @@ for sig, k, n, bmult, wt in grid:
 print(f"{len(grid)} dev runs in {(time.time()-t0)/60:.1f} min")
 if rows:
     dev = pd.DataFrame(rows).sort_values("Sharpe", ascending=False)
-    dev.to_csv(OUT / "v3_dev_grid.csv", index=False)
+    dev.to_csv(OUT / f"v3_dev_grid{SFX}.csv", index=False)
 else:
-    dev = pd.read_csv(OUT / "v3_dev_grid.csv")
+    dev = pd.read_csv(OUT / f"v3_dev_grid{SFX}.csv")
 
 spy = p.df("d1_close")["SPY"]; spy_r = (spy.shift(-2) / spy.shift(-1) - 1)
 print("\nSPY dev:", {k: round(v, 2) for k, v in B.stats(spy_r.loc[DEV[0]:DEV[1]]).items()})
@@ -56,4 +62,4 @@ print("\n=== HOLDOUT (2024-01 -> 2026-09), pre-registered pick:", dict(best[["si
 print("v3   :", {k: round(v, 2) for k, v in B.stats(hold).items()}, "| missing-return fills:", B.simulate.missing)
 print("SPY  :", {k: round(v, 2) for k, v in B.stats(spy_r.loc[HOLD[0]:HOLD[1]]).items()})
 print("by year v3:", B.by_year(hold).round(1).to_dict(), " SPY:", B.by_year(spy_r.loc[HOLD[0]:HOLD[1]].dropna()).round(1).to_dict())
-pd.DataFrame({"v3": hold, "SPY": spy_r.reindex(hold.index)}).to_csv(OUT / "v3_holdout_weekly.csv")
+pd.DataFrame({"v3": hold, "SPY": spy_r.reindex(hold.index)}).to_csv(OUT / f"v3_holdout_weekly{SFX}.csv")

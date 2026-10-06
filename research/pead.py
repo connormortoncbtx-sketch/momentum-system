@@ -29,6 +29,12 @@ HOLD = ("2024-01-05", "2026-09-18")
 p = B.load_panel(DATA, "2026-10-02")
 f = B.features(p)
 U = B.universe(p, f, 5.0, 2e6)
+import os
+SFX = ""
+if os.environ.get("UNIV") == "top500":
+    # large caps: 500 most-traded names (4-wk avg $ volume) among the base universe
+    U = U & (f["adv"].where(U).rank(axis=1, ascending=False) <= 500)
+    SFX = "_top500"
 ev = pd.read_parquet(f"{DATA}/earnings_events.parquet")
 ev = ev.dropna(subset=["sue"])
 ev["avail_week"] = pd.to_datetime(ev["d1"]) + pd.to_timedelta(4 - pd.to_datetime(ev["d1"]).dt.weekday, unit="D")
@@ -77,7 +83,7 @@ for h in H:
     x = t5[f"abn_{h}w"].dropna()
     print(f"  Q5 {h:>2}w: mean {x.mean()*100:+.2f}%  t={x.mean()/x.std()*np.sqrt(len(x)):.1f}  "
           f"(round-trip cost at 15bps = 0.30%)")
-es.to_parquet(OUT / "pead_event_study.parquet", index=False)
+es.to_parquet(OUT / f"pead_event_study{SFX}.parquet", index=False)
 
 # ── STAGE 2: portfolio grid ──────────────────────────────────────────────────
 def event_score(col, max_age):
@@ -120,9 +126,9 @@ if not holdout_only:
         rows.append({"score": name, "max_age_w": age, "k": k, "n": n, "weights": wt, **B.stats(r)})
     print(f"\n{len(grid)} dev portfolio runs in {(time.time()-t0)/60:.1f} min")
     dev = pd.DataFrame(rows).sort_values("Sharpe", ascending=False)
-    dev.to_csv(OUT / "pead_dev_grid.csv", index=False)
+    dev.to_csv(OUT / f"pead_dev_grid{SFX}.csv", index=False)
 else:
-    dev = pd.read_csv(OUT / "pead_dev_grid.csv")
+    dev = pd.read_csv(OUT / f"pead_dev_grid{SFX}.csv")
 
 spy_r = (d1c["SPY"].shift(-2) / d1c["SPY"].shift(-1) - 1)
 print("\nSPY dev:", {k: round(v, 2) for k, v in B.stats(spy_r.loc[DEV[0]:DEV[1]]).items()})
@@ -142,4 +148,4 @@ print("PEAD :", {k: round(v, 2) for k, v in B.stats(hold).items()}, "| missing f
 print("SPY  :", {k: round(v, 2) for k, v in B.stats(spy_r.loc[HOLD[0]:HOLD[1]]).items()})
 print("by year PEAD:", B.by_year(hold).round(1).to_dict(),
       " SPY:", B.by_year(spy_r.loc[HOLD[0]:HOLD[1]].dropna()).round(1).to_dict())
-pd.DataFrame({"pead": hold, "SPY": spy_r.reindex(hold.index)}).to_csv(OUT / "pead_holdout_weekly.csv")
+pd.DataFrame({"pead": hold, "SPY": spy_r.reindex(hold.index)}).to_csv(OUT / f"pead_holdout_weekly{SFX}.csv")
