@@ -1,1 +1,1 @@
-news labels: {'ok': 1458, 'no_news': 119, "fatal: Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too lo": 1}, spend $40.01, model claude-sonnet-5-5
+news labels: {'ok': 2069, 'no_news': 131}, spend $2.25, model claude-sonnet-5-5
