@@ -52,6 +52,14 @@ weekly lows) was about as negative as what happened. The plumbing failures
 removed the risk controls and added weekend gap risk, but the designed
 strategy would also have lost money in this stretch.
 
+**Correction (later the same day, from the 10-year backtest in
+`docs/2026-10_strategy_research.md`):** the timing bug and the missing stops
+did *not* make things worse on average. Tuesday-open-in / Monday-open-out
+beat the designed Monday-close-in / Friday-close-out timing (−4.1% vs −8.8%
+CAGR, 2017–2026), and a 7% hard stop lowered returns. The losses come from
+the strategy design: weekly full turnover, a 10-name basket, and a
+momentum-hostile 12 months.
+
 ## Fixes shipped 2026-10-06
 
 - Entry/monitor/premarket moved to an exact-time Netlify scheduled-function dispatcher

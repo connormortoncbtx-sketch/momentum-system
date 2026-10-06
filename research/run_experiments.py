@@ -175,6 +175,24 @@ def main():
         t = pd.DataFrame({"no filter": B.stats(base), "cash when SPY < 40w SMA": B.stats(filt)}).T
         lines += ["\n## E. Market regime filter (live proxy, weekly)\n", fmt(t)]
 
+    # ── G. cost sensitivity & turnover control ─────────────────────────────
+    g = {}
+    for name in ["live_momentum_proxy", "m12_1", "hi52 (near 52w high)"]:
+        sc = signals[name].loc[keep]
+        for c in (5, 15, 30):
+            g[(name, f"weekly full turnover, {c}bps")] = B.stats(B.top_n(sc, R(fwd), R(U), N, c))
+        for c in (5, 15):
+            g[(name, f"buffered top-30 hold, {c}bps")] = B.stats(B.top_n_buffered(p, sc, U.loc[keep], N, 30, c))
+    t = pd.DataFrame(g).T
+    t.index.names = ["signal", "variant"]
+    t.to_csv(out / "costs_turnover.csv")
+    lines += ["\n## G. Costs and turnover (top-10)\n", fmt(t)]
+    if "SPY" in p.symbols:
+        d1c = p.df("d1_close")["SPY"]
+        spy_hold = R((d1c.shift(-2) / d1c.shift(-1) - 1))
+        lines += ["\nSPY held continuously (Mon close → Mon close): "
+                  + ", ".join(f"{k} {v:.2f}" for k, v in B.stats(spy_hold).items()) + "\n"]
+
     # ── F. recent window ─────────────────────────────────────────────────────
     recent = {k: v.loc["2025-10-01":] for k, v in port.items()}
     t = pd.DataFrame({k: B.stats(v) for k, v in recent.items()}).T.sort_values("Sharpe", ascending=False)

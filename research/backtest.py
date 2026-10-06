@@ -72,6 +72,8 @@ def load_panel(data_dir: str, last_complete_week: str | None = None) -> Panel:
     assets = pd.read_parquet(f"{data_dir}/assets.parquet").set_index("symbol")
 
     cols = ["d1_open", "d1_close", "d2_open", "close", "low_after_d1", "high", "dollar_vol", "n_days"]
+    if "raw_close" in long.columns:
+        cols.append("raw_close")
     wide = {c: long.pivot(index="week", columns="symbol", values=c).sort_index() for c in cols}
     weeks, symbols = wide["close"].index, wide["close"].columns
     p = Panel(weeks=weeks, symbols=symbols)
@@ -103,13 +105,25 @@ def features(p: Panel) -> dict[str, pd.DataFrame]:
     f["trend"] = (C > sma10).astype(float) + (sma10 > sma40).astype(float) + (C > sma40).astype(float)
     f["adv"] = dv.rolling(4, min_periods=3).sum() / nd.rolling(4, min_periods=3).sum()
     f["hist"] = C.notna().rolling(53, min_periods=1).sum()
-    f["price"] = C
+    if "raw_close" in p.m:
+        # Price filters must use the price that actually traded. Adjusted history
+        # inflates reverse-splitters' past prices (a $0.20 stock shows as $25,000).
+        raw = p.df("raw_close")
+        f["price"] = raw
+        ratio = C / raw                      # cumulative adjustment factor at t
+        # factor shrinks across a reverse split: past adj/raw >> current adj/raw
+        f["rsplit_52w"] = (ratio.rolling(52, min_periods=2).max() / ratio) > 1.5
+    else:
+        f["price"] = C
+        f["rsplit_52w"] = pd.DataFrame(False, index=C.index, columns=C.columns)
     return f
 
 
-def universe(p: Panel, f, min_price=5.0, min_adv=2e6) -> pd.DataFrame:
+def universe(p: Panel, f, min_price=5.0, min_adv=2e6, exclude_rsplit=True) -> pd.DataFrame:
     u = (f["price"] >= min_price) & (f["adv"] >= min_adv) & (f["hist"] >= 53)
     u &= ~pd.Series(p.is_fund, index=p.symbols)
+    if exclude_rsplit:
+        u &= ~f["rsplit_52w"].fillna(False).astype(bool)
     return u
 
 
@@ -202,3 +216,30 @@ def stats(r: pd.Series) -> dict:
 
 def by_year(r: pd.Series) -> pd.Series:
     return r.groupby(r.index.year).apply(lambda x: ((1 + x).prod() - 1) * 100)
+
+
+def top_n_buffered(p: Panel, score: pd.DataFrame, mask: pd.DataFrame, n=10, buffer=30,
+                   cost_bps=15.0) -> pd.Series:
+    """Persistent portfolio rebalanced at MONDAY CLOSE using Friday's signal.
+
+    Holdings that still rank within `buffer` are kept; only drop-outs are
+    replaced. Return for formation week t = Monday close (t+1) -> Monday close
+    (t+2), so weekends are held. Costs charged on actual turnover.
+    """
+    d1c = p.df("d1_close")
+    r = (d1c.shift(-2) / d1c.shift(-1) - 1)          # aligned to formation week t
+    r = r.where(r.abs() < 1.5)
+    held: list[str] = []
+    out = {}
+    for wk in score.index:
+        s = score.loc[wk].where(mask.loc[wk] & r.loc[wk].notna()).dropna()
+        if len(s) < n:
+            continue
+        ranks = s.rank(ascending=False)
+        keep = [h for h in held if h in ranks.index and ranks[h] <= buffer]
+        fill = [x for x in s.nlargest(n + len(keep)).index if x not in keep][: n - len(keep)]
+        new = keep + fill
+        turnover = len(set(new) - set(held)) / n          # fraction of book bought (= sold)
+        out[wk] = r.loc[wk, new].mean() - 2 * turnover * cost_bps / 1e4
+        held = new
+    return pd.Series(out, dtype=float)
