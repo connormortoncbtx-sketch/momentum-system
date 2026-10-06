@@ -1,0 +1,51 @@
+name: Research Events (SEC earnings dates + reactions)
+
+# Manual only. Builds earnings_events.parquet from SEC EDGAR 8-K Item 2.02
+# filings plus Alpaca daily bars, and adds it to the research-data branch.
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: 'Debug: only first N symbols (0 = all)'
+        required: false
+        default: '0'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: research-data
+  cancel-in-progress: false
+
+jobs:
+  events:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install
+        run: pip install "alpaca-py>=0.30.0" "pandas>=2.0" pyarrow numpy
+
+      - name: Load research-data branch
+        run: git clone -q --depth 1 -b research-data "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" research_data
+
+      - name: Build earnings events
+        env:
+          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+        run: python research/fetch_events.py --data research_data --limit "${{ inputs.limit }}"
+
+      - name: Push to research-data branch
+        run: |
+          cd research_data
+          git config user.name  "momentum-bot"
+          git config user.email "momentum-bot@users.noreply.github.com"
+          git add -A
+          git commit -q -m "research events $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" HEAD:research-data
