@@ -184,3 +184,59 @@ anonymized headlines and summaries.
 Six designs have been scored on the holdout (3 families × 2 universes). With
 that many looks, one beating SPY on raw return by luck is expected. None
 shows beta-adjusted alpha with t > 1.
+
+---
+
+# Round 4: your manual trades, intraday rules, AI news (complete)
+
+## Your manual trade log (69 trades, Apr 7 – Jun 5, 2026)
+
+- **Verified:** +4.52% average per trade, 65% win rate. These were the live
+  model's top ranks (mostly 1–15), not discretionary picks. Compounded over
+  7 trading weeks: **+35.8%**, vs SPY +8.4% and the price-only proxy +5.3%.
+  The full live model (catalyst, fundamentals, sentiment, LLM) did something
+  in that window that price signals alone did not.
+- **What followed:** over the next 10 weeks the live model's top 10 lost
+  19.9% while SPY gained 0.7% (performance_log). Weekly excess vs SPY across
+  all 16 logged weeks: −0.9%/wk (t −0.7).
+- **Stops and trails in your own trades:** the same 67 entries held to
+  Friday close would have averaged +5.38% per trade, vs +4.72% actual.
+  Stops filled at −10.2% on average against 7–10% settings, because stocks
+  gapped through them.
+
+## Intraday rules on 5-minute bars (2017–2026)
+
+- **Data:** 2.66M bars, the price-only proxy's top-10 picks each week.
+  5,004 paths; matches daily data with correlation 0.9986.
+- **Test:** 135 rule sets, covering entry timing, hard stops (5–15%),
+  trailing stops (8–25% trigger / 4–10% trail) and selling half at the
+  trigger. Gap-through fills use the bar's open. Costs 15 bps per side.
+
+| Rule | Dev per trade | Holdout per trade |
+|---|---|---|
+| Hold Mon close → Fri close (baseline) | −0.39% | −0.10% |
+| Best dev: trail on at +8%, trails 4%, sell half at trigger | −0.24% | −0.12% |
+| Live-style: 10% stop, trail on at +17% / 8%, sell half | −0.46% | −0.09% |
+| Enter Tue open (hold) | −0.55% | — |
+| Enter Mon open (hold) | −0.68% | — |
+
+Intraday management moves results by about 0.1–0.2% per trade and does not
+help on the holdout. Monday close is the best entry time. **Which stocks get
+picked decides the outcome; intraday handling barely changes it.**
+
+## AI news classification (complete: 2,200 events, about $7.50)
+
+| | Dev | Holdout | Post-cutoff (clean) |
+|---|---|---|---|
+| Fundamental score, return per point | +0.61% (t 1.9) | −0.56% (t −1.0) | −0.12% (t −0.3) |
+| Guidance raised vs lowered | +0.2 / −1.9% | +1.5 / −3.0% | −3.4 / +0.9% |
+
+The only positive result is in the period the model may remember. It
+disappears on events after its training cutoff.
+
+## Running now
+
+`shadow_lc.yml` / `automation/shadow_lc_momentum.py` runs a shadow of the
+large-cap monthly momentum design with no orders. It writes one row per week
+to `data/shadow_lc_ledger.jsonl`: shadow value, live Alpaca equity and SPY,
+all indexed to 100 from Oct 5, 2026.
