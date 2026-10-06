@@ -94,14 +94,16 @@ def earnings_filings(symbols: set[str]) -> pd.DataFrame:
         if n % 500 == 0:
             log.info(f"  EDGAR {n:,}/{len(cmap):,} issuers, {len(rows):,} filings")
     df = pd.DataFrame(rows)
-    # EDGAR acceptanceDateTime is Eastern despite the trailing Z
-    df["accepted_et"] = pd.to_datetime(df["accepted"].str.replace("Z", "", regex=False).str[:19])
+    # acceptanceDateTime is UTC (verified: hour histogram peaks at 20-21h and
+    # 10-12h UTC = the 4-5pm / 6-8am ET earnings slots). Convert to Eastern.
+    df["accepted_et"] = (pd.to_datetime(df["accepted"], utc=True)
+                         .dt.tz_convert("America/New_York").dt.tz_localize(None))
     df = df[df.form == "8-K"].sort_values("accepted_et")
     # one event per symbol per 20 days (8-K amendments / duplicate exhibits)
     df["gap_days"] = df.groupby("symbol")["accepted_et"].diff().dt.days
     df = df[(df.gap_days.isna()) | (df.gap_days > 20)].drop(columns="gap_days")
     hrs = df.accepted_et.dt.hour.value_counts(normalize=True).sort_index().round(3)
-    log.info(f"Acceptance-hour distribution (expect peaks ~6-9 and 16-17 if ET): {hrs.to_dict()}")
+    log.info(f"Acceptance-hour distribution, ET (expect peaks ~6-9 and 16-17): {hrs.to_dict()}")
     return df
 
 
