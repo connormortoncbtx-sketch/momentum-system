@@ -1,0 +1,44 @@
+name: Research Insiders (SEC Form 4 purchases)
+
+# Manual only. Adds insider_buys.parquet to the research-data branch.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: research-data
+  cancel-in-progress: false
+
+jobs:
+  insiders:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install
+        run: pip install "pandas>=2.0" pyarrow
+
+      - name: Load research-data branch
+        run: git clone -q --depth 1 -b research-data "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" research_data
+
+      - name: Fetch insider purchases
+        env:
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+          RESEARCH_DATA: research_data
+        run: python research/fetch_insiders.py
+
+      - name: Push to research-data branch
+        run: |
+          cd research_data
+          git config user.name  "momentum-bot"
+          git config user.email "momentum-bot@users.noreply.github.com"
+          git add -A
+          git commit -q -m "research insiders $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" HEAD:research-data
