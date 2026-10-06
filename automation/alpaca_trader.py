@@ -146,6 +146,69 @@ CIRCUIT_BREAKER_PCT = None   # e.g. 0.08 = exit if down 8% from Monday open
 # -- WITHDRAWAL PARAMETERS ----------------------------------------------------
 WITHDRAWAL_FLOOR = 10000.0
 
+# -- SESSION WINDOW GUARD (2026-10-06) ----------------------------------------
+# GitHub scheduled runs drifted 1-5 HOURS late from May-Oct 2026: 43 of 45
+# Monday entries and nearly every Friday exit fired after the 3:00 PM CT
+# close. Market DAY orders then queued for the next open, so baskets were
+# entered at Tuesday open and held over the weekend until Monday open.
+# Every order now checks the Alpaca market clock before submitting.
+#
+# Entry outside the window -> refuse (cash is safe; a random-time entry isn't
+#   the strategy). Alerts loudly.
+# Exit after close -> still submit (queues for next open) -- flattening at the
+#   open beats carrying an unmanaged basket another week. Alerts loudly.
+# Exit too early -> refuse; the dispatcher fired at the wrong time.
+SESSION_WINDOW_MIN_TO_CLOSE = 4     # minutes; below this, orders may not fill
+SESSION_WINDOW_MAX_TO_CLOSE = 45    # minutes; above this, we're too early
+
+
+def minutes_to_close(client) -> tuple[bool, float | None]:
+    """Return (is_open, minutes until today's close) from Alpaca's clock.
+
+    minutes is None when the market is closed. Uses the broker clock rather
+    than the runner clock so holidays and half-days are handled for free.
+    """
+    clock = client.get_clock()
+    if not clock.is_open:
+        return False, None
+    mins = (clock.next_close - clock.timestamp).total_seconds() / 60.0
+    return True, mins
+
+
+def session_window_ok(client, mode: str) -> bool:
+    """Gate order submission on the pre-close window. Logs + alerts on refusal."""
+    try:
+        is_open, mins = minutes_to_close(client)
+    except Exception as e:
+        log.error(f"Market clock unavailable ({e}) -- refusing {mode}")
+        log_event("alpaca_trader", LogStatus.ERROR,
+                  f"{mode}: market clock unavailable, no orders submitted",
+                  errors=[str(e)])
+        notify_error("alpaca_trader", f"{mode.upper()} aborted: market clock unavailable ({e})")
+        return False
+
+    if is_open and SESSION_WINDOW_MIN_TO_CLOSE <= mins <= SESSION_WINDOW_MAX_TO_CLOSE:
+        log.info(f"Session window OK: {mins:.1f} min to close")
+        return True
+
+    if mode == "exit" and not is_open:
+        msg = ("EXIT ran after the close -- submitting anyway; sells queue for "
+               "next open. Check the dispatcher.")
+        log.warning(msg)
+        log_event("alpaca_trader", LogStatus.WARNING, "Exit: late run, queued for next open",
+                  metrics={"market_open": False})
+        notify_alert("alpaca_trader", msg)
+        return True
+
+    where = "market closed" if not is_open else f"{mins:.0f} min to close"
+    msg = (f"{mode.upper()} refused: outside pre-close window ({where}). "
+           f"No orders submitted. Check the dispatcher.")
+    log.error(msg)
+    log_event("alpaca_trader", LogStatus.ERROR, msg,
+              metrics={"market_open": is_open, "minutes_to_close": mins})
+    notify_error("alpaca_trader", msg)
+    return False
+
 
 # ── ALPACA CLIENT ─────────────────────────────────────────────────────────────
 
@@ -470,6 +533,29 @@ def run_entry():
 
     client = get_alpaca()
 
+    if not session_window_ok(client, "entry"):
+        return
+
+    # Idempotency: queued/working BUY orders mean an earlier run already
+    # entered this week. Positions alone isn't enough -- orders submitted
+    # after hours don't become positions until the next open, which is how
+    # the duplicate CST cron kept passing this check and wiping state
+    # (2026-06-22 onward).
+    try:
+        from alpaca.trading.requests import GetOrdersRequest
+        from alpaca.trading.enums import QueryOrderStatus
+        open_buys = [o for o in client.get_orders(filter=GetOrdersRequest(status=QueryOrderStatus.OPEN))
+                     if o.side == OrderSide.BUY]
+    except Exception as e:
+        log.error(f"Could not list open orders ({e}) -- refusing entry to avoid duplicates")
+        notify_error("alpaca_trader", f"ENTRY aborted: could not list open orders ({e})")
+        return
+    if open_buys:
+        log.warning(f"{len(open_buys)} open BUY orders already exist -- entry already ran; skipping")
+        log_event("alpaca_trader", LogStatus.INFO,
+                  f"Skipped entry: {len(open_buys)} open BUY orders already working")
+        return
+
     if not SCORES_CSV.exists():
         log.error("No scores_final.csv -- run weekly pipeline first")
         return
@@ -517,17 +603,30 @@ def run_entry():
     deployable = cash
     if cash <= 0:
         log.warning("No settled cash available -- skipping entry")
+        log_event("alpaca_trader", LogStatus.WARNING, "Skipped entry: no settled cash")
+        notify_alert("alpaca_trader", "Entry skipped: no settled cash available")
         return
     if cash < portfolio_value * 0.45:
         log.warning(f"Cash ${cash:,.2f} is unusually low vs portfolio ${portfolio_value:,.2f} "
                     f"-- possible unsettled trades or margin usage. Skipping entry.")
+        log_event("alpaca_trader", LogStatus.WARNING,
+                  f"Skipped entry: cash ${cash:,.0f} < 45% of portfolio ${portfolio_value:,.0f}")
+        notify_alert("alpaca_trader", f"Entry skipped: cash ${cash:,.0f} unusually low "
+                                      f"vs portfolio ${portfolio_value:,.0f}")
         return
     log.info(f"Deployable (cash only, no margin): ${deployable:,.2f}")
 
     existing = {p.symbol for p in client.get_all_positions()}
     if existing:
+        # Previously a silent skip -- a stranded CLBK position blocked the
+        # 2026-09-14 and 09-21 entries with no alert.
         log.warning(f"Already holding {len(existing)} positions: {existing}")
         log.warning("Skipping entry -- close existing positions first")
+        log_event("alpaca_trader", LogStatus.WARNING,
+                  f"Skipped entry: {len(existing)} stray positions held",
+                  metrics={"symbols": sorted(existing)[:10]})
+        notify_alert("alpaca_trader", f"Entry BLOCKED by stray positions: "
+                                      f"{', '.join(sorted(existing)[:5])}. Close them manually.")
         return
 
     positions  = compute_positions(scores, deployable)
@@ -545,10 +644,14 @@ def run_entry():
     filled    = []
     failed    = []
     skipped   = []
+    # Build the new week's state separately and only persist it if at least
+    # one order was accepted. Previously state was reset up front, so a run
+    # whose orders all failed (e.g. the duplicate CST cron hitting buying
+    # power) saved EMPTY positions over the real ones -- place_stops then
+    # skipped and the monitor had nothing to manage (Jun 22 - Oct 2026).
+    from automation.tz_utils import now_ct
     state     = load_state()
-    state["entry_date"]       = datetime.date.today().isoformat()
-    state["week_open_value"]  = portfolio_value
-    state["positions"]        = {}
+    new_positions = {}
 
     candidates_queue = primaries + fallbacks
 
@@ -603,7 +706,7 @@ def run_entry():
                      f"(${p['dollar_size']:,.0f})  "
                      f"rank={p['composite_rank']}  {p['conviction']}")
             filled.append(sym)
-            state["positions"][sym] = {
+            new_positions[sym] = {
                 "shares":               shares,
                 "entry_price_est":      p["price"],
                 "hard_stop_pct":        p["suggested_hard_stop_pct"],
@@ -628,11 +731,17 @@ def run_entry():
         skipped = unused
         log.info(f"  Unused fallbacks (not needed): {skipped}")
 
-    save_state(state)
+    if filled:
+        state["entry_date"]      = now_ct().date().isoformat()
+        state["week_open_value"] = portfolio_value
+        state["positions"]       = new_positions
+        save_state(state)
+    else:
+        log.error("No orders accepted -- leaving existing state untouched")
 
     log.info(f"Entry complete: {len(filled)} filled, {len(failed)} failed, "
              f"{len(skipped)} fallbacks unused")
-    fallback_used = [s for s in filled if state["positions"][s].get("is_fallback")]
+    fallback_used = [s for s in filled if new_positions[s].get("is_fallback")]
     if fallback_used:
         log.info(f"  Fallbacks used: {fallback_used}")
     if failed:
@@ -707,8 +816,14 @@ def run_place_stops():
     state_positions = state.get("positions", {})
 
     if not state_positions:
-        log.warning("State has no positions but Alpaca does -- skipping to avoid placing "
-                    "stops on positions we don't have metadata for")
+        # This was a silent skip for ~15 weeks (Jun-Oct 2026) after state got
+        # wiped: positions sat with NO hard stops. Make it impossible to miss.
+        msg = (f"State has no positions but Alpaca holds {len(live_positions)} -- "
+               f"NO STOPS PLACED. Positions are unprotected.")
+        log.error(msg)
+        log_event("alpaca_trader", LogStatus.ERROR, msg,
+                  metrics={"symbols": sorted(live_by_symbol)[:10]})
+        notify_error("alpaca_trader", msg)
         return
 
     placed    = []
@@ -857,6 +972,11 @@ def run_exit():
         save_state(state)
         return
 
+    # Guard after the no-positions check so a late backstop run following a
+    # successful on-time exit stays a quiet no-op instead of alerting.
+    if not session_window_ok(client, "exit"):
+        return
+
     account          = client.get_account()
     portfolio_value  = float(account.portfolio_value)
     state            = load_state()
@@ -898,6 +1018,21 @@ def run_exit():
     if cancelled_stops:
         log.info(f"  Cancelled {len(cancelled_stops)} outstanding stop orders")
 
+    # Idempotency: a market/limit SELL already working for a symbol means an
+    # earlier exit run covered it (e.g. sells queued after the close). Don't
+    # resubmit -- the duplicate run used to fail every symbol and log a
+    # spurious "0 closed, N FAILED" warning each week.
+    pending_sells = {
+        o.symbol for o in open_orders
+        if o.side == OrderSide.SELL
+        and o.order_type not in (OrderType.STOP, OrderType.STOP_LIMIT, OrderType.TRAILING_STOP)
+    }
+    if pending_sells and position_symbols <= pending_sells:
+        log.info(f"All {len(position_symbols)} positions already have working sells -- nothing to do")
+        log_event("alpaca_trader", LogStatus.INFO,
+                  "Skipped exit: sells already working for all positions")
+        return
+
     # ── STEP 2: SUBMIT MARKET SELLS (DAY, not CLS) ─────────────────────────
     # Mirrors the 2026-04-27 entry-side fix. The same closing-auction
     # pro-rata problem that shorted Monday buys can short Friday sells --
@@ -922,6 +1057,9 @@ def run_exit():
     for pos in positions:
         sym    = pos.symbol
         shares = int(float(pos.qty))
+        if sym in pending_sells:
+            log.info(f"  {sym}: sell already working -- skipping")
+            continue
         try:
             client.submit_order(
                 order_data=MarketOrderRequest(

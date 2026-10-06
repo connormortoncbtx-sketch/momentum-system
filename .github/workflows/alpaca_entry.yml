@@ -1,22 +1,10 @@
 name: Alpaca Entry (Monday Close)
 
 on:
-  schedule:
-    # Monday 2:45 PM CT -- normal entry day
-    # Timing: 15 min before close. Submitting market DAY orders here gives
-    # them time to fill against the live close-ramp book without competing
-    # in the closing auction's pro-rata mechanism. Previously 2:30 CT with
-    # CLS time-in-force, but the auction shorted high-conviction names by
-    # 30-60% on 2026-04-27 (see alpaca_trader.py patch notes).
-    # CDT (Mar-Nov): UTC-5 -> 19:45 UTC
-    - cron: '45 19 * * 1'
-    # CST (Nov-Mar): UTC-6 -> 20:45 UTC
-    - cron: '45 20 * * 1'
-    # Tuesday 2:45 PM CT -- fallback when Monday is a holiday
-    # CDT (Mar-Nov): UTC-5 -> 19:45 UTC
-    - cron: '45 19 * * 2'
-    # CST (Nov-Mar): UTC-6 -> 20:45 UTC
-    - cron: '45 20 * * 2'
+  # 2026-10-06: schedule removed. GitHub cron ran this 1-5 HOURS late from
+  # May-Oct 2026 (43/45 entries fired after the close). Now triggered at the
+  # exact time by an external dispatcher calling workflow_dispatch on
+  # America/Chicago time -- see docs/scheduler_setup.md.
   workflow_dispatch:
 
 permissions:

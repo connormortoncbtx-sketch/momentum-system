@@ -1,31 +1,16 @@
 name: Alpaca Intraday Monitor
 
 on:
-  schedule:
-    # Job 1 -- 8:30 AM CT (market open) Mon-Fri
-    # CDT (Mar-Nov): UTC-5 -> 13:30 UTC
-    - cron: '30 13 * * 1-5'
-    # CST (Nov-Mar): UTC-6 -> 14:30 UTC
-    - cron: '30 14 * * 1-5'
-
-    # Job 2 -- 11:15 AM CT Mon-Fri
-    # CDT (Mar-Nov): UTC-5 -> 16:15 UTC
-    - cron: '15 16 * * 1-5'
-    # CST (Nov-Mar): UTC-6 -> 17:15 UTC
-    - cron: '15 17 * * 1-5'
-
-    # Job 3 -- 2:00 PM CT Mon-Fri (short run to close)
-    # CDT (Mar-Nov): UTC-5 -> 19:00 UTC
-    - cron: '0 19 * * 1-5'
-    # CST (Nov-Mar): UTC-6 -> 20:00 UTC
-    - cron: '0 20 * * 1-5'
-
+  # 2026-10-06: schedule removed. GitHub cron ran this 1-5 HOURS late from
+  # May-Oct 2026 (43/45 entries fired after the close). Now triggered at the
+  # exact time by an external dispatcher calling workflow_dispatch on
+  # America/Chicago time -- see docs/scheduler_setup.md.
   workflow_dispatch:
     inputs:
       duration:
         description: 'Duration in minutes'
         required: false
-        default: '180'
+        default: ''   # empty -> computed from CT clock (minutes to close + 10)
 
 permissions:
   contents: write
