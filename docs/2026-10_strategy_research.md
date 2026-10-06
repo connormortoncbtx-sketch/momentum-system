@@ -240,3 +240,66 @@ disappears on events after its training cutoff.
 large-cap monthly momentum design with no orders. It writes one row per week
 to `data/shadow_lc_ledger.jsonl`: shadow value, live Alpaca equity and SPY,
 all indexed to 100 from Oct 5, 2026.
+
+---
+
+# Round 5: market regime
+
+## What the live system does today
+
+`02_regime.py` labels each week (risk_on … risk_off_severe). `config/weights.json`
+then multiplies the signal weights by that label.
+
+**`self_refine.py` has rewritten those weights about weekly since June**, each
+time from a few recent weeks of results per regime:
+
+- Catalyst weight: 0.38 (Jun) → 0.60 (Jul) → 0.05 (Aug).
+- Fundamentals weight: 0.10 → 0.43.
+- Momentum now makes up just 9% of the score.
+
+The system that produced the April–May trades no longer exists in its
+original form.
+
+## Regime replica, 2016–2026
+
+The classifier was rebuilt on weekly ETF closes. VIX is approximated by SPY
+realized volatility + 3 points. It tracks the live classifier with composite
+correlation 0.83 and 61% label agreement over 23 overlapping weeks.
+
+## Stage 1: do the labels predict which stock types win? (dev 2017–2023)
+
+No. Across six stock types and five labels, every t-stat is below 1.8. The
+live momentum blend's excess return is about zero in every label. The
+momentum-crash rule (SPY 2-year return < 0) had only 10 dev weeks and no
+effect.
+
+Factor momentum ran the **opposite** way for momentum stocks. After 8 weeks
+of beating the universe, 12-1 momentum underperformed the next week
+(−0.13%). After 8 weeks of lagging, it outperformed (+0.54%, t 2.6, dev).
+
+## Stage 2: regime-aware strategies (dev pick, holdout once)
+
+| Design | Dev Sharpe | Holdout CAGR | Holdout Sharpe | Holdout maxDD |
+|---|---|---|---|---|
+| SPY | 0.76 | 20.6% | 1.31 | −17% |
+| Large-cap momentum, always on | 0.42 | 33.5% | 1.06 | −28% |
+| **Large-cap momentum only after an 8-wk momentum lag, else SPY** (added after Stage 1) | 0.76 | **33.7%** | **1.43** | −23% |
+| Your labels as on/off | 0.30 | — | — | — |
+| Your labels choose the stock type | 0.42 | — | — | — |
+| Rotate to best trailing stock type | 0.16 | — | — | — |
+
+The contrarian switch is the first design with a holdout Sharpe above SPY's.
+Robustness is mixed:
+
+- **Replication:** after-lag beat after-run in the holdout for the broad
+  universe (t 1.8), but not within large caps (t −1.0).
+- **Lookbacks:** switching on the large-cap factor itself underperformed SPY
+  in dev at every lookback from 4 to 26 weeks, and outperformed in holdout at
+  every one. That looks like a good 2024–26 for large-cap momentum, not a
+  stable rule.
+- **Beta-adjusted alpha:** +10.2%/yr, t 1.1.
+- It was chosen after many holdout looks across this research.
+
+**Conclusion:** promising enough to track live, not proven enough to trade.
+The regime labels as currently built do not carry predictive information for
+stock selection. Weekly re-tuning of regime multipliers fits noise.
