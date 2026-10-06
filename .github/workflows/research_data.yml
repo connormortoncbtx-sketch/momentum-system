@@ -18,6 +18,10 @@ on:
         description: 'Debug: only first N symbols (0 = all)'
         required: false
         default: '0'
+      status:
+        description: 'all = fresh full pull; inactive = add delisted names to existing branch'
+        required: false
+        default: 'all'
 
 permissions:
   contents: write
@@ -40,6 +44,10 @@ jobs:
       - name: Install
         run: pip install "alpaca-py>=0.30.0" "pandas>=2.0" pyarrow
 
+      - name: Load existing research-data (inactive merge mode)
+        if: ${{ inputs.status == 'inactive' }}
+        run: git clone -q --depth 1 -b research-data "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" research_data
+
       - name: Fetch history
         env:
           ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
@@ -47,15 +55,14 @@ jobs:
         run: |
           python research/fetch_history.py \
             --start "${{ inputs.start }}" --feed "${{ inputs.feed }}" \
-            --limit "${{ inputs.limit }}" --out research_data
+            --limit "${{ inputs.limit }}" --status "${{ inputs.status }}" --out research_data
 
       - name: Push to research-data branch
         run: |
           cd research_data
-          git init -q
-          git config user.name  "momentum-bot"
-          git config user.email "momentum-bot@users.noreply.github.com"
-          git checkout -q -b research-data
+          git config --global user.name  "momentum-bot"
+          git config --global user.email "momentum-bot@users.noreply.github.com"
+          if [ ! -d .git ]; then git init -q && git checkout -q -b research-data; fi
           git add -A
-          git commit -q -m "research data $(date -u +%Y-%m-%dT%H:%MZ)"
-          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" research-data
+          git commit -q -m "research data (${{ inputs.status }}) $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" HEAD:research-data

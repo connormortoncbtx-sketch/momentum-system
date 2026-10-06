@@ -39,14 +39,16 @@ EXCHANGES = {"NYSE", "NASDAQ", "AMEX", "ARCA", "BATS"}
 BATCH = 200
 
 
-def list_symbols():
+def list_symbols(status_filter="all"):
     from alpaca.trading.client import TradingClient
     from alpaca.trading.requests import GetAssetsRequest
     from alpaca.trading.enums import AssetClass, AssetStatus
 
     tc = TradingClient(os.environ["ALPACA_API_KEY"], os.environ["ALPACA_SECRET_KEY"], paper=True)
     rows = []
-    for status in (AssetStatus.ACTIVE, AssetStatus.INACTIVE):
+    statuses = {"all": (AssetStatus.ACTIVE, AssetStatus.INACTIVE),
+                "inactive": (AssetStatus.INACTIVE,)}[status_filter]
+    for status in statuses:
         assets = tc.get_all_assets(GetAssetsRequest(asset_class=AssetClass.US_EQUITY, status=status))
         for a in assets:
             ex = str(getattr(a.exchange, "value", a.exchange))
@@ -70,9 +72,11 @@ def fetch_daily(symbols, start, end, feed):
 
     client = StockHistoricalDataClient(os.environ["ALPACA_API_KEY"], os.environ["ALPACA_SECRET_KEY"])
     frames, failed = [], []
-    for i in range(0, len(symbols), BATCH):
-        batch = symbols[i:i + BATCH]
-        for attempt in range(4):
+
+    def get(batch, depth=0):
+        """Fetch a batch; on a non-transient error, bisect so one bad symbol
+        (common among delisted names) can't sink the other 199."""
+        for attempt in range(3 if depth == 0 else 2):
             try:
                 req = StockBarsRequest(symbol_or_symbols=batch, timeframe=TimeFrame.Day,
                                        start=start, end=end, adjustment=Adjustment.ALL,
@@ -81,17 +85,31 @@ def fetch_daily(symbols, start, end, feed):
                 if len(df):
                     df = df.reset_index()[["symbol", "timestamp", "open", "high", "low", "close", "volume"]]
                     frames.append(weekly(df))
-                break
+                return
             except Exception as e:
-                wait = 5 * (attempt + 1)
-                log.warning(f"  batch {i // BATCH} attempt {attempt + 1} failed: {e} -- retry in {wait}s")
-                time.sleep(wait)
-        else:
+                msg = str(e)
+                transient = any(t in msg for t in ("429", "timed out", "Timeout", "502", "503", "504"))
+                if not transient:
+                    break
+                time.sleep(5 * (attempt + 1))
+        if len(batch) == 1:
             failed.extend(batch)
+            return
+        mid = len(batch) // 2
+        get(batch[:mid], depth + 1)
+        get(batch[mid:], depth + 1)
+
+    for i in range(0, len(symbols), BATCH):
+        get(symbols[i:i + BATCH])
         if (i // BATCH) % 10 == 0:
-            log.info(f"  {min(i + BATCH, len(symbols)):,}/{len(symbols):,} symbols")
+            log.info(f"  {min(i + BATCH, len(symbols)):,}/{len(symbols):,} symbols, {len(failed)} failed")
     if failed:
         log.warning(f"{len(failed)} symbols failed after retries")
+    if not frames:
+        cols = ["symbol", "week", "first_date", "n_days", "d1_open", "d1_close", "close",
+                "low", "high", "dollar_vol", "d2_open", "low_after_d1"]
+        return pd.DataFrame({c: pd.Series(dtype="datetime64[ns]" if c in ("week", "first_date") else "float64")
+                             for c in cols}), failed
     return pd.concat(frames, ignore_index=True), failed
 
 
@@ -124,15 +142,18 @@ def main():
     ap.add_argument("--feed", default="sip")
     ap.add_argument("--out", default="research_data")
     ap.add_argument("--limit", type=int, default=0, help="debug: only first N symbols")
+    ap.add_argument("--status", default="all", choices=["all", "inactive"],
+                    help="inactive = fetch delisted names only and MERGE into existing --out files")
     a = ap.parse_args()
 
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
-    assets = list_symbols()
+    assets = list_symbols(a.status)
     syms = assets.symbol.tolist()
-    for must in ("SPY", "IWM", "QQQ"):
-        if must not in syms:
-            syms.insert(0, must)
+    if a.status == "all":
+        for must in ("SPY", "IWM", "QQQ"):
+            if must not in syms:
+                syms.insert(0, must)
     if a.limit:
         syms = syms[: a.limit]
 
@@ -144,12 +165,21 @@ def main():
              f"in {(time.time() - t0) / 60:.1f} min")
 
     assets["has_data"] = assets.symbol.isin(set(panel.symbol))
+    if a.status == "inactive" and (out / "assets.parquet").exists():
+        old_assets = pd.read_parquet(out / "assets.parquet")
+        old_assets = old_assets[~old_assets.symbol.isin(assets.symbol)]
+        assets = pd.concat([old_assets, assets], ignore_index=True)
     assets.to_parquet(out / "assets.parquet", index=False)
     for yr, chunk in panel.groupby(panel.week.dt.year):
-        chunk.to_parquet(out / f"weekly_{yr}.parquet", index=False, compression="zstd")
+        path = out / f"weekly_{yr}.parquet"
+        if a.status == "inactive" and path.exists():
+            prev = pd.read_parquet(path)
+            prev = prev[~prev.symbol.isin(set(chunk.symbol))]
+            chunk = pd.concat([prev, chunk], ignore_index=True)
+        chunk.to_parquet(path, index=False, compression="zstd")
         log.info(f"  weekly_{yr}.parquet: {len(chunk):,} rows, "
                  f"{(out / f'weekly_{yr}.parquet').stat().st_size / 1e6:.1f} MB")
-    (out / "README.md").write_text(
+    (out / f"README_{a.status}.md").write_text(
         f"Generated {dt.datetime.utcnow():%Y-%m-%d %H:%M} UTC by research/fetch_history.py\n"
         f"start={a.start} feed={a.feed} symbols_requested={len(syms)} "
         f"symbols_with_data={panel.symbol.nunique()} failed={len(failed)}\n")
