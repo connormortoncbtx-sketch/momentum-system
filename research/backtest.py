@@ -243,3 +243,63 @@ def top_n_buffered(p: Panel, score: pd.DataFrame, mask: pd.DataFrame, n=10, buff
         out[wk] = r.loc[wk, new].mean() - 2 * turnover * cost_bps / 1e4
         held = new
     return pd.Series(out, dtype=float)
+
+
+def simulate(p: Panel, score: pd.DataFrame, mask: pd.DataFrame, n=25, buffer=50, k=4,
+             cost_bps=15.0, weighting="equal", vol: pd.DataFrame | None = None) -> pd.Series:
+    """General persistent portfolio, held continuously (weekends included).
+
+    Every k weeks, at MONDAY CLOSE using the prior Friday's signal: keep
+    holdings still ranked within `buffer`, fill to n with the best new names.
+    Between rebalances weights drift with prices. Weekly return series is
+    Monday close -> next Monday close, aligned to the formation week.
+    weighting: 'equal' or 'invvol' (1/vol12, capped at 3x equal weight).
+    Costs charged on traded weight (both legs).
+    """
+    d1c = p.df("d1_close")
+    wk_ret = (d1c.shift(-2) / d1c.shift(-1) - 1)
+    wk_ret = wk_ret.where(wk_ret.abs() < 1.5)
+    w = pd.Series(dtype=float)
+    out = {}
+    for i, wk in enumerate(score.index):
+        if i % k == 0:
+            s = score.loc[wk].where(mask.loc[wk] & wk_ret.loc[wk].notna()).dropna()
+            if len(s) >= n:
+                ranks = s.rank(ascending=False)
+                keep = [h for h in w.index if h in ranks.index and ranks[h] <= buffer]
+                fill = [x for x in s.nlargest(n + len(keep)).index if x not in keep][: n - len(keep)]
+                names = keep + fill
+                if weighting == "invvol" and vol is not None:
+                    iv = 1 / vol.loc[wk, names].clip(lower=0.01)
+                    iv = iv.fillna(iv.median())
+                    tgt = (iv / iv.sum()).clip(upper=3 / n)
+                    tgt = tgt / tgt.sum()
+                else:
+                    tgt = pd.Series(1 / n, index=names)
+                traded = tgt.sub(w, fill_value=0).abs().sum()
+                cost = traded * cost_bps / 1e4
+                w = tgt
+            else:
+                cost = 0.0
+        else:
+            cost = 0.0
+        if w.empty:
+            continue
+        r = wk_ret.loc[wk, w.index]
+        if r.notna().mean() < 0.5:
+            break                          # end of data, not a mass delisting
+        # names with no next-week return (halted/delisted): assume -50% and drop
+        simulate.missing += int(r.isna().sum())
+        r = r.fillna(-0.5)
+        port = float((w * r).sum())
+        out[wk] = port - cost
+        w = w * (1 + r)
+        w = w[w > 0]
+        w = w / w.sum() if w.sum() > 0 else w
+        if r.isna().any() or (r == -0.5).any():
+            w = w.drop(r[r == -0.5].index, errors="ignore")
+            w = w / w.sum() if w.sum() > 0 else w
+    return pd.Series(out, dtype=float)
+
+
+simulate.missing = 0
