@@ -4,7 +4,9 @@
     "schema_version": "1.0",
     "last_modified": "2026-08-29",
     "modified_by": "self_refine.py",
-    "philosophy": "There are always winners in any market. The regime determines WHERE they are, not WHETHER they exist. Never reduce to zero \u2014 redirect."
+    "philosophy": "There are always winners in any market. The regime determines WHERE they are, not WHETHER they exist. Never reduce to zero \u2014 redirect.",
+    "self_refine_mode": "report_only",
+    "frozen_note": "2026-10-06: weekly self-refine rewrites disabled (fit noise). Set self_refine_mode to \"apply\" to re-enable."
   },
   "signal_weights": {
     "momentum": 0.09,

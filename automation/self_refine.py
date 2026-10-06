@@ -322,6 +322,25 @@ def run():
 
     changes = diff_weights(current_weights, new_weights)
 
+    # 2026-10-06 FREEZE: weekly rewrites were fitting a few weeks of noise per
+    # regime (catalyst weight 0.38 -> 0.60 -> 0.05 in 10 weeks; momentum down to
+    # 9%). Proposals are still generated and logged to refinements/, but
+    # config/weights.json is only written when weights.json sets
+    # "_meta.self_refine_mode": "apply". Default is report-only.
+    mode = current_weights.get("_meta", {}).get("self_refine_mode", "report_only")
+    if mode != "apply":
+        note_path = REFINEMENTS / ("%s.md" % date_str)
+        with open(note_path, "w") as f:
+            f.write("# Refinement %s - PROPOSAL ONLY (weights frozen)\n\n" % date_str)
+            f.write("Weeks analyzed: %d\n\nProposed changes (not applied):\n" % n_weeks)
+            f.write("\n".join("- " + c for c in changes) or "- none")
+            f.write("\n")
+        log.info("Weights frozen (self_refine_mode=%s) -- proposal logged to %s, not applied" % (mode, note_path))
+        log_event("self_refine", LogStatus.INFO,
+                  f"Proposal logged, not applied (weights frozen); {len(changes)} proposed changes",
+                  metrics={"weeks_analyzed": n_weeks, "proposed_changes": len(changes)})
+        return
+
     with open(WEIGHTS, "w") as f:
         json.dump(new_weights, f, indent=2)
 
