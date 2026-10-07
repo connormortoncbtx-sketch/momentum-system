@@ -47,8 +47,8 @@ def month_end_last(s, lag_days=0):
     return s.resample("ME").last().reindex(months).ffill(limit=2)
 
 def monthly_obs(s, lag_months=0):
-    m = s.resample("ME").last()
-    return m.shift(lag_months).reindex(months)
+    # 2026-10-07 fix: extend to the month grid before lagging, carry one missing month
+    return s.resample("ME").last().reindex(months).shift(lag_months).ffill(limit=1)
 
 umd_m = (1 + mom).resample("ME").prod().reindex(months) - 1
 mkt_d = fac["Mkt-RF"] + fac["RF"]

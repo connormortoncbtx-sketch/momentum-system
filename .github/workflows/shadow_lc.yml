@@ -1,6 +1,7 @@
 name: Shadow Portfolios (no orders)
 
-# Side-by-side shadow of the large-cap monthly momentum design. Uses the
+# Side-by-side shadows (no orders): #1 large-cap monthly momentum, #2 contrarian
+# regime switch, #3 macro + volatility-sized momentum exposure. Uses the
 # entry day's official close fetched after the fact, so GitHub cron drift is
 # harmless; the script is idempotent per entry date (extra runs are no-ops).
 on:
@@ -50,11 +51,20 @@ jobs:
           pip install pyarrow
           python automation/shadow_regime_switch.py
 
+      - name: Update shadow macro-sized momentum
+        continue-on-error: true
+        env:
+          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+          ALPACA_PAPER: ${{ secrets.ALPACA_PAPER || 'true' }}
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+        run: python automation/shadow_macro_sized.py
+
       - name: Commit ledger
         run: |
           git config user.name  "momentum-bot"
           git config user.email "momentum-bot@users.noreply.github.com"
-          git add data/shadow_lc_state.json data/shadow_lc_ledger.jsonl data/shadow_regime_state.json data/shadow_regime_ledger.jsonl data/system_log.jsonl 2>/dev/null || true
+          git add data/shadow_lc_state.json data/shadow_lc_ledger.jsonl data/shadow_regime_state.json data/shadow_regime_ledger.jsonl data/shadow_macro_state.json data/shadow_macro_ledger.jsonl data/system_log.jsonl 2>/dev/null || true
           git diff --cached --quiet && exit 0
           git commit -q -m "shadows: $(date +%Y-%m-%d) update"
           for attempt in 1 2 3 4 5; do
