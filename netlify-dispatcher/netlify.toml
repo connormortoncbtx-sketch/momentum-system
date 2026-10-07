@@ -5,7 +5,10 @@
 [build]
   command = "echo 'no build step'"
   publish = "public"
-  ignore  = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- ."
+  # Exit 0 = skip, 1 = build. Always build when there is no previous deploy to
+  # compare against (first build: CACHED_COMMIT_REF == COMMIT_REF), otherwise skip
+  # unless something in this folder changed.
+  ignore  = "if [ -z \"$CACHED_COMMIT_REF\" ] || [ \"$CACHED_COMMIT_REF\" = \"$COMMIT_REF\" ]; then exit 1; fi; git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- ."
 
 [functions]
   directory = "netlify/functions"
