@@ -467,3 +467,33 @@ so it goes on the watch list; it is not a rule.
   SPY.
 - **Options, credit and short-volume measures** give no stable
   short-horizon regime signal 2017–2026.
+
+## Shadow #3 live (Oct 7, 2026)
+
+`automation/shadow_macro_sized.py` (in `shadow_lc.yml`) runs the pass-3c rule
+with no orders:
+- **Monthly:** momentum weight = vol scale × macro on/off, capped at 1.
+- **Weekly:** that share of NAV goes in the top-20 large-cap momentum
+  basket; the rest is in SPY.
+
+**Verification:**
+- `research/macro_signal.py` reproduces the research weights exactly
+  (549 months).
+- With Ken French data at its real 1–2 month publication lag, the holdout
+  Sharpe is 0.69–0.77 vs 0.27 always-on.
+
+**Bug fixed during the build:** monthly FRED series lost their newest value
+when lagged, and the Oct-2025 shutdown gap blanked some months. The
+research holdout moved 0.74 → 0.77 (n 112 → 115); the pick did not change.
+
+**First reading (Oct 5):** macro **ON**. Momentum volatility is high (24%),
+so exposure is **27% momentum basket / 73% SPY**. The ledger is
+`data/shadow_macro_ledger.jsonl`. You get a phone alert when the macro
+switch flips.
+
+**Three shadows now run beside the live system**, all indexed to Oct 5 = 100:
+1. Large-cap monthly momentum (always on).
+2. Contrarian regime switch (currently in SPY).
+3. Macro + vol-sized momentum (currently 27/73).
+
+Review in early January 2027.
