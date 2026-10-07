@@ -1,6 +1,19 @@
 {
- "markets": 9694,
+ "markets": 54276,
  "series": [
-  "KXHIGHNY"
+  "KXHIGHAUS",
+  "KXHIGHCHI",
+  "KXHIGHDEN",
+  "KXHIGHLAX",
+  "KXHIGHMIA",
+  "KXHIGHNY",
+  "KXHIGHPHIL",
+  "KXHIGHTBOS",
+  "KXHIGHTDAL",
+  "KXHIGHTDC",
+  "KXHIGHTEWR",
+  "KXHIGHTPHX",
+  "KXHIGHTSAN",
+  "KXHIGHTSATX"
  ]
 }
