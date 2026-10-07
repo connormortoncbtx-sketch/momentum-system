@@ -215,9 +215,9 @@ def fetch_mos(stations, start):
 def main():
     out = Path(os.environ.get("RESEARCH_DATA", "research_data")) / "kalshi"
     out.mkdir(parents=True, exist_ok=True)
-    only = os.environ.get("ONLY", "markets,candles,mos").split(",")
-    series = [s for s in os.environ.get("SERIES", ",".join(SERIES)).split(",") if s]
-    start = os.environ.get("START", "2021-06-01")
+    only = (os.environ.get("ONLY") or "markets,candles,mos").split(",")
+    series = [s for s in (os.environ.get("SERIES") or ",".join(SERIES)).split(",") if s]
+    start = os.environ.get("START") or "2021-06-01"
     if "markets" in only:
         mk = fetch_markets(series)
         mk.to_parquet(out / "markets.parquet", index=False)
