@@ -170,11 +170,25 @@ def fetch_candles(mk):
     return df
 
 
-def fetch_mos(stations, start):
+def _mos_frame(rows):
+    df = pd.DataFrame(rows)
+    if len(df):
+        df["runtime"] = pd.to_datetime(df.runtime, utc=True)
+        df["ftime"] = pd.to_datetime(df.ftime, utc=True)
+    return df
+
+
+def fetch_mos(stations, start, path=None):
+    """Resumable: station/model pairs already in `path` are skipped, and the file
+    is rewritten after each pair so a timeout keeps what was fetched."""
+    prev = pd.read_parquet(path) if path and Path(path).exists() else pd.DataFrame()
+    have = set(map(tuple, prev[["station", "model"]].drop_duplicates().values)) if len(prev) else set()
     rows = []
     months = pd.date_range(start, dt.date.today(), freq="MS")
     for st in sorted(stations):
         for model in ("GFS", "NBS"):
+            if (st, model) in have:
+                log.info(f"  MOS {st} {model}: already fetched"); continue
             n0 = len(rows)
             for m0 in months:
                 m1 = m0 + pd.offsets.MonthBegin(1)
@@ -205,11 +219,9 @@ def fetch_mos(stations, start):
                     rows.append({"station": st, "model": model, "runtime": r.runtime, "ftime": r.ftime,
                                  "n_x": float(getattr(r, col))})
             log.info(f"  MOS {st} {model}: {len(rows) - n0:,} max/min rows")
-    df = pd.DataFrame(rows)
-    if len(df):
-        df["runtime"] = pd.to_datetime(df.runtime, utc=True)
-        df["ftime"] = pd.to_datetime(df.ftime, utc=True)
-    return df
+            if path:
+                pd.concat([prev, _mos_frame(rows)], ignore_index=True).to_parquet(path, index=False)
+    return pd.concat([prev, _mos_frame(rows)], ignore_index=True)
 
 
 def main():
@@ -230,8 +242,9 @@ def main():
         cd.to_parquet(out / "candles.parquet", index=False, compression="zstd")
         log.info(f"candles: {len(cd):,} rows for {cd.ticker.nunique() if len(cd) else 0:,} markets")
     if "mos" in only:
-        mos = fetch_mos(set(mk.station), start)
+        mos = fetch_mos(set(mk.station), start, out / "mos.parquet")
         mos.to_parquet(out / "mos.parquet", index=False)
+        log.info(f"mos: {len(mos):,} rows, {mos.station.nunique() if len(mos) else 0} stations")
     summary = {"markets": len(mk), "series": sorted(mk.series.unique().tolist())}
     (out / "README.md").write_text(json.dumps(summary, indent=1))
     print(f"::notice::kalshi data: {len(mk)} markets, series {summary['series']}")
