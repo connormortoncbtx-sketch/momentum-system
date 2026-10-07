@@ -1,0 +1,51 @@
+name: Research Macro (FRED, CBOE, Ken French, FINRA)
+
+# Manual only. Adds research_data/macro/*.parquet to the research-data branch.
+on:
+  workflow_dispatch:
+    inputs:
+      only:
+        description: 'Comma list: fred,french,cboe,finra'
+        required: false
+        default: 'fred,french,cboe,finra'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: research-data
+  cancel-in-progress: false
+
+jobs:
+  macro:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install
+        run: pip install "pandas>=2.0" pyarrow
+
+      - name: Load research-data branch
+        run: git clone -q --depth 1 -b research-data "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" research_data
+
+      - name: Fetch
+        env:
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+          RESEARCH_DATA: research_data
+          ONLY: ${{ inputs.only }}
+        run: python research/fetch_macro.py
+
+      - name: Push to research-data branch
+        run: |
+          cd research_data
+          git config user.name  "momentum-bot"
+          git config user.email "momentum-bot@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && exit 0
+          git commit -q -m "research macro $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" HEAD:research-data
