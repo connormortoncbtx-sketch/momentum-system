@@ -328,3 +328,49 @@ stock selection. Weekly re-tuning of regime multipliers fits noise.
 **Review date:** after about 12 weeks (early January 2027), compare the live
 system, both shadows and SPY on the same Monday closes. Any regime rule that
 gets promoted must also hold up in the 10-year history.
+
+---
+
+# Pass 3b: richer regime diagnosis (Oct 7, 2026)
+
+**Script:** `research/regime_v2.py`.
+
+**Features (12):** dispersion, breadth, breadth change, average correlation,
+market volatility and its trend, SPY trend, SPY 52-week return, credit
+(HYG−TLT), size (IWM−SPY), momentum crowding, and trailing momentum-factor
+return. Each is z-scored using only past data.
+
+**Choices:** six top-500 baskets (live proxy, 12-1 momentum, near 52-week
+high, low vol, high vol, last week's losers) or SPY.
+
+**Stage A (dev 2017–2023):** 10 of 72 feature/basket links had |t| > 2,
+against about 3.6 expected by chance. There was a coherent "stress" cluster:
+high dispersion, volatility and correlation, or weak credit, was followed by
+high-vol stocks and last week's losers beating SPY.
+
+**Stability check** (Newey-West t by period):
+
+| Link | 2017–20 | 2021–23 | 2024–26 |
+|---|---|---|---|
+| dispersion → high-vol | +3.4 | −0.9 | −1.6 |
+| dispersion → last week's losers | +3.3 | −0.4 | −1.9 |
+| dispersion → 12-1 momentum | +2.7 | −0.4 | −1.9 |
+| market vol → high-vol | +2.6 | −0.3 | +5.1 |
+| credit → low-vol | +3.3 | +0.2 | +1.7 |
+| trailing momentum factor → live proxy (shadow #2's input) | −1.9 | +0.3 | +0.0 |
+
+The cluster comes almost entirely from the 2020 crash and rebound. It flips
+sign or disappears afterward.
+
+**Stage B** (dev comparison 2020–2023, holdout scored once):
+- Ridge on all 12 features: Sharpe 0.31, worse than always-on (0.49).
+- The best-single-feature rule changed its feature between refits
+  (credit → dispersion), a sign of instability.
+- Holdout: 13.2% CAGR (Sharpe 0.52), vs always-on large-cap momentum
+  33.5% (1.06) and SPY 20.6% (1.31).
+
+**Conclusion:** none of these 12 price- and market-based diagnoses gives a
+stable regime signal for choosing what to hold. **Shadow #2's input also
+looks weak:** its relationship came from 2017–20 and has been flat since.
+Shadow #2 keeps running as cheap live evidence, but expectations should be
+low.
