@@ -151,11 +151,8 @@ SIGNAL_FEATURES = [
     "sig_sentiment_news",
     "sig_sentiment_analyst",
     "sig_sentiment_short",
-    # Composite signals (regime-adjusted)
-    "sig_momentum_adj",
-    "sig_catalyst_adj",
-    "sig_fundamentals_adj",
-    "sig_sentiment_adj",
+    # 2026-10-06: regime-adjusted composites (*_adj) removed from model inputs --
+    # weekly regime multipliers rescaled them unpredictably for the trees.
 ]
 
 # Metadata used for grouping/filtering but not as model features

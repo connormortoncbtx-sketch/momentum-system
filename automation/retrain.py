@@ -15,6 +15,8 @@ Retraining triggers:
     - Only if IC of current model has been declining (optional guard)
 """
 
+import json
+import os
 import pickle
 import logging
 import sys
@@ -45,8 +47,9 @@ RETRAIN_FEATURES = [
     "sig_catalyst_analyst", "sig_fund_growth", "sig_fund_quality",
     "sig_fund_profitability", "sig_fund_value", "sig_sentiment_news",
     "sig_sentiment_analyst", "sig_sentiment_short",
-    "sig_momentum_adj", "sig_catalyst_adj", "sig_fundamentals_adj",
-    "sig_sentiment_adj",
+    # 2026-10-06: *_adj inputs removed. They are sub-signals x weights x regime
+    # multipliers, so each week's regime label rescaled model inputs in ways the
+    # trees were never trained on. The model now sees only scale-stable signals.
 ]
 
 
@@ -217,6 +220,24 @@ def run():
         probs = model.predict_proba(X.values)[:, 1]
         ic, _ = stats.spearmanr(probs, log_df.loc[X.index, "forward_return_1w"].fillna(0))
         log.info(f"  In-sample IC: {ic:.4f}")
+
+        # 2026-10-06 FREEZE: weekly retraining on ~50 weeks refit noise and changed
+        # the picks every week. The candidate is still trained and its in-sample IC
+        # logged, but the live model is only replaced when config/weights.json sets
+        # "_meta.retrain_mode": "apply" (or RETRAIN_MODE=apply for a one-off run).
+        try:
+            with open("config/weights.json") as wf:
+                mode = json.load(wf).get("_meta", {}).get("retrain_mode", "report_only")
+        except Exception:
+            mode = "report_only"
+        mode = os.environ.get("RETRAIN_MODE", mode)
+        if mode != "apply":
+            log.info(f"Model frozen (retrain_mode={mode}): candidate IC={ic:.4f} logged, live model unchanged")
+            log_event("retrain", LogStatus.INFO,
+                      f"Candidate trained (not deployed, model frozen): in-sample IC {ic:.4f}",
+                      metrics={"weeks": int(n_weeks), "samples": int(len(X)),
+                               "in_sample_ic": round(float(ic), 4), "n_features": int(X.shape[1])})
+            return
 
         with open(MODEL_FILE, "wb") as f:
             pickle.dump(model, f)
