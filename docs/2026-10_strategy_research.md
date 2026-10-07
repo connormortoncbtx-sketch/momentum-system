@@ -374,3 +374,71 @@ stable regime signal for choosing what to hold. **Shadow #2's input also
 looks weak:** its relationship came from 2017–20 and has been flat since.
 Shadow #2 keeps running as cheap live evidence, but expectations should be
 low.
+
+---
+
+# Pass 3c: macro, options and flow data (Oct 7, 2026)
+
+**Data** (`research/fetch_macro.py`, all free):
+- **FRED:** rates and yield curve, Baa/Aaa credit spreads, CPI,
+  unemployment, industrial production, initial claims, Chicago Fed NFCI,
+  real yields, fed funds.
+- **CBOE:** VIX, VIX3M, VIX9D, SKEW; put/call ratios, 2006–2019 only.
+- **Ken French daily momentum factor (UMD)**, from 1926.
+- **FINRA daily short-sale volume**, from 2009. This is the off-exchange
+  ("dark pool") data that DIX-style indexes are built from.
+
+Publication lags are applied: CPI, unemployment and IP lag one month;
+claims and NFCI lag 7 days. The NBER recession flag is excluded because
+it is only declared after the fact.
+
+## 60 years of momentum vs macro regime (`research/macro_regime.py`)
+
+**Setup:** next-month momentum-factor return. Fit 1972–2004, choose on
+2005–2016, score the holdout (2017–2026) once.
+
+**No single macro measure predicts momentum.** 0 of 16 were significant in
+1972–2004; none carried into 2005–2016. Macro quadrants (growth ×
+inflation) were not stable either: "deflation" was the best quadrant in
+1972–2004 (+1.6%/month) and the worst in 2005–2016 (−1.1%).
+
+**Strategies on the momentum factor:**
+
+| | 1972–2004 Sharpe | 2005–2016 Sharpe | Holdout 2017–2026 |
+|---|---|---|---|
+| Always on | 0.72 | 0.04 | Sharpe 0.27, max DD −35% |
+| Volatility-managed (size down when momentum is volatile) | 1.03 | 0.59 | *diagnostic only:* 0.53, −12% |
+| **Vol-managed + 16-feature macro on/off (pre-registered pick)** | 1.03 | 0.78 | **Sharpe 0.74, max DD −5.6%** |
+
+**Attribution** (diagnostic only; the pick was already scored):
+- The macro model was "on" in 90% of holdout months.
+- Next-month momentum averaged **+0.55%** in the 102 "on" months and
+  **−2.28%** in the 11 "off" months.
+- The macro inputs add something on top of volatility management, but
+  the evidence rests on only 11 "off" months.
+
+**Translated to the long-only top-500 momentum basket** (exposure = rule
+weight, rest in SPY):
+
+| | 2017–2023 Sharpe | 2024–2026 Sharpe | Max DD (24–26) |
+|---|---|---|---|
+| Always in momentum basket | 0.42 | 1.05 | −28% |
+| Rule-sized momentum + SPY | 0.64 | 1.15 | −22% |
+| SPY | 0.76 | 1.32 | −17% |
+
+The rule improves the basket's risk-adjusted return in both periods but
+does not beat SPY.
+
+**Live-use caveat:** Ken French data posts about a month late. A live
+version needs our own momentum-factor volatility, which the weekly
+panel already computes.
+
+## Options, credit, macro and short volume on our baskets (`research/flow_regime.py`)
+
+**Setup:** next-4-week (basket − SPY) on each input. An input must hold
+with |t| > 2 and the same sign in both 2017–2020 and 2021–2023.
+
+**Result (without short volume):** 19 of 54 links were significant in
+2017–2020, but 7 in 2021–2023 and **0 in both**. VIX, VIX term structure,
+SKEW, put/call, credit, curve, claims and NFCI all fall into the same
+COVID-driven pattern seen in pass 3b.
