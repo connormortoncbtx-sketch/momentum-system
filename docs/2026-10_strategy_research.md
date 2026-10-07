@@ -442,3 +442,28 @@ with |t| > 2 and the same sign in both 2017–2020 and 2021–2023.
 2017–2020, but 7 in 2021–2023 and **0 in both**. VIX, VIX term structure,
 SKEW, put/call, credit, curve, claims and NFCI all fall into the same
 COVID-driven pattern seen in pass 3b.
+
+**FINRA short volume.** The public archive starts Dec 29, 2017, so the
+2017–2020 half could not be tested. In 2021–2023, a rising off-exchange
+short ratio (vs its 26-week mean) preceded momentum beating SPY:
+t 4.3 (live proxy) and t 3.6 (12-1 momentum). Both pairs were fixed in
+advance and scored once on 2024–2026:
+
+| Pair | 2021–23 t | Holdout t |
+|---|---|---|
+| Short-ratio change → live-proxy basket | 4.33 | −0.11 |
+| Short-ratio change → 12-1 momentum basket | 3.59 | 1.46 (same sign, +2.2% per sd over 4 wks) |
+
+Neither pair cleared |t| > 2 out of sample. The 12-1 link kept its sign,
+so it goes on the watch list; it is not a rule.
+
+## Pass 3c conclusion
+
+- **Combining macro inputs works modestly; no single input does.**
+  Volatility-managed momentum plus a 16-input macro on/off model passed a
+  60-year fit / 12-year selection / 10-year holdout test.
+- **On the long-only basket** it raises the Sharpe (0.42 → 0.64 in
+  2017–23; 1.05 → 1.15 in 2024–26) and cuts drawdowns, but stays below
+  SPY.
+- **Options, credit and short-volume measures** give no stable
+  short-horizon regime signal 2017–2026.
