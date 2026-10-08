@@ -155,19 +155,34 @@ def candles_for(m):
     return out
 
 
-def fetch_candles(mk):
-    rows, done = [], 0
-    with cf.ThreadPoolExecutor(8) as ex:
-        for res in ex.map(candles_for, mk.itertuples(index=False)):
-            rows.extend(res); done += 1
-            if done % 2000 == 0:
-                log.info(f"  candles {done:,}/{len(mk):,} markets, {len(rows):,} rows")
+def _candle_frame(rows):
     df = pd.DataFrame(rows)
     if len(df):
         df["ts"] = pd.to_datetime(df.ts, unit="s", utc=True)
         for c in ("bid", "ask", "last", "vwap"):
             df[c] = df[c].astype("float32")
     return df
+
+
+def fetch_candles(mk, path=None, budget_min=float(os.environ.get("BUDGET_MIN") or 290)):
+    """Resumable: tickers already in `path` are skipped; checkpoints every 4,000
+    markets and stops cleanly when the time budget runs out (rerun to continue)."""
+    prev = pd.read_parquet(path) if path and Path(path).exists() else pd.DataFrame()
+    if len(prev):
+        mk = mk[~mk.ticker.isin(set(prev.ticker))]
+    log.info(f"  candles: {len(prev):,} rows already, {len(mk):,} markets to fetch")
+    t0, rows, done = time.monotonic(), [], 0
+    todo = list(mk.itertuples(index=False))
+    for i in range(0, len(todo), 4000):
+        if (time.monotonic() - t0) / 60 > budget_min:
+            log.info("  candles: time budget reached; rerun to continue"); break
+        with cf.ThreadPoolExecutor(8) as ex:
+            for res in ex.map(candles_for, todo[i:i + 4000]):
+                rows.extend(res); done += 1
+        log.info(f"  candles {done:,}/{len(todo):,} markets, {len(rows):,} rows")
+        if path:
+            pd.concat([prev, _candle_frame(rows)], ignore_index=True).to_parquet(path, index=False, compression="zstd")
+    return pd.concat([prev, _candle_frame(rows)], ignore_index=True)
 
 
 def _mos_frame(rows):
@@ -238,8 +253,7 @@ def main():
     log.info(f"markets: {len(mk):,} across {mk.series.nunique()} series, "
              f"{mk.open_time.min():%Y-%m-%d}..{mk.close_time.max():%Y-%m-%d}")
     if "candles" in only:
-        cd = fetch_candles(mk[mk.open_time >= pd.Timestamp(start, tz="UTC")])
-        cd.to_parquet(out / "candles.parquet", index=False, compression="zstd")
+        cd = fetch_candles(mk[mk.open_time >= pd.Timestamp(start, tz="UTC")], out / "candles.parquet")
         log.info(f"candles: {len(cd):,} rows for {cd.ticker.nunique() if len(cd) else 0:,} markets")
     if "mos" in only:
         mos = fetch_mos(set(mk.station), start, out / "mos.parquet")
