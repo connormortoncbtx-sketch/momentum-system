@@ -157,8 +157,12 @@ def predict(w, df, slot):
 
 # --------------------------------------------------------------- 4. prices
 def price_at(mk, cd, slot):
-    q = mk[["ticker", f"t_{slot}"]].rename(columns={f"t_{slot}": "ts"}).sort_values("ts")
-    c = cd.dropna(subset=["bid", "ask"], how="all").sort_values("ts")
+    q = mk[["ticker", f"t_{slot}"]].rename(columns={f"t_{slot}": "ts"})
+    q["ts"] = pd.to_datetime(q.ts, utc=True).astype("datetime64[ns, UTC]")
+    q = q.drop_duplicates("ticker").sort_values("ts")
+    c = cd.dropna(subset=["bid", "ask"], how="all").copy()
+    c["ts"] = c.ts.astype("datetime64[ns, UTC]")
+    c = c.sort_values("ts")
     j = pd.merge_asof(q, c[["ticker", "ts", "bid", "ask", "volume"]].assign(cts=c.ts),
                       on="ts", by="ticker", direction="backward", tolerance=pd.Timedelta("12h"))
     # day volume up to decision, as a liquidity gauge
