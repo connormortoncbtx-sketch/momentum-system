@@ -497,3 +497,42 @@ switch flips.
 3. Macro + vol-sized momentum (currently 27/73).
 
 Review in early January 2027.
+
+## Kalshi daily-high temperature markets (Oct 8, 2026) — `research/kalshi/`
+
+**Question:** does a free public forecast beat Kalshi's prices after fees?
+
+**Data** (`research_data/kalshi/` on the research-data branch):
+- 54,276 settled markets, 9,569 city-days, 14 cities, Aug 2021 – Oct 2026.
+- Hourly bid/ask for 54,090 of them.
+- GFS MOS and NBM text forecasts from the Iowa Environmental Mesonet.
+
+**Model:**
+- high ~ Normal(a + b·forecast, σ(season)).
+- Fitted per station on dev (pre-2025) by interval-censored maximum likelihood.
+- Uses only forecast runs that were public at the decision time: 9pm local the night before, or 9am local on the day.
+- Only NYC, Chicago, Austin and Miami have enough dev history.
+- Forecast error (NBM vs actual high): about 2°F (1.4°F Miami, 2.7°F Chicago).
+- Buckets are 2°F wide.
+
+**Results.** Dev = 2021–24, holdout = 2025–26, ~15k quoted markets each. Taker fills at bid/ask plus the fee.
+
+| | Market log loss | Model | Market+model blend |
+|---|---|---|---|
+| 9pm, dev | 0.415 | 0.440 | 0.410 |
+| 9pm, holdout | **0.333** | 0.379 | 0.333 |
+| 9am, dev | 0.374 | 0.432 | 0.370 |
+| 9am, holdout | **0.289** | 0.369 | 0.291 |
+
+- **The market is well calibrated.** At every price bucket, outcomes land within about 2–4 percentage points of the price.
+- **The market got sharper over time:** holdout log loss is about 20% lower than dev.
+- **Trading on the model loses** in the holdout, −2 to −2.5¢ per contract (t −4 to −8).
+- **The blend made 2.5–3.8¢ per contract in dev** (in-sample, weights fit on dev), but −2¢ to +0.1¢ in the holdout. It does not survive.
+- **Longshot bias** (buy NO on markets priced under 5¢): −1 to −1.5¢ per contract in dev, +0.4¢ in the holdout (t 1.9). This is noise after the spread.
+- The Aug–Oct 2026 slice of the holdout was seen once in a debug run; nothing was tuned on it.
+
+**Conclusion:** no edge from public point forecasts. Traders already price NBM/GFS and do better. If the Kalshi idea continues, the only plausible paths are:
+- (a) trading the same day on live station readings: the max so far plus the HRRR model. The edge there is speed, and the window is short.
+- (b) market making (posting quotes, earning the spread), which needs order-book data and an API account.
+
+Both are a different kind of system from "many small bets on a forecast".
