@@ -146,12 +146,19 @@ def candles_for(m):
         d = get_json(f"{API}/historical/markets/{m.ticker}/candlesticks?{q}")
     out = []
     for c in (d or {}).get("candlesticks", []):
-        f = lambda obj, k: float(obj[k]) if obj and obj.get(k) not in (None, "") else None
+        # live endpoint: close_dollars / mean_dollars / volume_fp;
+        # /historical endpoint: close / mean / volume (dollar strings)
+        def f(obj, k):
+            for key in (f"{k}_dollars", k):
+                v = (obj or {}).get(key)
+                if v not in (None, ""):
+                    return float(v)
+            return None
         yb, ya, pr = c.get("yes_bid") or {}, c.get("yes_ask") or {}, c.get("price") or {}
         out.append({"ticker": m.ticker, "ts": c["end_period_ts"],
-                    "bid": f(yb, "close_dollars"), "ask": f(ya, "close_dollars"),
-                    "last": f(pr, "close_dollars"), "vwap": f(pr, "mean_dollars"),
-                    "volume": float(c.get("volume_fp") or 0)})
+                    "bid": f(yb, "close"), "ask": f(ya, "close"),
+                    "last": f(pr, "close"), "vwap": f(pr, "mean"),
+                    "volume": float(c.get("volume_fp") or c.get("volume") or 0)})
     return out
 
 
@@ -169,7 +176,11 @@ def fetch_candles(mk, path=None, budget_min=float(os.environ.get("BUDGET_MIN") o
     markets and stops cleanly when the time budget runs out (rerun to continue)."""
     prev = pd.read_parquet(path) if path and Path(path).exists() else pd.DataFrame()
     if len(prev):
-        mk = mk[~mk.ticker.isin(set(prev.ticker))]
+        # a ticker counts as done only if some candle carries a quote, trade or volume
+        ok = prev.bid.notna() | prev.ask.notna() | prev["last"].notna() | (prev.volume > 0)
+        done_t = set(prev.ticker[ok])
+        prev = prev[prev.ticker.isin(done_t)]
+        mk = mk[~mk.ticker.isin(done_t)]
     log.info(f"  candles: {len(prev):,} rows already, {len(mk):,} markets to fetch")
     t0, rows, done = time.monotonic(), [], 0
     todo = list(mk.itertuples(index=False))
