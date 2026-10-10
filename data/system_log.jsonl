@@ -2900,3 +2900,4 @@
 {"timestamp": "2026-10-09T23:30:02.214815+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=exit", "metrics": {}, "errors": []}
 {"timestamp": "2026-10-10T00:20:03.383081+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=exit", "metrics": {}, "errors": []}
 {"timestamp": "2026-10-10T01:07:35.252808+00:00", "workflow": "health_check", "status": "warning", "message": "Weekly health check complete", "metrics": {"entries_reviewed": 95, "workflows_covered": 17, "errors_in_period": 7, "warnings_in_period": 1, "result": "issues_found"}, "errors": []}
+{"timestamp": "2026-10-10T01:50:41.198896+00:00", "workflow": "health_check", "status": "warning", "message": "Weekly health check complete", "metrics": {"entries_reviewed": 78, "workflows_covered": 17, "errors_in_period": 4, "warnings_in_period": 2, "result": "issues_found"}, "errors": []}
