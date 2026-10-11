@@ -98,25 +98,32 @@ def _finra_day(d):
 
 
 def fetch_shortvol():
-    days = pd.bdate_range(START, dt.date.today() - dt.timedelta(days=1))
-    frames = []
-    with cf.ThreadPoolExecutor(8) as ex:
-        for i, r in enumerate(ex.map(_finra_day, days)):
-            if r is not None:
-                frames.append(r)
-            if i % 250 == 0:
-                log.info(f"  FINRA {i:,}/{len(days):,} days")
-    d = pd.concat(frames, ignore_index=True)
-    d["short_volume"] = pd.to_numeric(d.short_volume, errors="coerce")
-    d["total_volume"] = pd.to_numeric(d.total_volume, errors="coerce")
-    d["week"] = d.date + pd.to_timedelta(4 - d.date.dt.weekday, unit="D")
-    w = d.groupby(["week", "symbol"]).agg(short_volume=("short_volume", "sum"),
-                                          total_volume=("total_volume", "sum"),
-                                          days=("date", "nunique")).reset_index()
-    for c in ("short_volume", "total_volume"):
-        w[c] = w[c].astype("float32")
-    save_by_year(w, "shortvol", "week")
-    return len(w), w.symbol.nunique()
+    """Fetch day files year by year and aggregate to weeks as we go (memory-safe)."""
+    total, syms = 0, set()
+    for yr in range(int(START[:4]), dt.date.today().year + 1):
+        days = pd.bdate_range(max(pd.Timestamp(START), pd.Timestamp(yr, 1, 1)),
+                              min(pd.Timestamp(dt.date.today() - dt.timedelta(days=1)), pd.Timestamp(yr, 12, 31)))
+        frames = []
+        with cf.ThreadPoolExecutor(8) as ex:
+            for r in ex.map(_finra_day, days):
+                if r is not None:
+                    frames.append(r)
+        if not frames:
+            continue
+        d = pd.concat(frames, ignore_index=True)
+        d["short_volume"] = pd.to_numeric(d.short_volume, errors="coerce")
+        d["total_volume"] = pd.to_numeric(d.total_volume, errors="coerce")
+        d["week"] = d.date + pd.to_timedelta(4 - d.date.dt.weekday, unit="D")
+        w = d.groupby(["week", "symbol"]).agg(short_volume=("short_volume", "sum"),
+                                              total_volume=("total_volume", "sum"),
+                                              days=("date", "nunique")).reset_index()
+        for c in ("short_volume", "total_volume"):
+            w[c] = w[c].astype("float32")
+        f = OUT / f"shortvol_{yr}.parquet"
+        w.to_parquet(f, index=False, compression="zstd")
+        log.info(f"  FINRA {yr}: {len(frames)} days, {len(w):,} symbol-weeks, {f.stat().st_size / 1e6:.1f} MB")
+        total += len(w); syms |= set(w.symbol)
+    return total, len(syms)
 
 
 # ── SEC fails-to-deliver ─────────────────────────────────────────────────────
@@ -240,4 +247,10 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception:
+        import traceback
+        for line in traceback.format_exc().strip().splitlines()[-12:]:
+            print(f"::error::{line}")
+        raise
