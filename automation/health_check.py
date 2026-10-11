@@ -40,12 +40,29 @@ Flag these categories if present:
 - WARNING: degraded performance, unusual patterns, metrics outside normal range
 - INFO: notable observations that don't require immediate action but are worth knowing
 
-Normal ranges for reference:
-- Pipeline IC score: 0.40 to 0.75 (below 0.40 is concerning)
-- Universe size: 4800 to 5500 tickers (significant change warrants review)
-- Alpaca fills: expect 8-10 filled, 0-2 failed per week
-- Weekend refresh: should run Sunday evening and Monday morning
-- Premarket monitor: should run 5 checks on Monday morning
+How the system runs now (updated Oct 2026) -- do NOT flag these as problems:
+- Times are America/Chicago. A Netlify dispatcher triggers trading jobs on time:
+  premarket 06:00 Mon/Tue; position monitor 08:30, 11:15, 14:00 Mon-Fri;
+  entry 14:45 Mon/Tue; stops 15:10 Mon/Tue; exit 14:45 Thu/Fri.
+  GitHub cron backups fire the same jobs again (two UTC times per job for DST),
+  so repeat runs are expected. "Skipped: ...", "not exit day", "already ran",
+  "already in exec log" and "ghost run prevention" lines are guards working
+  correctly -- normal no-ops, never issues.
+- The scoring weights and the ML model are FROZEN on purpose (report-only).
+  "Proposal logged, not applied" and "Candidate trained (not deployed)" are expected.
+  The retrain "in-sample IC" belongs to an undeployed candidate; normal is 0.15-0.30.
+- Negative cadence capture (top-ranked names under-performing) is a known,
+  documented weakness under research review. Mention it at most as one INFO line.
+- Three shadow portfolios (no orders) update Monday/Tuesday evenings.
+
+Normal ranges:
+- Universe size: 1,700-2,300 tickers. Flag below 1,500, or a >15% change vs last week.
+- Alpaca entry: 8-10 filled, 0-2 failed. Exit closes every open position on Thu/Fri.
+- Stops: every entry week should log a successful place_stops run.
+
+Resolution rule: if a failure was followed later in the window by a successful run of
+the same workflow (and mode), report it as a single INFO line marked "resolved", not as
+CRITICAL/WARNING. Only flag what is still broken or what a human must still do.
 
 If everything looks normal across all workflows, respond with exactly:
 CLEAR: System operating normally. No issues detected.
@@ -64,6 +81,21 @@ def run_health_check() -> dict:
     log.info("=" * 60)
     log.info("WEEKLY HEALTH CHECK")
     log.info("=" * 60)
+
+    # One check per week: the cron fires twice (DST pair), so skip a repeat run
+    # within 18 hours of the last completed check -- avoids duplicate alerts.
+    if HEALTH_LOG.exists():
+        try:
+            last = json.loads(HEALTH_LOG.read_text().strip().splitlines()[-1])
+            age_h = (datetime.now(timezone.utc)
+                     - datetime.fromisoformat(last["timestamp"])).total_seconds() / 3600
+            if age_h < 18:
+                log.info(f"Skipped: health check already ran {age_h:.1f}h ago")
+                log_event("health_check", LogStatus.INFO,
+                          f"Skipped: already ran {age_h:.1f}h ago")
+                return {"status": "skipped", "message": "already ran"}
+        except Exception as e:
+            log.warning(f"Could not read last health check time: {e}")
 
     # Read last 7 days of logs
     entries = read_logs(days=7)
@@ -191,7 +223,7 @@ def run_health_check() -> dict:
 
 def run():
     result = run_health_check()
-    if result["status"] == "clear":
+    if result["status"] in ("clear", "skipped"):
         log.info("System healthy -- no action required")
     elif result["status"] == "issues":
         log.warning("Issues detected -- notification sent")
