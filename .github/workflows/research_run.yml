@@ -17,7 +17,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: research-data
+  group: research-run-${{ inputs.script }}
   cancel-in-progress: false
 
 jobs:
@@ -51,4 +51,17 @@ jobs:
           git add -A
           git diff --cached --quiet && exit 0
           git commit -q -m "research ${{ inputs.script }} $(date -u +%Y-%m-%dT%H:%MZ)"
-          git push "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" HEAD:research-data
+          URL="https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"
+          # several research runs may push to the branch at once: on rejection, re-clone
+          # the latest branch, lay our changed files over it and retry
+          for attempt in 1 2 3 4 5; do
+            git push -q "$URL" HEAD:research-data && exit 0
+            CHANGED=$(git diff --name-only HEAD~1 HEAD)
+            cd .. && rm -rf rd_new && git clone -q --depth 1 -b research-data "$URL" rd_new
+            for f in $CHANGED; do mkdir -p "rd_new/$(dirname "$f")"; cp "research_data/$f" "rd_new/$f"; done
+            rm -rf research_data && mv rd_new research_data && cd research_data
+            git config user.name "momentum-bot"; git config user.email "momentum-bot@users.noreply.github.com"
+            git add -A; git commit -q -m "research ${{ inputs.script }} $(date -u +%Y-%m-%dT%H:%MZ) (retry $attempt)"
+            sleep $((RANDOM % 20 + 5))
+          done
+          exit 1
