@@ -801,3 +801,23 @@ Results pending.
 2. **The catalyst decides what comes next.** Classifying the catalyst fast is worth something on its own: hold real scheduled news, fade unexplained spikes.
 3. **39% of spikes have no filing behind them.** Explaining those needs news data (GDELT next). These are also the ones that fade.
 4. **"Event minus one" therefore matters most for spikes we can enter early AND exit near the top.** Step 2 looks for signatures in the 1–8 weeks before, against matched controls.
+
+### Steady risers at the 3%/week run rate (`research/steady_risers.py`, `research/results/steady_risers.txt`)
+
+Run rate: 3%/wk = +12.6%/4 wk = +46.9%/13 wk.
+
+**A. How common:**
+- A steady run is 13 weeks at ≥ +46.9% with ≥ 9 up weeks, no week above +20%, and an in-window drawdown no worse than −12%.
+- There were **3,323 such episodes since 2017** (about 100–700 a year). On a typical week 0.47% of the universe is in one.
+- Any-path runs at the run rate are about 6× more common.
+
+**B. Can a steady run be caught after 8 weeks?**
+- Take stocks up ≥ 20–30% in 8 weeks with ≥ 6 up weeks and no week above +15%.
+- They hit the run rate over the NEXT 13 weeks only 4–7% of the time. All stocks: 4–5%.
+- Their 13-week excess return is +0.7% to +2.4%, the same sign in dev and holdout but small.
+- **A steady path alone does not predict continuation.**
+- Jumpy 8-week risers hit the run rate more often (12%) but crash more (29–38% fall below −20%). Holdout excess −3.3%.
+
+**C. Smooth vs. choppy winners** (top 10% by 26-week return, split by share of up weeks):
+- Smooth beats choppy over 13 weeks: +1.9% vs +0.3% in dev, +1.5% vs −3.4% in the holdout. t ≈ 1–1.7.
+- Consistent direction, weak strength. This is the known "frog in the pan" effect.
