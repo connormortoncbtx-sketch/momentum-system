@@ -1,0 +1,54 @@
+name: Research run (research/<script>.py -> research-data branch)
+
+# Manual only. Runs a research script with data-API secrets and pushes anything it
+# writes under research_data/ to the research-data branch. Never places orders.
+on:
+  workflow_dispatch:
+    inputs:
+      script:
+        description: 'Script name in research/ (without .py)'
+        required: true
+      limit:
+        description: 'Optional LIMIT env for a smoke test'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+concurrency:
+  group: research-data
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install
+        run: pip install "pandas>=2.0" pyarrow alpaca-py anthropic
+      - name: Load research-data branch
+        run: git clone -q --depth 1 -b research-data "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" research_data
+      - name: Run
+        env:
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+          RESEARCH_DATA: research_data
+          LIMIT: ${{ inputs.limit }}
+        run: python "research/${{ inputs.script }}.py"
+      - name: Push to research-data branch
+        if: always()
+        run: |
+          cd research_data
+          git config user.name  "momentum-bot"
+          git config user.email "momentum-bot@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && exit 0
+          git commit -q -m "research ${{ inputs.script }} $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" HEAD:research-data
