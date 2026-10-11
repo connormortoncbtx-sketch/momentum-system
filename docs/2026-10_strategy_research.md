@@ -677,3 +677,46 @@ Buy last week's biggest losers among the most-traded names. 48 designs.
   - Holdout: **−8.5%**.
 - No design holds up in the holdout at 15 bps.
 - **Dead.** The effect has decayed since 2024.
+
+## Post-scoring filters (Oct 10, 2026)
+
+V1 filtered the scored list on prior-week return and Monday's move, and bought at Tuesday's open.
+
+Scripts: `research/post_filters.py` and `research/post_filters_portfolio.py`. Results: `research/results/post_filters.csv`.
+
+**Setup:**
+- Each week, take the top 50 by score. Split them into fifths by a factor and measure each fifth against the pool average.
+- 23 factors, all known at decision time:
+  - **Recent moves:** prior week, prior 4 weeks, Monday's return, Monday's open gap, Monday intraday, Tuesday open gap, stretch above the 10-week average, close vs. the week's high.
+  - **Trend and momentum:** 52-week-high distance, trend count, 12-1, 3-1.
+  - **Risk:** 12-week vol, lottery (max week), 52-week beta, idiosyncratic vol.
+  - **Size and liquidity:** dollar volume, volume surge, price level.
+  - **Events:** earnings last week, earnings this week, insider buying in the last 4 weeks.
+- Four pools:
+  - Live proxy, bought Tue open (V1 timing).
+  - Live proxy, bought Mon close.
+  - 12-1 momentum held 4 weeks.
+  - 12-1 momentum held 13 weeks.
+
+**Result: filters are noise, with one exception.**
+- 80 top-minus-bottom tests. 5 had |t| > 2 in dev, about what chance gives (4).
+- Only one held up in both periods: **reporting earnings during the hold week is GOOD.** It beats the pool by +1.0% (t 2.0) in dev and +2.3% (t 2.2) in the holdout, per week. The live rule removes exactly these names.
+- **V1's Monday filter has the right sign in both periods but is weak.** The fifth that ran most on Monday trails the pool, Tue open → Fri close: −0.14% dev, −0.30% holdout per week. The fifth that fell most on Monday leads: +0.08%, +0.26%.
+- Tuesday-gap and prior-week filters point the same way, with smaller and less consistent effects.
+- **Size, price level and beta look strong in the holdout only.** Big, high-priced, high-beta names won in 2024–26, the mega-cap era. They show nothing in dev, so they are a regime effect, not a filter.
+
+**Top-10 weekly portfolios** (live proxy, Tue open → Fri close, 15 bps):
+
+| Variant | Dev CAGR / Sharpe | Holdout CAGR / Sharpe |
+|---|---|---|
+| No filter | −17.0% / −0.68 | −2.3% / 0.09 |
+| Skip top-20% Monday runners | −11.8% / −0.45 | −1.3% / 0.11 |
+| Skip Monday + prior-week runners | −13.6% / −0.62 | +8.4% / 0.44 |
+| Skip top-20% Tuesday gap | −12.3% / −0.49 | −0.5% / 0.13 |
+| Current rule: skip earnings in hold week | −19.5% / −0.83 | −8.3% / −0.13 |
+
+The Monday filter helps a few points a year, but cannot rescue a weekly-turnover strategy.
+
+**Live-only factors** (21 weeks of the live top 50): catalyst, fundamentals and sentiment sub-signals, conviction, EV, predicted vol, sector. Nothing reaches |t| > 1.2; there is too little history.
+
+Factors with no history here (short interest, options flow, analyst revisions, news) can only be tested forward.
