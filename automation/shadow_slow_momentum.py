@@ -12,6 +12,9 @@ docs/2026-10_strategy_research.md (research/hold_conditions.py):
   rule      each entry day, using the prior Friday's ranks: KEEP every holding
             still ranked in the top 100; SELL the rest; FILL back to 10 names
             from the top of the list; equal weight (as backtested)
+  filter    new buys skip "spikers": the 10 biggest gainers of the past week or
+            past 4 weeks in the universe (rank-band study, Oct 10: top-5 gainers
+            trail by 2.4-9% over the next 2-13 weeks in dev AND holdout)
   backtest  dev 2017-23: 26.4%/yr, Sharpe 0.75, max DD -46%
             holdout 2024-26: 38.1%/yr, Sharpe 0.85, max DD -42% (SPY 20.6% / 1.31)
             median hold ~21 weeks. Best of 106 designs -> level is optimistic.
@@ -48,14 +51,22 @@ SCORES = DATA / "scores_final.csv"
 N, KEEP_WITHIN, COST_BPS = 10, 100, 15.0
 
 
+SPIKE_TOP = 10
+
+
 def ranks_at(p, entry):
-    """12-1 momentum ranks (1 = best) within the research universe at the formation Friday."""
+    """12-1 momentum ranks (1 = best) within the research universe at the formation
+    Friday, plus the set of spikers (top-SPIKE_TOP gainers over 1 or 4 weeks)."""
     f = B.features(p)
     U = B.universe(p, f, 5.0, 2e6)
     entry_fri = pd.Timestamp(entry) + pd.Timedelta(days=4 - entry.weekday())
     form = p.weeks[p.weeks.get_loc(entry_fri) - 1]
     s = f["m12_1"].loc[form].where(U.loc[form]).dropna()
-    return s.rank(ascending=False), form, s
+    spikers = set()
+    for k in ("r1w", "r4w"):
+        r = f[k].loc[form].where(U.loc[form]).dropna().rank(ascending=False)
+        spikers |= set(r[r <= SPIKE_TOP].index)
+    return s.rank(ascending=False), form, s, spikers
 
 
 def main():
@@ -87,7 +98,7 @@ def main():
         log.warning(f"No closes for {entry} yet -- will retry next run")
         return
     p = build_panel(adj, raw, {k: names.get(k, k) for k in set(syms)}, entry)
-    ranks, form, mom = ranks_at(p, entry)
+    ranks, form, mom, spikers = ranks_at(p, entry)
 
     # 1. mark to market from the last recorded close to this entry-day close
     closes = adj.pivot_table(index="date", columns="symbol", values="close", aggfunc="last")
@@ -106,7 +117,8 @@ def main():
     # 2. keep names still in the top KEEP_WITHIN, fill to N from the top, equal weight
     keep = [h for h in held if h in ranks.index and ranks[h] <= KEEP_WITHIN]
     sold = sorted(set(held) - set(keep))
-    fill = [x for x in ranks.sort_values().index if x not in keep][: N - len(keep)]
+    fill = [x for x in ranks.sort_values().index if x not in keep and x not in spikers][: N - len(keep)]
+    skipped = [x for x in ranks.sort_values().index[: N + len(spikers)] if x in spikers and x not in keep]
     names_new = keep + fill
     tgt = {s: nav / len(names_new) for s in names_new}
     traded = sum(abs(tgt.get(s, 0) - held.get(s, 0)) for s in set(tgt) | set(held))
@@ -126,7 +138,7 @@ def main():
            "live_index": round(100 * live / state["nav0_live"], 4) if live and state["nav0_live"] else None,
            "spy_index": round(100 * spy / state["nav0_spy"], 4),
            "turnover_pct": round(100 * traded / (nav + cost), 1),
-           "bought": fill, "sold": sold, "exited_no_price": exited,
+           "bought": fill, "sold": sold, "skipped_spikers": skipped, "exited_no_price": exited,
            "holdings": {s: {"rank": int(ranks[s]) if s in ranks.index else None,
                             "mom_12_1_pct": round(float(mom[s]) * 100, 1) if s in mom.index else None,
                             "since": entered[s]} for s in sorted(held)},

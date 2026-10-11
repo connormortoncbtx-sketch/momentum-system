@@ -2,7 +2,8 @@ name: Shadow Portfolios (no orders)
 
 # Side-by-side shadows (no orders): #1 large-cap monthly momentum, #2 contrarian
 # regime switch, #3 macro + volatility-sized momentum exposure, #4 slow 12-1
-# momentum held while in the top 100. Uses the
+# momentum held while in the top 100 (spike-filtered), #5 live picks with vs
+# without the earnings-week exclusion. Uses the
 # entry day's official close fetched after the fact, so GitHub cron drift is
 # harmless; the script is idempotent per entry date (extra runs are no-ops).
 on:
@@ -69,11 +70,19 @@ jobs:
           ALPACA_PAPER: ${{ secrets.ALPACA_PAPER || 'true' }}
         run: python automation/shadow_slow_momentum.py
 
+      - name: Update shadow earnings-hold comparison
+        continue-on-error: true
+        env:
+          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+          ALPACA_PAPER: ${{ secrets.ALPACA_PAPER || 'true' }}
+        run: python automation/shadow_earnings_hold.py
+
       - name: Commit ledger
         run: |
           git config user.name  "momentum-bot"
           git config user.email "momentum-bot@users.noreply.github.com"
-          git add data/shadow_lc_state.json data/shadow_lc_ledger.jsonl data/shadow_regime_state.json data/shadow_regime_ledger.jsonl data/shadow_macro_state.json data/shadow_macro_ledger.jsonl data/shadow_slow_state.json data/shadow_slow_ledger.jsonl data/system_log.jsonl 2>/dev/null || true
+          git add data/shadow_lc_state.json data/shadow_lc_ledger.jsonl data/shadow_regime_state.json data/shadow_regime_ledger.jsonl data/shadow_macro_state.json data/shadow_macro_ledger.jsonl data/shadow_slow_state.json data/shadow_slow_ledger.jsonl data/shadow_earnings_state.json data/shadow_earnings_ledger.jsonl data/system_log.jsonl 2>/dev/null || true
           git diff --cached --quiet && exit 0
           git commit -q -m "shadows: $(date +%Y-%m-%d) update"
           for attempt in 1 2 3 4 5; do
