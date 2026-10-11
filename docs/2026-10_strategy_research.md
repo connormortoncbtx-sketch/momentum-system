@@ -955,3 +955,21 @@ Run rate: 3%/wk = +12.6%/4 wk = +46.9%/13 wk.
   - **Worse.** It was removed from shadow #4 before its first run, so the shadow matches the backtested design.
 
 **Takeaway:** the avoid signals help event-driven, short-horizon trading. They do not help a slow momentum book, whose winners often issue stock into strength and keep running.
+
+### Shadow #6 live (Oct 11, 2026): `automation/shadow_filings.py`, `.github/workflows/shadow_filings.yml`
+
+**Schedule:** twice each weekday, about 9:30pm ET and 8:40am ET.
+
+**What it does:**
+- Reads EDGAR's latest-8-K feed (feed parsing verified in Actions with `research/probes/edgar_feed.py`).
+- Filters to small caps: $30M–$2B market cap, price ≥ $1, ≥ $300k/day traded, and the study's item list.
+- Judges each filing with the study's exact prompt and model.
+- Logs every judgement to `data/shadow_filings_judgements.jsonl`.
+
+**Two hypothetical 20-session books, IWM-adjusted, entered at the first open AFTER each judgement:**
+1. Contract-win longs.
+2. Bad-news shorts (direction ≤ −1 or 4+ red flags), before borrow costs.
+
+Closed trades go to `data/shadow_filings_ledger.jsonl`. Estimated cost is about $0.003 per filing.
+
+**Fix found while wiring it:** the shadow workflows ran `git add` on a list of files that included ledgers not created yet. That makes git stage nothing, so shadows #4/#5 would have silently lost their first state on Monday. Now only existing files are staged.
