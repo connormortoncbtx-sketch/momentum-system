@@ -151,6 +151,40 @@ def main():
     print(res.round(2).to_string(index=False))
     res.to_csv(f"{OUT}/contract_book.csv", index=False)
     top = res.iloc[0]
+    # robustness of the design chosen on "early": higher costs, without its best events, daily series saved
+    global COST
+    m = SIG[top.signal]; H, cap = int(top.H), float(top.cap)
+    base, _ = book(ev[m], O, C, H, cap)
+    pd.DataFrame({"contract_book": base}).to_csv(f"{OUT}/contract_book_daily.csv")
+    print(f"\nROBUSTNESS of {top.signal} H{H} cap{cap}")
+    for cst in (50.0, 100.0):
+        COST = cst; r, _ = book(ev[m], O, C, H, cap)
+        print(f"  cost {cst:.0f} bps/side: early", {a: round(v, 2) for a, v in st(r[r.index < HOLD0]).items()},
+              "holdout", {a: round(v, 2) for a, v in st(r[r.index >= HOLD0]).items()})
+    COST = 25.0
+    x = ev[m].copy()
+    for k in (1, 3, 5, 10):
+        drop = x.sort_values("ab_20", ascending=False).head(k).accession          # ex post: remove the best k events
+        r, _ = book(x[~x.accession.isin(drop)], O, C, H, cap)
+        print(f"  without best {k:2d} events: early", {a: round(v, 2) for a, v in st(r[r.index < HOLD0]).items()},
+              "holdout", {a: round(v, 2) for a, v in st(r[r.index >= HOLD0]).items()})
+    # control: random 8-Ks (any type) with the same number of events per period, same book
+    rng = np.random.default_rng(3)
+    ctrl = []
+    pool_e, pool_h = ev[ev.t < HOLD0], ev[ev.t >= HOLD0]
+    ne, nh = int((m & (ev.t < HOLD0)).sum()), int((m & (ev.t >= HOLD0)).sum())
+    O2, C2 = bars(list(pd.concat([pool_e.sample(min(len(pool_e), ne * 20), random_state=1),
+                                  pool_h.sample(min(len(pool_h), nh * 20), random_state=1)]).symbol) + ["IWM"],
+                  START - pd.Timedelta(days=10))
+    for d in range(20):
+        smp = pd.concat([pool_e.sample(min(len(pool_e), ne * 20), random_state=1).iloc[d * ne:(d + 1) * ne],
+                         pool_h.sample(min(len(pool_h), nh * 20), random_state=1).iloc[d * nh:(d + 1) * nh]])
+        r, _ = book(smp, O2, C2, H, cap)
+        ctrl.append((st(r[r.index < HOLD0])["Sharpe"], st(r[r.index >= HOLD0])["Sharpe"],
+                     st(r[r.index < HOLD0])["CAGR"], st(r[r.index >= HOLD0])["CAGR"]))
+    ctrl = pd.DataFrame(ctrl, columns=["early_Sharpe", "hold_Sharpe", "early_CAGR", "hold_CAGR"])
+    print("  CONTROL: 20 random sets of 8-Ks (same counts, same book):")
+    print(ctrl.describe().round(2).to_string())
     print(f"\n::notice::contract book: best-on-early {top.signal} H{top.H} cap{top.cap}: early Sharpe {top.early_Sharpe:.2f} "
           f"CAGR {top.early_CAGR:.1f}%, holdout Sharpe {top.hold_Sharpe:.2f} CAGR {top.hold_CAGR:.1f}% DD {top.hold_maxDD:.0f}%")
 
