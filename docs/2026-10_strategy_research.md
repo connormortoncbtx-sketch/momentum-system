@@ -973,3 +973,47 @@ Run rate: 3%/wk = +12.6%/4 wk = +46.9%/13 wk.
 Closed trades go to `data/shadow_filings_ledger.jsonl`. Estimated cost is about $0.003 per filing.
 
 **Fix found while wiring it:** the shadow workflows ran `git add` on a list of files that included ledgers not created yet. That makes git stage nothing, so shadows #4/#5 would have silently lost their first state on Monday. Now only existing files are staged.
+
+## Winners first (Oct 11, 2026): `research/winners.py`, `research/results/winners.txt`
+
+Start from the biggest winners and dissect them.
+
+### Before the run
+
+1,213 quarterly top-1% winners, 2017–2026; median next-13-week return +106%. They are compared with the bottom-1% losers (median −63%). Average percentile at the START of the quarter, where 50 = typical stock:
+
+| Trait | Winners | Losers | Typical (middle half) |
+|---|---|---|---|
+| 12-week volatility | 82 | 85 | 42 |
+| Distance below 52-week high | 74 | 78 | 44 |
+| Share price | 24 | 22 | 55 |
+| $ volume | 36 | 34 | 52 |
+| 12-1 momentum | **45** | **36** | 51 |
+| Earnings filed in last 13 wk | **47** | **39** | 51 |
+| Form 4 activity | **48** | **40** | 50 |
+
+- **Before the run, the biggest winners and the biggest losers look almost the same:** volatile, cheap, small, beaten-down lottery tickets.
+- The differences are a few percentile points. Winners have somewhat better 12-1 momentum, are current on their filings, and show more insider-form activity.
+
+### Where they were
+
+- Pharma/biotech (SIC 28) is **29% of all winners, 2.6× its share of the universe**. These are binary clinical and regulatory events.
+- Credit/lending (SIC 61) is 3.1× over-represented, and electronics/semis 1.6×.
+- In each year, the five industries with the most winners hold 45–69% of that year's winners, against 30–34% of the universe. **Clustering is strong.**
+
+### Is the clustering tradeable in advance?
+
+Next-13-week excess, top vs bottom quintile:
+
+| Signal | Dev spread | Holdout spread |
+|---|---|---|
+| Industry 13-wk momentum (SIC-3, leave-one-out) | +1.6% (t 1.6) | +0.5% (t 0.2) |
+| Own 12-1 momentum | +2.1% (t 1.9) | +1.8% (t 1.7) |
+| Strong stock in strong industry (vs universe) | +2.6% (t 2.4) | −0.7% |
+
+- **Industry waves are visible only in hindsight.** Last quarter's hot industry does not reliably stay hot.
+- Plain 12-1 momentum is the one trait that keeps working, which is consistent with shadow #4.
+
+### AI post-mortems
+
+`research/winner_postmortems.py`: each 2024–26 top/bottom-1% stock's 8-Ks are read to name the driver, whether its date was known in advance, and any precursor. Queued.
