@@ -68,7 +68,7 @@ def main():
     tg = pd.read_parquet("research/samples/straddle_targets.parquet")
     lim = int(os.environ.get("LIMIT") or 0)
     if lim:
-        tg = tg.groupby("group", group_keys=False).apply(lambda g: g.sample(min(lim, len(g)), random_state=3))
+        tg = tg.groupby("group").sample(n=lim, random_state=3)
     sc = StockHistoricalDataClient(K, S); oc = OptionHistoricalDataClient(K, S); tc = TradingClient(K, S, paper=True)
 
     # stock closes (RAW prices: option strikes are in raw terms)
