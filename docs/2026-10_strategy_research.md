@@ -861,3 +861,43 @@ Run rate: 3%/wk = +12.6%/4 wk = +46.9%/13 wk.
 - Net issuance, low asset growth, ROA, earnings yield, book-to-market: |t| < 2 in both periods.
 - The accruals test is broken (1% coverage): cash flow is reported year-to-date and needs a different build. This is low priority given the rest.
 - Classic published factors add nothing usable here. That is consistent with their post-publication decay and with the 2024–26 rally in low-quality stocks.
+
+### LLM filing reader: results (`research/llm_analyze.py`, `research/results/llm_filings.txt`)
+
+**Run:**
+- 16,996 of 17,000 filings judged.
+- Cost: 38.5M input + 2.4M output tokens with Claude Haiku 4.5 Batches ≈ **$25 (≈ $1.50 per 1,000 filings)**.
+- Returns are measured from the FIRST OPEN after the authoritative acceptance time, IWM-adjusted.
+- The score was designed on dev (2023 – Mar 2025). The holdout (Apr 2025 – Sep 2026, after the model's training cutoff) was scored once.
+- Anonymisation leaked some names (e.g. a summary named Tilray). That matters only for dev; the holdout is post-cutoff regardless.
+
+**Bad news keeps drifting down after the open, in both periods:**
+
+| Holdout | n | Day 1 | Day 5 | Day 20 |
+|---|---|---|---|---|
+| LLM direction −1 | 2,314 | −1.14% | −1.58% (t −5.2) | −2.41% |
+| LLM direction −2 | 339 | −2.33% | −1.12% | −2.62% |
+| 4+ red flags | 4,595 | −1.01% | −1.23% (t −5.2) | −2.96% |
+| Dev, direction −1 | 972 | −0.76% | −1.17% (t −2.7) | −2.80% |
+
+**Good news is priced by the open and then fades:**
+- Direction +2: gap +7.6% at the open, then −0.4% (5d) and −1.1% (20d) in the holdout.
+- Big positive deals (stated value > 20% of market cap) fade −2.8% to −4.4% over 20 days.
+
+**Event types with the same sign in both periods (5-day / 20-day):**
+
+| Event | Dev | Holdout |
+|---|---|---|
+| **Contract win** (the one positive) | +5.1% / +6.4% (t 2.4) | +2.6% / +5.0% (t 1.9; n = 207, ~12/month) |
+| Clinical "positive" | −3.6% | −2.0% / −3.4% |
+| Company announces an acquisition | −0.7% / −1.5% | −2.0% / −4.8% (t −4.1) |
+| Equity financing | −0.8% / −3.1% | −1.7% / −3.4% |
+| Executive departure | −0.6% | −1.1% |
+| Partnership | −1.3% | −1.3% |
+
+**Overall rank correlation** of the score with 1–20 day returns: +0.02 to +0.05.
+
+**Conclusion:**
+- Reading small-cap filings gives **a strong, cheap, consistent bad-news signal** (avoid/short) and **one long signal, contract wins**.
+- It does not find broad positive under-reaction. Good news is already in the opening price.
+- Shorting small caps is limited by borrow cost and availability, so the bad-news side is most usable as a filter on any long book. It can be a short book only where borrow is cheap.
