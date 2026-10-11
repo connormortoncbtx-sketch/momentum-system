@@ -536,3 +536,71 @@ Review in early January 2027.
 - (b) market making (posting quotes, earning the spread), which needs order-book data and an API account.
 
 Both are a different kind of system from "many small bets on a forecast".
+
+## Rank tranches and hold length (Oct 10, 2026)
+
+Scripts:
+- `research/rank_tranches_live.py`
+- `research/rank_tranches.py`
+- `research/hold_conditions.py`
+
+Results: `research/results/hold_conditions.csv`.
+
+### Does rank 1–3 underperform rank 4–13?
+
+**Live history:** 21 weeks with composite ranks (Apr 17 – Oct 2, 2026). Excess return is measured vs. the universe, Tue open → Fri close.
+
+| Ranks | All 21 wks | First 7 wks | Last 14 wks (after the Jun 5 scoring fix) |
+|---|---|---|---|
+| 1–3 | −1.00% (t −0.8) | −2.36% | −0.32% |
+| 4–6 | +0.51% (t 0.3) | +3.44% | −0.95% |
+| 7–10 | −0.04% | +3.14% | −1.64% |
+| 11–13 | −1.69% (t −1.6) | −0.02% | −2.53% |
+
+- The June observation (1–3 bad, 4–10 good) came from the first 7 weeks.
+- In the 14 weeks since, every bucket in the top 20 trailed the universe.
+- Nothing is significant.
+
+**10 years (2017–2026) on the momentum proxy, 12-1 momentum, and the live RS blend:**
+- The 1–3 vs 4–6 vs 7–13 differences are all |t| < 1.5.
+- The sign flips between dev and holdout, and between signals.
+- **There is no robust "skip the top 3" effect.**
+- What the very top does carry is the biggest recent spike. Median last-week return is +7.0% for ranks 1–3, +5.2% for 4–13, and +0.2% for the rest. Short-term reversal is real (decile table).
+
+### Hold length
+
+Staggered tranches, 15 bps per side. Momentum proxy, top 20.
+
+| Hold | 1 wk | 2 wk | 4 wk | 8 wk | 13 wk |
+|---|---|---|---|---|---|
+| Dev CAGR | −1.6% | 3.7% | 7.6% | 12.1% | 14.1% |
+| Dev Sharpe | 0.07 | 0.27 | 0.42 | 0.57 | 0.64 |
+| Holdout CAGR | 6.8% | 12.7% | 23.5% | 16.8% | 16.2% |
+
+The live score's edge is slow, and weekly turnover throws it away. This is the most consistent result of the whole review.
+
+### Condition-based exits and entries
+
+106 designs. Dev 2017–23 picks, holdout 2024–26 once.
+
+- **Hold while the stock stays in the top-B by rank** (exit on a condition, not a date).
+  - 12-1 momentum, top 10, hold while in the top 100:
+    - Dev: 26.4%/yr, Sharpe 0.75, max DD −46%.
+    - Holdout: 38.1%/yr, Sharpe 0.85, max DD −42%.
+    - SPY: dev 13.0% / 0.76; holdout 20.6% / 1.31.
+  - Median hold is 21 weeks. It beat SPY in 7 of 10 years and lagged in 2021, 2023 and 2026 YTD.
+  - Neighbouring designs agree: 12-1 with a top-50 to top-200 exit gives holdout 11–38%/yr.
+  - The live proxy and the live RS blend do worse under the same rules.
+  - It was best of 106 designs, so treat the level as optimistic. The direction (slow momentum, rank-based exit) is robust.
+- **Trailing stops** (10–20% off the peak weekly close): dev 15–21%, holdout −13% to +6%. They don't help.
+- **Entry filters:**
+  - Skip last week's top-10% movers: dev 19.5%, holdout 20.9% (12-1, n20).
+  - Buy only after a down week: similar.
+  - Modest help, not a standalone edge.
+
+**Conclusion:** the tranche idea is noise. The N-length idea is the real lead:
+- Buy 12-1 momentum.
+- Hold until the name falls out of the top ~100.
+- Accept −40% drawdowns.
+
+Candidate for shadow #4.
