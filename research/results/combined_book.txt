@@ -1,0 +1,61 @@
+long done
+short done
+     part                                                               design  dev_CAGR  dev_vol  dev_Sharpe  dev_maxDD  hold_CAGR  hold_vol  hold_Sharpe  hold_maxDD
+benchmark                                                                  SPY     12.95    18.31        0.76     -33.48      20.55     15.18         1.31      -17.27
+     long                                                 core (no exclusions)     26.44    44.28        0.75     -45.92      38.12     55.64         0.85      -42.22
+     long                                                   core excl offering     19.06    43.48        0.62     -38.03      28.20     49.10         0.75      -30.64
+     long                                                       core excl late     21.12    43.32        0.66     -55.57      33.27     56.25         0.79      -46.95
+     long                                                   core excl distress     21.00    45.84        0.65     -53.30      32.88     54.44         0.79      -48.59
+     long                                                     core excl merger     24.22    44.60        0.71     -45.92      43.00     55.40         0.92      -42.22
+     long                                                   core excl all four     16.33    43.08        0.57     -41.90      11.47     49.21         0.46      -37.09
+     long                                     core excl offering+late+distress     15.19    43.00        0.54     -40.75      11.47     49.21         0.46      -37.09
+    short                                          short late H4 (avg 4 names)    -15.56    41.14       -0.20     -83.49     -40.94     53.81        -0.67      -79.09
+    short                                        short late H13 (avg 11 names)    -11.31    36.75       -0.14     -78.80     -16.37     36.43        -0.30      -51.90
+    short                                     short offering H4 (avg 97 names)    -12.35    24.46       -0.42     -67.92     -19.16     23.12        -0.80      -49.70
+    short                                   short offering H13 (avg 259 names)    -14.94    24.41       -0.54     -72.80     -19.92     21.24        -0.94      -50.70
+    short                                     short distress H4 (avg 13 names)    -14.84    29.57       -0.40     -77.11     -20.05     30.77        -0.57      -53.22
+    short                                    short distress H13 (avg 40 names)    -17.40    26.97       -0.57     -77.49     -20.58     25.08        -0.79      -52.12
+    short                      short late+offering+distress H4 (avg 108 names)    -13.20    24.68       -0.45     -68.42     -20.17     23.14        -0.86      -51.22
+    short                     short late+offering+distress H13 (avg 289 names)    -15.30    24.62       -0.55     -72.77     -19.87     21.13        -0.94      -50.89
+    short                      short late+offering+distress H13, borrow 10%/yr    -20.25    24.62       -0.79     -79.65     -24.56     21.13        -1.23      -58.02
+    short short late+offering+distress H13, looser borrow screen ($2, $1M/day)    -15.28    24.67       -0.55     -72.92     -17.67     21.13        -0.81      -47.36
+/home/claude/momentum-system/research/combined_book.py:163: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  sr = res[res.part == "short"][~res.design.str.contains("borrow")].sort_values("dev_Sharpe", ascending=False).iloc[0]
+
+chosen on dev: long = core (no exclusions) | short = late H13
+     part                    design  dev_CAGR  dev_vol  dev_Sharpe  dev_maxDD  hold_CAGR  hold_vol  hold_Sharpe  hold_maxDD
+benchmark                       SPY     12.95    18.31        0.76     -33.48      20.55     15.18         1.31      -17.27
+    combo long core (no exclusions)     26.44    44.28        0.75     -45.92      38.12     55.64         0.85      -42.22
+    combo       long + 0.25 x short     27.07    40.03        0.80     -42.41      38.05     50.33         0.89      -42.16
+    combo       long + 0.50 x short     26.61    37.59        0.82     -40.85      36.86     46.26         0.91      -42.97
+    combo       long + 1.00 x short     22.55    39.26        0.71     -53.23      31.24     43.09         0.84      -47.07
+
+correlation long vs short (weekly): -0.57
+
+LEVERAGE (gross long exposure x k; financing 6%/yr on the borrowed part)
+               book  period  leverage  CAGR  maxDD  weekly_geo  kelly
+          long only     dev      1.00 26.44 -45.92        0.45   1.50
+          long only     dev      1.50 27.89 -69.08        0.47   1.50
+          long only     dev      2.00 22.48 -85.95        0.39   1.50
+          long only     dev      3.00 -7.84 -98.48       -0.16   1.50
+          long only     dev      0.75 21.48 -34.65        0.37   1.50
+          long only holdout      1.00 38.12 -42.22        0.62   1.40
+          long only holdout      1.50 40.93 -58.54        0.66   1.40
+          long only holdout      2.00 33.48 -71.26        0.56   1.40
+          long only holdout      3.00 -5.19 -87.87       -0.10   1.40
+          long only holdout      0.70 29.37 -31.01        0.50   1.40
+          long only holdout      1.40 41.20 -55.57        0.67   1.40
+long + 0.50 x short     dev      1.00 26.61 -40.85        0.45   1.89
+long + 0.50 x short     dev      1.50 31.04 -57.50        0.52   1.89
+long + 0.50 x short     dev      2.00 30.67 -71.59        0.52   1.89
+long + 0.50 x short     dev      3.00 14.88 -91.37        0.27   1.89
+long + 0.50 x short     dev      0.94 25.33 -38.69        0.44   1.89
+long + 0.50 x short     dev      1.89 31.19 -68.45        0.52   1.89
+long + 0.50 x short holdout      1.00 36.86 -42.97        0.61   1.77
+long + 0.50 x short holdout      1.50 43.86 -58.57        0.70   1.77
+long + 0.50 x short holdout      2.00 43.73 -70.54        0.70   1.77
+long + 0.50 x short holdout      3.00 22.81 -86.13        0.40   1.77
+long + 0.50 x short holdout      0.89 33.56 -39.11        0.56   1.77
+long + 0.50 x short holdout      1.77 44.71 -65.44        0.71   1.77
+
+target: 3.00%/week geometric = 366%/yr

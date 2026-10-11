@@ -1137,3 +1137,47 @@ I tested every observable precursor against the base rate, across all universe s
 - Late filers, preliminary proxies and 13D stakes do raise the odds of becoming a run-rate winner, by about 1.4–1.5× the base rate. But their mean return is negative.
 - That is the same lottery-ticket shape as the signature model: these filings predict volatility, not direction.
 - Form 425 and merger proxies are reliably negative. Late filers are a strong avoid (−11% over 13 weeks in the holdout).
+
+### Combined book: best Sharpe we can build, and leverage (`research/combined_book.py`, `research/results/combined_book.txt`)
+
+The question: what is the highest Sharpe we can build from the robust pieces, and how far does leverage take it toward 3%/week?
+
+Setup:
+- **Long core:** slow 12-1 momentum (shadow #4).
+- **Exclusions:** names flagged by filings are dropped. The flags are offering (424B or item 3.02, last 8 weeks), late filer (NT 10-K/Q, last 13 weeks), distress (items 3.01/3.03/5.01, last 8 weeks) and merger (425/PREM14A/DEFM14A, last 13 weeks).
+- **Short leg:** new bad-news flags, restricted to price ≥ $5 and ≥ $5M/day so the names are likely borrowable. Borrow costs 4%/yr and trading 15 bps per side. Squeezes are not clipped.
+- **Selection:** the long variant and short leg were chosen on dev; the holdout was scored once.
+
+**1. Filing exclusions hurt the momentum core.**
+
+| Long book | Dev CAGR / Sharpe | Holdout CAGR / Sharpe |
+|---|---|---|
+| Core, no exclusions | 26.4% / 0.75 | 38.1% / 0.85 |
+| Excluding offerings | 19.1% / 0.62 | 28.2% / 0.75 |
+| Excluding offering + late + distress | 15.2% / 0.54 | 11.5% / 0.46 |
+
+Momentum winners raise money while their stock is hot, and keep rising anyway. The offering drift is a small-cap, non-momentum effect.
+
+**2. The bad-news short leg has no edge among borrowable names.**
+- Raw short legs lose 11–20%/yr in both periods.
+- Relative to borrowable stocks, the combined flags earn +3.8% to +8.9%/yr excess in dev (t 1.9–3.6), but only −0.3% to +2.6%/yr in the holdout (t ≈ 0). That is before the 4% borrow cost.
+- The strong event-study drifts live in names you cannot borrow.
+
+**3. The short leg works only as a hedge.**
+- Long plus 0.5× late-filer shorts: Sharpe 0.82 dev / 0.91 holdout, versus 0.75 / 0.85 for long only.
+- Correlation between the long book and the short leg is −0.57. The improvement is hedging, not alpha.
+
+**4. Leverage** (financing at 6%/yr):
+
+| Book | Leverage | Dev CAGR / max DD | Holdout CAGR / max DD |
+|---|---|---|---|
+| Long only | 1.0× | 26.4% / −46% | 38.1% / −42% |
+| Long only | full Kelly (1.4–1.5×) | ~28% / −69% | 41.2% / −56% |
+| Long + 0.5× short | full Kelly (1.8–1.9×) | 31.2% / −68% | 44.7% / −65% |
+| Any | 3× | −8% to +15% / −86% to −98% | |
+
+**Ceiling: about 0.5–0.7%/week geometric**, with 55–70% drawdowns at full Kelly. 3%/week (366%/yr) is about 5× beyond what any tested combination supports, and the core is the best of 106 designs, so live results will be lower.
+
+**Not yet testable: contract-win overlay.**
+- LLM judgements cover only a 17k-filing sample. Contract wins are 1.7% of 8-Ks: 281 events, mean +4–6% excess over 20 days, but median about 0 (a lottery-like skew).
+- A portfolio test needs the reader run over every small-cap 8-K from 2024 to 2026.
