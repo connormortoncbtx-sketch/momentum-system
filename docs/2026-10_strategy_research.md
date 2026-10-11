@@ -720,3 +720,55 @@ The Monday filter helps a few points a year, but cannot rescue a weekly-turnover
 **Live-only factors** (21 weeks of the live top 50): catalyst, fundamentals and sentiment sub-signals, conviction, EV, predicted vol, sector. Nothing reaches |t| > 1.2; there is too little history.
 
 Factors with no history here (short interest, options flow, analyst revisions, news) can only be tested forward.
+
+## Novel-angle program, part 1 (Oct 10–11, 2026)
+
+**New data on the research-data branch:**
+- `sec/filings_<yr>.parquet`: 4.16M filings, 7,860 current issuers, 2016+, with 8-K item codes.
+- `sec/fundamentals_<yr>.parquet`: 10.2M XBRL values, 13,144 companies including delisted ones, with acceptance times.
+- `alt/*`: FINRA per-stock short volume, SEC fails-to-deliver, Wikipedia page views. Queued.
+
+**Timestamp caveat (verified with `research/probes/sec_time*.py`):**
+- The SEC submissions API's `acceptanceDateTime` is sometimes true UTC and sometimes UTC plus one extra Eastern offset.
+- The stored Eastern value is therefore either right or 4–5 hours late, never early. That is safe to use: it can delay a signal but never leaks the future.
+- Studies that need the exact time read the filing's index page instead.
+
+### Forced flows (`research/forced_flows.py`)
+
+Weekly data. Excess vs the equal-weight universe. Dev = events before 2023, holdout = 2023 on.
+
+**Follow-on offerings** (424B4/424B5 from companies listed more than 6 months; first prospectus per 30 days):
+
+| Week vs. filing | 424B5 dev | 424B5 holdout | 424B4 dev | 424B4 holdout |
+|---|---|---|---|---|
+| −1 | +1.61% (t 8.5) | +1.04% (t 4.3) | −2.0% | −7.1% |
+| 0 | −1.74% (t −11.4) | −2.38% (t −9.6) | −7.5% | −12.8% |
+| +1 to +4, per week | −0.03 to −0.27% | −0.29 to −0.75% (t −2 to −4.5) | mixed | mixed |
+
+- Companies raise money right after a run-up, then lag for weeks.
+- **This is the first new effect that is robust in both periods.** Use it as a hard filter (never hold a recent issuer) and as a candidate short signal.
+- The next step is predicting issuance before it happens: a shelf registration, cash burn and a recent rally.
+
+**IPO lock-up expiry:**
+- 1,477 IPOs identified (first trade plus a 424B4 within 3 weeks).
+- There is no clean lock-up-week effect.
+- Recent IPOs drift lower generally, about −0.5 to −1%/week around month 6, in both periods.
+
+**Tax-loss / January** (YTD-loser decile, bought around Dec 20):
+- Dev: +2.8% to +3.2% over 4 weeks (t ≈ 0.9, 6 years).
+- Holdout: −0.3% to −0.5% (3 years).
+- Not reliable.
+
+### LLM filing reader (`research/llm_sample.py`, `research/llm_filings.py`)
+
+**Sample:**
+- Small-cap 8-Ks: $30M–$2B market cap, ≥ $300k/day traded, price ≥ $1.
+- Items 1.01–8.01, excluding earnings (2.02).
+- 5,000 dev filings (2023 – Mar 2025) and 12,000 holdout filings (Apr 2025 – Sep 2026, after the model's training cutoff, so it cannot know outcomes).
+
+**Method:**
+- Text is anonymised: company name and ticker are removed.
+- Claude Haiku 4.5, via the Message Batches API, judges type, $ value, direction, materiality relative to company size, novelty, and red flags.
+- Entry is at the first open after the authoritative acceptance time.
+
+Results pending.
