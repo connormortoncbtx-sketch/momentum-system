@@ -1060,3 +1060,49 @@ Excess return by week relative to the report week (0). Groups are 12-1 momentum 
 - **Trend following cuts drawdowns but adds no return.** ETF long/short barely makes money. Long-only roughly tracks SPY.
 - Crypto trend matches BTC's Sharpe with half the drawdown.
 - It is a defensive overlay, not a growth engine.
+
+### Straddles on predicted movers (`research/options_straddles.py`)
+
+The signature model predicts *who* will move (AUC 0.89 spike, 0.93 crash) but not the direction. So the natural trade is to buy a straddle on the names it flags. Alpaca option history only starts in Jan/Feb 2024, so this test is holdout-only. It buys the nearest-expiry ATM straddle at the entry close and holds it to expiry.
+
+| Group | n | Mean P&L / premium | Median | Implied move | Realized move |
+|---|---|---|---|---|---|
+| Model top picks | 1,045 | −5.3% | −24.1% | 19.6% | 14.3% |
+| Control (random universe names) | 1,520 | −6.4% | −23.8% | 6.4% | 4.5% |
+
+**Verdict: no edge.** The options market already prices the moves the model predicts. The flagged names carry triple the implied move, and still realize less than that implied move. The model finds the same volatility the market maker sees.
+
+### PDUFA run-up (`research/fetch_pdufa.py`, `research/pdufa_test.py`, `research/results/pdufa_test.txt`)
+
+804 FDA decision dates (193 companies), mined from SEC full-text search. Only weeks after the date was public are counted. Median lead time is 128 days.
+
+- **Decision week is negative:** −3.6% excess in dev, −2.2% in holdout (medians −1.6% / −0.9%). This is "sell the news" or binary risk.
+- **No pre-decision run-up** in the 8 weeks before the decision; every weekly mean is within ±0.7%.
+- **Strategy** (buy 4 weeks before, sell before the decision week): dev −0.02% (t −0.03), holdout +1.25% (t 1.4, win rate 54%). Weak and inconsistent.
+
+**Verdict:** not a growth engine. The decision-week drop is a reason to keep known binary events out of a long book.
+
+### Same-day Kalshi weather (`research/kalshi/sameday.py`, `research/results/kalshi_sameday.txt`)
+
+The test asks whether the high observed so far (ASOS hourly data) beats Kalshi prices late in the day. The model takes the high so far plus a historical distribution of afternoon gains.
+
+| Hour | Market log loss (dev / holdout) | Model log loss (dev / holdout) |
+|---|---|---|
+| 12:00 | 0.162 / 0.213 | 0.207 / 0.294 |
+| 14:00 | 0.055 / 0.120 | 0.105 / 0.207 |
+| 16:00 | 0.022 / 0.041 | 0.123 / 0.166 |
+
+The market is far better calibrated than the model at every hour. Trades against it lose in both periods (holdout t −3.5 to −8.2). **Closed.** Participants already watch the live observations.
+
+### Winner post-mortems (`research/winner_postmortems.py`)
+
+Haiku read the filings around ~330 top winners and ~300 bottom losers and named each one's driver.
+
+| Group | Unclear | Most common named drivers |
+|---|---|---|
+| Winners | 253 | earnings/guidance 20, contract/customer 12, acquired/merger 10 |
+| Losers | 180 | delisting/distress 58, dilution/offering 50 |
+
+**Verdict:**
+- **Most big winners have no filing catalyst.** The filing stream explains losers far better than winners.
+- This matches the earlier LLM-reader result: bad news is legible and drifts; good news is either priced at the open or never shows up in filings at all.
