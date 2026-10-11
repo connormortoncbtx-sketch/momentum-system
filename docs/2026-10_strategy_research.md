@@ -821,3 +821,43 @@ Run rate: 3%/wk = +12.6%/4 wk = +46.9%/13 wk.
 **C. Smooth vs. choppy winners** (top 10% by 26-week return, split by share of up weeks):
 - Smooth beats choppy over 13 weeks: +1.9% vs +0.3% in dev, +1.5% vs −3.4% in the holdout. t ≈ 1–1.7.
 - Consistent direction, weak strength. This is the known "frog in the pan" effect.
+
+### 8-K item codes (`research/item_events.py`, `research/results/item_events.csv`)
+
+**Setup:**
+- Every 8-K since 2017 from current filers, weekly data.
+- Excess return vs the equal-weight universe ($2, $500k/day, 26+ weeks listed) in the 4 weeks AFTER the filing week.
+
+**Baseline:**
+- Conditioning on being in the universe at t gives a small negative drift, because losers later drop out of the universe.
+- Over 4 weeks, current 8-K filers average −0.60% (dev) and −1.33% (holdout).
+- **Read the item effects against that baseline.**
+
+| Item | 4-wk after, dev (vs −0.60) | Holdout (vs −1.33) |
+|---|---|---|
+| 3.02 unregistered share sale | −2.79% (t −7.0) | −5.83% (t −9.7) |
+| 3.01 listing deficiency | −2.51% | −7.76% |
+| 3.03 holder rights modified (often reverse splits) | −1.19% | −5.15% |
+| 5.01 change of control | −2.69% | −11.69% |
+| 5.03 bylaws/charter (often split authorisations) | −1.15% | −2.65% |
+| 1.01 material agreement (many are financing deals) | −0.99% (small caps −1.24%) | −2.64% (small caps −3.50%) |
+| 2.01 acquisition/disposal completed | −1.17% | −3.60% |
+| 2.02 earnings, 7.01 Reg FD, 8.01 other | ≈ baseline | ≈ baseline to −0.8% below |
+
+- No item code predicts outperformance.
+- Codes tied to **dilution and distress** predict underperformance well beyond baseline in both periods. That gives a second robust avoid/short list alongside the offering result.
+- Item 1.01 mixes good contracts with financing deals. Separating them is the LLM reader's job.
+
+### XBRL fundamental factors (`research/xbrl_factors.py`, `research/results/xbrl_factors.csv`)
+
+**Setup:**
+- Top-minus-bottom quintile within the $5 / $2M universe, 4- and 13-week horizons.
+- 7,065 symbols matched by CIK. Survivorship caveat: delisted companies don't map to tickers.
+
+**Results:**
+- **No factor is robust.**
+- Gross profitability: dev +1.6%/13 wk (t 2.7), holdout −3.5%.
+- Revenue acceleration: dev +0.9%/13 wk (t 3.6), holdout +0.1%.
+- Net issuance, low asset growth, ROA, earnings yield, book-to-market: |t| < 2 in both periods.
+- The accruals test is broken (1% coverage): cash flow is reported year-to-date and needs a different build. This is low priority given the rest.
+- Classic published factors add nothing usable here. That is consistent with their post-publication decay and with the 2024–26 rally in low-quality stocks.
