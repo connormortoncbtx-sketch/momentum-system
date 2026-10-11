@@ -27,9 +27,11 @@ N_DEV, N_HOLD = 5000, 12000
 # (full-coverage backfill for portfolio tests) -> research/samples/llm_8k_full.parquet
 FULL = os.environ.get("FULL") == "1"
 FULL_START = os.environ.get("FULL_START") or "2024-01-01"
+FULL_END = os.environ.get("FULL_END") or END
+FULL_OUT = os.environ.get("FULL_OUT") or "research/samples/llm_8k_full.parquet"
 
-fi = pd.concat(pd.read_parquet(f) for f in sorted(glob.glob(f"{SEC}/filings_202[3-6].parquet")))
-k = fi[(fi.form == "8-K") & (fi.accepted_et >= DEV0) & (fi.accepted_et < END)].copy()
+fi = pd.concat(pd.read_parquet(f) for f in sorted(glob.glob(f"{SEC}/filings_20[12][0-9].parquet")))
+k = fi[(fi.form == "8-K") & (fi.accepted_et >= (FULL_START if FULL else DEV0)) & (fi.accepted_et < (FULL_END if FULL else END))].copy()
 k["item_set"] = k["items"].fillna("").str.split(",").apply(lambda xs: {x.strip() for x in xs})
 k = k[k.item_set.apply(lambda s: bool(s & ITEMS))]
 k["symbol"] = k.tickers.str.split(",").str[0]
@@ -60,7 +62,7 @@ print(k.groupby("period").size())
 rng = np.random.default_rng(7)
 if FULL:
     done = set(pd.read_parquet("research/samples/llm_8k_sample.parquet").accession)
-    sel = k[(k.accepted_et >= FULL_START) & ~k.accession.isin(done)]
+    sel = k[(k.accepted_et >= FULL_START) & (k.accepted_et < FULL_END) & ~k.accession.isin(done)]
 else:
     dev = k[k.period == "dev"]; hold = k[k.period == "holdout"]
     dev = dev.iloc[rng.permutation(len(dev))[:N_DEV]]
@@ -69,7 +71,7 @@ else:
 out = sel[["accession", "cik", "symbol", "items", "accepted_et", "filing_date", "primary_doc",
                               "sic", "price", "adv", "mcap", "revenue_ttm", "period"]].sort_values("accepted_et")
 os.makedirs("research/samples", exist_ok=True)
-out.to_parquet("research/samples/llm_8k_full.parquet" if FULL else "research/samples/llm_8k_sample.parquet", index=False)
+out.to_parquet(FULL_OUT if FULL else "research/samples/llm_8k_sample.parquet", index=False)
 print(out.groupby("period").size(), out.mcap.describe())
 items = out["items"].str.split(",").explode().str.strip()
 print(items[items.isin(ITEMS)].value_counts())
