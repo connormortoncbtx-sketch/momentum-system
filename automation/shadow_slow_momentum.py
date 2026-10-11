@@ -12,9 +12,10 @@ docs/2026-10_strategy_research.md (research/hold_conditions.py):
   rule      each entry day, using the prior Friday's ranks: KEEP every holding
             still ranked in the top 100; SELL the rest; FILL back to 10 names
             from the top of the list; equal weight (as backtested)
-  filter    new buys skip "spikers": the 10 biggest gainers of the past week or
-            past 4 weeks in the universe (rank-band study, Oct 10: top-5 gainers
-            trail by 2.4-9% over the next 2-13 weeks in dev AND holdout)
+  filter    none. A "skip the 10 biggest 1/4-week gainers" filter was added Oct 10 and
+            removed Oct 11 before the first run: in this exact design it cut dev CAGR
+            26.4% -> 19.1% and holdout 38.1% -> 34.6% (research/avoid_filter.py).
+            Kept in code with SPIKE_TOP = 0 for reference.
   backtest  dev 2017-23: 26.4%/yr, Sharpe 0.75, max DD -46%
             holdout 2024-26: 38.1%/yr, Sharpe 0.85, max DD -42% (SPY 20.6% / 1.31)
             median hold ~21 weeks. Best of 106 designs -> level is optimistic.
@@ -51,7 +52,7 @@ SCORES = DATA / "scores_final.csv"
 N, KEEP_WITHIN, COST_BPS = 10, 100, 15.0
 
 
-SPIKE_TOP = 10
+SPIKE_TOP = 0     # spike filter OFF: backtest (research/avoid_filter.py, Oct 11) showed it HURT this design
 
 
 def ranks_at(p, entry):

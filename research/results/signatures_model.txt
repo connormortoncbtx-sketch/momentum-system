@@ -1,0 +1,85 @@
+rows 1,558,868, weeks 509, features 30
+
+Lift: event rate in the top 10% of each feature / base rate
+period                   dev  hold
+target feature                    
+spike1 vol12            5.20  5.06
+       max_wk12         4.44  4.62
+       dist_hi52        4.35  3.63
+run13  vol12            3.37  2.56
+spike1 distress_8w      3.07  3.82
+run13  dist_hi52        3.04  2.41
+       max_wk12         3.01  2.39
+spike1 r4w              3.00  3.33
+       r13w             2.92  3.27
+       r1w              2.81  3.06
+       ex_r1w           2.77  3.03
+       i302_8w          2.74  3.24
+       vol_surge        2.22  2.44
+       shelf_52w        2.15  2.62
+run13  r13w             2.13  2.04
+       r4w              2.10  1.90
+spike1 wiki_surge       2.07  1.80
+       m12_1            2.05  2.33
+run13  r1w              2.02  1.87
+       ex_r1w           1.96  1.83
+       i302_8w          1.87  1.75
+spike1 prosp_8w         1.78  2.10
+       ftd_rel_adv      1.77  1.90
+run13  m12_1            1.73  1.99
+spike1 d13_8w           1.69  1.56
+run13  wiki_surge       1.47  1.18
+spike1 i101_4w          1.44  1.68
+run13  distress_8w      1.43  1.44
+       ftd_rel_adv      1.37  1.45
+       shelf_52w        1.35  1.66
+       vol_surge        1.34  1.29
+spike1 n8k_4w           1.33  1.72
+run13  d13_8w           1.33  1.04
+       i202_13w         1.30  1.27
+       insider_buy_4w   1.27  1.14
+spike1 pr_4w            1.21  1.46
+       insider_buy_4w   1.19  0.82
+run13  i101_4w          1.19  1.08
+spike1 i202_13w         1.13  1.09
+run13  prosp_8w         1.11  1.13
+spike1 i502_4w          1.07  1.10
+run13  n8k_4w           1.07  1.02
+       i502_4w          1.06  1.08
+       pr_4w            1.00  1.03
+       short_ratio_chg  0.89  0.93
+spike1 short_ratio_chg  0.87  1.08
+run13  short_ratio      0.75  0.74
+       form4_4w         0.73  0.85
+spike1 short_ratio      0.71  0.48
+run13  wiki_log         0.69  0.70
+spike1 wiki_log         0.69  0.62
+run13  log_adv          0.63  0.85
+spike1 log_adv          0.61  0.50
+       form4_4w         0.60  0.45
+run13  log_price        0.30  0.41
+spike1 log_price        0.19  0.18
+
+### spike1: holdout AUC 0.893; base rate 0.86%; top-1% predicted rate 9.80% (lift 11.4x)
+    top features by gain: vol12 31%, dist_hi52 8%, log_price 8%, earn_next_wk 6%, m12_1 5%, r13w 5%, r4w 4%, max_wk12 4%, r1w 4%, ex_r1w 4%
+
+### crash1: holdout AUC 0.932; base rate 0.64%; top-1% predicted rate 17.57% (lift 27.4x)
+    top features by gain: vol12 21%, dist_hi52 9%, ex_r1w 8%, earn_next_wk 7%, r4w 6%, vol_surge 5%, log_price 5%, r1w 4%, m12_1 4%, max_wk12 4%
+
+### run13: holdout AUC 0.774; base rate 5.22%; top-1% predicted rate 17.11% (lift 3.3x)
+    top features by gain: vol12 47%, dist_hi52 10%, max_wk12 7%, log_price 7%, m12_1 4%, r4w 4%, r13w 4%, wiki_log 2%, log_adv 2%, r1w 2%
+
+Payoff, top 10/week by p_s: mean next-week excess -1.10% (Mon-close entry -0.52%), median -3.18%, spikes caught/week 1.06, t -1.06
+
+Payoff, top 10/week by net: mean next-week excess -0.19% (Mon-close entry -0.52%), median -1.34%, spikes caught/week 0.87, t -0.28
+
+Payoff, top 20/week by P(run13), held 13 weeks: mean +7.8% vs universe +3.6%; hit rate 16.6% vs base 5.2%
+
+run13 picks: next-13-week return distribution (holdout): {'mean': 7.8, 'std': 63.3, 'min': -99.8, '10%': -45.3, '25%': -28.9, '50%': -5.8, '75%': 27.1, '90%': 73.1, 'max': 621.3}
+  share losing > 30%: 24.0% (universe 7.7%)
+  non-overlapping start offset 0: 11 blocks, mean excess +7.9%, t 1.05
+  non-overlapping start offset 4: 10 blocks, mean excess +4.9%, t 1.31
+  non-overlapping start offset 8: 10 blocks, mean excess +4.1%, t 0.90
+  non-overlapping start offset 12: 10 blocks, mean excess +2.8%, t 0.45
+  (in-sample dev, optimistic) top-20 13wk mean +23.7% vs universe +2.7%
+  benchmark, top-20 by 12-week volatility alone: -12.3%

@@ -901,3 +901,57 @@ Run rate: 3%/wk = +12.6%/4 wk = +46.9%/13 wk.
 - Reading small-cap filings gives **a strong, cheap, consistent bad-news signal** (avoid/short) and **one long signal, contract wins**.
 - It does not find broad positive under-reaction. Good news is already in the opening price.
 - Shorting small caps is limited by borrow cost and availability, so the bad-news side is most usable as a filter on any long book. It can be a short book only where borrow is cheap.
+
+### Spike anatomy step 2: pre-event signatures (`research/signatures.py`, `research/signatures_model.py`)
+
+**Setup:**
+- 1.56M stock-weeks (2017 – Sep 2026), 30 features known at the Friday close:
+  - price and volume
+  - FINRA short-volume share
+  - fails-to-deliver (only files already published)
+  - Wikipedia attention
+  - filing counts and types
+  - insider buys
+  - earnings due next week
+- LightGBM trained on 2017–2023 and scored once on 2024–2026.
+
+**Results** (holdout; lift = the event's rate in the model's top 1% ÷ its base rate):
+
+| Target | AUC | Base rate | Top-1% predicted rate |
+|---|---|---|---|
+| Spike next week (≥ +25% excess) | 0.89 | 0.86% | 9.8% (11×) |
+| Crash next week (≤ −25%) | 0.93 | 0.64% | 17.6% (27×) |
+| Run-rate quarter (≥ +46.9% in 13 wk) | 0.77 | 5.2% | 17.1% (3.3×) |
+
+**What drives it:**
+- Most of the predictive power comes from volatility. Top features by gain: 12-week volatility (21–47%), distance below the 52-week high, low price, and an earnings report due.
+- Distress filings (3.01/3.03/5.01) and share sales (3.02) raise the odds of a spike 3× — and of a crash too.
+
+**Payoff:**
+- **Buy the 10 likeliest spikes each week:** catches about 1 spike a week but returns −1.1%/wk excess (median −3.2%).
+- **Rank by P(spike) − P(crash):** about −0.2%/wk.
+- **Top 20 by P(run-rate quarter), held 13 weeks:**
+  - Mean +7.8% vs universe +3.6%. Median −5.8%.
+  - 24% of picks lose more than 30% (universe: 8%).
+  - Non-overlapping t-stats 0.5–1.3.
+  - That is a lottery ticket, not an edge. It does beat a pure top-volatility basket (−12.3%).
+
+**Conclusion:**
+- Public pre-event signatures predict THAT a big move is coming (AUC ~0.9), not WHICH WAY.
+- "Event minus one" is real for volatility. Direction must come from content: the filing reader's bad-news side, and contract wins.
+- The natural instrument for "a big move is coming, direction unknown" is options (straddles). They are priced by the same crowd, so the test would be whether our predicted-move probability beats the options' implied move. That needs options history we do not have free.
+
+### Avoid list and spike filter on slow momentum (`research/avoid_filter.py`)
+
+**Setup:** 12-1 momentum, hold while ranked ≤ 100, entry filters only.
+
+**Results:**
+- **Avoid list** (3.02, 3.01/3.03/5.01, or a 424B prospectus in the last 8 weeks — 19% of top-50 momentum names):
+  - Top 10: dev 26.4% → 21.4%, holdout 38.1% → 39.6% (max DD −42% → −34%).
+  - Top 20: dev 18.3% → 17.8%, holdout 26.6% → 15.7%.
+  - Not robust.
+- **Spike filter** (skip the top-10 gainers over 1 or 4 weeks):
+  - Top 10: dev 26.4% → 19.1%, holdout 38.1% → 34.6%.
+  - **Worse.** It was removed from shadow #4 before its first run, so the shadow matches the backtested design.
+
+**Takeaway:** the avoid signals help event-driven, short-horizon trading. They do not help a slow momentum book, whose winners often issue stock into strength and keep running.
