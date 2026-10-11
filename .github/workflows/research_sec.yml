@@ -1,0 +1,52 @@
+name: Research SEC (all filings + XBRL fundamentals)
+
+# Manual only. Adds sec/filings_<yr>.parquet and sec/fundamentals_<yr>.parquet to research-data.
+on:
+  workflow_dispatch:
+    inputs:
+      only:
+        description: 'Comma list: filings,fundamentals'
+        required: false
+        default: 'filings,fundamentals'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: research-data
+  cancel-in-progress: false
+
+jobs:
+  sec:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install
+        run: pip install "pandas>=2.0" pyarrow
+
+      - name: Load research-data branch
+        run: git clone -q --depth 1 -b research-data "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" research_data
+
+      - name: Fetch SEC data
+        env:
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+          RESEARCH_DATA: research_data
+          ONLY: ${{ inputs.only }}
+        run: python research/fetch_sec.py
+
+      - name: Push to research-data branch
+        if: always()
+        run: |
+          cd research_data
+          git config user.name  "momentum-bot"
+          git config user.email "momentum-bot@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && exit 0
+          git commit -q -m "research sec $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" HEAD:research-data
