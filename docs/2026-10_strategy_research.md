@@ -1106,3 +1106,34 @@ Haiku read the filings around ~330 top winners and ~300 bottom losers and named 
 **Verdict:**
 - **Most big winners have no filing catalyst.** The filing stream explains losers far better than winners.
 - This matches the earlier LLM-reader result: bad news is legible and drifts; good news is either priced at the open or never shows up in filings at all.
+
+#### Post-mortem detail and precursor test (`research/precursor_test.py`, `research/results/precursor_test.txt`)
+
+The sample was 333 winners and 328 losers. Every one had at least one 8-K in its window.
+
+- **Scheduled catalyst:** 8% of winners and 10% of losers had one.
+- **Hint before the window:** the model saw a "yes" or "partly" hint for 7% of winners and 13% of losers.
+- **Named precursors that are observable as form types:**
+  - merger communications (Form 425): AVAV, MOVE
+  - proxy solicitation: SDEV
+  - preliminary proxy votes on reverse splits or share authorisations: MLGO, TJGC
+  - Nasdaq compliance hearings
+  - the rest are one-off narratives.
+
+I tested every observable precursor against the base rate, across all universe stocks from 2017 to 2026. Each event is the first such filing in a 4-week gap. Returns are excess returns starting the week after the filing.
+
+| Precursor | 13-week excess (dev / holdout) | Winner rate (dev / holdout) | Base rate |
+|---|---|---|---|
+| Form 425 merger comms | −2.5% / −4.6% (t −4.3 / −5.4) | 2.3% / 1.9% | 3.8% / 5.2% |
+| Proxy solicitation | +0.3% / +0.3% | 4.7% / 6.6% | 3.8% / 5.2% |
+| Merger proxy | −4.9% / −6.0% | 3.7% / 2.1% | |
+| Tender offer | −0.1% / −3.2% | 3.4% / 6.0% | |
+| New 13D stake | −1.1% / −4.3% | 5.7% / 5.6% | |
+| Late filer (NT 10-K/Q) | −5.1% / −11.0% (t −4.3 / −5.4) | 5.7% / 7.0% | |
+| Preliminary proxy (vote) | −0.1% / −2.8% | 5.4% / 7.6% | |
+
+**Verdict: no precursor is a buy signal.**
+
+- Late filers, preliminary proxies and 13D stakes do raise the odds of becoming a run-rate winner, by about 1.4–1.5× the base rate. But their mean return is negative.
+- That is the same lottery-ticket shape as the signature model: these filings predict volatility, not direction.
+- Form 425 and merger proxies are reliably negative. Late filers are a strong avoid (−11% over 13 weeks in the holdout).
