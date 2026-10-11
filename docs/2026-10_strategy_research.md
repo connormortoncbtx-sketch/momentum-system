@@ -1017,3 +1017,23 @@ Next-13-week excess, top vs bottom quintile:
 ### AI post-mortems
 
 `research/winner_postmortems.py`: each 2024–26 top/bottom-1% stock's 8-Ks are read to name the driver, whether its date was known in advance, and any precursor. Queued.
+
+### Earnings run-up for momentum names (`research/earnings_runup.py`, `research/results/earnings_runup.txt`)
+
+Excess return by week relative to the report week (0). Groups are 12-1 momentum percentiles, measured 3 weeks before the report.
+
+| Group | Week −1, dev | Week −1, holdout | Week 0, dev | Week 0, holdout |
+|---|---|---|---|---|
+| Top 10% | +0.18% | +0.57% | +0.40% | +0.69% |
+| 80–90% | −0.07% | +0.03% | +0.08% | +0.18% |
+| Bottom 20% | +0.10% | −0.08% | +0.35% | −0.66% |
+
+**The pre-registered rule did not work.** Buying top-20% momentum names one week before their report and holding 2 weeks returned −0.08% in dev and +0.67% in the holdout (t 1.0).
+
+**The positive effect is confined to the top 10%.** That matches the earlier earnings-week result (top-2% reporters +1.1% to +1.5% a week). Narrowing to the top 10% is a post-hoc choice, so it stays a hypothesis for shadow #5, not a finding.
+
+### Queued Oct 11 (parallel research runs)
+
+- `research/fetch_trend.py`: cross-asset ETF and crypto daily bars, for time-series momentum and trend tests.
+- `research/fetch_pdufa.py`: an FDA-decision (PDUFA) calendar mined from SEC full-text search, for a biotech run-up test. Pharma/biotech is 29% of the biggest winners.
+- `research/fetch_asos.py`: hourly station observations, for the same-day Kalshi test (the high so far vs. market prices).
