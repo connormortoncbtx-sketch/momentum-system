@@ -1,0 +1,14 @@
+                                      CAGR%                                                  Sharpe                                                  maxDD%                                            
+period                          dev 2016-22 dev 2021-23 holdout 2023-26 holdout 2024-26 dev 2016-22 dev 2021-23 holdout 2023-26 holdout 2024-26 dev 2016-22 dev 2021-23 holdout 2023-26 holdout 2024-26
+book                                                                                                                                                                                                   
+BTC buy & hold                          NaN        4.99             NaN           27.50         NaN        0.38             NaN            0.75         NaN      -76.68             NaN          -53.07
+ETF trend 126d long-only              11.89         NaN           25.65             NaN        0.54         NaN            1.12             NaN      -53.90         NaN          -22.37             NaN
+ETF trend 126d long/short              6.76         NaN            4.46             NaN        0.44         NaN            0.37             NaN      -37.84         NaN          -17.34             NaN
+ETF trend 252d long-only              10.52         NaN           28.60             NaN        0.50         NaN            1.20             NaN      -54.97         NaN          -20.47             NaN
+ETF trend 252d long/short              7.44         NaN           12.51             NaN        0.50         NaN            0.80             NaN      -35.32         NaN          -20.20             NaN
+ETF trend 63d long-only               16.33         NaN           24.65             NaN        0.71         NaN            1.08             NaN      -49.57         NaN          -19.84             NaN
+ETF trend 63d long/short               7.18         NaN            0.96             NaN        0.45         NaN            0.14             NaN      -31.74         NaN          -23.68             NaN
+SPY buy & hold                        11.60         NaN           22.38             NaN        0.68         NaN            1.43             NaN      -33.79         NaN          -18.75             NaN
+crypto trend 100d MA, long/cash         NaN       -6.95             NaN           14.36         NaN       -0.34             NaN            0.77         NaN      -38.83             NaN          -24.23
+crypto trend 20d MA, long/cash          NaN        8.81             NaN            8.85         NaN        0.51             NaN            0.51         NaN      -24.87             NaN          -39.26
+crypto trend 50d MA, long/cash          NaN        8.60             NaN           14.69         NaN        0.52             NaN            0.77         NaN      -31.18             NaN          -31.87

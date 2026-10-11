@@ -1037,3 +1037,26 @@ Excess return by week relative to the report week (0). Groups are 12-1 momentum 
 - `research/fetch_trend.py`: cross-asset ETF and crypto daily bars, for time-series momentum and trend tests.
 - `research/fetch_pdufa.py`: an FDA-decision (PDUFA) calendar mined from SEC full-text search, for a biotech run-up test. Pharma/biotech is 29% of the biggest winners.
 - `research/fetch_asos.py`: hourly station observations, for the same-day Kalshi test (the high so far vs. market prices).
+
+### Trend following, cross-asset ETFs and crypto (`research/trend_test.py`, `research/results/trend_test.txt`)
+
+**ETFs** (41 ETFs, monthly signal, 10% vol target per asset). CAGR and Sharpe; dev = 2016–22, holdout = 2023–26:
+
+| Book | Dev | Holdout |
+|---|---|---|
+| Long-only, 63-day | 16.3%, Sharpe 0.71, max DD −50% | 24.7%, Sharpe 1.08, max DD −20% |
+| Long-only, 252-day | 10.5%, 0.50 | 28.6%, 1.20 |
+| Long/short | 6.8–7.4%, 0.44–0.50 | 1.0–12.5%, 0.14–0.80 |
+| SPY | 11.6%, 0.68, max DD −34% | 22.4%, 1.43, max DD −19% |
+
+**Crypto** (16 coins, long when price is above its N-day average, otherwise cash; 25 bps costs):
+
+| Book | Dev (2021–23) | Holdout (2024–26) |
+|---|---|---|
+| 50-day | 8.6%, Sharpe 0.52, max DD −31% | 14.7%, 0.77, max DD −32% |
+| BTC buy & hold | 5.0%, 0.38, max DD −77% | 27.5%, 0.75, max DD −53% |
+
+**Verdict:**
+- **Trend following cuts drawdowns but adds no return.** ETF long/short barely makes money. Long-only roughly tracks SPY.
+- Crypto trend matches BTC's Sharpe with half the drawdown.
+- It is a defensive overlay, not a growth engine.
