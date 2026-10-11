@@ -2951,3 +2951,4 @@
 {"timestamp": "2026-10-10T07:33:37.041216+00:00", "workflow": "weekly_pipeline", "status": "success", "message": "Pipeline complete (49.7 min)", "metrics": {"elapsed_min": 49.7, "stages_run": 6}, "errors": []}
 {"timestamp": "2026-10-10T08:07:33.976180+00:00", "workflow": "weekly_pipeline", "status": "info", "message": "Pipeline invoked (from=01, only=None, force=False)", "metrics": {}, "errors": []}
 {"timestamp": "2026-10-10T08:07:33.978050+00:00", "workflow": "weekly_pipeline", "status": "info", "message": "Skipped: ghost run prevention (last run 0.6h ago)", "metrics": {"last_run_hours_ago": 0.57, "threshold_hours": 18}, "errors": []}
+{"timestamp": "2026-10-11T13:18:58.723090+00:00", "workflow": "shadow_filings", "status": "success", "message": "Shadow filings: 0 judged-eligible, new long 0, new short 0, open trades 0", "metrics": {}, "errors": []}
