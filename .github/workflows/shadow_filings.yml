@@ -1,0 +1,51 @@
+name: Shadow Filings (LLM 8-K reader, no orders)
+
+# Shadow #6: reads new small-cap 8-Ks, judges them with Claude Haiku (same prompt as
+# research/llm_filings.py), and tracks two hypothetical 20-session books
+# (contract-win longs, bad-news shorts). Entry = first open AFTER the judgement,
+# so cron lateness can only make it later, never earlier. No orders are placed.
+on:
+  schedule:
+    - cron: '30 1 * * 2-6'    # ~9:30pm ET, Mon-Fri evenings (after-close filings)
+    - cron: '40 12 * * 1-5'   # ~8:40am ET, before the open (overnight/pre-market filings)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: shadow-filings
+  cancel-in-progress: false
+
+jobs:
+  read:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - name: Install dependencies
+        run: pip install -r requirements.txt anthropic
+      - name: Read filings
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+        run: python automation/shadow_filings.py
+      - name: Commit ledger
+        run: |
+          git config user.name  "momentum-bot"
+          git config user.email "momentum-bot@users.noreply.github.com"
+          git add data/shadow_filings_state.json data/shadow_filings_judgements.jsonl data/shadow_filings_ledger.jsonl data/system_log.jsonl 2>/dev/null || true
+          git diff --cached --quiet && exit 0
+          git commit -q -m "shadow filings: $(date -u +%Y-%m-%dT%H:%MZ)"
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push; then break; fi
+            git rebase --abort 2>/dev/null || true
+            [ $attempt -eq 5 ] && exit 1
+            sleep $((RANDOM % 5 + 2))
+          done
