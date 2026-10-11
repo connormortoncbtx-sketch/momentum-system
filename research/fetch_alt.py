@@ -140,7 +140,7 @@ def ftd_links():
     if not out:      # documented pattern fallback
         for p in pd.period_range(START, dt.date.today(), freq="M"):
             for half in "ab":
-                out.append((f"https://www.sec.gov/files/data/fails-deliver-data/cnsfails{p.strftime("%Y%m")}{half}.zip",
+                out.append((f"https://www.sec.gov/files/data/fails-deliver-data/cnsfails{p.strftime('%Y%m')}{half}.zip",
                             p.strftime("%Y%m"), half))
     return out
 
