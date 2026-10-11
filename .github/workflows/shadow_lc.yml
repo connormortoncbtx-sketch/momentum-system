@@ -82,7 +82,7 @@ jobs:
         run: |
           git config user.name  "momentum-bot"
           git config user.email "momentum-bot@users.noreply.github.com"
-          git add data/shadow_lc_state.json data/shadow_lc_ledger.jsonl data/shadow_regime_state.json data/shadow_regime_ledger.jsonl data/shadow_macro_state.json data/shadow_macro_ledger.jsonl data/shadow_slow_state.json data/shadow_slow_ledger.jsonl data/shadow_earnings_state.json data/shadow_earnings_ledger.jsonl data/system_log.jsonl 2>/dev/null || true
+          for f in data/shadow_lc_state.json data/shadow_lc_ledger.jsonl data/shadow_regime_state.json data/shadow_regime_ledger.jsonl data/shadow_macro_state.json data/shadow_macro_ledger.jsonl data/shadow_slow_state.json data/shadow_slow_ledger.jsonl data/shadow_earnings_state.json data/shadow_earnings_ledger.jsonl data/system_log.jsonl; do if [ -e "$f" ]; then git add "$f"; fi; done
           git diff --cached --quiet && exit 0
           git commit -q -m "shadows: $(date +%Y-%m-%d) update"
           for attempt in 1 2 3 4 5; do
