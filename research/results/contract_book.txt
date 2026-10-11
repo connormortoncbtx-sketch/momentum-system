@@ -1,0 +1,130 @@
+judged 8-Ks since 2024: 32,783; by period: {'early': 13474, 'holdout': 19309}
+  contract_win dir>=1 (shadow #6): 550 events (332 holdout)
+  contract_win dir>=1 materiality>=0.7: 439 events (269 holdout)
+  contract_win dir>=1 novelty>=0.8: 303 events (197 holdout)
+  contract_win dir>=1 value>=10% of mcap: 178 events (104 holdout)
+  contract_win dir=2: 145 events (101 holdout)
+  any positive type dir>=1: 5736 events (3446 holdout)
+
+EVENT LEVEL (IWM-adjusted from entry open; %)
+  contract_win dir>=1 (shadow #6)            early    ab_5: n  218 mean   0.42 median  -0.26 t  0.37  win   47%
+  contract_win dir>=1 (shadow #6)            early    ab_20: n  218 mean   1.31 median  -2.04 t  0.83  win   46%
+  contract_win dir>=1 (shadow #6)            holdout  ab_5: n  332 mean   2.49 median  -1.14 t  2.25  win   46%
+  contract_win dir>=1 (shadow #6)            holdout  ab_20: n  323 mean  14.08 median  -0.86 t  1.31  win   48%
+  contract_win dir>=1 materiality>=0.7       early    ab_5: n  170 mean   0.08 median  -0.41 t  0.07  win   45%
+  contract_win dir>=1 materiality>=0.7       early    ab_20: n  170 mean   1.47 median  -0.69 t  0.80  win   49%
+  contract_win dir>=1 materiality>=0.7       holdout  ab_5: n  269 mean   2.49 median  -1.21 t  2.09  win   46%
+  contract_win dir>=1 materiality>=0.7       holdout  ab_20: n  263 mean   2.75 median  -1.69 t  1.35  win   46%
+  contract_win dir>=1 novelty>=0.8           early    ab_5: n  106 mean  -0.84 median  -0.74 t -0.57  win   41%
+  contract_win dir>=1 novelty>=0.8           early    ab_20: n  106 mean  -0.34 median  -2.63 t -0.15  win   43%
+  contract_win dir>=1 novelty>=0.8           holdout  ab_5: n  197 mean   3.45 median  -1.40 t  2.03  win   46%
+  contract_win dir>=1 novelty>=0.8           holdout  ab_20: n  192 mean  21.51 median  -0.87 t  1.19  win   48%
+  contract_win dir>=1 value>=10% of mcap     early    ab_5: n   74 mean   1.74 median  -0.18 t  0.95  win   47%
+  contract_win dir>=1 value>=10% of mcap     early    ab_20: n   74 mean   5.34 median   0.80 t  1.77  win   51%
+  contract_win dir>=1 value>=10% of mcap     holdout  ab_5: n  104 mean   5.29 median   2.03 t  2.93  win   55%
+  contract_win dir>=1 value>=10% of mcap     holdout  ab_20: n  100 mean   4.09 median  -0.08 t  1.43  win   50%
+  contract_win dir=2                         early    ab_5: n   44 mean   1.65 median   1.32 t  0.54  win   52%
+  contract_win dir=2                         early    ab_20: n   44 mean   4.57 median  -0.69 t  1.13  win   48%
+  contract_win dir=2                         holdout  ab_5: n  101 mean   2.33 median  -1.21 t  1.28  win   47%
+  contract_win dir=2                         holdout  ab_20: n   98 mean   7.31 median  -0.01 t  1.78  win   50%
+  any positive type dir>=1                   early    ab_5: n 2290 mean  -0.60 median  -1.20 t -1.74  win   44%
+  any positive type dir>=1                   early    ab_20: n 2290 mean  -0.88 median  -3.24 t -1.50  win   41%
+  any positive type dir>=1                   holdout  ab_5: n 3446 mean  -0.22 median  -0.93 t -0.71  win   46%
+  any positive type dir>=1                   holdout  ab_20: n 3390 mean   0.05 median  -2.42 t  0.05  win   44%
+IWM early {'CAGR': np.float64(0.63), 'vol': np.float64(20.47), 'Sharpe': np.float64(0.13), 'maxDD': np.float64(-18.03)} holdout {'CAGR': np.float64(25.9), 'vol': np.float64(21.1), 'Sharpe': np.float64(1.2), 'maxDD': np.float64(-13.73)}
+SPY early {'CAGR': np.float64(15.52), 'vol': np.float64(13.39), 'Sharpe': np.float64(1.14), 'maxDD': np.float64(-10.04)} holdout {'CAGR': np.float64(25.58), 'vol': np.float64(17.03), 'Sharpe': np.float64(1.42), 'maxDD': np.float64(-12.05)}
+
+PORTFOLIOS (ranked on early Sharpe)
+                                signal  H  cap  avg_pos  invested_days  early_CAGR  early_vol  early_Sharpe  early_maxDD  hold_CAGR  hold_vol  hold_Sharpe  hold_maxDD
+contract_win dir>=1 value>=10% of mcap 20  1.0     5.33          98.28      112.88      57.71          1.60       -29.44      71.74     58.70         1.21      -34.28
+contract_win dir>=1 value>=10% of mcap 40  0.2    10.24          99.43       85.57      48.39          1.52       -25.51      56.22     47.29         1.18      -27.32
+contract_win dir>=1 value>=10% of mcap 40  1.0    10.24          99.43       82.93      50.83          1.44       -27.94      58.72     47.75         1.20      -27.32
+                    contract_win dir=2 10  1.0     2.29          91.09      132.58     101.13          1.36       -51.63      73.52     83.48         1.07      -51.53
+contract_win dir>=1 value>=10% of mcap 20  0.2     5.33          98.28       61.60      42.40          1.34       -24.59      88.67     48.87         1.54      -31.14
+                    contract_win dir=2 20  1.0     4.34          98.85       85.25      78.54          1.17       -33.49     127.97     72.25         1.49      -41.28
+contract_win dir>=1 value>=10% of mcap 40  0.1    10.24          99.43       41.70      36.22          1.14       -24.36      44.66     40.59         1.11      -26.94
+contract_win dir>=1 value>=10% of mcap 20  0.1     5.33          98.28       26.29      24.82          1.06       -18.32      50.41     34.30         1.36      -22.97
+                    contract_win dir=2 10  0.1     2.29          91.09       14.74      15.75          0.95       -11.25      29.67     25.21         1.16      -25.18
+                    contract_win dir=2 10  0.2     2.29          91.09       28.45      31.49          0.95       -21.90      53.05     46.74         1.14      -41.65
+                    contract_win dir=2 40  0.2     8.37          99.43       47.05      58.86          0.95       -30.29      84.60     56.85         1.36      -42.06
+                    contract_win dir=2 40  1.0     8.37          99.43       47.97      62.78          0.94       -30.86      91.07     57.33         1.42      -42.06
+                    contract_win dir=2 40  0.1     8.37          99.43       30.80      36.36          0.92       -18.35      45.18     51.01         0.99      -38.54
+                    contract_win dir=2 20  0.1     4.34          98.85       16.87      22.73          0.80       -13.14      61.07     38.39         1.43      -30.06
+                    contract_win dir=2 20  0.2     4.34          98.85       28.11      45.26          0.77       -25.63     100.63     59.26         1.47      -37.98
+contract_win dir>=1 value>=10% of mcap 10  0.1     2.81          93.68       11.95      16.45          0.77       -14.08      41.16     22.24         1.66      -13.20
+contract_win dir>=1 value>=10% of mcap 10  0.2     2.81          93.68       20.31      32.39          0.73       -27.05      85.94     40.20         1.74      -23.81
+  contract_win dir>=1 materiality>=0.7 20  0.2    13.19         100.00       21.42      38.76          0.69       -25.57      65.11     45.18         1.34      -32.52
+  contract_win dir>=1 materiality>=0.7 20  1.0    13.19         100.00       20.85      39.03          0.68       -25.57      65.11     45.18         1.34      -32.52
+  contract_win dir>=1 materiality>=0.7 20  0.1    13.19         100.00       17.56      35.37          0.63       -24.86      69.11     43.10         1.43      -31.07
+       contract_win dir>=1 (shadow #6) 20  0.1    16.51         100.00       18.10      37.19          0.63       -27.37     141.78     45.73         2.16      -27.13
+       contract_win dir>=1 (shadow #6) 20  0.2    16.51         100.00       17.90      38.06          0.62       -27.37     147.68     46.91         2.16      -27.13
+       contract_win dir>=1 (shadow #6) 20  1.0    16.51         100.00       16.76      38.41          0.60       -27.37     147.68     46.91         2.16      -27.13
+contract_win dir>=1 value>=10% of mcap  5  1.0     1.53          77.87        7.53      88.88          0.53       -63.71     271.24     77.91         2.05      -47.42
+contract_win dir>=1 value>=10% of mcap 10  1.0     2.81          93.68       10.30      80.93          0.53       -51.61     141.94     73.79         1.54      -38.35
+       contract_win dir>=1 (shadow #6) 40  0.1    31.77         100.00        9.98      35.30          0.45       -25.08      79.56     38.27         1.72      -26.43
+       contract_win dir>=1 (shadow #6) 40  0.2    31.77         100.00        9.88      35.69          0.44       -25.08      79.56     38.27         1.72      -26.43
+  contract_win dir>=1 materiality>=0.7 40  0.1    25.40         100.00        9.25      35.51          0.43       -25.90      54.97     40.31         1.29      -29.71
+       contract_win dir>=1 (shadow #6) 40  1.0    31.77         100.00        8.81      36.07          0.41       -25.08      79.56     38.27         1.72      -26.43
+  contract_win dir>=1 materiality>=0.7 40  0.2    25.40         100.00        7.74      35.83          0.39       -25.90      54.97     40.31         1.29      -29.71
+  contract_win dir>=1 materiality>=0.7 40  1.0    25.40         100.00        6.64      36.08          0.36       -25.90      54.97     40.31         1.29      -29.71
+  contract_win dir>=1 materiality>=0.7 10  0.1     6.94          99.57        5.27      28.99          0.32       -21.48      81.29     37.74         1.77      -32.37
+                    contract_win dir=2  5  1.0     1.25          70.83      -15.85      90.77          0.30       -75.56      71.17     81.46         1.06      -45.62
+contract_win dir>=1 value>=10% of mcap  5  0.1     1.53          77.87        2.56      12.84          0.26       -14.51      39.04     15.09         2.26       -8.39
+contract_win dir>=1 value>=10% of mcap  5  0.2     1.53          77.87        3.01      25.63          0.24       -27.34      87.97     29.59         2.28      -16.18
+       contract_win dir>=1 (shadow #6) 10  0.1     8.69          99.86        1.62      32.19          0.21       -23.74     106.67     41.30         1.96      -30.96
+      contract_win dir>=1 novelty>=0.8 40  0.1    17.56          99.43        0.16      36.72          0.19       -34.01     105.31     44.92         1.83      -32.27
+  contract_win dir>=1 materiality>=0.7 10  0.2     6.94          99.57       -1.97      42.71          0.17       -32.85     127.41     49.47         1.91      -31.83
+                    contract_win dir=2  5  0.1     1.25          70.83        0.42      12.14          0.09       -13.77      13.98     16.26         0.89      -14.53
+                    contract_win dir=2  5  0.2     1.25          70.83       -0.64      24.28          0.09       -26.04      27.58     32.37         0.91      -26.48
+      contract_win dir>=1 novelty>=0.8 40  0.2    17.56          99.43       -3.94      38.59          0.09       -34.01     105.31     44.92         1.83      -32.27
+      contract_win dir>=1 novelty>=0.8 40  1.0    17.56          99.43       -4.30      39.06          0.08       -34.01     105.31     44.92         1.83      -32.27
+       contract_win dir>=1 (shadow #6) 10  1.0     8.69          99.86       -6.33      44.06          0.07       -30.92     146.20     50.19         2.04      -30.47
+       contract_win dir>=1 (shadow #6) 10  0.2     8.69          99.86       -6.47      42.00          0.05       -31.55     140.03     48.64         2.04      -30.47
+  contract_win dir>=1 materiality>=0.7 10  1.0     6.94          99.57      -10.56      50.38          0.03       -35.92     134.92     53.82         1.85      -31.83
+      contract_win dir>=1 novelty>=0.8 10  1.0     4.79          97.99      -14.58      57.28          0.01       -49.55     135.81     61.68         1.70      -38.37
+      contract_win dir>=1 novelty>=0.8 20  1.0     9.10          99.43       -9.84      45.04         -0.00       -38.39     156.40     64.50         1.76      -36.47
+      contract_win dir>=1 novelty>=0.8 10  0.1     4.79          97.99       -3.58      23.19         -0.04       -25.61      73.01     36.87         1.67      -34.84
+      contract_win dir>=1 novelty>=0.8 20  0.2     9.10          99.43      -10.57      41.94         -0.06       -38.39     162.33     64.24         1.80      -36.47
+      contract_win dir>=1 novelty>=0.8 10  0.2     4.79          97.99      -12.70      40.57         -0.13       -41.01     141.07     52.65         1.93      -36.70
+              any positive type dir>=1 40  0.1   334.43         100.00       -7.59      28.71         -0.13       -26.06       9.65     27.11         0.47      -18.62
+      contract_win dir>=1 novelty>=0.8 20  0.1     9.10          99.43       -9.90      33.16         -0.15       -36.22     131.09     48.68         1.96      -36.47
+       contract_win dir>=1 (shadow #6)  5  0.1     4.74          97.84       -7.31      24.08         -0.20       -22.57      54.70     29.62         1.62      -22.95
+              any positive type dir>=1 40  0.2   334.43         100.00       -9.40      28.93         -0.20       -26.06       9.65     27.11         0.47      -18.62
+              any positive type dir>=1 40  1.0   334.43         100.00      -11.73      29.44         -0.28       -26.06       9.65     27.11         0.47      -18.62
+       contract_win dir>=1 (shadow #6)  5  0.2     4.74          97.84      -19.04      40.63         -0.32       -36.61     122.99     46.46         1.96      -24.54
+       contract_win dir>=1 (shadow #6)  5  1.0     4.74          97.84      -32.73      59.76         -0.36       -50.62     297.70     77.68         2.11      -28.02
+              any positive type dir>=1 20  0.1   172.65         100.00      -15.00      30.25         -0.39       -27.52       4.14     27.66         0.28      -24.68
+  contract_win dir>=1 materiality>=0.7  5  0.1     3.78          95.11      -10.11      20.77         -0.41       -19.64      42.12     27.28         1.43      -21.04
+  contract_win dir>=1 materiality>=0.7  5  0.2     3.78          95.11      -21.06      38.52         -0.42       -36.57      95.22     44.06         1.74      -23.13
+  contract_win dir>=1 materiality>=0.7  5  1.0     3.78          95.11      -41.64      68.85         -0.43       -65.75     137.85     60.35         1.73      -34.68
+              any positive type dir>=1 20  0.2   172.65         100.00      -16.66      30.46         -0.45       -27.52       4.14     27.66         0.28      -24.68
+              any positive type dir>=1 20  1.0   172.65         100.00      -18.81      30.94         -0.52       -27.52       4.14     27.66         0.28      -24.68
+      contract_win dir>=1 novelty>=0.8  5  1.0     2.61          88.51      -59.32      72.91         -0.83       -73.34     236.38     83.65         1.82      -43.52
+      contract_win dir>=1 novelty>=0.8  5  0.2     2.61          88.51      -28.34      32.82         -0.85       -39.39      90.65     44.92         1.66      -33.51
+      contract_win dir>=1 novelty>=0.8  5  0.1     2.61          88.51      -15.69      16.61         -0.94       -21.77      43.14     24.60         1.58      -20.86
+              any positive type dir>=1 10  0.1    90.66         100.00      -29.49      30.92         -0.98       -37.46     -10.77     28.84        -0.25      -36.17
+              any positive type dir>=1 10  0.2    90.66         100.00      -30.87      31.12         -1.03       -37.46     -10.61     28.84        -0.25      -36.17
+              any positive type dir>=1 10  1.0    90.66         100.00      -32.65      31.58         -1.09       -37.46     -10.07     28.85        -0.22      -36.17
+              any positive type dir>=1  5  0.1    49.45          99.28      -37.40      35.64         -1.14       -46.02     -17.11     31.66        -0.43      -44.24
+              any positive type dir>=1  5  0.2    49.45          99.28      -38.62      35.81         -1.19       -46.02     -18.23     31.83        -0.47      -45.55
+              any positive type dir>=1  5  1.0    49.45          99.28      -40.20      36.21         -1.24       -46.02     -17.62     32.04        -0.45      -46.21
+
+ROBUSTNESS of contract_win dir>=1 value>=10% of mcap H20 cap1.0
+  cost 50 bps/side: early {'CAGR': np.float64(100.09), 'vol': np.float64(57.67), 'Sharpe': np.float64(1.49), 'maxDD': np.float64(-29.63)} holdout {'CAGR': np.float64(62.25), 'vol': np.float64(58.65), 'Sharpe': np.float64(1.11), 'maxDD': np.float64(-35.5)}
+  cost 100 bps/side: early {'CAGR': np.float64(76.72), 'vol': np.float64(57.65), 'Sharpe': np.float64(1.28), 'maxDD': np.float64(-30.03)} holdout {'CAGR': np.float64(44.76), 'vol': np.float64(58.59), 'Sharpe': np.float64(0.92), 'maxDD': np.float64(-37.89)}
+  without best  1 events: early {'CAGR': np.float64(112.88), 'vol': np.float64(57.71), 'Sharpe': np.float64(1.6), 'maxDD': np.float64(-29.44)} holdout {'CAGR': np.float64(61.46), 'vol': np.float64(58.29), 'Sharpe': np.float64(1.11), 'maxDD': np.float64(-34.28)}
+  without best  3 events: early {'CAGR': np.float64(41.18), 'vol': np.float64(56.42), 'Sharpe': np.float64(0.89), 'maxDD': np.float64(-46.33)} holdout {'CAGR': np.float64(61.46), 'vol': np.float64(58.29), 'Sharpe': np.float64(1.11), 'maxDD': np.float64(-34.28)}
+  without best  5 events: early {'CAGR': np.float64(30.83), 'vol': np.float64(56.74), 'Sharpe': np.float64(0.76), 'maxDD': np.float64(-46.33)} holdout {'CAGR': np.float64(51.85), 'vol': np.float64(57.05), 'Sharpe': np.float64(1.01), 'maxDD': np.float64(-34.28)}
+  without best 10 events: early {'CAGR': np.float64(9.44), 'vol': np.float64(56.02), 'Sharpe': np.float64(0.44), 'maxDD': np.float64(-46.33)} holdout {'CAGR': np.float64(29.0), 'vol': np.float64(56.25), 'Sharpe': np.float64(0.73), 'maxDD': np.float64(-36.84)}
+  CONTROL: 20 random sets of 8-Ks (same counts, same book):
+       early_Sharpe  hold_Sharpe  early_CAGR  hold_CAGR
+count         20.00        20.00       20.00      20.00
+mean          -0.47        -0.04      -20.31      -8.78
+std            0.80         0.57       34.01      20.15
+min           -1.76        -1.46      -75.77     -46.96
+25%           -1.07        -0.27      -43.23     -20.14
+50%           -0.44        -0.03      -25.05     -11.63
+75%           -0.10         0.37      -12.43       7.19
+max            0.84         0.75       50.93      23.13
+
+::notice::contract book: best-on-early contract_win dir>=1 value>=10% of mcap H20 cap1.0: early Sharpe 1.60 CAGR 112.9%, holdout Sharpe 1.21 CAGR 71.7% DD -34%

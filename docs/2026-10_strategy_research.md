@@ -1181,3 +1181,55 @@ Momentum winners raise money while their stock is hot, and keep rising anyway. T
 **Not yet testable: contract-win overlay.**
 - LLM judgements cover only a 17k-filing sample. Contract wins are 1.7% of 8-Ks: 281 events, mean +4–6% excess over 20 days, but median about 0 (a lottery-like skew).
 - A portfolio test needs the reader run over every small-cap 8-K from 2024 to 2026.
+
+### Contract-win book with full coverage (`research/contract_book.py`, `research/combo_contract.py`)
+
+**Data**
+- The LLM reader now covers every qualifying small-cap 8-K from Jan 2024 to Sep 2026: 32,783 filings, about 17.9k of them new. The backfill cost about $26 (Haiku 4.5 via the batch API).
+- "Early" = Jan 2024 – Mar 2025, used for choosing. It may overlap the model's training data.
+- "Holdout" = Apr 2025 – Sep 2026, scored once.
+
+**Event level** (IWM-adjusted, from the entry open)
+- The baseline is bad: the average small-cap 8-K filer trails IWM by −0.9% / −1.0% over 20 days (median −2%).
+- All contract wins with direction ≥ 1:
+  - Early: +1.3% (n 218).
+  - Holdout: +14.1% (n 323), but that figure is driven by one +3,400% name (BNAI). Without it, +3.5% (t 1.9).
+  - Removing the best 10 holdout events brings it to 0.
+- Contract worth ≥ 10% of market cap: +5.3% early (n 74) and +4.1% holdout (n 100).
+  - Against random draws of the same number of 8-Ks, p = 0.03 early and p = 0.04 holdout.
+  - The holdout 5-day gain is +5.3%, median +2.0%, t 2.9.
+- All other positive news types: −0.9% / +0.05%. Contract wins are the only good news that drifts.
+
+**Portfolio** (buy at the first open after acceptance, hold 20 sessions, equal weight across open positions, 25 bps/side)
+
+The best design on early data: contract value ≥ 10% of market cap, hold 20 sessions, no per-name cap (about 5 positions on average, invested 98% of days).
+
+| | Early | Holdout |
+|---|---|---|
+| CAGR / Sharpe / max DD | 113% / 1.60 / −29% | 72% / 1.21 / −34% |
+| 50 bps per side | 100% / 1.49 | 62% / 1.11 |
+| 100 bps per side | 77% / 1.28 | 45% / 0.92 |
+| Without the 5 best events (ex post) | 31% / 0.76 | 52% / 1.01 |
+| Without the 10 best events | 9% / 0.44 | 29% / 0.73 |
+| 20 random 8-K portfolios (mean, best) | Sharpe −0.47, 0.84 | Sharpe −0.04, 0.75 |
+| IWM | 0.6% / 0.13 | 25.9% / 1.20 |
+
+**Combined with the slow-momentum core** (weekly, Monday to Monday)
+- Weekly correlation between the two is 0.54. Both are small-cap risk-on bets.
+- Blending does not beat the contract book alone:
+
+| Book | Leverage | Early CAGR / Sharpe / DD | Holdout CAGR / Sharpe / DD | Holdout per week |
+|---|---|---|---|---|
+| Momentum core only | 1× | 29% / 0.73 / −28% | 46% / 0.94 / −42% | 0.74% |
+| 50/50 blend | 1× | 65% / 1.20 / −21% | 71% / 1.30 / −35% | 1.04% |
+| Contract book only | 1× | 90% / 1.25 / −27% | 90% / 1.41 / −31% | 1.24% |
+| Contract book only | Kelly from early (1.66×) | 113% / 1.21 / −43% | 137% / 1.37 / −48% | 1.67% |
+
+(At weekly resolution the contract book's CAGR differs from the daily figure above because of how the windows are aligned.)
+
+**Verdict**
+- This is the first edge that beats random controls in both periods, survives 50–100 bps costs, and survives removing its best five trades.
+- It is still a lottery-skewed book with about 5 names, about 180 qualifying events in 2.75 years (roughly 1.3 per week), and only one regime (a hot small-cap market, 2024–26).
+- The ceiling moves from about 0.5–0.7%/week to about 1.0–1.7%/week. 3%/week is still not supported.
+
+**Live check:** shadow #6's records already hold the contract value and market cap, so the ≥ 10% sub-book can be read out of its existing ledger with no change to the shadow.
