@@ -604,3 +604,76 @@ The live score's edge is slow, and weekly turnover throws it away. This is the m
 - Accept −40% drawdowns.
 
 Candidate for shadow #4.
+
+## Full-spectrum rank bands, earnings weeks, large-cap reversal (Oct 10, 2026)
+
+Scripts:
+- `research/rank_bands.py`
+- `research/earnings_week.py`
+- `research/reversal_lc.py`
+
+Results:
+- `research/results/rank_bands*.csv`
+- `research/results/reversal_lc.csv`
+
+### Rank bands
+
+**Setup:**
+- 10 scores: live proxy, 12-1, 6-1, 3-1, RS blend, 52-week high, trend, last week, last month, low vol.
+- 61 bands each: 11 fine bands over ranks 1–500, plus 50 two-percent bins over the whole list.
+- Horizons of 1/2/4/8/13 weeks.
+- Plus size, market-trend and dispersion cuts.
+- 3,050 band tests in all; Newey-West t-stats.
+
+**Results:**
+- **Fewer bands were significant than chance.** 3% had |t| > 2 in dev, versus 5% expected by luck.
+  - Of those, 22% kept the sign with |t| > 1 in the holdout, versus about 16% by chance.
+  - Bands at the head of the list carry essentially no information.
+- **No stable sweet spot at the top.**
+  - For every momentum score, the profile over ranks 1–500 has near-zero or negative rank correlation between dev and holdout.
+  - The "skip 1–3, buy 4–13" shape does not exist in 10 years of data.
+  - Live proxy at 13 weeks: dev ranks 1–50 all earn +1.2 to +1.8% excess; holdout is mixed.
+- **The broad, coarse momentum profile is stable only at long horizons.**
+  - Dev/holdout correlation of the 50-bin profile: RS blend 0.74–0.80 at 8–13 weeks, versus 0.13 at 1 week.
+  - Live proxy: 0.61–0.69 versus −0.01.
+  - This is the same message as the hold-length test.
+- **One band effect is robust: the extreme top of recent gainers.** The 5 biggest gainers of the past week, out of ~2,400:
+
+| Horizon | 2 wk | 4 wk | 8 wk | 13 wk |
+|---|---|---|---|---|
+| Dev excess | −2.7% (t −4.8) | −2.5% | −3.7% | −3.8% |
+| Holdout excess | −2.4% (t −2.1) | −3.7% | −7.7% | −9.2% |
+
+- Ranks 6–10 show about half the effect, and ranks 11+ are flat.
+- Last month's top 5 gainers behave the same way: −3.8% to −14.1% over 2–13 weeks in the holdout.
+- The effect holds in large and small names and in most market states.
+- Only about 7% of the live system's top-10 picks fall in that zone, so filtering them helps a little.
+
+### Earnings weeks
+
+The live system excludes holding through an earnings report.
+
+| Group | Dev | Holdout |
+|---|---|---|
+| All stocks reporting | −0.06%/wk (t −0.5) | −0.04%/wk |
+| Top-2% momentum, reporting | **+1.06%/wk** (t 1.9) | **+1.52%/wk** (t 1.4) |
+| Top-2% momentum, not reporting | −0.07% | −0.05% |
+| Large caps (top 500), reporting | −0.19% | −0.66% (t −2.0) |
+
+- No general earnings premium.
+- Strong-momentum names, however, beat the universe in the weeks they report, in both periods.
+- Single-stock risk doubles: the weekly return spread is 9.6% versus 4.5%.
+- Effect on the weekly top-20 proxy basket of excluding earnings:
+  - Dev: −9.6% CAGR with the exclusion, −7.1% without.
+  - Holdout: −11.0% with, −3.3% without.
+- **The exclusion rule has cost money on average.** It reduces single-name blow-ups (FSLY), not losses.
+
+### Large-cap short-term reversal
+
+Buy last week's biggest losers among the most-traded names. 48 designs.
+
+- Best dev design: 1,000 names, 20 losers, skip earnings-driven drops, 5 bps.
+  - Dev: 30.4%/yr, Sharpe 0.84.
+  - Holdout: **−8.5%**.
+- No design holds up in the holdout at 15 bps.
+- **Dead.** The effect has decayed since 2024.
