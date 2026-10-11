@@ -38,8 +38,13 @@ import pandas as pd
 log = logging.getLogger("llm_filings")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)-7s %(message)s", datefmt="%H:%M:%S")
 UA = os.environ.get("SEC_USER_AGENT") or "MomentumAlpha research momentum-bot@users.noreply.github.com"
-OUT = Path(os.environ.get("RESEARCH_DATA", "research_data")) / "llm"
-SAMPLE = Path("research/samples/llm_8k_sample.parquet")
+# Full-coverage backfill: SAMPLE=research/samples/llm_8k_full.parquet LLM_DIR=llm_full PART=i NPARTS=n
+# (each part checkpoints separately under <LLM_DIR>/part<i>)
+PART, NPARTS = int(os.environ.get("PART") or 0), int(os.environ.get("NPARTS") or 1)
+OUT = Path(os.environ.get("RESEARCH_DATA", "research_data")) / (os.environ.get("LLM_DIR") or "llm")
+if NPARTS > 1:
+    OUT = OUT / f"part{PART}"
+SAMPLE = Path(os.environ.get("SAMPLE") or "research/samples/llm_8k_sample.parquet")
 MODEL = os.environ.get("LLM_MODEL") or "claude-haiku-4-5-20251001"
 MAX_CHARS = 9000
 
@@ -278,7 +283,9 @@ def stage_returns(sample, texts):
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
-    sample = pd.read_parquet(SAMPLE).drop_duplicates("accession")
+    sample = pd.read_parquet(SAMPLE).drop_duplicates("accession").reset_index(drop=True)
+    if NPARTS > 1:
+        sample = sample[sample.index % NPARTS == PART]
     only = (os.environ.get("ONLY") or "text,llm,returns").split(",")
     texts = stage_text(sample) if "text" in only else pd.read_parquet(OUT / "texts.parquet")
     notes = [f"texts {len(texts):,}"]

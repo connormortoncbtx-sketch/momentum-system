@@ -11,12 +11,28 @@ on:
         description: 'Comma list: text,llm,returns'
         required: false
         default: 'text,llm,returns'
+      sample:
+        description: 'Sample file (default research/samples/llm_8k_sample.parquet)'
+        required: false
+        default: ''
+      llm_dir:
+        description: 'Output dir under research_data (default llm)'
+        required: false
+        default: ''
+      part:
+        description: 'Part index (with nparts > 1)'
+        required: false
+        default: '0'
+      nparts:
+        description: 'Number of parts'
+        required: false
+        default: '1'
 
 permissions:
   contents: write
 
 concurrency:
-  group: research-data
+  group: research-llm-${{ inputs.llm_dir }}-${{ inputs.part }}
   cancel-in-progress: false
 
 jobs:
@@ -44,6 +60,10 @@ jobs:
           ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
           RESEARCH_DATA: research_data
           ONLY: ${{ inputs.only }}
+          SAMPLE: ${{ inputs.sample }}
+          LLM_DIR: ${{ inputs.llm_dir }}
+          PART: ${{ inputs.part }}
+          NPARTS: ${{ inputs.nparts }}
         run: python research/llm_filings.py
 
       - name: Push to research-data branch
@@ -55,4 +75,15 @@ jobs:
           git add -A
           git diff --cached --quiet && exit 0
           git commit -q -m "research llm filings $(date -u +%Y-%m-%dT%H:%MZ)"
-          git push "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" HEAD:research-data
+          URL="https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"
+          for attempt in 1 2 3 4 5; do
+            git push -q "$URL" HEAD:research-data && exit 0
+            CHANGED=$(git diff --name-only HEAD~1 HEAD)
+            cd .. && rm -rf rd_new && git clone -q --depth 1 -b research-data "$URL" rd_new
+            for f in $CHANGED; do mkdir -p "rd_new/$(dirname "$f")"; cp "research_data/$f" "rd_new/$f"; done
+            rm -rf research_data && mv rd_new research_data && cd research_data
+            git config user.name "momentum-bot"; git config user.email "momentum-bot@users.noreply.github.com"
+            git add -A; git commit -q -m "research llm filings $(date -u +%Y-%m-%dT%H:%MZ) (retry $attempt)"
+            sleep $((RANDOM % 20 + 5))
+          done
+          exit 1

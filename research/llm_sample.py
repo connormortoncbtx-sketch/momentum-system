@@ -23,6 +23,10 @@ ITEMS = {"1.01", "1.02", "1.03", "2.01", "2.03", "2.04", "2.05", "2.06", "3.01",
          "4.01", "4.02", "5.01", "5.02", "7.01", "8.01"}
 DEV0, HOLD0, END = "2023-01-01", "2025-04-01", "2026-09-25"   # holdout starts after the model's training cutoff
 N_DEV, N_HOLD = 5000, 12000
+# FULL=1: every qualifying 8-K from FULL_START on that is NOT already in the study sample
+# (full-coverage backfill for portfolio tests) -> research/samples/llm_8k_full.parquet
+FULL = os.environ.get("FULL") == "1"
+FULL_START = os.environ.get("FULL_START") or "2024-01-01"
 
 fi = pd.concat(pd.read_parquet(f) for f in sorted(glob.glob(f"{SEC}/filings_202[3-6].parquet")))
 k = fi[(fi.form == "8-K") & (fi.accepted_et >= DEV0) & (fi.accepted_et < END)].copy()
@@ -54,13 +58,18 @@ k = k[(k.mcap >= 30e6) & (k.mcap <= 2e9) & (k.price >= 1) & (k.adv >= 3e5)]
 k["period"] = np.where(k.accepted_et >= HOLD0, "holdout", "dev")
 print(k.groupby("period").size())
 rng = np.random.default_rng(7)
-dev = k[k.period == "dev"]; hold = k[k.period == "holdout"]
-dev = dev.iloc[rng.permutation(len(dev))[:N_DEV]]
-hold = hold.iloc[rng.permutation(len(hold))[:N_HOLD]]
-out = pd.concat([dev, hold])[["accession", "cik", "symbol", "items", "accepted_et", "filing_date", "primary_doc",
+if FULL:
+    done = set(pd.read_parquet("research/samples/llm_8k_sample.parquet").accession)
+    sel = k[(k.accepted_et >= FULL_START) & ~k.accession.isin(done)]
+else:
+    dev = k[k.period == "dev"]; hold = k[k.period == "holdout"]
+    dev = dev.iloc[rng.permutation(len(dev))[:N_DEV]]
+    hold = hold.iloc[rng.permutation(len(hold))[:N_HOLD]]
+    sel = pd.concat([dev, hold])
+out = sel[["accession", "cik", "symbol", "items", "accepted_et", "filing_date", "primary_doc",
                               "sic", "price", "adv", "mcap", "revenue_ttm", "period"]].sort_values("accepted_et")
 os.makedirs("research/samples", exist_ok=True)
-out.to_parquet("research/samples/llm_8k_sample.parquet", index=False)
+out.to_parquet("research/samples/llm_8k_full.parquet" if FULL else "research/samples/llm_8k_sample.parquet", index=False)
 print(out.groupby("period").size(), out.mcap.describe())
 items = out["items"].str.split(",").explode().str.strip()
 print(items[items.isin(ITEMS)].value_counts())
