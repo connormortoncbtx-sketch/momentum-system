@@ -1,0 +1,58 @@
+name: Research LLM filings (small-cap 8-K reading study)
+
+# Manual only. Reads research/samples/llm_8k_sample.parquet, fetches filing text from
+# EDGAR, scores it with Claude Haiku (Message Batches API, ~$30 for the full sample),
+# adds Alpaca daily returns, and pushes llm/* to the research-data branch.
+# Each stage is checkpointed; re-running resumes. Never places orders.
+on:
+  workflow_dispatch:
+    inputs:
+      only:
+        description: 'Comma list: text,llm,returns'
+        required: false
+        default: 'text,llm,returns'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: research-data
+  cancel-in-progress: false
+
+jobs:
+  llm:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install
+        run: pip install "pandas>=2.0" pyarrow anthropic alpaca-py
+
+      - name: Load research-data branch
+        run: git clone -q --depth 1 -b research-data "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" research_data
+
+      - name: Run study
+        env:
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+          RESEARCH_DATA: research_data
+          ONLY: ${{ inputs.only }}
+        run: python research/llm_filings.py
+
+      - name: Push to research-data branch
+        if: always()
+        run: |
+          cd research_data
+          git config user.name  "momentum-bot"
+          git config user.email "momentum-bot@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && exit 0
+          git commit -q -m "research llm filings $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" HEAD:research-data
