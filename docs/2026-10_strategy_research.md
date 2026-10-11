@@ -772,3 +772,32 @@ Weekly data. Excess vs the equal-weight universe. Dev = events before 2023, hold
 - Entry is at the first open after the authoritative acceptance time.
 
 Results pending.
+
+### Spike anatomy, step 1 (`research/spike_catalog.py`)
+
+**Definitions:**
+- Spike = a week ≥ +25% above the equal-weight universe; crash = ≤ −25%.
+- Universe: price ≥ $2, ≥ $500k/day traded, ≥ 26 weeks listed.
+- 2017 to Sep 2026: **9,945 spikes and 6,827 crashes** (about 1,000 spikes a year; 1,300–1,650 a year since 2020).
+- Catalysts come from the SEC filings index plus the earnings table.
+
+**Spikes:**
+
+| Catalyst | Share | Next 4 weeks: median excess | % up |
+|---|---|---|---|
+| No filing (news or flow) | 39% | −7.3% | 38% |
+| Earnings (scheduled) | 21% | −0.7% | 48% |
+| Other filing (10-Q, S-3, 13G…) | 16% | −7.5% | 36% |
+| Press release 8-K | 6% | −6.1% | 39% |
+| Offering / dilution in the same week | 5% | −7.7% | 36% |
+| Material agreement | 2% | −5.0% | 37% |
+| M&A forms (under-counted: acquired targets are delisted) | 1.5% | −13.3% | 34% |
+| Accounting / listing problem | 0.5% | −22.3% | 33% |
+
+**Crashes:** offering-driven crashes keep falling (−14.1% median, only 26% up). Earnings crashes stabilise (−0.9%).
+
+**Takeaways:**
+1. **Chasing spikes after the fact loses.** Every unscheduled type fades by a median of 5–13% over the next month. Only earnings spikes hold.
+2. **The catalyst decides what comes next.** Classifying the catalyst fast is worth something on its own: hold real scheduled news, fade unexplained spikes.
+3. **39% of spikes have no filing behind them.** Explaining those needs news data (GDELT next). These are also the ones that fade.
+4. **"Event minus one" therefore matters most for spikes we can enter early AND exit near the top.** Step 2 looks for signatures in the 1–8 weeks before, against matched controls.
