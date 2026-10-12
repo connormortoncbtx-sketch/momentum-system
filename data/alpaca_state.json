@@ -13,7 +13,10 @@
       "is_fallback": false,
       "phase": 1,
       "high_water_mark": 63.67,
-      "order_id": "52e643bf-cafe-4432-abbf-3b92c33a0a92"
+      "order_id": "52e643bf-cafe-4432-abbf-3b92c33a0a92",
+      "hard_stop_order_id": "de076881-32ea-4868-affd-f3ba4d4c51ac",
+      "hard_stop_price": 57.12,
+      "entry_price_actual": 63.47
     },
     "SPT": {
       "shares": 578,
@@ -27,7 +30,10 @@
       "is_fallback": false,
       "phase": 1,
       "high_water_mark": 11.04,
-      "order_id": "9ce3dfd0-fa23-4f48-a34d-5b32bc967e63"
+      "order_id": "9ce3dfd0-fa23-4f48-a34d-5b32bc967e63",
+      "hard_stop_order_id": "9c850863-6f58-4658-a628-4ea69655c81d",
+      "hard_stop_price": 10.28,
+      "entry_price_actual": 11.05
     },
     "MTSI": {
       "shares": 20,
@@ -41,7 +47,10 @@
       "is_fallback": false,
       "phase": 1,
       "high_water_mark": 314.1,
-      "order_id": "dc322da5-e822-4eba-95de-fd60e7c2355b"
+      "order_id": "dc322da5-e822-4eba-95de-fd60e7c2355b",
+      "hard_stop_order_id": "e4f9895e-0a9b-4ace-b18c-789ee6839a2b",
+      "hard_stop_price": 286.64,
+      "entry_price_actual": 308.22
     },
     "MXL": {
       "shares": 66,
@@ -55,7 +64,10 @@
       "is_fallback": false,
       "phase": 1,
       "high_water_mark": 96.16,
-      "order_id": "13dca25a-65ce-4323-9e23-1cfc212bc9de"
+      "order_id": "13dca25a-65ce-4323-9e23-1cfc212bc9de",
+      "hard_stop_order_id": "bbdaf34b-779a-4906-94c9-6e2def085dc0",
+      "hard_stop_price": 79.97,
+      "entry_price_actual": 88.85
     },
     "VECO": {
       "shares": 122,
@@ -69,7 +81,10 @@
       "is_fallback": false,
       "phase": 1,
       "high_water_mark": 52.28,
-      "order_id": "16e4c4ce-43fc-4601-80f0-3e65beee3bdb"
+      "order_id": "16e4c4ce-43fc-4601-80f0-3e65beee3bdb",
+      "hard_stop_order_id": "669fb7f7-66c5-4c67-ad82-8feada058048",
+      "hard_stop_price": 45.9,
+      "entry_price_actual": 49.36
     },
     "XP": {
       "shares": 196,
@@ -83,7 +98,10 @@
       "is_fallback": false,
       "phase": 1,
       "high_water_mark": 32.55,
-      "order_id": "f2bbb946-d791-4c84-ade1-c00cb872fb43"
+      "order_id": "f2bbb946-d791-4c84-ade1-c00cb872fb43",
+      "hard_stop_order_id": "f39043fd-4d4e-47cb-ab13-2291da8b78f4",
+      "hard_stop_price": 29.29,
+      "entry_price_actual": 32.55
     },
     "NTAP": {
       "shares": 26,
@@ -97,7 +115,10 @@
       "is_fallback": false,
       "phase": 1,
       "high_water_mark": 243.36,
-      "order_id": "cfa32fe9-fd4b-4605-9def-2e864aac0977"
+      "order_id": "cfa32fe9-fd4b-4605-9def-2e864aac0977",
+      "hard_stop_order_id": "452a96ab-859b-49c1-a69f-9128510757f9",
+      "hard_stop_price": 222.21,
+      "entry_price_actual": 238.94
     },
     "AMLX": {
       "shares": 232,
@@ -111,7 +132,10 @@
       "is_fallback": false,
       "phase": 1,
       "high_water_mark": 27.48,
-      "order_id": "8d90cdef-1c75-4935-a4f4-b4c5e400c6c9"
+      "order_id": "8d90cdef-1c75-4935-a4f4-b4c5e400c6c9",
+      "hard_stop_order_id": "62bd639f-3f9f-4663-9ed2-fdb828e35757",
+      "hard_stop_price": 24.54,
+      "entry_price_actual": 27.51
     },
     "PAYS": {
       "shares": 422,
@@ -125,7 +149,10 @@
       "is_fallback": false,
       "phase": 1,
       "high_water_mark": 15.15,
-      "order_id": "a429e409-d300-49c0-8d98-9e59ce938a50"
+      "order_id": "a429e409-d300-49c0-8d98-9e59ce938a50",
+      "hard_stop_order_id": "8eba2d55-4d87-4050-8733-aba9eb0290aa",
+      "hard_stop_price": 13.65,
+      "entry_price_actual": 15.17
     },
     "FIVN": {
       "shares": 185,
@@ -139,7 +166,10 @@
       "is_fallback": false,
       "phase": 1,
       "high_water_mark": 34.55,
-      "order_id": "2d38e992-2e1c-41d6-9cea-dd04115e93fd"
+      "order_id": "2d38e992-2e1c-41d6-9cea-dd04115e93fd",
+      "hard_stop_order_id": "74343cab-47d4-403f-be60-4efbbd52692d",
+      "hard_stop_price": 33.09,
+      "entry_price_actual": 35.58
     }
   },
   "entry_date": "2026-10-12"
