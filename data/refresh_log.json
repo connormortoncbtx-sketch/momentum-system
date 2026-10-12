@@ -1,37 +1,5 @@
 [
   {
-    "run_label": "monday_morning",
-    "timestamp": "2026-08-10T11:23:12.744903",
-    "regime": "risk_on",
-    "top_5": [
-      {
-        "symbol": "TRAX",
-        "alpha_score": 0.8036859999999999,
-        "alpha_rank": 8
-      },
-      {
-        "symbol": "OPTX",
-        "alpha_score": 0.8143419999999999,
-        "alpha_rank": 6
-      },
-      {
-        "symbol": "MANE",
-        "alpha_score": 0.7521799999999998,
-        "alpha_rank": 15
-      },
-      {
-        "symbol": "PRCH",
-        "alpha_score": 0.7485579999999998,
-        "alpha_rank": 17
-      },
-      {
-        "symbol": "WGS",
-        "alpha_score": 0.7639369999999999,
-        "alpha_rank": 12
-      }
-    ]
-  },
-  {
     "run_label": "sunday_night",
     "timestamp": "2026-08-17T00:55:32.344247",
     "regime": "risk_on",
@@ -636,6 +604,38 @@
         "symbol": "SPT",
         "alpha_score": 0.803024,
         "alpha_rank": 6
+      }
+    ]
+  },
+  {
+    "run_label": "manual_refresh",
+    "timestamp": "2026-10-12T07:23:14.724563",
+    "regime": "trending_mixed",
+    "top_5": [
+      {
+        "symbol": "MXL",
+        "alpha_score": 1.0,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "CDNA",
+        "alpha_score": 0.989404,
+        "alpha_rank": 2
+      },
+      {
+        "symbol": "AMLX",
+        "alpha_score": 0.892485,
+        "alpha_rank": 8
+      },
+      {
+        "symbol": "SPT",
+        "alpha_score": 0.903024,
+        "alpha_rank": 6
+      },
+      {
+        "symbol": "XP",
+        "alpha_score": 0.8994019999999999,
+        "alpha_rank": 7
       }
     ]
   }

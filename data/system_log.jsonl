@@ -2954,3 +2954,5 @@
 {"timestamp": "2026-10-11T13:18:58.723090+00:00", "workflow": "shadow_filings", "status": "success", "message": "Shadow filings: 0 judged-eligible, new long 0, new short 0, open trades 0", "metrics": {}, "errors": []}
 {"timestamp": "2026-10-12T02:44:17.885749+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Starting weekend refresh (manual_refresh)", "metrics": {}, "errors": []}
 {"timestamp": "2026-10-12T03:11:27.907519+00:00", "workflow": "weekend_refresh", "status": "success", "message": "Refresh complete (manual_refresh)", "metrics": {"run_label": "manual_refresh", "symbols": 1811, "regime": "trending_mixed", "top_pick": "MXL", "top_score": 0.9002}, "errors": []}
+{"timestamp": "2026-10-12T06:59:02.127825+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Starting weekend refresh (manual_refresh)", "metrics": {}, "errors": []}
+{"timestamp": "2026-10-12T07:23:14.729700+00:00", "workflow": "weekend_refresh", "status": "success", "message": "Refresh complete (manual_refresh)", "metrics": {"run_label": "manual_refresh", "symbols": 1811, "regime": "trending_mixed", "top_pick": "MXL", "top_score": 1.0}, "errors": []}
