@@ -14,6 +14,11 @@ results in docs/2026-10_strategy_research.md). Runs twice each weekday.
              return a short would have earned before borrow costs
      Entry = the first regular-session OPEN after the judgement was made (never
      earlier than the moment we could have acted); exit = close 20 sessions later.
+  5. (added Oct 11, 2026) LONG_DIV: the same contract wins as a diversified book -- the
+     design that held up out of sample in research/contract_filters.py (2017-23 dev
+     Sharpe 1.04, 2024-26 holdout 1.18): hold 10 sessions, weights 1/vol60 (floor 20%)
+     across open positions, max 25% per name, rest cash, 25 bps per side. Tracked as a
+     daily NAV (state["div"]) plus closed trades in the ledger.
 Files: data/shadow_filings_state.json (checkpoint + open trades),
        data/shadow_filings_judgements.jsonl (every judgement),
        data/shadow_filings_ledger.jsonl (closed trades).
@@ -50,6 +55,7 @@ LEDGER = DATA / "shadow_filings_ledger.jsonl"
 ITEMS = {"1.01", "1.02", "1.03", "2.01", "2.03", "2.04", "2.05", "2.06", "3.01", "3.02",
          "4.01", "4.02", "5.01", "5.02", "7.01", "8.01"}
 HOLD_SESSIONS = 20
+HOLD_DIV, CAP_DIV, COST_DIV = 10, 0.25, 25.0
 MAX_JUDGE_PER_RUN = 250          # cost guard (~$0.75)
 FEED = ("https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&type=8-K&company=&dateb="
         "&owner=include&start={start}&count=100&output=atom")
@@ -159,6 +165,42 @@ def judge(client, row, mcap, rev):
             "in_tokens": msg.usage.input_tokens, "out_tokens": msg.usage.output_tokens}
 
 
+def div_nav(state, b):
+    """Advance the diversified book's daily NAV through the last complete session in `b`."""
+    dv = state.setdefault("div", {})
+    dv.setdefault("nav", 100.0); dv.setdefault("closed", [])
+    pos = [{"symbol": o["symbol"], "entry_date": o["entry_date"], "exit_date": None, "vol60": o.get("vol60", 0.8)}
+           for o in state["open"] if o["book"] == "long_contract_div" and o.get("entry_date")] + dv["closed"]
+    if not pos or b.empty:
+        return
+    C = b.pivot_table(index="date", columns="symbol", values="close")
+    O = b.pivot_table(index="date", columns="symbol", values="open")
+    last = dt.date.fromisoformat(dv["last_date"]) if dv.get("last_date") else None
+    start = min(dt.date.fromisoformat(p["entry_date"]) for p in pos)
+    for d in [x for x in C.index if x >= start and (last is None or x > last)]:
+        rs, ws = [], []
+        for p in pos:
+            e0 = dt.date.fromisoformat(p["entry_date"])
+            e1 = dt.date.fromisoformat(p["exit_date"]) if p["exit_date"] else None
+            if p["symbol"] not in C.columns or d < e0 or (e1 and d > e1):
+                continue
+            c = C[p["symbol"]]
+            if d == e0:
+                r = c.get(d) / O[p["symbol"]].get(d) - 1 - 2 * COST_DIV / 1e4
+            else:
+                prev = c[c.index < d].dropna()
+                r = c.get(d) / prev.iloc[-1] - 1 if len(prev) else np.nan
+            if np.isfinite(r):
+                rs.append(r); ws.append(1.0 / max(p["vol60"], 0.2))
+        if rs:
+            w = np.minimum(np.array(ws) / sum(ws), CAP_DIV)
+            dv["nav"] *= 1 + float((w * np.array(rs)).sum())
+        dv["last_date"] = str(d)
+    dv["closed"] = [p for p in dv["closed"] if dt.date.fromisoformat(p["exit_date"]) >= dt.date.fromisoformat(dv["last_date"])]
+    hist = dv.setdefault("history", {})
+    hist[dv["last_date"]] = round(dv["nav"], 4)
+
+
 def main():
     now = dt.datetime.now(ET)
     state = json.loads(STATE.read_text()) if STATE.exists() else {
@@ -218,12 +260,16 @@ def main():
                 state["open"].append({"book": book, "symbol": e["symbol"], "accession": e["accession"],
                                       "decided": decided.isoformat(), "event_type": j.get("event_type"),
                                       "summary": j.get("summary"), "entry_date": None, "entry": None})
+            if book == "long_contract_win":
+                state["open"].append({"book": "long_contract_div", "symbol": e["symbol"], "accession": e["accession"],
+                                      "decided": decided.isoformat(), "event_type": j.get("event_type"),
+                                      "summary": j.get("summary"), "entry_date": None, "entry": None})
     state["since"] = max([since] + [dt.datetime.fromisoformat(e["accepted"]) for e in entries]).isoformat()
 
     # 4. mark trades: fill entries at the first open after the decision; close after 20 sessions
     if state["open"]:
         first = min(dt.datetime.fromisoformat(o["decided"]).date() for o in state["open"])
-        b = daily_bars([o["symbol"] for o in state["open"]] + ["IWM"], first - dt.timedelta(days=3))
+        b = daily_bars([o["symbol"] for o in state["open"]] + ["IWM"], first - dt.timedelta(days=100))
         still = []
         with LEDGER.open("a") as lf:
             for o in state["open"]:
@@ -235,9 +281,14 @@ def main():
                     still.append(o); continue
                 d0 = sess.iloc[0]
                 o["entry_date"], o["entry"] = str(d0.date), float(d0.open)
-                if len(sess) <= HOLD_SESSIONS:
+                hold = HOLD_DIV if o["book"] == "long_contract_div" else HOLD_SESSIONS
+                if o["book"] == "long_contract_div" and o.get("vol60") is None:
+                    pre = g[g.date < d0.date].close.tail(61).to_numpy()
+                    v = float(np.std(np.diff(np.log(pre))) * np.sqrt(252)) if len(pre) >= 21 else 0.8
+                    o["vol60"] = v if np.isfinite(v) else 0.8
+                if len(sess) <= hold:
                     still.append(o); continue
-                d1 = sess.iloc[HOLD_SESSIONS]
+                d1 = sess.iloc[hold]
                 r = float(d1.close / d0.open - 1)
                 ri = float(iwm.loc[d1.date, "close"] / iwm.loc[d0.date, "open"] - 1) if (
                     d0.date in iwm.index and d1.date in iwm.index) else float("nan")
@@ -245,10 +296,14 @@ def main():
                 row = {**o, "exit_date": str(d1.date), "exit": float(d1.close), "ret": r, "iwm_ret": ri,
                        "book_ret_vs_iwm": sign * (r - ri)}
                 lf.write(json.dumps(row) + "\n")
+                if o["book"] == "long_contract_div":
+                    state.setdefault("div", {}).setdefault("closed", []).append(
+                        {"symbol": o["symbol"], "entry_date": o["entry_date"], "exit_date": str(d1.date), "vol60": o["vol60"]})
         state["open"] = still
+        div_nav(state, b)
     STATE.write_text(json.dumps(state, indent=1))
     msg = (f"Shadow filings: {len(cands)} judged-eligible, new long {n_long}, new short {n_short}, "
-           f"open trades {len(state['open'])}")
+           f"open trades {len(state['open'])}, diversified-book NAV {state.get('div', {}).get('nav', 100.0):.2f}")
     log.info(msg)
     log_event("shadow_filings", LogStatus.SUCCESS, msg)
 

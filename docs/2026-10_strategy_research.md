@@ -1288,3 +1288,5 @@ The best design on early data: contract value ≥ 10% of market cap, hold 20 ses
 | 2.9× (full Kelly) | 79% | 1.12% | −78% | −87% |
 
 **Ceiling: about 0.7–1.0%/week at survivable leverage.** 3%/week is not supported by anything tested.
+
+**Live tracking (Oct 11):** shadow #6 now runs a third book on the same judgements, `long_contract_div`. It is all contract wins (direction ≥ 1), held 10 sessions, weighted by 1/vol60 with a 25% cap per name, 25 bps per side. It is tracked as a daily NAV in `data/shadow_filings_state.json` (`div`) plus closed trades in the ledger. There is no extra LLM cost, and no orders are placed.
