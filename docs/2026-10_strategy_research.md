@@ -1233,3 +1233,58 @@ The best design on early data: contract value ≥ 10% of market cap, hold 20 ses
 - The ceiling moves from about 0.5–0.7%/week to about 1.0–1.7%/week. 3%/week is still not supported.
 
 **Live check:** shadow #6's records already hold the contract value and market cap, so the ≥ 10% sub-book can be read out of its existing ledger with no change to the shadow.
+
+### Contract wins out of sample, 2017–2023, plus filters, exits, sizing and hedge (`research/contract_filters.py`, `research/llm_counterparty.py`, `research/results/contract_filters.txt`)
+
+**Data**
+- The LLM read every qualifying small-cap 8-K from 2017 to 2023: 58,124 filings, about $83. Total coverage is now 93,006 filings from 2017-01 to 2026-09.
+- A second read of all 1,577 contract wins (counterparty type, how firm the deal is, timing) cost about $2.
+- **Caveat:** the SEC filing set only includes companies that still have a ticker, so 2017–23 is survivor-biased. The random-filing controls share that bias.
+
+**A. Out of sample (2017–2023, never seen by the design)**
+- **Event level:** contract wins ≥10% of market cap gained +1.8% (IWM-adjusted, 20 days) versus −0.3% for all 8-Ks (p = 0.04, median −1.1%). For all contract wins it was +0.45% (p = 0.10).
+- **Book** (≥10% of market cap, 20-day hold, equal weight, no cap):
+
+| | CAGR | Sharpe | Max DD |
+|---|---|---|---|
+| Book, 2017–23 | 9.8% | 0.43 | −64% |
+| IWM, 2017–23 | 7.3% | 0.41 | |
+| Book, 2024–26 | 89% | 1.39 | |
+
+- **Year by year:** −6%, −50%, +141%, +113%, +23%, −35%, 0%, then +165% (2024), +32%, +67%.
+- Random-filing books averaged a Sharpe of −0.11 in dev (best 0.26).
+- **Verdict:**
+  - The edge is real but small: a percent or two over 20 days.
+  - The book is a high-beta, small-cap lottery.
+  - 2024–26 was an exceptionally kind regime for it.
+
+**B. Filters (terciles chosen on dev)**
+- **Adopted on dev** (worst group trails the rest at t < −2):
+  - Drop the low third by contract value relative to market cap.
+  - Drop US-federal-government customers.
+- **On the holdout, both filters hurt:**
+  - The federal effect reverses: −4.1% in dev, +3.6% in holdout.
+  - Filtered base: holdout Sharpe 0.51, versus 1.39 unfiltered.
+  - All contract wins filtered: holdout Sharpe 1.30, versus 1.55 unfiltered.
+- No technical, fundamental or counterparty feature separates winners reliably. Holdout tercile means are dominated by a few lottery names.
+
+**C. Exits, sizing, hedge (528 designs, chosen on dev)**
+- **What works is breadth plus sizing:**
+  - all contract wins, not only the ≥10% ones
+  - inverse-volatility weights
+  - a 25% cap per name
+  - 10-day hold
+- Dev-best design: dev Sharpe 1.04 (32%/yr, max DD −40%); holdout Sharpe 1.18 (47%/yr, max DD −35%).
+- The median holdout Sharpe of the dev top-20 is 1.02.
+- Early loser cuts and trailing stops are neutral.
+- The IWM hedge lowers Sharpe (dev 1.04 → 0.96).
+
+**Leverage on the dev-best design** (full Kelly from dev = 2.9×):
+
+| Leverage | Holdout CAGR | Per week | Holdout max DD | Dev max DD |
+|---|---|---|---|---|
+| 1× | 47% | 0.74% | −35% | |
+| 1.45× (half Kelly) | 62% | 0.93% | −48% | −56% |
+| 2.9× (full Kelly) | 79% | 1.12% | −78% | −87% |
+
+**Ceiling: about 0.7–1.0%/week at survivable leverage.** 3%/week is not supported by anything tested.

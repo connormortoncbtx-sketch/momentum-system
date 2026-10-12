@@ -1,0 +1,132 @@
+judged 8-Ks: 93,006 {2017: 6118, 2018: 6573, 2019: 7013, 2020: 9819, 2021: 11004, 2022: 9732, 2023: 9964, 2024: 10613, 2025: 12458, 2026: 9712}
+contract wins dir>=1: 1577 | base (>=10% of mcap): 466 {2017: 32, 2018: 28, 2019: 31, 2020: 37, 2021: 64, 2022: 45, 2023: 51, 2024: 60, 2025: 49, 2026: 69}
+
+A1. EVENT LEVEL (IWM-adjusted from the entry open, %) vs all judged 8-Ks of the same years
+  all contract wins    dev      n 1027 ab20 mean   0.45 median  -1.42 | all-8-K mean  -0.31 | p(random >= signal) 0.102 | ab5 mean  0.79
+  all contract wins    holdout  n  541 ab20 mean   8.93 median  -1.27 | all-8-K mean  -0.96 | p(random >= signal) 0.000 | ab5 mean  1.67
+  base >=10% of mcap   dev      n  288 ab20 mean   1.81 median  -1.09 | all-8-K mean  -0.31 | p(random >= signal) 0.038 | ab5 mean  1.96
+  base >=10% of mcap   holdout  n  174 ab20 mean   4.62 median   0.04 | all-8-K mean  -0.96 | p(random >= signal) 0.016 | ab5 mean  3.81
+  base by year (ab20 mean %, n): {2017: (np.float64(0.2), 32), 2018: (np.float64(-2.5), 28), 2019: (np.float64(5.8), 31), 2020: (np.float64(14.7), 37), 2021: (np.float64(-1.8), 64), 2022: (np.float64(-1.2), 45), 2023: (np.float64(0.5), 51), 2024: (np.float64(7.7), 60), 2025: (np.float64(2.0), 49), 2026: (np.float64(3.8), 69)}
+
+A2. BASE BOOK (H20, equal weight, no cap) by period and year
+  dev 2017-23: CAGR   9.77 Sharpe   0.43 maxDD -63.85
+  holdout 2024-26: CAGR  89.38 Sharpe   1.39 maxDD -34.28
+  IWM dev: CAGR   7.25 Sharpe   0.41 maxDD -41.27
+  IWM holdout: CAGR  13.87 Sharpe   0.73 maxDD -27.50
+      book_%  iwm_%
+date               
+2017    -6.4   14.6
+2018   -50.2  -11.1
+2019   141.2   25.4
+2020   113.3   20.2
+2021    22.6   14.3
+2022   -34.6  -20.5
+2023    -0.3   16.8
+2024   164.9   11.4
+2025    31.9   12.7
+2026    67.1   14.1
+  CONTROL: 10 random-filing books per period (same event counts):
+      dev_Sharpe  hold_Sharpe  dev_CAGR  hold_CAGR
+mean       -0.11         0.02    -14.37      -7.11
+min        -0.62        -0.76    -33.92     -33.82
+max         0.26         0.59      1.29      17.28
+
+B1. FEATURE TERCILES on all contract wins (ab20 %, by DEV tercile cut points)
+  rel_value      dev-low  -3.15 (n203) | dev-mid   2.73 (n202) | dev-high   1.00 (n202) | hold-low  36.31 (n90) | hold-mid   6.89 (n130) | hold-high   2.22 (n114)
+  rel_rev        dev-low  -0.31 (n147) | dev-mid   0.32 (n147) | dev-high   1.25 (n147) | hold-low  -0.66 (n60) | hold-mid   9.61 (n85) | hold-high  29.99 (n121)
+  mcap           dev-low  -0.48 (n343) | dev-mid   1.16 (n342) | dev-high   0.68 (n342) | hold-low  19.82 (n183) | hold-mid   5.50 (n200) | hold-high   0.67 (n158)
+  price          dev-low   1.48 (n343) | dev-mid  -0.03 (n342) | dev-high  -0.09 (n342) | hold-low  18.35 (n244) | hold-mid   1.26 (n176) | hold-high   1.09 (n121)
+  materiality    dev-low   0.84 (n369) | dev-mid  -1.41 (n316) | dev-high   1.76 (n342) | hold-low  24.02 (n163) | hold-mid  -1.60 (n164) | hold-high   5.51 (n214)
+  novelty        dev-low   1.00 (n428) | dev-mid  -1.00 (n434) | dev-high   2.85 (n165) | hold-low   2.61 (n172) | hold-mid  14.92 (n252) | hold-high   5.32 (n117)
+  n_flags        dev-low   1.75 (n572) | dev-mid  -1.68 (n166) | dev-high  -0.88 (n289) | hold-low   2.85 (n292) | hold-mid   5.70 (n73) | hold-high  20.37 (n176)
+  pre_mom20      dev-low   1.06 (n342) | dev-mid   1.90 (n342) | dev-high  -1.52 (n342) | hold-low  16.38 (n199) | hold-mid   2.81 (n139) | hold-high   5.92 (n202)
+  pre_mom60      dev-low   0.86 (n340) | dev-mid   1.52 (n339) | dev-high  -0.56 (n339) | hold-low  22.18 (n174) | hold-mid   2.73 (n159) | hold-high   2.80 (n203)
+  dist_hi252     dev-low  -1.40 (n343) | dev-mid   2.42 (n342) | dev-high   0.34 (n342) | hold-low  16.23 (n224) | hold-mid   5.03 (n168) | hold-high   2.36 (n149)
+  vol60          dev-low   0.74 (n343) | dev-mid   0.78 (n342) | dev-high  -0.16 (n342) | hold-low   1.43 (n102) | hold-mid   2.98 (n163) | hold-high  15.22 (n276)
+  pre_volsurge5  dev-low   2.12 (n342) | dev-mid  -0.78 (n342) | dev-high  -0.08 (n342) | hold-low  22.97 (n187) | hold-mid   3.63 (n178) | hold-high  -0.55 (n175)
+  gap_at_entry   dev-low   1.22 (n413) | dev-mid  -0.59 (n272) | dev-high   0.36 (n342) | hold-low   0.97 (n222) | hold-mid   4.07 (n94) | hold-high  18.82 (n225)
+  counterparty_type:
+                          mean         count        
+period                     dev holdout   dev holdout
+counterparty_type                                   
+foreign_government       -1.32   -2.07    39      13
+large_public_company      1.71   20.91   343     183
+related_party            -2.61    0.81    41      23
+small_or_private_company  0.07    3.69   347     167
+state_local_government    5.07   -0.66    54      36
+unknown                   3.85    3.45    70      29
+us_federal_government    -4.05    3.56   132      90
+  firmness:
+                                  mean          count        
+period                             dev holdout    dev holdout
+firmness                                                     
+expansion_of_existing_agreement  59.37     NaN    1.0     NaN
+extension                         2.48  -20.20    6.0     1.0
+extension_or_modification         3.72     NaN    1.0     NaN
+firm_order_or_award               0.39   10.20  777.0   411.0
+framework_or_master_agreement     2.79    6.27  144.0    84.0
+loi_mou_or_nonbinding            -4.11   -3.93   22.0    11.0
+option_or_extension              -3.08    5.77   73.0    33.0
+unknown                          -0.02  -12.08    2.0     1.0
+  counterparty_named:
+                    mean         count        
+period               dev holdout   dev holdout
+counterparty_named                            
+False               4.03   33.49   164     117
+True               -0.23    2.15   862     424
+  revenue_within_12m:
+                    mean         count        
+period               dev holdout   dev holdout
+revenue_within_12m                            
+False              -4.65   14.73    45      32
+True                0.88   10.06   786     417
+  repeat_customer:
+                 mean         count        
+period            dev holdout   dev holdout
+repeat_customer                            
+False           -0.97   31.71   222     124
+True             0.22    1.14   453     224
+  going_concern:
+                mean         count        
+period           dev holdout   dev holdout
+going_concern                             
+False           0.52    9.04  1024     537
+True          -23.84   -5.51     3       4
+
+B2. ADOPTED on DEV (worst group trails the rest at t < -2): [('rel_value', 'low', np.float64(-2.25)), ('counterparty_type', 'us_federal_government', np.float64(-2.62))]
+
+B3. BOOKS (H20 equal weight)
+  base (>=10% mcap)                        n  466 | dev CAGR   9.77 Sharpe   0.43 maxDD -63.85 | holdout CAGR  89.38 Sharpe   1.39 maxDD -34.28
+  all contract wins                        n 1577 | dev CAGR   5.71 Sharpe   0.33 maxDD -69.35 | holdout CAGR  78.06 Sharpe   1.55 maxDD -28.82
+  all contract wins + adopted filters      n 1109 | dev CAGR  17.38 Sharpe   0.60 maxDD -50.11 | holdout CAGR  58.27 Sharpe   1.30 maxDD -25.51
+  base + adopted filters                   n  370 | dev CAGR  13.67 Sharpe   0.51 maxDD -63.51 | holdout CAGR  13.83 Sharpe   0.51 maxDD -60.04
+
+C. EXITS / SIZING / HEDGE (on base and on the filtered base)
+  528 designs; top 15 by DEV Sharpe:
+                                set  H  kill  trail   size  cap  hedge  dev_CAGR  dev_Sharpe  dev_maxDD  hold_CAGR  hold_Sharpe  hold_maxDD
+all contract wins + adopted filters 10   NaN    NaN invvol 0.25    0.0     32.21        1.04     -40.28      46.90         1.18      -34.92
+all contract wins + adopted filters 10   NaN   0.25 invvol 0.25    0.0     30.19        1.01     -36.89      37.18         1.01      -36.72
+all contract wins + adopted filters 20   3.0    NaN invvol 0.25    0.0     31.11        0.98     -34.56      60.41         1.42      -24.32
+             base + adopted filters 10   NaN   0.25 invvol 0.25    0.0     23.61        0.98     -35.29      12.78         0.53      -30.75
+             base + adopted filters 10   NaN   0.25  equal 0.25    0.0     26.26        0.98     -43.93      16.82         0.61      -34.87
+all contract wins + adopted filters 20   3.0   0.25 invvol 0.25    0.0     30.02        0.97     -32.34      48.54         1.26      -23.69
+all contract wins + adopted filters 10   NaN    NaN invvol 0.25    1.0     23.74        0.96     -32.13      27.21         0.90      -32.82
+             base + adopted filters 10   NaN   0.25 invvol 0.25    1.0     20.68        0.92     -31.99       4.89         0.31      -28.31
+             base + adopted filters 10   NaN   0.25  equal 0.25    1.0     22.88        0.92     -36.55       8.98         0.43      -28.44
+all contract wins + adopted filters 20  10.0    NaN invvol 0.25    0.0     26.71        0.92     -34.00      52.18         1.32      -26.73
+all contract wins + adopted filters 10   NaN   0.25 invvol 0.25    1.0     21.98        0.91     -38.20      19.27         0.70      -34.75
+all contract wins + adopted filters 10   NaN    NaN invvol 1.00    0.0     33.70        0.90     -51.54      50.00         1.15      -36.16
+all contract wins + adopted filters 20  10.0   0.25 invvol 0.25    0.0     24.90        0.89     -39.26      48.34         1.27      -27.22
+all contract wins + adopted filters 20  10.0    NaN invvol 1.00    0.0     27.19        0.86     -37.89      54.80         1.33      -24.95
+             base + adopted filters 10   NaN    NaN invvol 0.25    0.0     20.67        0.85     -38.05      19.12         0.69      -25.78
+
+  median holdout Sharpe of the dev top-20: 1.02 | of all designs: 1.0
+
+  LEVERAGE of the dev-best design (full Kelly from dev = 2.90x):
+    1.00x  dev CAGR    32.2 DD  -40.3 | holdout CAGR    46.9 Sharpe 1.18 DD  -34.9 -> 0.74%/week
+    1.45x  dev CAGR    41.4 DD  -56.2 | holdout CAGR    61.8 Sharpe 1.13 DD  -48.1 -> 0.93%/week
+    1.50x  dev CAGR    42.2 DD  -57.7 | holdout CAGR    63.2 Sharpe 1.12 DD  -49.5 -> 0.95%/week
+    2.00x  dev CAGR    49.4 DD  -71.1 | holdout CAGR    74.5 Sharpe 1.10 DD  -61.5 -> 1.08%/week
+    2.90x  dev CAGR    53.5 DD  -86.6 | holdout CAGR    78.7 Sharpe 1.08 DD  -77.5 -> 1.12%/week
+
+::notice::contract filters: base dev CAGR   9.77 Sharpe   0.43 maxDD -63.85; dev-best all contract wins + adopted filters H10 killnan trailnan invvol cap0.25 hedge0.0: dev Sharpe 1.04 holdout Sharpe 1.18 CAGR 47%
