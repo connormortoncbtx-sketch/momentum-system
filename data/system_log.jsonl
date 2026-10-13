@@ -2975,3 +2975,4 @@
 {"timestamp": "2026-10-13T07:57:58.277334+00:00", "workflow": "shadow_filings", "status": "success", "message": "Shadow filings: 0 judged-eligible, new long 0, new short 0, open trades 0, diversified-book NAV 100.00", "metrics": {}, "errors": []}
 {"timestamp": "2026-10-13T11:01:25.399836+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Starting premarket monitor", "metrics": {}, "errors": []}
 {"timestamp": "2026-10-13T13:01:39.876210+00:00", "workflow": "premarket_monitor", "status": "success", "message": "Completed 5 premarket checks", "metrics": {"date": "2026-10-13", "checks_done": 5, "tickers_tracked": 30, "go": 25, "caution": 0, "skip": 0}, "errors": []}
+{"timestamp": "2026-10-13T19:31:42.348768+00:00", "workflow": "shadow_filings", "status": "success", "message": "Shadow filings: 20 judged-eligible, new long 0, new short 9, open trades 9, diversified-book NAV 100.00", "metrics": {}, "errors": []}

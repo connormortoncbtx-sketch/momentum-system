@@ -1,4 +1,99 @@
 {
- "since": "2026-10-10T15:18:57.093235-04:00",
- "open": []
+ "since": "2026-10-13T15:21:08-04:00",
+ "open": [
+  {
+   "book": "short_bad_news",
+   "symbol": "SKYA",
+   "accession": "0001493152-26-046759",
+   "decided": "2026-10-13T15:30:58.273889-04:00",
+   "event_type": "buyback_dividend",
+   "summary": "Company announces cash tender offer to repurchase up to 95% outstanding shares at $3.00/share premium",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "BMBL",
+   "accession": "0000950103-26-015480",
+   "decided": "2026-10-13T15:31:01.018845-04:00",
+   "event_type": "acquisition",
+   "summary": "Company agreed to be acquired by Ithaca Holdco at $6.05/share Class A stock, going private.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "DFDV",
+   "accession": "0001805526-26-000127",
+   "decided": "2026-10-13T15:31:04.004945-04:00",
+   "event_type": "routine",
+   "summary": "SOL treasury increased 1% weekly; CHAD preferred stock hit record highs despite crypto selloff.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "SUNS",
+   "accession": "0001829126-26-011033",
+   "decided": "2026-10-13T15:31:15.297574-04:00",
+   "event_type": "buyback_dividend",
+   "summary": "Board authorizes $20M stock repurchase program effective post-acquisition of Southern Realty Trust.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "MLAB",
+   "accession": "0001437749-26-032499",
+   "decided": "2026-10-13T15:31:20.959597-04:00",
+   "event_type": "restructuring",
+   "summary": "Mesa Labs restructuring: 40 job cuts, $9.3M cost reduction, $4.3M reinvestment, $5M net savings target.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "IRHO",
+   "accession": "0001213900-26-108733",
+   "decided": "2026-10-13T15:31:23.921159-04:00",
+   "event_type": "partnership",
+   "summary": "Electra AI selected as Official Battery Partner for Westbrook Racing UIM E1 championship team",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "BKTI",
+   "accession": "0001437749-26-032498",
+   "decided": "2026-10-13T15:31:26.250355-04:00",
+   "event_type": "restructuring",
+   "summary": "Partial roof collapse at headquarters facility disrupts production and IT systems; impact uncertain.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ADCT",
+   "accession": "0000950103-26-015465",
+   "decided": "2026-10-13T15:31:29.349488-04:00",
+   "event_type": "equity_financing",
+   "summary": "$86.6M equity raise with pre-funded warrants; massive dilution; debt refinancing",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "BHR",
+   "accession": "0001574085-26-000153",
+   "decided": "2026-10-13T15:31:32.695137-04:00",
+   "event_type": "prelim_results_good",
+   "summary": "Braemar reports TTM results: $385.2M revenue, $90.4M Hotel EBITDA, 23.5% margin across six properties.",
+   "entry_date": null,
+   "entry": null
+  }
+ ],
+ "div": {
+  "nav": 100.0,
+  "closed": []
+ }
 }
