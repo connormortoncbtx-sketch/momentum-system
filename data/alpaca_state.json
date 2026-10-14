@@ -52,23 +52,6 @@
       "hard_stop_price": 286.64,
       "entry_price_actual": 308.22
     },
-    "MXL": {
-      "shares": 66,
-      "entry_price_est": 96.16,
-      "hard_stop_pct": 10.0,
-      "activation_pct": 8.9,
-      "trail_pct": 6.4,
-      "alpha_score": 1.0,
-      "weekly_vol": 12.75,
-      "composite_rank": 4,
-      "is_fallback": false,
-      "phase": 1,
-      "high_water_mark": 96.16,
-      "order_id": "13dca25a-65ce-4323-9e23-1cfc212bc9de",
-      "hard_stop_order_id": "bbdaf34b-779a-4906-94c9-6e2def085dc0",
-      "hard_stop_price": 79.97,
-      "entry_price_actual": 88.85
-    },
     "VECO": {
       "shares": 122,
       "entry_price_est": 52.28,
@@ -103,23 +86,6 @@
       "hard_stop_price": 29.29,
       "entry_price_actual": 32.55
     },
-    "NTAP": {
-      "shares": 26,
-      "entry_price_est": 243.36,
-      "hard_stop_pct": 7.0,
-      "activation_pct": 4.6,
-      "trail_pct": 2.8,
-      "alpha_score": 0.992668,
-      "weekly_vol": 5.52,
-      "composite_rank": 7,
-      "is_fallback": false,
-      "phase": 1,
-      "high_water_mark": 243.36,
-      "order_id": "cfa32fe9-fd4b-4605-9def-2e864aac0977",
-      "hard_stop_order_id": "452a96ab-859b-49c1-a69f-9128510757f9",
-      "hard_stop_price": 222.21,
-      "entry_price_actual": 238.94
-    },
     "AMLX": {
       "shares": 232,
       "entry_price_est": 27.48,
@@ -153,23 +119,6 @@
       "hard_stop_order_id": "8eba2d55-4d87-4050-8733-aba9eb0290aa",
       "hard_stop_price": 13.65,
       "entry_price_actual": 15.17
-    },
-    "FIVN": {
-      "shares": 185,
-      "entry_price_est": 34.55,
-      "hard_stop_pct": 7.0,
-      "activation_pct": 7.3,
-      "trail_pct": 4.7,
-      "alpha_score": 0.965774,
-      "weekly_vol": 9.33,
-      "composite_rank": 10,
-      "is_fallback": false,
-      "phase": 1,
-      "high_water_mark": 34.55,
-      "order_id": "2d38e992-2e1c-41d6-9cea-dd04115e93fd",
-      "hard_stop_order_id": "74343cab-47d4-403f-be60-4efbbd52692d",
-      "hard_stop_price": 33.09,
-      "entry_price_actual": 35.58
     }
   },
   "entry_date": "2026-10-12"
