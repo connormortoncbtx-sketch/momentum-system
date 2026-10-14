@@ -1,5 +1,5 @@
 {
- "since": "2026-10-13T15:21:08-04:00",
+ "since": "2026-10-13T17:30:20-04:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -88,6 +88,76 @@
    "decided": "2026-10-13T15:31:32.695137-04:00",
    "event_type": "prelim_results_good",
    "summary": "Braemar reports TTM results: $385.2M revenue, $90.4M Hotel EBITDA, 23.5% margin across six properties.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "VWAV",
+   "accession": "0001731122-26-001340",
+   "decided": "2026-10-14T02:24:45.296988-04:00",
+   "event_type": "contract_loss",
+   "summary": "Joint venture with Sadot Group terminated; company retains Israeli investment rights but issues 500k dilutive shares.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ALIS",
+   "accession": "0001493152-26-046872",
+   "decided": "2026-10-14T02:24:52.900871-04:00",
+   "event_type": "acquisition",
+   "summary": "SPAC amends forward purchase agreement with Goodvision AI acquisition; up to 3M shares at ~$10.31",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "LCII",
+   "accession": "0000763744-26-000089",
+   "decided": "2026-10-14T02:25:00.934708-04:00",
+   "event_type": "regulatory_setback",
+   "summary": "DOJ issues Second Request in Patrick Industries merger review; extends HSR waiting period.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "TCBX",
+   "accession": "0001193125-26-420491",
+   "decided": "2026-10-14T02:25:07.928965-04:00",
+   "event_type": "acquisition",
+   "summary": "Third Coast Bank acquires Great Plains Bancshares in stock merger; regulatory/shareholder approval pending.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "UVV",
+   "accession": "0001193125-26-420470",
+   "decided": "2026-10-14T02:25:10.581197-04:00",
+   "event_type": "debt_financing",
+   "summary": "Credit agreement amended to relax leverage ratio covenants, indicating financial pressure.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "WEAV",
+   "accession": "0001609151-26-000111",
+   "decided": "2026-10-14T02:25:24.338217-04:00",
+   "event_type": "litigation",
+   "summary": "Two stockholder lawsuits filed challenging merger proxy disclosures; company denies merit, voluntarily supplements disclosures",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "QUMS",
+   "accession": "0001829126-26-011072",
+   "decided": "2026-10-14T02:25:29.322488-04:00",
+   "event_type": "acquisition",
+   "summary": "SPAC merger agreement: $600M pre-money valuation acquisition of Fortune Favor Technology by parent company.",
    "entry_date": null,
    "entry": null
   }
