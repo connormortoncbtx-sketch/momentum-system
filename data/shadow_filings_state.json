@@ -1,5 +1,5 @@
 {
- "since": "2026-10-13T17:30:20-04:00",
+ "since": "2026-10-14T13:03:38-04:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -8,8 +8,8 @@
    "decided": "2026-10-13T15:30:58.273889-04:00",
    "event_type": "buyback_dividend",
    "summary": "Company announces cash tender offer to repurchase up to 95% outstanding shares at $3.00/share premium",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-14",
+   "entry": 2.57
   },
   {
    "book": "short_bad_news",
@@ -18,8 +18,8 @@
    "decided": "2026-10-13T15:31:01.018845-04:00",
    "event_type": "acquisition",
    "summary": "Company agreed to be acquired by Ithaca Holdco at $6.05/share Class A stock, going private.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-14",
+   "entry": 5.95
   },
   {
    "book": "short_bad_news",
@@ -28,8 +28,8 @@
    "decided": "2026-10-13T15:31:04.004945-04:00",
    "event_type": "routine",
    "summary": "SOL treasury increased 1% weekly; CHAD preferred stock hit record highs despite crypto selloff.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-14",
+   "entry": 4.12
   },
   {
    "book": "short_bad_news",
@@ -38,8 +38,8 @@
    "decided": "2026-10-13T15:31:15.297574-04:00",
    "event_type": "buyback_dividend",
    "summary": "Board authorizes $20M stock repurchase program effective post-acquisition of Southern Realty Trust.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-14",
+   "entry": 6.4
   },
   {
    "book": "short_bad_news",
@@ -48,8 +48,8 @@
    "decided": "2026-10-13T15:31:20.959597-04:00",
    "event_type": "restructuring",
    "summary": "Mesa Labs restructuring: 40 job cuts, $9.3M cost reduction, $4.3M reinvestment, $5M net savings target.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-14",
+   "entry": 125.19
   },
   {
    "book": "short_bad_news",
@@ -58,8 +58,8 @@
    "decided": "2026-10-13T15:31:23.921159-04:00",
    "event_type": "partnership",
    "summary": "Electra AI selected as Official Battery Partner for Westbrook Racing UIM E1 championship team",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-14",
+   "entry": 10.06
   },
   {
    "book": "short_bad_news",
@@ -68,8 +68,8 @@
    "decided": "2026-10-13T15:31:26.250355-04:00",
    "event_type": "restructuring",
    "summary": "Partial roof collapse at headquarters facility disrupts production and IT systems; impact uncertain.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-14",
+   "entry": 69.89
   },
   {
    "book": "short_bad_news",
@@ -78,8 +78,8 @@
    "decided": "2026-10-13T15:31:29.349488-04:00",
    "event_type": "equity_financing",
    "summary": "$86.6M equity raise with pre-funded warrants; massive dilution; debt refinancing",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-14",
+   "entry": 1.67
   },
   {
    "book": "short_bad_news",
@@ -88,8 +88,8 @@
    "decided": "2026-10-13T15:31:32.695137-04:00",
    "event_type": "prelim_results_good",
    "summary": "Braemar reports TTM results: $385.2M revenue, $90.4M Hotel EBITDA, 23.5% margin across six properties.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-14",
+   "entry": 1.24
   },
   {
    "book": "short_bad_news",
@@ -98,8 +98,8 @@
    "decided": "2026-10-14T02:24:45.296988-04:00",
    "event_type": "contract_loss",
    "summary": "Joint venture with Sadot Group terminated; company retains Israeli investment rights but issues 500k dilutive shares.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-14",
+   "entry": 4.3
   },
   {
    "book": "short_bad_news",
@@ -108,8 +108,8 @@
    "decided": "2026-10-14T02:24:52.900871-04:00",
    "event_type": "acquisition",
    "summary": "SPAC amends forward purchase agreement with Goodvision AI acquisition; up to 3M shares at ~$10.31",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-14",
+   "entry": 8.505
   },
   {
    "book": "short_bad_news",
@@ -118,8 +118,8 @@
    "decided": "2026-10-14T02:25:00.934708-04:00",
    "event_type": "regulatory_setback",
    "summary": "DOJ issues Second Request in Patrick Industries merger review; extends HSR waiting period.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-14",
+   "entry": 78.65
   },
   {
    "book": "short_bad_news",
@@ -128,8 +128,8 @@
    "decided": "2026-10-14T02:25:07.928965-04:00",
    "event_type": "acquisition",
    "summary": "Third Coast Bank acquires Great Plains Bancshares in stock merger; regulatory/shareholder approval pending.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-14",
+   "entry": 40.97
   },
   {
    "book": "short_bad_news",
@@ -138,8 +138,8 @@
    "decided": "2026-10-14T02:25:10.581197-04:00",
    "event_type": "debt_financing",
    "summary": "Credit agreement amended to relax leverage ratio covenants, indicating financial pressure.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-14",
+   "entry": 42.0
   },
   {
    "book": "short_bad_news",
@@ -148,8 +148,8 @@
    "decided": "2026-10-14T02:25:24.338217-04:00",
    "event_type": "litigation",
    "summary": "Two stockholder lawsuits filed challenging merger proxy disclosures; company denies merit, voluntarily supplements disclosures",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-14",
+   "entry": 7.38
   },
   {
    "book": "short_bad_news",
@@ -158,6 +158,106 @@
    "decided": "2026-10-14T02:25:29.322488-04:00",
    "event_type": "acquisition",
    "summary": "SPAC merger agreement: $600M pre-money valuation acquisition of Fortune Favor Technology by parent company.",
+   "entry_date": "2026-10-14",
+   "entry": 10.38
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "DAKT",
+   "accession": "0001628280-26-065837",
+   "decided": "2026-10-14T13:35:03.096233-04:00",
+   "event_type": "restructuring",
+   "summary": "Manufacturing network optimization: Ireland facility closure, $13.5M charge, exit customized transportation business.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "TOP",
+   "accession": "0001213900-26-109242",
+   "decided": "2026-10-14T13:35:09.006474-04:00",
+   "event_type": "restructuring",
+   "summary": "U.S. headquarters established in Houston; board restructured from 5 to 7 directors with new appointments.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ALEC",
+   "accession": "0001193125-26-421080",
+   "decided": "2026-10-14T13:35:11.588533-04:00",
+   "event_type": "dilution_other",
+   "summary": "Board approved stock option repricing to $1.87 exercise price for 4.05M shares",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_win",
+   "symbol": "RARE",
+   "accession": "0001193125-26-421079",
+   "decided": "2026-10-14T13:35:13.419461-04:00",
+   "event_type": "contract_win",
+   "summary": "Company sells Rare Pediatric Disease Priority Review Voucher for $203M cash",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_div",
+   "symbol": "RARE",
+   "accession": "0001193125-26-421079",
+   "decided": "2026-10-14T13:35:13.419461-04:00",
+   "event_type": "contract_win",
+   "summary": "Company sells Rare Pediatric Disease Priority Review Voucher for $203M cash",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "SKYX",
+   "accession": "0001493152-26-046938",
+   "decided": "2026-10-14T13:35:17.126322-04:00",
+   "event_type": "acquisition",
+   "summary": "Acquisition of Deako completed; 25M shares issued plus $12.5M debt obligation incurred.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ONMD",
+   "accession": "0001493152-26-046931",
+   "decided": "2026-10-14T13:35:34.934425-04:00",
+   "event_type": "listing_deficiency",
+   "summary": "Company regains Nasdaq compliance after bid price fell below $1.00 minimum; deficiency resolved.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "FFAI",
+   "accession": "0001213900-26-109222",
+   "decided": "2026-10-14T13:35:40.480421-04:00",
+   "event_type": "divestiture",
+   "summary": "Company divests robotics business to FFR for $200M via stock consideration, requires FFR stockholder approval.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_win",
+   "symbol": "ETON",
+   "accession": "0001437749-26-032600",
+   "decided": "2026-10-14T13:35:44.946641-04:00",
+   "event_type": "contract_win",
+   "summary": "Exclusive U.S. license agreement for LIBERVANT seizure treatment; $10M upfront plus $47.5M milestones.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_div",
+   "symbol": "ETON",
+   "accession": "0001437749-26-032600",
+   "decided": "2026-10-14T13:35:44.946641-04:00",
+   "event_type": "contract_win",
+   "summary": "Exclusive U.S. license agreement for LIBERVANT seizure treatment; $10M upfront plus $47.5M milestones.",
    "entry_date": null,
    "entry": null
   }
