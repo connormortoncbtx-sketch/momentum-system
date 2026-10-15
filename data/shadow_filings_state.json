@@ -1,5 +1,5 @@
 {
- "since": "2026-10-14T17:28:20-04:00",
+ "since": "2026-10-15T13:00:00-04:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -168,8 +168,8 @@
    "decided": "2026-10-14T13:35:03.096233-04:00",
    "event_type": "restructuring",
    "summary": "Manufacturing network optimization: Ireland facility closure, $13.5M charge, exit customized transportation business.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-15",
+   "entry": 18.06
   },
   {
    "book": "short_bad_news",
@@ -178,8 +178,8 @@
    "decided": "2026-10-14T13:35:09.006474-04:00",
    "event_type": "restructuring",
    "summary": "U.S. headquarters established in Houston; board restructured from 5 to 7 directors with new appointments.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-15",
+   "entry": 14.96
   },
   {
    "book": "short_bad_news",
@@ -188,8 +188,8 @@
    "decided": "2026-10-14T13:35:11.588533-04:00",
    "event_type": "dilution_other",
    "summary": "Board approved stock option repricing to $1.87 exercise price for 4.05M shares",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-15",
+   "entry": 1.92
   },
   {
    "book": "long_contract_win",
@@ -198,8 +198,8 @@
    "decided": "2026-10-14T13:35:13.419461-04:00",
    "event_type": "contract_win",
    "summary": "Company sells Rare Pediatric Disease Priority Review Voucher for $203M cash",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-15",
+   "entry": 14.87
   },
   {
    "book": "long_contract_div",
@@ -208,8 +208,9 @@
    "decided": "2026-10-14T13:35:13.419461-04:00",
    "event_type": "contract_win",
    "summary": "Company sells Rare Pediatric Disease Priority Review Voucher for $203M cash",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-15",
+   "entry": 14.87,
+   "vol60": 1.2762635430206901
   },
   {
    "book": "short_bad_news",
@@ -218,8 +219,8 @@
    "decided": "2026-10-14T13:35:17.126322-04:00",
    "event_type": "acquisition",
    "summary": "Acquisition of Deako completed; 25M shares issued plus $12.5M debt obligation incurred.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-15",
+   "entry": 1.04
   },
   {
    "book": "short_bad_news",
@@ -228,8 +229,8 @@
    "decided": "2026-10-14T13:35:34.934425-04:00",
    "event_type": "listing_deficiency",
    "summary": "Company regains Nasdaq compliance after bid price fell below $1.00 minimum; deficiency resolved.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-15",
+   "entry": 4.63
   },
   {
    "book": "short_bad_news",
@@ -238,8 +239,8 @@
    "decided": "2026-10-14T13:35:40.480421-04:00",
    "event_type": "divestiture",
    "summary": "Company divests robotics business to FFR for $200M via stock consideration, requires FFR stockholder approval.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-15",
+   "entry": 0.9086
   },
   {
    "book": "long_contract_win",
@@ -248,8 +249,8 @@
    "decided": "2026-10-14T13:35:44.946641-04:00",
    "event_type": "contract_win",
    "summary": "Exclusive U.S. license agreement for LIBERVANT seizure treatment; $10M upfront plus $47.5M milestones.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-15",
+   "entry": 53.275
   },
   {
    "book": "long_contract_div",
@@ -258,8 +259,9 @@
    "decided": "2026-10-14T13:35:44.946641-04:00",
    "event_type": "contract_win",
    "summary": "Exclusive U.S. license agreement for LIBERVANT seizure treatment; $10M upfront plus $47.5M milestones.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-15",
+   "entry": 53.275,
+   "vol60": 0.9275765163611955
   },
   {
    "book": "short_bad_news",
@@ -268,8 +270,8 @@
    "decided": "2026-10-15T02:06:13.414799-04:00",
    "event_type": "equity_financing",
    "summary": "Company establishes at-the-market equity offering agreement with Clear Street LLC, enabling ongoing dilutive share sales.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-15",
+   "entry": 1.18
   },
   {
    "book": "short_bad_news",
@@ -278,8 +280,8 @@
    "decided": "2026-10-15T02:06:16.262172-04:00",
    "event_type": "equity_financing",
    "summary": "Equity offering of ~$235M net (31.2M shares + warrants); significant dilution for small-revenue company.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-15",
+   "entry": 8.04
   },
   {
    "book": "short_bad_news",
@@ -288,8 +290,8 @@
    "decided": "2026-10-15T02:06:19.374898-04:00",
    "event_type": "acquisition",
    "summary": "Lawson subsidiary acquiring GradeEight for ~$145M while company pursuing go-private transaction",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-15",
+   "entry": 35.05
   },
   {
    "book": "short_bad_news",
@@ -298,8 +300,8 @@
    "decided": "2026-10-15T02:06:22.305069-04:00",
    "event_type": "buyback_dividend",
    "summary": "Board approves $1.50/share special cash distribution funded by recent asset sale proceeds.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-15",
+   "entry": 6.015
   },
   {
    "book": "short_bad_news",
@@ -308,8 +310,8 @@
    "decided": "2026-10-15T02:06:25.640358-04:00",
    "event_type": "prelim_results_bad",
    "summary": "REIT reports Q3 estimated loss of $0.90/share; heavy RMBS losses; maintains monthly dividend.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-15",
+   "entry": 5.12
   },
   {
    "book": "short_bad_news",
@@ -318,8 +320,8 @@
    "decided": "2026-10-15T02:06:35.275073-04:00",
    "event_type": "routine",
    "summary": "Routine disclosure of unaudited Q3 2026 interim financials via parent company 6-K filing.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-15",
+   "entry": 5.64
   },
   {
    "book": "short_bad_news",
@@ -328,8 +330,8 @@
    "decided": "2026-10-15T02:06:37.737470-04:00",
    "event_type": "acquisition",
    "summary": "Nathan's Famous facing stockholder lawsuits and demand letters over Smithfield merger proxy disclosures.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-15",
+   "entry": 101.915
   },
   {
    "book": "short_bad_news",
@@ -338,8 +340,8 @@
    "decided": "2026-10-15T02:06:40.460452-04:00",
    "event_type": "equity_financing",
    "summary": "Company issues $50M Series B preferred stock with 9.25% dividend; dilutive to common equity.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-15",
+   "entry": 51.97
   },
   {
    "book": "short_bad_news",
@@ -348,8 +350,8 @@
    "decided": "2026-10-15T02:06:43.486983-04:00",
    "event_type": "exec_departure",
    "summary": "CFO Michael Bondi departing after S&S business sale to Gilat; Richard Nyren appointed as replacement.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-15",
+   "entry": 1.32
   },
   {
    "book": "short_bad_news",
@@ -358,8 +360,8 @@
    "decided": "2026-10-15T02:06:46.303474-04:00",
    "event_type": "routine",
    "summary": "October dividend announced; preliminary September financial update with $8.0B portfolio.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-15",
+   "entry": 5.69
   },
   {
    "book": "short_bad_news",
@@ -368,8 +370,8 @@
    "decided": "2026-10-15T02:06:50.922488-04:00",
    "event_type": "equity_financing",
    "summary": "Company establishes at-the-market equity offering facility for working capital needs.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-15",
+   "entry": 8.2
   },
   {
    "book": "short_bad_news",
@@ -378,8 +380,8 @@
    "decided": "2026-10-15T02:06:57.767097-04:00",
    "event_type": "exec_departure",
    "summary": "General Counsel Amy Pugh resigns effective November 2, 2026 for another opportunity.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-15",
+   "entry": 12.46
   },
   {
    "book": "short_bad_news",
@@ -388,8 +390,8 @@
    "decided": "2026-10-15T02:07:00.915088-04:00",
    "event_type": "exec_appointment",
    "summary": "CEO granted 11M stock options with steep performance hurdles; extreme dilution if achieved.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-15",
+   "entry": 7.0
   },
   {
    "book": "short_bad_news",
@@ -400,10 +402,154 @@
    "summary": "Merger with Madison Parent completed; company now wholly-owned subsidiary; $2.43/share consideration paid",
    "entry_date": null,
    "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CRBP",
+   "accession": "0001193125-26-422437",
+   "decided": "2026-10-15T13:19:26.309930-04:00",
+   "event_type": "routine",
+   "summary": "Updated investor presentation on oncology/obesity pipeline; routine FD disclosure.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_win",
+   "symbol": "EMAT",
+   "accession": "0001213900-26-109622",
+   "decided": "2026-10-15T13:19:29.209385-04:00",
+   "event_type": "contract_win",
+   "summary": "Equipment delivery begins for ten-fold rare earth magnet capacity expansion to 10,000 metric tons.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_div",
+   "symbol": "EMAT",
+   "accession": "0001213900-26-109622",
+   "decided": "2026-10-15T13:19:29.209385-04:00",
+   "event_type": "contract_win",
+   "summary": "Equipment delivery begins for ten-fold rare earth magnet capacity expansion to 10,000 metric tons.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "BZH",
+   "accession": "0001104659-26-116005",
+   "decided": "2026-10-15T13:19:33.819999-04:00",
+   "event_type": "acquisition",
+   "summary": "Stockholders approved merger with Dream Finders Homes; company delisting from NYSE, going private.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "DFDV",
+   "accession": "0001805526-26-000132",
+   "decided": "2026-10-15T13:19:36.513962-04:00",
+   "event_type": "buyback_dividend",
+   "summary": "Dividend rate increase on preferred stock from 13% to 14%, funded by treasury strategy, not earnings.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "VRRM",
+   "accession": "0001193125-26-422342",
+   "decided": "2026-10-15T13:19:39.225536-04:00",
+   "event_type": "exec_departure",
+   "summary": "CFO Craig Conti resigning effective November 4, 2026; orderly transition with search underway.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CNDT",
+   "accession": "0001677703-26-000134",
+   "decided": "2026-10-15T13:19:41.572948-04:00",
+   "event_type": "debt_financing",
+   "summary": "Amendment extends revolving credit maturity by 16 days; signals refinancing uncertainty and debt pressure.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "OPNW",
+   "accession": "0001214659-26-012934",
+   "decided": "2026-10-15T13:19:44.239320-04:00",
+   "event_type": "partnership",
+   "summary": "Non-binding $1B tokenized financing partnership with Meridian for distributed AI computing network powered by solar and Tesla Powerwalls.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "REAL",
+   "accession": "0001193125-26-422329",
+   "decided": "2026-10-15T13:19:47.346371-04:00",
+   "event_type": "debt_financing",
+   "summary": "RealReal secures $175M credit facility to refinance 2029 notes; maintains tight financial covenants",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CRON",
+   "accession": "0001656472-26-000061",
+   "decided": "2026-10-15T13:19:56.968483-04:00",
+   "event_type": "acquisition",
+   "summary": "Closed CanAdelaar cannabis acquisition despite pending regulatory approvals and environmental penalties.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "TNXP",
+   "accession": "0001493152-26-047139",
+   "decided": "2026-10-15T13:19:59.367875-04:00",
+   "event_type": "prelim_results_good",
+   "summary": "Q3 2026 preliminary revenue $14-15M; substantial cash position $162.8M disclosed.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_win",
+   "symbol": "ESTA",
+   "accession": "0001104659-26-115928",
+   "decided": "2026-10-15T13:20:05.569579-04:00",
+   "event_type": "contract_win",
+   "summary": "Master supply agreement with NuSil extended through 2031 with auto-renewal options.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_div",
+   "symbol": "ESTA",
+   "accession": "0001104659-26-115928",
+   "decided": "2026-10-15T13:20:05.569579-04:00",
+   "event_type": "contract_win",
+   "summary": "Master supply agreement with NuSil extended through 2031 with auto-renewal options.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "SKYA",
+   "accession": "0001493152-26-047079",
+   "decided": "2026-10-15T13:20:08.500534-04:00",
+   "event_type": "buyback_dividend",
+   "summary": "Company announces $3/share tender offer for up to 95% of shares, warrants at 65% premium.",
+   "entry_date": null,
+   "entry": null
   }
  ],
  "div": {
-  "nav": 100.0,
-  "closed": []
+  "nav": 100.35917913012415,
+  "closed": [],
+  "last_date": "2026-10-15",
+  "history": {
+   "2026-10-15": 100.3592
+  }
  }
 }
