@@ -1,5 +1,5 @@
 {
- "since": "2026-10-14T13:03:38-04:00",
+ "since": "2026-10-14T17:28:20-04:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -258,6 +258,146 @@
    "decided": "2026-10-14T13:35:44.946641-04:00",
    "event_type": "contract_win",
    "summary": "Exclusive U.S. license agreement for LIBERVANT seizure treatment; $10M upfront plus $47.5M milestones.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "TRON",
+   "accession": "0001493152-26-047064",
+   "decided": "2026-10-15T02:06:13.414799-04:00",
+   "event_type": "equity_financing",
+   "summary": "Company establishes at-the-market equity offering agreement with Clear Street LLC, enabling ongoing dilutive share sales.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "VSTM",
+   "accession": "0001104659-26-115880",
+   "decided": "2026-10-15T02:06:16.262172-04:00",
+   "event_type": "equity_financing",
+   "summary": "Equity offering of ~$235M net (31.2M shares + warrants); significant dilution for small-revenue company.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "DSGR",
+   "accession": "0001193125-26-421808",
+   "decided": "2026-10-15T02:06:19.374898-04:00",
+   "event_type": "acquisition",
+   "summary": "Lawson subsidiary acquiring GradeEight for ~$145M while company pursuing go-private transaction",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "VISN",
+   "accession": "0001193125-26-421807",
+   "decided": "2026-10-15T02:06:22.305069-04:00",
+   "event_type": "buyback_dividend",
+   "summary": "Board approves $1.50/share special cash distribution funded by recent asset sale proceeds.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ORC",
+   "accession": "0001437749-26-032635",
+   "decided": "2026-10-15T02:06:25.640358-04:00",
+   "event_type": "prelim_results_bad",
+   "summary": "REIT reports Q3 estimated loss of $0.90/share; heavy RMBS losses; maintains monthly dividend.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "USGO",
+   "accession": "0001437749-26-032627",
+   "decided": "2026-10-15T02:06:35.275073-04:00",
+   "event_type": "routine",
+   "summary": "Routine disclosure of unaudited Q3 2026 interim financials via parent company 6-K filing.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "NATH",
+   "accession": "0001104659-26-115866",
+   "decided": "2026-10-15T02:06:37.737470-04:00",
+   "event_type": "acquisition",
+   "summary": "Nathan's Famous facing stockholder lawsuits and demand letters over Smithfield merger proxy disclosures.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "IIPR",
+   "accession": "0001104659-26-115864",
+   "decided": "2026-10-15T02:06:40.460452-04:00",
+   "event_type": "equity_financing",
+   "summary": "Company issues $50M Series B preferred stock with 9.25% dividend; dilutive to common equity.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CMTL",
+   "accession": "0000023197-26-000113",
+   "decided": "2026-10-15T02:06:43.486983-04:00",
+   "event_type": "exec_departure",
+   "summary": "CFO Michael Bondi departing after S&S business sale to Gilat; Richard Nyren appointed as replacement.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "IVR",
+   "accession": "0001437071-26-000076",
+   "decided": "2026-10-15T02:06:46.303474-04:00",
+   "event_type": "routine",
+   "summary": "October dividend announced; preliminary September financial update with $8.0B portfolio.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "MOVE",
+   "accession": "0001213900-26-109462",
+   "decided": "2026-10-15T02:06:50.922488-04:00",
+   "event_type": "equity_financing",
+   "summary": "Company establishes at-the-market equity offering facility for working capital needs.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "GDOT",
+   "accession": "0001386278-26-000048",
+   "decided": "2026-10-15T02:06:57.767097-04:00",
+   "event_type": "exec_departure",
+   "summary": "General Counsel Amy Pugh resigns effective November 2, 2026 for another opportunity.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "YEXT",
+   "accession": "0001628280-26-065872",
+   "decided": "2026-10-15T02:07:00.915088-04:00",
+   "event_type": "exec_appointment",
+   "summary": "CEO granted 11M stock options with steep performance hurdles; extreme dilution if achieved.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CCO",
+   "accession": "0001213900-26-109385",
+   "decided": "2026-10-15T02:07:07.330200-04:00",
+   "event_type": "acquisition",
+   "summary": "Merger with Madison Parent completed; company now wholly-owned subsidiary; $2.43/share consideration paid",
    "entry_date": null,
    "entry": null
   }

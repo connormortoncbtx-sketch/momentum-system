@@ -2985,3 +2985,4 @@
 {"timestamp": "2026-10-14T17:35:53.522631+00:00", "workflow": "shadow_filings", "status": "success", "message": "Shadow filings: 24 judged-eligible, new long 2, new short 6, open trades 26, diversified-book NAV 100.00", "metrics": {}, "errors": []}
 {"timestamp": "2026-10-14T19:02:11.756551+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Starting monitor (duration=68min, mode=PAPER)", "metrics": {}, "errors": []}
 {"timestamp": "2026-10-14T20:10:13.377202+00:00", "workflow": "alpaca_monitor", "status": "info", "message": "Session quiet: 68 polls, no phase transitions", "metrics": {"polls": 68, "upgrades": 0, "stops_placed": 0, "poll_errors": 0}, "errors": []}
+{"timestamp": "2026-10-15T06:07:07.956474+00:00", "workflow": "shadow_filings", "status": "success", "message": "Shadow filings: 21 judged-eligible, new long 0, new short 14, open trades 40, diversified-book NAV 100.00", "metrics": {}, "errors": []}
