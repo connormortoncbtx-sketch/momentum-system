@@ -1,0 +1,19 @@
+OUT OF SAMPLE (weeks after each snapshot), Mon open -> Fri close, mean % per week:
+                     weeks  picks_vol  big_winners  big_losers  no_stops  with_stops  with_stops_pess  universe  cum_no_stops  cum_stops  cum_stops_pess
+snap                                                                                                                                                    
+Apr 20 (live start)     14       8.62           11          18     -1.63       -0.88            -1.19      0.31        -21.13     -11.94          -15.70
+May 08                  12       8.41            9          12     -0.64       -0.53            -0.89      0.20         -7.99      -6.51          -10.52
+May 22 (peak)           10       9.27            9          14     -1.55       -0.95            -1.33      0.26        -14.86      -9.36          -12.81
+May 29                  10       9.27            9          14     -1.55       -0.95            -1.33      0.26        -14.86      -9.36          -12.81
+Jun 13                   8       7.66            6           7     -0.91        0.16            -0.05      0.37         -7.90       0.34           -1.20
+Aug 01                   4       6.44            4           2      1.56        2.23             2.23      0.34          6.33       9.13            9.13
+
+IN SAMPLE (weeks before each snapshot) for contrast:
+                     nostop  stops
+snap                              
+Apr 20 (live start)    2.56   2.56
+May 08                 7.71   7.05
+May 22 (peak)          7.14   4.14
+May 29                 7.14   4.14
+Jun 13                 6.04   4.96
+Aug 01                 4.00   3.04

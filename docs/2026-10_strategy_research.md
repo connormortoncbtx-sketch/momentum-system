@@ -1320,3 +1320,15 @@ The best design on early data: contract value ≥ 10% of market cap, hold 20 ses
 - The good stretch was a rising market plus one theme week, not a better version.
 - The weekly self-refine/retrain loop fits the past and fails forward. That is why the stack is frozen.
 - Reverting to May 22 would have lost about 25% more than the universe.
+
+**Stops added to the revert test** (`research/stops_replay.py`). Each snapshot's top 10 was replayed out of sample, Mon open → Fri close, with the live rules: hard stop 7/10/15% by volatility, activation at max(3%, 0.75 × average win), then a trailing stop of min(vol/2, 15%).
+
+| Snapshot | No stops | With stops | With stops, pessimistic | Universe |
+|---|---|---|---|---|
+| May 22, 10 weeks | −1.55%/wk (−15%) | −0.95%/wk (−9%) | −1.33%/wk (−13%) | +0.26%/wk |
+| Apr 20, 14 weeks | −1.63%/wk | −0.88%/wk | −1.19%/wk | |
+
+- The May 22 picks had 9 big winners (≥ +10%) and 14 big losers (≤ −10%).
+- Stops cut losses by a third to a half but do not turn the book positive.
+- In sample, the same snapshots show +4% to +8%/week, which shows how much the weekly retraining overfits.
+- The live account also had stops through Jun – Aug and fell from $111.6k to about $74k.
