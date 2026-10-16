@@ -1,0 +1,71 @@
+name: Kalshi MM bot (dry / demo only)
+
+# Manual only. Runs kalshi_mm/bot.py for a fixed number of minutes and pushes its logs to
+# research-data:kalshi_mm/<mode>/. Real-money (prod) mode is deliberately NOT offered here.
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'dry (public data, no orders) or demo (fake-money exchange)'
+        required: true
+        default: 'dry'
+        type: choice
+        options: [dry, demo]
+      minutes:
+        description: 'Run time in minutes (max ~330)'
+        required: true
+        default: '15'
+      offset_c:
+        description: 'Cents behind the best bid'
+        required: false
+        default: '2'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kalshi-mm-${{ inputs.mode }}
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 345
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install cryptography
+      - run: python kalshi_mm/test_bot.py
+      - name: Load research-data branch
+        run: git clone -q --depth 1 -b research-data "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" research_data
+      - name: Run bot
+        env:
+          MODE: ${{ inputs.mode }}
+          RUN_MINUTES: ${{ inputs.minutes }}
+          OFFSET_C: ${{ inputs.offset_c }}
+          LOG_DIR: research_data/kalshi_mm/${{ inputs.mode }}
+          KALSHI_KEY_ID: ${{ secrets.KALSHI_DEMO_KEY_ID }}
+          KALSHI_PRIVATE_KEY: ${{ secrets.KALSHI_DEMO_PRIVATE_KEY }}
+        run: python kalshi_mm/bot.py
+      - name: Summary
+        if: always()
+        run: |
+          for f in research_data/kalshi_mm/${{ inputs.mode }}/*.jsonl; do
+            [ -f "$f" ] && echo "::notice::$(basename $f): $(wc -l < $f) lines; last: $(tail -c 400 $f | tail -n 1)"
+          done
+      - name: Push logs
+        if: always()
+        run: |
+          cd research_data
+          git config user.name "momentum-bot"; git config user.email "momentum-bot@users.noreply.github.com"
+          git add -A; git diff --cached --quiet && exit 0
+          git commit -q -m "kalshi_mm ${{ inputs.mode }} $(date -u +%Y-%m-%dT%H:%MZ)"
+          URL="https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"
+          for attempt in 1 2 3 4 5; do
+            git push -q "$URL" HEAD:research-data && exit 0
+            git pull -q --rebase "$URL" research-data || true
+            sleep $((RANDOM % 20 + 5))
+          done
+          exit 1
