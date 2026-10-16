@@ -226,6 +226,7 @@ class Bot:
                     out.append((m["ticker"], (ct - now()).total_seconds() / 3600))
             except Exception as e:
                 log.warning(f"{s}: {e}")
+                jlog("errors", where="markets", series=s, error=str(e)[:300])
         return out
 
     def cycle(self):
@@ -306,6 +307,9 @@ class Bot:
                          status=o.get("status"), queue_position=o.get("queue_position"))
                 except Exception as e:
                     log.warning(f"place {tk} {side} {tgt}: {e}")
+                    jlog("errors", where="place", ticker=tk, side=side, price=tgt, error=str(e)[:300])
+        jlog("cycles", open_markets=len(mkts), books=len(books), placed=placed, cancelled=cancelled,
+             resting_usd=round(resting_cost, 2), positions_usd=round(used, 2))
         log.info(f"{len(mkts)} open mkts, {len(books)} books, placed {placed}, cancelled {cancelled}, "
                  f"resting ${resting_cost:,.2f}, in positions ${used:,.2f}")
         return "ok"
