@@ -1575,3 +1575,26 @@ The stop is dropped. The strategy stack, re-run with SLOW without a stop, is unc
 - The optimizer gave DOD 16–19% weight on its low dev correlation. Dev Sharpe rose (1.39 → 1.44), but holdout fell (1.54 → 1.44 without crypto; 1.68 → 1.59 with crypto). This is the classic sign of a weak book overfitting the mix.
 - **Excluded.** `strategy_stack.py` only includes it with `INCLUDE_DOD=1`.
 - The live DoD feed question is moot.
+
+### Shadow #7 live: the strategy stack (`automation/shadow_stack.py`, `.github/workflows/shadow_stack.yml`, Oct 16)
+
+**What it tracks.** The four books that exist live, with frozen weights and IWM hedge ratios fitted on 2017–2023 (`research/hedged_stack.py` subset):
+
+| Sleeve | Weight | Hedge |
+|---|---|---|
+| Slow momentum (shadow #4) | 14.5% | − 0.798 × IWM |
+| Contract-win diversified book (shadow #6) | 35.3% | − 0.743 × IWM |
+| ETF trend | 29.4% | none |
+| Crypto trend | 20.8% | none |
+
+- Backtest of exactly this mix: Sharpe 1.35 dev / 1.72 holdout. Without crypto (rescaled weights): 1.32 / 1.57.
+- PEAD and INSIDER are not in it; they have no live implementation.
+
+**How it is marked**
+- Weekly, over shadow #4's Monday-to-Monday window, running Tuesday 10:10 ET with a Wednesday backup.
+- The ETF and crypto books are recomputed from Alpaca daily bars each run (no state). On research data the replicas give ETF Sharpe 0.69 / 1.26 and crypto 0.52 / 0.77.
+- The contract sleeve comes from shadow #6's daily NAV.
+- NAV is tracked at 1×, 2× and 3× (6%/yr financing), plus each sleeve.
+- Started at shadow #4's Oct 12 mark; first mark about Oct 20. The live data path was dry-run on Oct 16: all 41 ETFs and 16 coins present.
+
+**Review.** The Jan 5, 2027 review task was updated to evaluate #4–#7. It also uses the Oct 19 universe-fix start for the live system and the price-based shadows.
