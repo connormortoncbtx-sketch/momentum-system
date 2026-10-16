@@ -1,5 +1,5 @@
 {
- "since": "2026-10-15T17:28:26-04:00",
+ "since": "2026-10-16T12:08:44-04:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -410,8 +410,8 @@
    "decided": "2026-10-15T13:19:26.309930-04:00",
    "event_type": "routine",
    "summary": "Updated investor presentation on oncology/obesity pipeline; routine FD disclosure.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-16",
+   "entry": 4.35
   },
   {
    "book": "long_contract_win",
@@ -420,8 +420,8 @@
    "decided": "2026-10-15T13:19:29.209385-04:00",
    "event_type": "contract_win",
    "summary": "Equipment delivery begins for ten-fold rare earth magnet capacity expansion to 10,000 metric tons.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-16",
+   "entry": 1.54
   },
   {
    "book": "long_contract_div",
@@ -430,8 +430,9 @@
    "decided": "2026-10-15T13:19:29.209385-04:00",
    "event_type": "contract_win",
    "summary": "Equipment delivery begins for ten-fold rare earth magnet capacity expansion to 10,000 metric tons.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-16",
+   "entry": 1.54,
+   "vol60": 1.4666393695798283
   },
   {
    "book": "short_bad_news",
@@ -440,8 +441,8 @@
    "decided": "2026-10-15T13:19:33.819999-04:00",
    "event_type": "acquisition",
    "summary": "Stockholders approved merger with Dream Finders Homes; company delisting from NYSE, going private.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-16",
+   "entry": 33.45
   },
   {
    "book": "short_bad_news",
@@ -450,8 +451,8 @@
    "decided": "2026-10-15T13:19:36.513962-04:00",
    "event_type": "buyback_dividend",
    "summary": "Dividend rate increase on preferred stock from 13% to 14%, funded by treasury strategy, not earnings.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-16",
+   "entry": 4.17
   },
   {
    "book": "short_bad_news",
@@ -460,8 +461,8 @@
    "decided": "2026-10-15T13:19:39.225536-04:00",
    "event_type": "exec_departure",
    "summary": "CFO Craig Conti resigning effective November 4, 2026; orderly transition with search underway.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-16",
+   "entry": 2.94
   },
   {
    "book": "short_bad_news",
@@ -470,8 +471,8 @@
    "decided": "2026-10-15T13:19:41.572948-04:00",
    "event_type": "debt_financing",
    "summary": "Amendment extends revolving credit maturity by 16 days; signals refinancing uncertainty and debt pressure.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-16",
+   "entry": 1.58
   },
   {
    "book": "short_bad_news",
@@ -480,8 +481,8 @@
    "decided": "2026-10-15T13:19:44.239320-04:00",
    "event_type": "partnership",
    "summary": "Non-binding $1B tokenized financing partnership with Meridian for distributed AI computing network powered by solar and Tesla Powerwalls.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-16",
+   "entry": 2.95
   },
   {
    "book": "short_bad_news",
@@ -490,8 +491,8 @@
    "decided": "2026-10-15T13:19:47.346371-04:00",
    "event_type": "debt_financing",
    "summary": "RealReal secures $175M credit facility to refinance 2029 notes; maintains tight financial covenants",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-16",
+   "entry": 10.54
   },
   {
    "book": "short_bad_news",
@@ -500,8 +501,8 @@
    "decided": "2026-10-15T13:19:56.968483-04:00",
    "event_type": "acquisition",
    "summary": "Closed CanAdelaar cannabis acquisition despite pending regulatory approvals and environmental penalties.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-16",
+   "entry": 3.23
   },
   {
    "book": "short_bad_news",
@@ -510,8 +511,8 @@
    "decided": "2026-10-15T13:19:59.367875-04:00",
    "event_type": "prelim_results_good",
    "summary": "Q3 2026 preliminary revenue $14-15M; substantial cash position $162.8M disclosed.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-16",
+   "entry": 6.46
   },
   {
    "book": "long_contract_win",
@@ -520,8 +521,8 @@
    "decided": "2026-10-15T13:20:05.569579-04:00",
    "event_type": "contract_win",
    "summary": "Master supply agreement with NuSil extended through 2031 with auto-renewal options.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-16",
+   "entry": 61.65
   },
   {
    "book": "long_contract_div",
@@ -530,8 +531,9 @@
    "decided": "2026-10-15T13:20:05.569579-04:00",
    "event_type": "contract_win",
    "summary": "Master supply agreement with NuSil extended through 2031 with auto-renewal options.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-16",
+   "entry": 61.65,
+   "vol60": 0.4945029397983647
   },
   {
    "book": "short_bad_news",
@@ -540,8 +542,8 @@
    "decided": "2026-10-15T13:20:08.500534-04:00",
    "event_type": "buyback_dividend",
    "summary": "Company announces $3/share tender offer for up to 95% of shares, warrants at 65% premium.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-16",
+   "entry": 2.68
   },
   {
    "book": "short_bad_news",
@@ -550,8 +552,8 @@
    "decided": "2026-10-16T02:03:39.441910-04:00",
    "event_type": "acquisition",
    "summary": "Q3 earnings with $8.8M impairment charge; proposed PBCO merger announced with integration risks.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-16",
+   "entry": 24.18
   },
   {
    "book": "short_bad_news",
@@ -560,8 +562,8 @@
    "decided": "2026-10-16T02:03:46.923793-04:00",
    "event_type": "acquisition",
    "summary": "SFE Group acquisition incentive grants approved for executives; deal must close by Nov 30.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-16",
+   "entry": 35.06
   },
   {
    "book": "short_bad_news",
@@ -570,8 +572,8 @@
    "decided": "2026-10-16T02:03:51.754800-04:00",
    "event_type": "dilution_other",
    "summary": "Company exchanged 13.4M shares for pre-funded warrants at $0.001 exercise price with major funds.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-16",
+   "entry": 1.0
   },
   {
    "book": "short_bad_news",
@@ -580,8 +582,8 @@
    "decided": "2026-10-16T02:03:55.724262-04:00",
    "event_type": "exec_departure",
    "summary": "Director David Safran resigned; board reduced from nine to eight members.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-16",
+   "entry": 22.6
   },
   {
    "book": "short_bad_news",
@@ -590,8 +592,8 @@
    "decided": "2026-10-16T02:03:58.550167-04:00",
    "event_type": "other",
    "summary": "ISDA master agreement amended; TNA termination trigger reduced to $200M from $1.5B.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-16",
+   "entry": 10.6
   },
   {
    "book": "short_bad_news",
@@ -600,8 +602,8 @@
    "decided": "2026-10-16T02:04:03.601702-04:00",
    "event_type": "equity_financing",
    "summary": "Company raises $200M via private placement at $32.75/share; significant dilution risk.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-16",
+   "entry": 37.07
   },
   {
    "book": "short_bad_news",
@@ -610,8 +612,8 @@
    "decided": "2026-10-16T02:04:06.452585-04:00",
    "event_type": "strategic_review",
    "summary": "Major 48.8% shareholder negotiated termination of poison pill; gained board review rights over transfers.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-16",
+   "entry": 6.13
   },
   {
    "book": "short_bad_news",
@@ -620,8 +622,8 @@
    "decided": "2026-10-16T02:04:17.485469-04:00",
    "event_type": "exec_departure",
    "summary": "President David Roberts retiring December 31, 2026; remaining as director.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-16",
+   "entry": 82.53
   },
   {
    "book": "long_contract_win",
@@ -630,8 +632,8 @@
    "decided": "2026-10-16T02:04:22.628754-04:00",
    "event_type": "contract_win",
    "summary": "PERC wins $39.8M design-build water purification facility contract in California",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-16",
+   "entry": 28.72
   },
   {
    "book": "long_contract_div",
@@ -640,8 +642,9 @@
    "decided": "2026-10-16T02:04:22.628754-04:00",
    "event_type": "contract_win",
    "summary": "PERC wins $39.8M design-build water purification facility contract in California",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-16",
+   "entry": 28.72,
+   "vol60": 0.2698899410456325
   },
   {
    "book": "short_bad_news",
@@ -650,16 +653,87 @@
    "decided": "2026-10-16T02:04:27.745128-04:00",
    "event_type": "routine",
    "summary": "Eight of nine director nominees elected at annual shareholder meeting; one director departs.",
+   "entry_date": "2026-10-16",
+   "entry": 3.02
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "SMTI",
+   "accession": "0001213900-26-110053",
+   "decided": "2026-10-16T12:55:06.932073-04:00",
+   "event_type": "regulatory_setback",
+   "summary": "FTC issued Second Request on proposed MiMedx merger; extends HSR waiting period indefinitely",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "MDXG",
+   "accession": "0001213900-26-110041",
+   "decided": "2026-10-16T12:55:09.287887-04:00",
+   "event_type": "regulatory_setback",
+   "summary": "FTC issued Second Request on Sanara merger; HSR waiting period extended indefinitely pending compliance.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "TOP",
+   "accession": "0001213900-26-110029",
+   "decided": "2026-10-16T12:55:16.540869-04:00",
+   "event_type": "routine",
+   "summary": "Announced updated share capital structure and free public float as of October 13, 2026.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "EBS",
+   "accession": "0001367644-26-000098",
+   "decided": "2026-10-16T12:55:26.429645-04:00",
+   "event_type": "exec_departure",
+   "summary": "CFO Richard Lindahl retiring December 2026; Frank Vargo promoted to interim CFO effective January 2027.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_win",
+   "symbol": "CYCU",
+   "accession": "0001868419-26-000054",
+   "decided": "2026-10-16T12:55:28.604100-04:00",
+   "event_type": "contract_win",
+   "summary": "Largest contract in history: $54.6M, 10-year state health cybersecurity modernization deal.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_div",
+   "symbol": "CYCU",
+   "accession": "0001868419-26-000054",
+   "decided": "2026-10-16T12:55:28.604100-04:00",
+   "event_type": "contract_win",
+   "summary": "Largest contract in history: $54.6M, 10-year state health cybersecurity modernization deal.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "BNAI",
+   "accession": "0001493152-26-047314",
+   "decided": "2026-10-16T12:55:38.821751-04:00",
+   "event_type": "litigation",
+   "summary": "Company settled $1.3M consulting dispute for $825K, dismissing lawsuit filed September 2026.",
    "entry_date": null,
    "entry": null
   }
  ],
  "div": {
-  "nav": 100.35917913012415,
+  "nav": 98.66035463831756,
   "closed": [],
-  "last_date": "2026-10-15",
+  "last_date": "2026-10-16",
   "history": {
-   "2026-10-15": 100.3592
+   "2026-10-15": 100.3592,
+   "2026-10-16": 98.6604
   }
  }
 }
