@@ -1,0 +1,48 @@
+name: Shadow Stack (#7, no orders)
+
+# Marks the diversified, market-hedged strategy stack once per week, after shadow #4
+# (Monday evening) and shadow #6 (Monday evening / Tuesday morning) have updated.
+on:
+  schedule:
+    - cron: '10 15 * * 2'   # Tuesday 10:10 ET
+    - cron: '10 15 * * 3'   # Wednesday backup (holiday weeks / late upstream marks)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: shadow-stack
+  cancel-in-progress: false
+
+jobs:
+  stack:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Update shadow stack
+        env:
+          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+        run: python automation/shadow_stack.py
+      - name: Commit ledger
+        run: |
+          git config user.name  "momentum-bot"
+          git config user.email "momentum-bot@users.noreply.github.com"
+          for f in data/shadow_stack_state.json data/shadow_stack_ledger.jsonl data/system_log.jsonl; do if [ -e "$f" ]; then git add "$f"; fi; done
+          git diff --cached --quiet && exit 0
+          git commit -q -m "shadow stack: $(date +%Y-%m-%d) update"
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push; then break; fi
+            git rebase --abort 2>/dev/null || true
+            git pull origin main --no-rebase --strategy=recursive -X theirs --no-edit 2>/dev/null || true
+            [ $attempt -eq 5 ] && exit 1
+            sleep $((RANDOM % 5 + 2))
+          done
