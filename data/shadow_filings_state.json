@@ -1,5 +1,5 @@
 {
- "since": "2026-10-15T13:00:00-04:00",
+ "since": "2026-10-15T17:28:26-04:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -540,6 +540,116 @@
    "decided": "2026-10-15T13:20:08.500534-04:00",
    "event_type": "buyback_dividend",
    "summary": "Company announces $3/share tender offer for up to 95% of shares, warrants at 65% premium.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "NRIM",
+   "accession": "0001163370-26-000032",
+   "decided": "2026-10-16T02:03:39.441910-04:00",
+   "event_type": "acquisition",
+   "summary": "Q3 earnings with $8.8M impairment charge; proposed PBCO merger announced with integration risks.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "EPAC",
+   "accession": "0000006955-26-000065",
+   "decided": "2026-10-16T02:03:46.923793-04:00",
+   "event_type": "acquisition",
+   "summary": "SFE Group acquisition incentive grants approved for executives; deal must close by Nov 30.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ALXO",
+   "accession": "0001193125-26-422992",
+   "decided": "2026-10-16T02:03:51.754800-04:00",
+   "event_type": "dilution_other",
+   "summary": "Company exchanged 13.4M shares for pre-funded warrants at $0.001 exercise price with major funds.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CMP",
+   "accession": "0001227654-26-000075",
+   "decided": "2026-10-16T02:03:55.724262-04:00",
+   "event_type": "exec_departure",
+   "summary": "Director David Safran resigned; board reduced from nine to eight members.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "UNG",
+   "accession": "0002071876-26-000249",
+   "decided": "2026-10-16T02:03:58.550167-04:00",
+   "event_type": "other",
+   "summary": "ISDA master agreement amended; TNA termination trigger reduced to $200M from $1.5B.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "TRAX",
+   "accession": "0001193125-26-422929",
+   "decided": "2026-10-16T02:04:03.601702-04:00",
+   "event_type": "equity_financing",
+   "summary": "Company raises $200M via private placement at $32.75/share; significant dilution risk.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "RAIL",
+   "accession": "0001213900-26-109859",
+   "decided": "2026-10-16T02:04:06.452585-04:00",
+   "event_type": "strategic_review",
+   "summary": "Major 48.8% shareholder negotiated termination of poison pill; gained board review rights over transfers.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "LMAT",
+   "accession": "0001193125-26-422885",
+   "decided": "2026-10-16T02:04:17.485469-04:00",
+   "event_type": "exec_departure",
+   "summary": "President David Roberts retiring December 31, 2026; remaining as director.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_win",
+   "symbol": "CWCO",
+   "accession": "0001104659-26-116231",
+   "decided": "2026-10-16T02:04:22.628754-04:00",
+   "event_type": "contract_win",
+   "summary": "PERC wins $39.8M design-build water purification facility contract in California",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_div",
+   "symbol": "CWCO",
+   "accession": "0001104659-26-116231",
+   "decided": "2026-10-16T02:04:22.628754-04:00",
+   "event_type": "contract_win",
+   "summary": "PERC wins $39.8M design-build water purification facility contract in California",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "EMPD",
+   "accession": "0001683168-26-007893",
+   "decided": "2026-10-16T02:04:27.745128-04:00",
+   "event_type": "routine",
+   "summary": "Eight of nine director nominees elected at annual shareholder meeting; one director departs.",
    "entry_date": null,
    "entry": null
   }
