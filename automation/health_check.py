@@ -56,7 +56,7 @@ How the system runs now (updated Oct 2026) -- do NOT flag these as problems:
 - Three shadow portfolios (no orders) update Monday/Tuesday evenings.
 
 Normal ranges:
-- Universe size: 1,700-2,300 tickers. Flag below 1,500, or a >15% change vs last week.
+- Universe size: 2,200-2,800 tickers since the Oct 16, 2026 universe fix (ticker-suffix bug, Alpaca asset list, dollar-volume gate; 1,811 -> ~2,440). The Oct 17 run is EXPECTED to jump ~35% -- do not flag that one. Flag below 2,000, or a >15% change vs last week after Oct 17.
 - Alpaca entry: 8-10 filled, 0-2 failed. Exit closes every open position on Thu/Fri.
 - Stops: every entry week should log a successful place_stops run.
 

@@ -3,7 +3,7 @@ research/strategy_stack.py -- stack the surviving books (+ the disadvantage fixe
 Sharpe through diversification; then size with leverage (Oct 16, 2026).
 
 Weekly return series (calendar weeks ending Friday), 2017-01 .. 2026-09:
-  SLOW      slow 12-1 momentum, hold while top-100, + 10% stop (research/avoid_stack.py)
+  SLOW      slow 12-1 momentum, hold while top-100, NO stop (the 10% stop failed the daily-bar check)
   LIVEFIX   live-style weekly composite with ALL disadvantage fixes (research/avoid_stack.py)
   CONTRACT  contract-win book chosen on 2017-23 (research/contract_filters.py: all contract
             wins + dev-adopted filters, 10-day hold, 1/vol weights, 25% cap)
@@ -32,7 +32,7 @@ def weekly_from_daily(r):
 
 
 import avoid_stack as A  # noqa: E402
-SER = {"SLOW": weekly_from_formation(A.sim("SLOW", ["stop10"])),
+SER = {"SLOW": weekly_from_formation(A.sim("SLOW", [])),   # no stop: daily-bar check (research/stop_daily_check.py) showed it hurts
        "LIVEFIX": weekly_from_formation(A.sim("LIVE", ["no_spike", "no_topvol", "no_late", "no_distress", "no_merger",
                                                        "no_offering", "no_badnews", "stop10", "hold50"]))}
 cb = pd.read_csv(f"{P}/results/contract_filters_daily.csv", index_col=0, parse_dates=True)["best"]

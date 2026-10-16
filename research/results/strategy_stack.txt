@@ -1,7 +1,7 @@
 weeks: dev 364, holdout 143
 
 COMPONENTS
-  SLOW                               dev   27.2%/yr Sh  0.81 DD  -33.9% | holdout   35.7%/yr Sh  0.86 DD  -37.5% (+0.59%/wk)
+  SLOW                               dev   26.1%/yr Sh  0.75 DD  -45.9% | holdout   38.9%/yr Sh  0.86 DD  -42.2% (+0.63%/wk)
   LIVEFIX                            dev    1.4%/yr Sh  0.18 DD  -44.8% | holdout   12.8%/yr Sh  0.58 DD  -23.7% (+0.23%/wk)
   CONTRACT                           dev   32.1%/yr Sh  0.99 DD  -34.9% | holdout   51.7%/yr Sh  1.28 DD  -28.2% (+0.81%/wk)
   ETFTREND                           dev   15.4%/yr Sh  0.63 DD  -47.3% | holdout   31.4%/yr Sh  1.39 DD  -13.8% (+0.53%/wk)
@@ -9,43 +9,43 @@ COMPONENTS
 
 CORRELATION (dev / holdout)
           SLOW  LIVEFIX  CONTRACT  ETFTREND  CRYPTO
-SLOW      1.00     0.57      0.32      0.26    0.07
-LIVEFIX   0.57     1.00      0.24      0.44    0.07
-CONTRACT  0.32     0.24      1.00      0.21    0.09
-ETFTREND  0.26     0.44      0.21      1.00   -0.00
-CRYPTO    0.07     0.07      0.09     -0.00    1.00
+SLOW      1.00     0.56      0.33      0.23    0.06
+LIVEFIX   0.56     1.00      0.24      0.44    0.07
+CONTRACT  0.33     0.24      1.00      0.21    0.09
+ETFTREND  0.23     0.44      0.21      1.00   -0.00
+CRYPTO    0.06     0.07      0.09     -0.00    1.00
           SLOW  LIVEFIX  CONTRACT  ETFTREND  CRYPTO
-SLOW      1.00     0.47      0.28      0.36    0.06
-LIVEFIX   0.47     1.00      0.23      0.39    0.03
-CONTRACT  0.28     0.23      1.00      0.39   -0.05
+SLOW      1.00     0.52      0.30      0.36    0.04
+LIVEFIX   0.52     1.00      0.23      0.39    0.03
+CONTRACT  0.30     0.23      1.00      0.39   -0.05
 ETFTREND  0.36     0.39      0.39      1.00    0.20
-CRYPTO    0.06     0.03     -0.05      0.20    1.00
+CRYPTO    0.04     0.03     -0.05      0.20    1.00
 
 MIXES (weights chosen on dev)
-  equal weight                       dev   18.1%/yr Sh  0.99 DD  -19.0% | holdout   33.2%/yr Sh  1.51 DD  -14.6% (+0.55%/wk)
+  equal weight                       dev   18.3%/yr Sh  0.97 DD  -21.4% | holdout   34.5%/yr Sh  1.47 DD  -13.6% (+0.57%/wk)
       weights SLOW 0.20, LIVEFIX 0.20, CONTRACT 0.20, ETFTREND 0.20, CRYPTO 0.20
-  inverse vol                        dev   13.6%/yr Sh  0.94 DD  -18.6% | holdout   28.5%/yr Sh  1.51 DD  -12.9% (+0.48%/wk)
-      weights SLOW 0.12, LIVEFIX 0.19, CONTRACT 0.14, ETFTREND 0.16, CRYPTO 0.39
-  max Sharpe (dev)                   dev   22.7%/yr Sh  1.18 DD  -21.5% | holdout   39.3%/yr Sh  1.64 DD  -13.9% (+0.64%/wk)
-      weights SLOW 0.19, LIVEFIX 0.00, CONTRACT 0.35, ETFTREND 0.19, CRYPTO 0.27
-  max Sharpe, no crypto (dev)        dev   29.7%/yr Sh  1.16 DD  -24.4% | holdout   46.4%/yr Sh  1.50 DD  -21.6% (+0.74%/wk)
-      weights SLOW 0.26, LIVEFIX 0.00, CONTRACT 0.48, ETFTREND 0.26, CRYPTO 0.00
+  inverse vol                        dev   13.5%/yr Sh  0.93 DD  -20.1% | holdout   29.0%/yr Sh  1.50 DD  -12.2% (+0.49%/wk)
+      weights SLOW 0.11, LIVEFIX 0.19, CONTRACT 0.14, ETFTREND 0.16, CRYPTO 0.39
+  max Sharpe (dev)                   dev   22.2%/yr Sh  1.16 DD  -22.5% | holdout   39.8%/yr Sh  1.65 DD  -12.7% (+0.65%/wk)
+      weights SLOW 0.14, LIVEFIX 0.00, CONTRACT 0.36, ETFTREND 0.21, CRYPTO 0.29
+  max Sharpe, no crypto (dev)        dev   29.5%/yr Sh  1.14 DD  -25.7% | holdout   47.8%/yr Sh  1.51 DD  -19.5% (+0.75%/wk)
+      weights SLOW 0.20, LIVEFIX 0.00, CONTRACT 0.51, ETFTREND 0.29, CRYPTO 0.00
 
 LEVERAGE on the max-Sharpe mix (Kelly from dev; financing 6%/yr on borrowed part)
-  max Sharpe (dev) x1.00             dev   22.7%/yr Sh  1.18 DD  -21.5% | holdout   39.3%/yr Sh  1.64 DD  -13.9% (+0.64%/wk)
-  max Sharpe (dev) x2.00             dev   37.0%/yr Sh  1.02 DD  -42.4% | holdout   74.4%/yr Sh  1.50 DD  -27.4% (+1.08%/wk)
-  max Sharpe (dev) x2.58             dev   43.6%/yr Sh  0.99 DD  -52.5% | holdout   94.7%/yr Sh  1.47 DD  -34.5% (+1.29%/wk)
-  max Sharpe (dev) x3.00             dev   47.6%/yr Sh  0.97 DD  -58.9% | holdout  108.8%/yr Sh  1.46 DD  -39.3% (+1.43%/wk)
-  max Sharpe (dev) x5.15             dev   53.3%/yr Sh  0.93 DD  -82.8% | holdout  164.4%/yr Sh  1.42 DD  -60.4% (+1.89%/wk)
-  max Sharpe, no crypto (dev) x1.00  dev   29.7%/yr Sh  1.16 DD  -24.4% | holdout   46.4%/yr Sh  1.50 DD  -21.6% (+0.74%/wk)
-  max Sharpe, no crypto (dev) x2.00  dev   48.9%/yr Sh  1.05 DD  -47.3% | holdout   86.9%/yr Sh  1.40 DD  -42.3% (+1.21%/wk)
-  max Sharpe, no crypto (dev) x2.01  dev   49.1%/yr Sh  1.04 DD  -47.5% | holdout   87.3%/yr Sh  1.40 DD  -42.4% (+1.21%/wk)
-  max Sharpe, no crypto (dev) x3.00  dev   60.7%/yr Sh  1.01 DD  -66.7% | holdout  121.0%/yr Sh  1.36 DD  -59.4% (+1.54%/wk)
-  max Sharpe, no crypto (dev) x4.01  dev   62.3%/yr Sh  0.98 DD  -82.1% | holdout  142.1%/yr Sh  1.34 DD  -73.1% (+1.72%/wk)
-  inverse vol x1.00                  dev   13.6%/yr Sh  0.94 DD  -18.6% | holdout   28.5%/yr Sh  1.51 DD  -12.9% (+0.48%/wk)
-  inverse vol x2.00                  dev   19.0%/yr Sh  0.74 DD  -39.2% | holdout   50.7%/yr Sh  1.34 DD  -25.7% (+0.79%/wk)
-  inverse vol x2.28                  dev   20.1%/yr Sh  0.71 DD  -44.2% | holdout   56.7%/yr Sh  1.32 DD  -28.9% (+0.87%/wk)
-  inverse vol x3.00                  dev   22.0%/yr Sh  0.67 DD  -55.9% | holdout   71.6%/yr Sh  1.28 DD  -36.9% (+1.04%/wk)
-  inverse vol x4.57                  dev   21.1%/yr Sh  0.62 DD  -75.7% | holdout   98.0%/yr Sh  1.24 DD  -52.1% (+1.32%/wk)
+  max Sharpe (dev) x1.00             dev   22.2%/yr Sh  1.16 DD  -22.5% | holdout   39.8%/yr Sh  1.65 DD  -12.7% (+0.65%/wk)
+  max Sharpe (dev) x2.00             dev   35.7%/yr Sh  1.00 DD  -43.9% | holdout   75.6%/yr Sh  1.52 DD  -26.5% (+1.09%/wk)
+  max Sharpe (dev) x2.52             dev   41.3%/yr Sh  0.97 DD  -53.1% | holdout   94.2%/yr Sh  1.49 DD  -33.2% (+1.28%/wk)
+  max Sharpe (dev) x3.00             dev   45.4%/yr Sh  0.95 DD  -60.5% | holdout  110.7%/yr Sh  1.47 DD  -39.0% (+1.44%/wk)
+  max Sharpe (dev) x5.04             dev   48.4%/yr Sh  0.91 DD  -83.9% | holdout  165.5%/yr Sh  1.43 DD  -60.4% (+1.90%/wk)
+  max Sharpe, no crypto (dev) x1.00  dev   29.5%/yr Sh  1.14 DD  -25.7% | holdout   47.8%/yr Sh  1.51 DD  -19.5% (+0.75%/wk)
+  max Sharpe, no crypto (dev) x1.93  dev   46.8%/yr Sh  1.03 DD  -47.9% | holdout   86.8%/yr Sh  1.41 DD  -38.1% (+1.21%/wk)
+  max Sharpe, no crypto (dev) x2.00  dev   47.9%/yr Sh  1.02 DD  -49.4% | holdout   89.5%/yr Sh  1.41 DD  -39.4% (+1.24%/wk)
+  max Sharpe, no crypto (dev) x3.00  dev   57.7%/yr Sh  0.98 DD  -68.6% | holdout  124.2%/yr Sh  1.37 DD  -56.7% (+1.56%/wk)
+  max Sharpe, no crypto (dev) x3.85  dev   56.7%/yr Sh  0.97 DD  -81.9% | holdout  142.1%/yr Sh  1.36 DD  -69.1% (+1.72%/wk)
+  inverse vol x1.00                  dev   13.5%/yr Sh  0.93 DD  -20.1% | holdout   29.0%/yr Sh  1.50 DD  -12.2% (+0.49%/wk)
+  inverse vol x2.00                  dev   18.7%/yr Sh  0.73 DD  -41.4% | holdout   51.7%/yr Sh  1.34 DD  -24.7% (+0.80%/wk)
+  inverse vol x2.22                  dev   19.5%/yr Sh  0.71 DD  -45.6% | holdout   56.5%/yr Sh  1.32 DD  -27.4% (+0.87%/wk)
+  inverse vol x3.00                  dev   21.3%/yr Sh  0.66 DD  -59.1% | holdout   72.8%/yr Sh  1.28 DD  -36.7% (+1.06%/wk)
+  inverse vol x4.43                  dev   20.0%/yr Sh  0.61 DD  -77.3% | holdout   97.0%/yr Sh  1.25 DD  -51.8% (+1.31%/wk)
 
 target 3.00%/week; goal 1.00%/week
