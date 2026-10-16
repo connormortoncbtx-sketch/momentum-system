@@ -1479,3 +1479,38 @@ The account's shape (up, then a steady slide) is the shape of short-term momentu
 - Leverage needs margin; a Roth cannot lever, and small caps have higher margin requirements.
 
 **Verdict:** this is the first combination at or above Sharpe 1.1 on data it was not designed on. About 1%/week becomes plausible at about 2× leverage, with roughly −40% to −50% drawdowns.
+
+### Data checks: universe coverage and intraday stops (Oct 16)
+
+**Research panel: complete.** It is built from Alpaca's full asset list: 15,008 symbols, 12,598 with data (NASDAQ 6,847, NYSE 2,891, AMEX 343, plus ETF venues), active and inactive. **Limit:** Alpaca keeps only about 2,500 delisted names, so 2017–2020 under-represents companies that later died. That flatters every backtest (small caps most), but comparisons between strategies are unaffected.
+
+**Live universe: 23% of eligible stocks were missing.** Of 2,221 eligible names (non-fund, price ≥ $5, ≥ 500k shares/day), 520 were absent. Causes:
+- **Suffix filter bug (212 names, since day one).** `01_universe.py` dropped every ticker ending in W, U or R. That rule is meant only for NASDAQ 5-letter warrants, units and rights. It removed MU, PLTR, PANW, INTU, MSTR, UBER, COHR, GLW, NOW, TER, MPWR, SCHW, LOW, KR, PWR and others.
+- **Stale sources (about 300 names).** The primary NASDAQ list was a years-old GitHub dataset, so new listings never entered: SPCX, CBRS, HONA, FDXF.
+- **Share-volume gate.** It also dropped expensive, heavily traded names such as MELI and FICO.
+
+**Fix (Oct 16):**
+- W/U/R rule applied to 5-letter tickers only.
+- Alpaca's live asset list (NASDAQ/NYSE/AMEX, tradable, non-fund) unioned in.
+- Live nasdaqtrader list read before the stale one.
+- A stock also passes the volume gate at ≥ $25M/day.
+- Dry run of tonight's exact upsert path (`research/probes/universe_dryrun.py`): 1,811 → **2,438** (+636, −9). All 25 spot checks present. Stage 1 takes 13 minutes.
+- Health-check baseline updated.
+
+**Effect on the trial:** the live system and shadows #1, #4 and #5 (which take their universe from `scores_final.csv`) change universe from the Oct 17 run. The Jan 5 live-vs-shadow comparison should start from that run.
+
+**Intraday:** the earlier 5-minute study (`research/intraday_rules.py`, weekly top-15 picks, 2017–2026) found that intraday exit rules move results by only 0.1–0.2% per trade.
+
+**The 10% stop on slow momentum fails on daily bars** (`research/stop_daily_check.py`). It was re-simulated on Alpaca daily OHLC for all 5,070 holding-weeks, 2017–2026; gaps fill at the open, intraday breaches at the stop.
+- It triggers in 27.9% of name-weeks: 1,264 intraday, 152 gaps. Gap fills average −14%; the worst is −43%.
+- Stopped weeks average a −10.6% fill. Without the stop, those same weeks returned −10.0%, so the stop just locks in the dip.
+
+| SLOW | Dev Sharpe | Holdout Sharpe |
+|---|---|---|
+| Stop, daily-validated | 0.71 | 0.69 |
+| No stop | 0.75 | 0.85 |
+| Stop, weekly-low approximation | 0.81 | 0.85 (wrong) |
+
+The stop is dropped. The strategy stack, re-run with SLOW without a stop, is unchanged in substance:
+- Max-Sharpe mix: dev 1.16, holdout 1.65.
+- At 2×: dev 35.7%/yr, max DD −44%; holdout 75.6%/yr (+1.09%/wk), max DD −27%.
