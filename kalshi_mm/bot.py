@@ -19,7 +19,7 @@ Every quote/fill/snapshot is appended to LOG_DIR/*.jsonl for the edge measuremen
 import base64, datetime as dt, json, logging, os, signal, sys, time, uuid
 import urllib.error, urllib.parse, urllib.request
 
-HOSTS = {"dry": "https://api.elections.kalshi.com", "prod": "https://api.elections.kalshi.com",
+HOSTS = {"dry": "https://api.elections.kalshi.com", "prod": "https://external-api.kalshi.com",
          "demo": "https://external-api.demo.kalshi.co"}
 PREFIX = "/trade-api/v2"
 
@@ -155,19 +155,42 @@ class Kalshi:
         return d.get("fills", [])
 
     def place(self, ticker, side, price, count):
-        body = {"ticker": ticker, "action": "buy", "side": side, "count": int(count), "type": "limit",
-                f"{side}_price": int(round(price * 100)), "post_only": True,
+        """side 'yes' = buy YES at price (book bid); side 'no' = buy NO at price, i.e. sell YES
+        at 1 - price (book ask). V2 orders are expressed on the YES leg only."""
+        yes_px = price if side == "yes" else 1 - price
+        body = {"ticker": ticker, "side": "bid" if side == "yes" else "ask", "count": f"{count:.2f}",
+                "price": f"{yes_px:.4f}", "time_in_force": "good_till_canceled",
+                "self_trade_prevention_type": "maker", "post_only": True,
                 "client_order_id": str(uuid.uuid4()), "cancel_order_on_pause": True}
-        return self.req("POST", "/portfolio/orders", body=body, auth=True).get("order", {})
+        return self.req("POST", "/portfolio/events/orders", body=body, auth=True)
 
-    def cancel(self, order_id):
-        return self.req("DELETE", f"/portfolio/orders/{order_id}", auth=True)
+    def cancel(self, order_id, ticker=None):
+        q = {"market_ticker": ticker} if ticker else {}
+        return self.req("DELETE", f"/portfolio/events/orders/{order_id}", auth=True, **q)
 
 
 # --- quoting logic (pure, unit-tested) ---------------------------------------------------
+def order_side(o):
+    """Our side label for a resting order: 'yes' (bid on YES) or 'no' (ask on YES = buy NO)."""
+    bs = o.get("book_side")
+    if bs in ("bid", "ask"):
+        return "yes" if bs == "bid" else "no"
+    side, action = o.get("outcome_side") or o.get("side"), o.get("action", "buy")
+    return side if action == "buy" else ("no" if side == "yes" else "yes")
+
+
 def order_price(o, side):
     v = o.get(f"{side}_price_dollars")
-    return round(num(v), 2) if v is not None else round(num(o.get(f"{side}_price")) / 100, 2)
+    if v is not None:
+        return round(num(v), 2)
+    if o.get(f"{side}_price") is not None:
+        return round(num(o.get(f"{side}_price")) / 100, 2)
+    other = "no" if side == "yes" else "yes"
+    return round(1 - num(o.get(f"{other}_price_dollars")), 2)
+
+
+def remaining(o):
+    return num(o.get("remaining_count_fp", o.get("remaining_count")))
 
 
 def targets(yes_bids, no_bids, pos, hours_left):
@@ -211,7 +234,7 @@ class Bot:
             return
         try:
             for o in self.k.resting():
-                self.k.cancel(o["order_id"])
+                self.k.cancel(o["order_id"], o.get("ticker"))
             jlog("events", event="cancel_all", reason=reason)
             log.info(f"cancelled all resting orders ({reason})")
         except Exception as e:
@@ -236,7 +259,7 @@ class Bot:
         rest = self.k.resting() if live else []
         mine = {}
         for o in rest:
-            mine.setdefault((o["ticker"], o["side"]), []).append(o)
+            mine.setdefault((o["ticker"], order_side(o)), []).append(o)
 
         books, marks = {}, {}
         for tk, h in mkts:
@@ -272,8 +295,7 @@ class Bot:
 
         hours = dict(mkts)
         placed = cancelled = 0
-        resting_cost = sum(order_price(o, o["side"]) * num(o.get("remaining_count_fp", o.get("remaining_count")))
-                           for o in rest)
+        resting_cost = sum(order_price(o, order_side(o)) * remaining(o) for o in rest)
         for tk, (y, n) in books.items():
             want = targets(y, n, pos.get(tk, 0.0), hours.get(tk, -1))
             if not live:
@@ -291,8 +313,8 @@ class Bot:
                         keep = o
                     else:
                         try:
-                            self.k.cancel(o["order_id"]); cancelled += 1
-                            resting_cost -= order_price(o, side) * num(o.get("remaining_count_fp", o.get("remaining_count")))
+                            self.k.cancel(o["order_id"], tk); cancelled += 1
+                            resting_cost -= order_price(o, side) * remaining(o)
                         except Exception as e:
                             log.warning(f"cancel {o.get('order_id')}: {e}")
                 if tgt is None or keep is not None:
@@ -304,7 +326,7 @@ class Bot:
                     resting_cost += tgt * SIZE; placed += 1
                     jlog("orders", ticker=tk, side=side, price=tgt, count=SIZE, hours_left=round(hours[tk], 2),
                          best_yes_bid=y[0][0], best_no_bid=n[0][0], order_id=o.get("order_id"),
-                         status=o.get("status"), queue_position=o.get("queue_position"))
+                         filled=o.get("fill_count"), remaining=o.get("remaining_count"))
                 except Exception as e:
                     log.warning(f"place {tk} {side} {tgt}: {e}")
                     jlog("errors", where="place", ticker=tk, side=side, price=tgt, error=str(e)[:300])

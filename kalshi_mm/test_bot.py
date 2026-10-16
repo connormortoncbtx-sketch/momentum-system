@@ -20,6 +20,13 @@ def test_targets():
     assert t == {"no": round(0.90 - B.OFFSET, 2)}, t
 
 
+def test_order_side():
+    assert B.order_side({"book_side": "bid"}) == "yes"
+    assert B.order_side({"book_side": "ask"}) == "no"
+    assert B.order_side({"side": "yes", "action": "sell"}) == "no"
+    assert B.order_price({"yes_price_dollars": "0.3000"}, "no") == 0.70
+
+
 def test_order_price():
     assert B.order_price({"yes_price_dollars": "0.3700"}, "yes") == 0.37
     assert B.order_price({"no_price": 52}, "no") == 0.52
@@ -43,5 +50,5 @@ def test_sign_roundtrip():
 
 
 if __name__ == "__main__":
-    for f in (test_targets, test_order_price, test_sign_roundtrip):
+    for f in (test_targets, test_order_side, test_order_price, test_sign_roundtrip):
         f(); print("ok", f.__name__)
