@@ -1514,3 +1514,37 @@ The account's shape (up, then a steady slide) is the shape of short-term momentu
 The stop is dropped. The strategy stack, re-run with SLOW without a stop, is unchanged in substance:
 - Max-Sharpe mix: dev 1.16, holdout 1.65.
 - At 2×: dev 35.7%/yr, max DD −44%; holdout 75.6%/yr (+1.09%/wk), max DD −27%.
+
+### More books, and hedging out the market (`research/extra_books.py`, `research/hedged_stack.py`, Oct 16)
+
+**Adding PEAD and INSIDER** (pre-registered dev picks, full 2017–2026 series):
+- PEAD: Sharpe 0.77 dev / 0.78 holdout. INSIDER: 0.75 / 0.63.
+- Combined max-Sharpe is unchanged: 1.16 dev / 1.64 holdout.
+- Long US-stock books correlate 0.6–0.8 with SLOW and with each other through shared market exposure. More stock books ≠ more independent books.
+
+**Market-hedged stock books.** Each stock book was regressed on IWM over dev; hedged book = book − β × IWM (short IWM futures or ETF).
+- Betas: SLOW 0.80, PEAD 0.70, INSIDER 0.78, CONTRACT 0.74.
+- Hedged books keep most of their alpha. CONTRACT hedged: Sharpe 0.91 dev / 1.10 holdout. SLOW hedged: 0.63 / 0.71.
+- Hedged-book correlations: CONTRACT_h vs the others 0.03–0.10; ETF trend vs hedged books about 0.
+
+| Mix (dev-chosen weights) | Dev Sharpe | Holdout Sharpe | Max DD (dev / holdout) |
+|---|---|---|---|
+| Unhedged max-Sharpe (before) | 1.16 | 1.64 | |
+| IWM-hedged books + ETF trend + crypto | **1.41** | 1.68 | −11% / −10% |
+| IWM-hedged books + ETF trend, no crypto | **1.39** | 1.54 | −12% / −13% |
+| SPY-hedged mixes | 1.08–1.17 | | |
+| SPY + IWM two-factor hedge | 1.6 | | |
+
+- The SPY-hedged mixes give no gain.
+- The two-factor hedge's 1.6 is **rejected**: its collinear betas (long SPY, short more IWM) embed a large-over-small bet that paid in both periods.
+
+**Realistic weekly return**, IWM-hedged mix with no crypto, live Sharpe haircut 20% (about 1.12):
+
+| Leverage | Per week | Max DD |
+|---|---|---|
+| 2× | 0.42% | −29% |
+| 3× | 0.51% | −45% |
+
+- Unhedged at the same haircut: 2× 0.53%/wk, max DD −55%.
+- Hedging buys smoothness: about the same return for 10 points less drawdown, or a little more return at the same drawdown. It is not a step change in return.
+- Needs a margin account that can short IWM (or IWM futures). A Roth cannot.
