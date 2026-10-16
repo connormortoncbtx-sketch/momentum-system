@@ -1,0 +1,43 @@
+  2017-12-22 clusters 60 stocks 2423
+  2018-12-07 clusters 60 stocks 2433
+  2019-11-22 clusters 61 stocks 2441
+  2020-11-06 clusters 61 stocks 2443
+  2021-10-22 clusters 68 stocks 2733
+  2022-10-07 clusters 65 stocks 2632
+  2023-09-22 clusters 66 stocks 2642
+  2024-09-06 clusters 68 stocks 2738
+  2025-08-22 clusters 75 stocks 3009
+  2026-08-07 clusters 81 stocks 3256
+
+1. CLUSTER IC (Spearman of heat vs next-4-week cluster excess return); t on non-overlapping weeks
+  c_r4       dev IC -0.028 (t -0.80) | holdout IC -0.017 (t +1.47) | top-bottom quintile 4w spread dev -0.28% holdout -0.11%
+  c_r13      dev IC -0.002 (t -0.42) | holdout IC -0.032 (t -0.60) | top-bottom quintile 4w spread dev -0.13% holdout -0.30%
+  breadth    dev IC -0.029 (t -1.23) | holdout IC -0.007 (t +1.67) | top-bottom quintile 4w spread dev -0.30% holdout -0.18%
+  accel      dev IC -0.017 (t +0.01) | holdout IC -0.002 (t +1.32) | top-bottom quintile 4w spread dev -0.10% holdout +0.13%
+  d_breadth  dev IC -0.013 (t +0.04) | holdout IC +0.006 (t +1.64) | top-bottom quintile 4w spread dev -0.02% holdout +0.27%
+
+2. STOCK LEVEL Fama-MacBeth (weekly rank regression of next-4w excess; coef x100, t on non-overlapping weeks)
+  dev      r4 -1.42 (t -1.3)  r13 +0.74 (t +0.4)  c_r4 -1.77 (t -0.3)  c_r13 -0.03 (t -0.4)  breadth -0.71 (t -0.9)  accel +1.44 (t +1.1)
+  holdout  r4 +0.08 (t +0.5)  r13 +0.36 (t -0.4)  c_r4 -0.67 (t +1.9)  c_r13 -2.80 (t -2.4)  breadth +2.31 (t -0.1)  accel -1.40 (t -0.6)
+
+3. BOOKS (4-week hold, 4 staggered tranches, 25 bps per side)
+  top 10 by own 13w return (no clusters)                         dev CAGR  -33.1%  Sharpe -0.56  maxDD  -95.3% | holdout CAGR  -57.8%  Sharpe -0.99  maxDD  -90.5%
+  hottest 3 clusters by c_r4 -> top 10 by own 13w                dev CAGR   -9.8%  Sharpe -0.06  maxDD  -82.5% | holdout CAGR  -29.2%  Sharpe -0.40  maxDD  -71.2%
+  hottest 3 clusters by c_r13 -> top 10 by own 13w               dev CAGR   -5.2%  Sharpe  0.09  maxDD  -82.6% | holdout CAGR  -26.0%  Sharpe -0.20  maxDD  -68.8%
+  broadest 3 clusters (breadth) -> top 10 by own 13w             dev CAGR   -9.4%  Sharpe -0.14  maxDD  -64.9% | holdout CAGR  -13.9%  Sharpe -0.10  maxDD  -54.6%
+  early themes (accelerating, breadth rising, not yet top) -> top 10 by own 4w dev CAGR   -2.6%  Sharpe  0.06  maxDD  -53.7% | holdout CAGR    0.4%  Sharpe  0.16  maxDD  -43.4%
+  equal-weight universe                                          dev CAGR    9.4%  Sharpe  0.51  maxDD  -41.7% | holdout CAGR   13.9%  Sharpe  0.79  maxDD  -22.1%
+
+4. SNAPSHOT 2026-10-02: hottest clusters by 13-week return
+  cluster  54 n  33 | 4w  +7.7% 13w  +42.7% breadth 0.52 accel -26.6 | YDES (YD Bio Limited Ordinar), QMCO (Quantum Corporation Co), P (Everpure, Inc.), HTFL (Heartflow, Inc. Common), VREX (Varex Imaging Corporat), NIQ (NIQ Global Intelligenc), TISI (Team, Inc.), CD (Chaince Digital Holdin), SBC (SBC Medical Group Hold), RSKD (Riskified Ltd.), HZO (MarineMax, Inc.), BWMN (Bowman Consulting Grou)
+  cluster  51 n  46 | 4w  +2.9% 13w  +33.8% breadth 0.50 accel  +5.4 | IOVA (Iovance Biotherapeutic), OESX (Orion Energy Systems, ), HELP (Helus Pharma Inc. Comm), MTW (The Manitowoc Company,), HBB (Hamilton Beach Brands ), MATV (Mativ Holdings, Inc.), SGHT (Sight Sciences, Inc. C), CAI (Caris Life Sciences, I), SOPH (SOPHiA GENETICS SA Ord), CRCT (Cricut, Inc. Class A C), WPP (WPP PLC), NEWP (New Pacific Metals Cor)
+  cluster  41 n  37 | 4w  +4.2% 13w  +31.7% breadth 0.62 accel -10.8 | ECO (Okeanis Eco Tankers Co), LPG (DORIAN LPG LTD), TRMD (TORM plc Class A Commo), HAFN (Hafnia Limited), FRO (Frontline Plc), TNK (Teekay Tankers Ltd.), NAT (Nordic American Tanker), INSW (International Seaways,), DHT (DHT HOLDINGS, INC.), BWLP (BW LPG Limited), BAFN (BayFirst Financial Cor), TK (Teekay Corporation Ltd)
+  cluster  38 n  30 | 4w  -9.0% 13w  +29.7% breadth 0.20 accel -47.1 | CYPH (Cypherpunk Technologie), EDRY (EuroDry Ltd. Common Sh), MRNA (Moderna, Inc. Common S), NTRB (Nutriband Inc. Common ), ARCT (Arcturus Therapeutics ), AMLX (Amylyx Pharmaceuticals), FRNM (Freenome, Inc. Common ), OBIO (Orchestra BioMed Holdi), WEAV (Weave Communications, ), FUTU (Futu Holdings Limited ), AMR (Alpha Metallurgical Re), STVN (Stevanato Group S.p.A.)
+  cluster  42 n  36 | 4w +10.8% 13w  +23.0% breadth 0.53 accel  -7.9 | SVIA (Silvia, Inc. Common St), GRAL (GRAIL, Inc. Common Sto), BMNR (BitMine Immersion Tech), SDGR (Schrodinger, Inc. Comm), SBET (SharpLink, Inc. Common), FWDI (Forward Industries, In), DFDV (DeFi Development Corp.), MSTR (Strategy Inc Common St), VNCE (Vince Holding Corp. Co), BLSH (Bullish), TEM (Tempus AI, Inc. Class ), CRCL (Circle Internet Group,)
+  cluster   0 n  24 | 4w +37.0% 13w  +22.1% breadth 0.83 accel +46.1 | XRPN (Armada Acquisition Cor), FEAM (5E Advanced Materials,), KOD (Kodiak Sciences Inc Co), IDT (IDT Corporation Class ), LIND (Lindblad Expeditions H), SANG (Sangoma Technologies C), VRA (Vera Bradley, Inc. Com), LFCR (Lifecore Biomedical, I), MAT (Mattel, Inc. Common St), CBNK (Capital Bancorp, Inc. ), BIRD (Smartbird, Inc. Class ), RLGT (Radiant Logistics, Inc)
+  cluster   6 n  43 | 4w  +4.3% 13w  +21.0% breadth 0.60 accel  +2.1 | AMPL (Amplitude, Inc. Class ), ESTC (Elastic N.V.), ZETA (Zeta Global Holdings C), GTLB (GitLab Inc. Class A Co), PD (PagerDuty, Inc.), NTSK (Netskope, Inc. Class A), DOCU (DocuSign, Inc. Common ), APPN (Appian Corporation Cla), OKTA (Okta, Inc. Class A Com), NET (Cloudflare, Inc. Class), S (SentinelOne, Inc.), RBRK (Rubrik, Inc.)
+  cluster  11 n 113 | 4w  -4.8% 13w  +16.1% breadth 0.24 accel -17.1 | CVI (CVR ENERGY, INC.), NRGU (MicroSectors U.S. Big ), GTE (Gran Tierra Energy Inc), PBF (PBF ENERGY INC.), MPC (MARATHON PETROLEUM COR), DINO (HF Sinclair Corporatio), VLO (Valero Energy Corporat), CLMT (Calumet, Inc. Common S), PSX (PHILLIPS 66), CRGY (Crescent Energy Compan), SSL (Sasol Limited), PARR (Par Pacific Holdings, )
+  cluster  33 n  37 | 4w  -5.2% 13w  +13.9% breadth 0.22 accel  -2.8 | RCEL (Avita Medical, Inc. Co), XGN (Exagen Inc. Common Sto), KRT (Karat Packaging Inc. C), ZBRA (Zebra Technologies Cor), HALO (Halozyme Therapeutics,), FIGS (FIGS, Inc.), PRGO (PERRIGO COMPANY PLC), CHYM (Chime Financial, Inc. ), INFU (InfuSystem Holdings, I), ZLAB (Zai Lab Limited Americ), ULH (Universal Logistics Ho), CACI (CACI INTERNATIONAL CLA)
+  cluster  14 n  39 | 4w  +3.6% 13w  +13.8% breadth 0.44 accel  +5.0 | TWST (Twist Bioscience Corpo), AZTA (Azenta, Inc.), INSP (Inspire Medical System), CSTL (Castle Biosciences, In), NTRA (Natera, Inc. Common St), ADPT (Adaptive Biotechnologi), BLFS (BioLife Solutions, Inc), AMPH (Amphastar Pharmaceutic), CTKB (Cytek Biosciences, Inc), BIO (Bio-Rad Laboratories, ), NEO (NeoGenomics, Inc. Comm), PSNL (Personalis, Inc. Commo)
+  cluster  19 n  41 | 4w  -7.3% 13w  +13.0% breadth 0.20 accel -11.2 | EFOR (Everforth, Inc.), HURN (Huron Consulting Group), CBZ (CBIZ, Inc.), ALVO (Alvotech Ordinary Shar), AVTR (Avantor, Inc.), ACN (Accenture PLC), SMTI (Sanara MedTech Inc. Co), CTSH (Cognizant Technology S), EXLS (ExlService Holdings, I), CORT (Corcept Therapeutics I), CARL (Carlsmed, Inc. Common ), EPAM (EPAM SYSTEMS, INC.)
+  cluster  28 n  69 | 4w  -8.0% 13w  +12.1% breadth 0.12 accel -12.2 | CDNA (CareDx, Inc. Common St), RNG (RINGCENTRAL, INC.), WIX (Wix.com Ltd. Ordinary ), VEEV (Veeva Systems Inc.), CRM (Salesforce, Inc.), SPSC (SPS Commerce, Inc. Com), BLKB (Blackbaud, Inc. Common), WDAY (Workday, Inc. Class A ), WK (Workiva Inc.), MANH (Manhattan Associates, ), INTA (Intapp, Inc. Common St), MSFT (Microsoft Corporation )

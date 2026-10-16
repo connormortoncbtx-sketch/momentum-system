@@ -1332,3 +1332,35 @@ The best design on early data: contract value ≥ 10% of market cap, hold 20 ses
 - Stops cut losses by a third to a half but do not turn the book positive.
 - In sample, the same snapshots show +4% to +8%/week, which shows how much the weekly retraining overfits.
 - The live account also had stops through Jun – Aug and fell from $111.6k to about $74k.
+
+### Theme detection (`research/theme_clusters.py`, `research/results/theme_clusters.txt`, Oct 16)
+
+**Method.** Each week, stocks (≥ $3, ≥ $1M/day) are clustered by k-means on 26 weeks of market-residual weekly returns, about 40 names per cluster, 60–80 clusters, 2017–2026. Heat measures: 4- and 13-week cluster return, breadth, acceleration, breadth change.
+
+**The detector finds real themes.** Snapshot for Oct 2, 2026:
+
+| Theme | Members | 13-week return | Status |
+|---|---|---|---|
+| Tanker/LPG shipping | FRO, DHT, TNK, HAFN, INSW | +32% | breadth 0.62 |
+| Crypto-treasury / AI-health | BMNR, SBET, MSTR, CRCL, TEM, GRAL | +23% | 4w +11% |
+| Cloud/security software | NET, OKTA, S, RBRK, GTLB, ESTC | +21% | |
+| Genomics tools | TWST, NTRA, ADPT | +14% | |
+| Refiners | MPC, VLO, PSX, PBF, DINO | +16% | rolling over: 4w −5%, breadth 0.24 |
+| Large SaaS | CRM, WDAY, MSFT, VEEV | | rolling over: 4w −8%, breadth 0.12 |
+| IT services | ACN, CTSH, EPAM | | rolling over |
+
+Some clusters are mixed, with no coherent story.
+
+**It doesn't predict.**
+- **Cluster level:** the rank IC of heat versus the next 4-week cluster excess return is −0.03 to +0.01 in both periods. The top-minus-bottom quintile spread is −0.3% to +0.3%.
+- **Stock level** (Fama-MacBeth): cluster heat adds nothing beyond the stock's own momentum. Holdout 13-week cluster return: −2.8 (t −2.4); hot themes mean-revert.
+- **Books** (4-week hold, 25 bps per side):
+
+| Book | Dev 2017–23 | Holdout 2024–26 |
+|---|---|---|
+| Top 10 by own 13-week return, no clusters | −33%/yr | −58%/yr |
+| Inside the hottest clusters | −5% to −10% | −14% to −29% |
+| Early themes (accelerating, breadth rising) | −2.6% | +0.4%, max DD −43% |
+| Equal-weight universe | +9.4% | +13.9% |
+
+**Verdict.** Themes are easy to see and useful as a dashboard, but by the time a theme shows up in prices, its next month is a coin flip at best. This matches the earlier industry-momentum result. Horizons beyond 4 weeks were not tested.
