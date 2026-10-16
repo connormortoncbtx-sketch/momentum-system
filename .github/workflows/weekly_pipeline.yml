@@ -62,6 +62,8 @@ jobs:
       - name: Run pipeline
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
         run: |
           # Compose flags from workflow_dispatch inputs. Scheduled (cron) runs
           # see empty inputs and produce no flags, preserving existing behavior.

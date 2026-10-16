@@ -31,6 +31,10 @@ from pathlib import Path
 
 MIN_PRICE         = 5.0
 MIN_AVG_VOL       = 500_000
+# 2026-10-16: a stock also passes the volume gate on DOLLAR volume. The share-count gate
+# alone dropped expensive, heavily traded names (MELI, FICO: < 500k shares/day but
+# hundreds of $M/day). Low-priced names are unaffected (they still need 500k shares).
+MIN_AVG_DOLLAR_VOL_ALT = 25_000_000
 MIN_MARKET_CAP    = 300_000_000
 MIN_HISTORY_DAYS  = 60
 BATCH_SIZE        = 100
@@ -52,6 +56,24 @@ def fetch_nasdaq_ftp():
         "https://raw.githubusercontent.com/datasets/nasdaq-listings/master/data/nasdaq-listed-symbols.csv",
         "https://ftp.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt",
     ]
+    # 2026-10-16: try the live nasdaqtrader file FIRST; the GitHub dataset is years stale
+    # (no new listings). The Alpaca asset list (fetch_alpaca_assets) is unioned on top.
+    try:
+        import urllib.request
+        with urllib.request.urlopen(urls[1], timeout=20) as r:
+            raw = r.read().decode("utf-8")
+        rows=[]
+        for line in raw.strip().split("\n")[1:]:
+            parts=line.split("|")
+            if len(parts)<7 or parts[0]=="File Creation Time" or parts[0].startswith("File"): continue
+            if parts[3].strip()=="Y" or parts[6].strip()=="Y":     # test issue / ETF
+                continue
+            rows.append({"symbol":parts[0].strip(),"name":parts[1].strip(),"exchange":"NASDAQ","sector":"","industry":""})
+        if len(rows) > 2000:
+            log.info(f"  NASDAQ (nasdaqtrader): {len(rows):,}")
+            return pd.DataFrame(rows)
+    except Exception as e:
+        log.warning(f"  NASDAQ nasdaqtrader failed: {e}")
     try:
         df = pd.read_csv(urls[0])
         df = df.rename(columns={"Symbol":"symbol","Company Name":"name"})
@@ -193,14 +215,51 @@ def fetch_wikipedia_fallback():
     log.info(f"  Wikipedia total: {len(rows)}")
     return pd.DataFrame(rows) if rows else pd.DataFrame(columns=["symbol","name","exchange","sector","industry"])
 
-def combine_and_clean(nasdaq, nyse):
-    df=pd.concat([nasdaq,nyse],ignore_index=True)
+import re as _re
+_FUND = _re.compile(r"\b(ETF|ETN|FUND|PROSHARES|ISHARES|DIREXION|SPDR|VANGUARD|WISDOMTREE|WARRANTS?|RIGHTS?|"
+                    r"UNITS?|PREFERRED|NOTES?|BITCOIN|ETHER|DEPOSITARY SHARES? REPRESENTING|% )\b", _re.I)
+
+
+def fetch_alpaca_assets():
+    """2026-10-16: authoritative, current list of tradable US stocks on NASDAQ / NYSE / NYSE
+    American from Alpaca (catches new listings the static lists miss: SPCX, CBRS, HONA, ...).
+    Funds, warrants, units, rights, preferreds and notes are dropped by name."""
+    try:
+        from alpaca.trading.client import TradingClient
+        from alpaca.trading.requests import GetAssetsRequest
+        from alpaca.trading.enums import AssetClass, AssetStatus
+        tc = TradingClient(os.environ["ALPACA_API_KEY"], os.environ["ALPACA_SECRET_KEY"],
+                           paper=os.environ.get("ALPACA_PAPER", "true").lower() != "false")
+        rows = []
+        for a in tc.get_all_assets(GetAssetsRequest(asset_class=AssetClass.US_EQUITY, status=AssetStatus.ACTIVE)):
+            ex = str(getattr(a.exchange, "value", a.exchange))
+            if ex not in ("NASDAQ", "NYSE", "AMEX") or not a.tradable:
+                continue
+            name = a.name or ""
+            if _FUND.search(name):
+                continue
+            rows.append({"symbol": a.symbol, "name": name, "exchange": ex, "sector": "", "industry": ""})
+        log.info(f"  Alpaca assets (NASDAQ/NYSE/AMEX, tradable, non-fund): {len(rows):,}")
+        return pd.DataFrame(rows)
+    except Exception as e:
+        log.warning(f"  Alpaca asset list failed: {e}")
+        return pd.DataFrame(columns=["symbol","name","exchange","sector","industry"])
+
+
+def combine_and_clean(nasdaq, nyse, alpaca=None):
+    # Alpaca first so its exchange labels win the de-duplication
+    df=pd.concat(([alpaca] if alpaca is not None and len(alpaca) else []) + [nasdaq,nyse],ignore_index=True)
     df["symbol"]=df["symbol"].str.strip().str.upper()
     df=df[df["symbol"].str.len()>0]
+    # 2026-10-16 fix: the W/U/R suffix rule applies to NASDAQ's 5-letter convention only
+    # (5th letter W = warrant, U = unit, R = rights). Applied to every length it silently
+    # removed MU, PLTR, PANW, INTU, MSTR, UBER, COHR, GLW, NOW, TER, MPWR, SCHW, LOW ...
+    # (212 of ~2,200 eligible stocks, from day one).
+    five = df["symbol"].str.len() == 5
     bad=(
-        df["symbol"].str.endswith("W") |   # warrants
-        df["symbol"].str.endswith("U") |   # units
-        df["symbol"].str.endswith("R") |   # rights
+        five & df["symbol"].str.endswith("W") |   # warrants
+        five & df["symbol"].str.endswith("U") |   # units
+        five & df["symbol"].str.endswith("R") |   # rights
         df["symbol"].str.contains(r"\.", regex=True) |  # BRK.B style
         df["symbol"].str.contains("-",  regex=False) |  # preferred shares
         df["symbol"].str.startswith("ZZ") |
@@ -235,7 +294,7 @@ def gate_batch(symbols):
             close=raw["Close"].dropna(); vol=raw["Volume"].dropna()
             if len(close)<MIN_HISTORY_DAYS: return []
             p=float(close.iloc[-1]); v=float(vol.tail(20).mean())
-            if p>=MIN_PRICE and v>=MIN_AVG_VOL:
+            if p>=MIN_PRICE and (v>=MIN_AVG_VOL or p*v>=MIN_AVG_DOLLAR_VOL_ALT):
                 passed.append({"symbol":sym,"last_price":round(p,2),"avg_vol_20d":int(v),"history_days":len(close)})
         except Exception: pass
         return passed
@@ -244,7 +303,7 @@ def gate_batch(symbols):
             close=raw["Close"][sym].dropna(); vol=raw["Volume"][sym].dropna()
             if len(close)<MIN_HISTORY_DAYS: continue
             p=float(close.iloc[-1]); v=float(vol.tail(20).mean())
-            if p>=MIN_PRICE and v>=MIN_AVG_VOL:
+            if p>=MIN_PRICE and (v>=MIN_AVG_VOL or p*v>=MIN_AVG_DOLLAR_VOL_ALT):
                 passed.append({"symbol":sym,"last_price":round(p,2),"avg_vol_20d":int(v),"history_days":len(close)})
         except Exception: continue
     return passed
@@ -419,7 +478,8 @@ def check_gate_failures(master):
     # tolerance for transient data issues while hard-removing unverifiable rows.
     failing = (
         (master["last_price"]    < MIN_PRICE)      |
-        (master["avg_vol_20d"]   < MIN_AVG_VOL)    |
+        ((master["avg_vol_20d"]  < MIN_AVG_VOL) &
+         (master["avg_vol_20d"] * master["last_price"] < MIN_AVG_DOLLAR_VOL_ALT)) |
         (master["market_cap"]    < MIN_MARKET_CAP)
     )
     master.loc[failing,  "gate_failures"] += 1
@@ -500,7 +560,8 @@ def run(force=False):
     log.info("Fetching ticker lists...")
     nasdaq=fetch_nasdaq_ftp()
     nyse=fetch_nyse_ftp()
-    raw_df=combine_and_clean(nasdaq,nyse)
+    alpaca=fetch_alpaca_assets()
+    raw_df=combine_and_clean(nasdaq,nyse,alpaca)
     raw_df.to_csv(OUTPUT_RAW,index=False)
 
     if upsert_mode:
