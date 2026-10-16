@@ -1648,3 +1648,17 @@ The stop is dropped. The strategy stack, re-run with SLOW without a stop, is unc
 Capacity is not the binding constraint at these sizes. The deep-level pot alone is about $1–2M/yr market-wide.
 
 **Verdict.** The edge is real and robust: positive in every bucket, period and month, and far above the placebo. It is small per contract and shrinking, and its size for a back-of-queue participant is unknown. The next step is a small live test (deep quotes, a few hundred dollars, about 8 weeks), measuring realized cents per contract against the 1.3–1.9¢ deep-level benchmark.
+
+**Bot built (Oct 16):** `kalshi_mm/bot.py`, workflow `kalshi_mm.yml`, run in dry or demo mode only.
+
+**How it quotes.**
+- Rests post-only orders 2¢ behind the best bid on both sides.
+- 5 contracts per quote, with a cap of ±25 contracts per market.
+- $200 total budget, $40 daily loss stop.
+- Quotes only 1–48h before close, in the 8 series that were positive in the holdout.
+- A KILL file cancels everything. All orders are cancelled on exit.
+- Logs quotes, orders, fills and snapshots for the realized-edge measurement.
+
+**Tests.** Offline tests pass for quote logic and Ed25519/RSA signing. A 6-minute dry run against live public books parsed every series and produced about 40 two-sided quotes per cycle (≈$190 collateral if all rested). Touch spreads were typically 1¢.
+
+**Next.** Demo-exchange run once demo API keys are stored as the GitHub secrets KALSHI_DEMO_KEY_ID and KALSHI_DEMO_PRIVATE_KEY. After that comes a funded small live test on an always-on host.
