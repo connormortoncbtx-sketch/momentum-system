@@ -1,0 +1,21 @@
+positive events: 20752 negative: 19620
+cluster-weeks 30,832, weeks 487
+
+IC of filing-flow features vs the cluster's next excess return (t on non-overlapping blocks)
+   4w pos_share  dev IC -0.033 (t -1.47, n 86) | holdout IC +0.007 (t +0.81, n 35)
+   4w pos_chg    dev IC -0.016 (t -1.26, n 86) | holdout IC -0.009 (t -0.03, n 35)
+   4w neg_share  dev IC +0.010 (t +1.27, n 86) | holdout IC -0.034 (t -0.87, n 35)
+   4w quiet_good dev IC -0.001 (t +0.27, n 86) | holdout IC +0.029 (t +0.18, n 35)
+  13w pos_share  dev IC -0.053 (t -0.20, n 27) | holdout IC -0.005 (t -0.69, n 10)
+  13w pos_chg    dev IC -0.010 (t +0.11, n 27) | holdout IC -0.021 (t -0.44, n 10)
+  13w neg_share  dev IC +0.004 (t -0.83, n 27) | holdout IC -0.033 (t +0.10, n 10)
+  13w quiet_good dev IC +0.011 (t -0.14, n 27) | holdout IC +0.037 (t +0.69, n 10)
+  26w pos_share  dev IC -0.079 (t +0.01, n 14) | holdout IC -0.004 (t -0.40, n 4)
+  26w pos_chg    dev IC -0.011 (t +0.31, n 14) | holdout IC -0.035 (t +0.14, n 4)
+  26w neg_share  dev IC -0.018 (t -0.38, n 14) | holdout IC -0.010 (t +1.04, n 4)
+  26w quiet_good dev IC -0.013 (t -0.65, n 14) | holdout IC +0.021 (t -0.09, n 4)
+
+BOOKS: members with a recent positive filing inside the 3 'quiet_good' clusters (good news spreading, price not yet hot)
+  H13: dev CAGR    4.5%  Sharpe  0.30  maxDD  -49.8% | holdout CAGR    9.0%  Sharpe  0.49  maxDD  -26.8%
+  H26: dev CAGR    6.0%  Sharpe  0.35  maxDD  -42.7% | holdout CAGR   12.6%  Sharpe  0.65  maxDD  -28.8%
+  equal-weight universe: dev CAGR    9.4%  Sharpe  0.51  maxDD  -41.7% | holdout CAGR   13.9%  Sharpe  0.79  maxDD  -22.1%

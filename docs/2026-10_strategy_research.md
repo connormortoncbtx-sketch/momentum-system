@@ -1405,3 +1405,36 @@ The account's shape (up, then a steady slide) is the shape of short-term momentu
 | Equal-weight universe | 9.4%, Sharpe 0.51 | 13.9%, Sharpe 0.79 |
 
 **Verdict:** "early" detected from price alone carries no edge. Getting in before a theme forms needs non-price information.
+
+### Do the small fixes add up? (`research/avoid_stack.py`, `research/results/avoid_stack.txt`, Oct 16)
+
+**Fixes tested** (each known at formation): skip the 5 biggest 1w/4w gainers, skip the top volatility decile, skip late filers, distress 8-Ks, merger filings, offerings, and LLM bad news; a 10% hard stop; for LIVE only, hold while ranked ≤ 50. Each fix was run alone, then as a greedy stack chosen on dev, and then with all fixes on.
+
+**LIVE proxy** (weekly top 10 by the live-style composite):
+
+| | Dev 2017–23 | Holdout 2024–26 |
+|---|---|---|
+| Base | −3.4%/yr, Sharpe 0.02, max DD −65% | +0.7%, Sharpe 0.22, max DD −56% |
+| All fixes on | +1.4%, Sharpe 0.18, max DD −45% | +12.8%, Sharpe 0.58, max DD −24% |
+
+- No single fix moves dev Sharpe by more than about ±0.07, except the stop, which is −0.22 dev but +0.44 holdout.
+- **The fixes do add up**, by about +0.2 to +0.35 Sharpe, but only to roughly market level. They turn a losing book into a mediocre one; they do not create an edge.
+
+**SLOW momentum** (shadow #4):
+
+| | Dev 2017–23 | Holdout 2024–26 |
+|---|---|---|
+| Base | 26.4%/yr, Sharpe 0.75, max DD −46% | 38.1%, Sharpe 0.85, max DD −42% |
+| All fixes on | 12.7%, Sharpe 0.54, max DD −35% | 23.9%, Sharpe 0.81, max DD −23% |
+| Greedy pick: 10% stop only | 27.5%, Sharpe 0.81, max DD −34% | 34.9%, Sharpe 0.85, max DD −38% |
+
+- On a book that already works, the filters remove winners: strong momentum names often have offerings, high volatility and bad-news days.
+- Only the stop helps robustly, and mostly through drawdown.
+
+### Filing flow as an early theme signal (`research/theme_filing_flow.py`, `research/results/theme_filing_flow.txt`)
+
+**Data:** 20,752 positive and 19,620 negative LLM-judged 8-Ks, 2017–2026, mapped onto the weekly price clusters.
+- The share of cluster members with recent good news, its change, bad-news share, and "good news spreading while price is still cold": IC at 4, 13 and 26 weeks is −0.08 to +0.04, with no significant t in either period.
+- Book (members with positive filings inside the top-3 "quiet good" clusters, 26-week hold): dev 6.0%/yr (Sharpe 0.35), holdout 12.6% (Sharpe 0.65). Equal-weight universe: 9.4% (Sharpe 0.51) / 13.9% (Sharpe 0.79).
+
+**Verdict:** filing news spreading through a theme does not lead its prices. Company-level contract wins still work (see the contract-win book); theme-level aggregation does not add anything.

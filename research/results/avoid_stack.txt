@@ -1,0 +1,30 @@
+blocks ready: {'no_late': 0.67, 'no_distress': 0.98, 'no_merger': 0.75, 'no_offering': 3.67, 'no_badnews': 0.5, 'no_spike': 0.06, 'no_topvol': 1.65} % of name-weeks
+
+=== LIVE ===
+  base                         dev   -3.4% Sh  0.02 DD  -65.0% | holdout    0.7% Sh  0.22 DD  -55.5%
+  + no_spike                   dev   -5.2% Sh -0.05 DD  -62.9% (dSh -0.07) | holdout    6.3% Sh  0.35 DD  -46.3% (dSh +0.13)
+  + no_topvol                  dev   -4.6% Sh -0.05 DD  -62.8% (dSh -0.06) | holdout    3.0% Sh  0.25 DD  -36.7% (dSh +0.03)
+  + no_late                    dev   -3.6% Sh  0.01 DD  -65.8% (dSh -0.01) | holdout    0.7% Sh  0.22 DD  -53.6% (dSh -0.00)
+  + no_distress                dev   -1.6% Sh  0.08 DD  -63.7% (dSh +0.06) | holdout    1.1% Sh  0.23 DD  -55.4% (dSh +0.01)
+  + no_merger                  dev   -3.5% Sh  0.01 DD  -64.1% (dSh -0.01) | holdout    0.4% Sh  0.21 DD  -55.5% (dSh -0.01)
+  + no_offering                dev   -3.6% Sh  0.00 DD  -61.7% (dSh -0.01) | holdout   -3.8% Sh  0.10 DD  -51.0% (dSh -0.12)
+  + no_badnews                 dev   -3.8% Sh -0.00 DD  -64.4% (dSh -0.02) | holdout    0.8% Sh  0.22 DD  -54.7% (dSh +0.00)
+  + stop10                     dev   -7.9% Sh -0.20 DD  -67.4% (dSh -0.22) | holdout   17.5% Sh  0.66 DD  -30.4% (dSh +0.44)
+  + hold50                     dev   -2.1% Sh  0.06 DD  -41.9% (dSh +0.04) | holdout   -1.2% Sh  0.17 DD  -38.9% (dSh -0.05)
+  GREEDY STACK (each step adds the fix that most improves DEV Sharpe; stops when none helps):
+    no_distress                                                  dev   -1.6% Sh  0.08 DD  -63.7% | holdout    1.1% Sh  0.23 DD  -55.4%
+  ALL FIXES ON                                                 dev    1.4% Sh  0.18 DD  -44.8% | holdout   12.8% Sh  0.58 DD  -23.7%
+
+=== SLOW ===
+  base                         dev   26.4% Sh  0.75 DD  -45.9% | holdout   38.1% Sh  0.85 DD  -42.2%
+  + no_spike                   dev   24.4% Sh  0.72 DD  -46.4% (dSh -0.04) | holdout   16.8% Sh  0.55 DD  -39.4% (dSh -0.30)
+  + no_topvol                  dev   18.8% Sh  0.67 DD  -44.9% (dSh -0.08) | holdout   35.9% Sh  1.01 DD  -29.6% (dSh +0.16)
+  + no_late                    dev   21.1% Sh  0.66 DD  -55.6% (dSh -0.09) | holdout   33.3% Sh  0.79 DD  -46.9% (dSh -0.07)
+  + no_distress                dev   21.0% Sh  0.65 DD  -53.3% (dSh -0.11) | holdout   32.9% Sh  0.79 DD  -48.6% (dSh -0.06)
+  + no_merger                  dev   24.2% Sh  0.71 DD  -45.9% (dSh -0.04) | holdout   43.0% Sh  0.92 DD  -42.2% (dSh +0.06)
+  + no_offering                dev   19.1% Sh  0.62 DD  -38.0% (dSh -0.14) | holdout   28.2% Sh  0.75 DD  -30.6% (dSh -0.11)
+  + no_badnews                 dev   14.2% Sh  0.52 DD  -53.9% (dSh -0.23) | holdout   32.4% Sh  0.78 DD  -41.7% (dSh -0.07)
+  + stop10                     dev   27.5% Sh  0.81 DD  -33.9% (dSh +0.06) | holdout   34.9% Sh  0.85 DD  -37.5% (dSh -0.00)
+  GREEDY STACK (each step adds the fix that most improves DEV Sharpe; stops when none helps):
+    stop10                                                       dev   27.5% Sh  0.81 DD  -33.9% | holdout   34.9% Sh  0.85 DD  -37.5%
+  ALL FIXES ON                                                 dev   12.7% Sh  0.54 DD  -34.6% | holdout   23.9% Sh  0.81 DD  -23.2%
