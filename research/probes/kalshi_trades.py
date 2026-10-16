@@ -12,8 +12,8 @@ def get(path, **q):
         return getattr(e, "code", str(e)[:60]), {}
 
 
-for path, t in (("/markets/trades", "KXHIGHNY-26OCT06-T70"), ("/historical/trades", "KXHIGHNY-25JUN10-T85"),
-                ("/markets/trades", "KXHIGHNY-25JUN10-T85"), ("/historical/trades", "KXHIGHNY-24AUG15-T85")):
+for path, t in (("/historical/trades", "KXHIGHNY-26JUL02-B101.5"), ("/historical/trades", "KXHIGHNY-25JUN01-T66"),
+                ("/historical/trades", "HIGHNY-24AUG03-B90.5"), ("/markets/trades", "KXHIGHNY-25JUN01-T66")):
     st, d = get(path, ticker=t, limit=1000)
     tr = d.get("trades", [])
     print(f"::notice::{path} {t}: status {st}, {len(tr)} trades, keys {sorted(tr[0].keys()) if tr else None}, "
