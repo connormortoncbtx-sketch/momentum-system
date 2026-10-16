@@ -44,6 +44,9 @@ if os.path.exists(_xb):
         SER[_c] = weekly_from_formation(_x[_c])
 cb = pd.read_csv(f"{P}/results/contract_filters_daily.csv", index_col=0, parse_dates=True)["best"]
 SER["CONTRACT"] = weekly_from_daily(cb)
+_dod = f"{P}/results/dod_book_daily.csv"                # research/dod_awards.py (dev-chosen design)
+if os.path.exists(_dod) and os.environ.get("INCLUDE_DOD") == "1":   # excluded: failed out of sample (Oct 16)
+    SER["DOD"] = weekly_from_daily(pd.read_csv(_dod, index_col=0, parse_dates=True)["dod"])
 
 D = f"{P}/trend"
 e = pd.read_parquet(f"{D}/etf_daily.parquet")

@@ -1548,3 +1548,30 @@ The stop is dropped. The strategy stack, re-run with SLOW without a stop, is unc
 - Unhedged at the same haircut: 2× 0.53%/wk, max DD −55%.
 - Hedging buys smoothness: about the same return for 10 points less drawdown, or a little more return at the same drawdown. It is not a step change in return.
 - Needs a margin account that can short IWM (or IWM futures). A Roth cannot.
+
+### DoD contract awards as a 5th book (`research/dod_awards.py`, Oct 16): **fails**
+
+**Data.** war.gov/defense.gov block cloud servers (403); the RSS gives titles only, back to Aug 2024. History therefore came from USAspending: 47,817 new DoD awards ≥ $7.5M, 2017–2026. The base obligation date is treated as the announcement day; one month-page (2025-09, page 3) failed to fetch.
+
+**Coverage**
+- Only 16% of awards mapped to a current ticker, covering 145 companies.
+- They are dominated by the big primes: LMT 1,201 events, BA 814, GD 716, LDOS 445, BAH 388.
+- 58% of events lack a share count, so award size relative to market cap is unknown.
+- Small contractors are mostly private, or already file 8-Ks, which the contract-win book catches.
+
+**Event drift** (IWM-adjusted, 20 days):
+
+| Award size vs market cap | Dev | Holdout |
+|---|---|---|
+| 0.1–1% | +0.75% (t 2.7) | +0.51% (t 0.7) |
+| 1–5% | +1.77% (t 2.7) | −1.14% |
+| ≥ 5% | −0.71% | −0.71% |
+
+**Book** (dev-chosen: awards ≥ 0.1% of market cap, 20-day hold): Sharpe 0.53 dev / 0.27 holdout.
+- IWM-hedged: 0.31 / −0.24.
+- Weekly correlation with the contract-win book: 0.25.
+
+**In the hedged stack**
+- The optimizer gave DOD 16–19% weight on its low dev correlation. Dev Sharpe rose (1.39 → 1.44), but holdout fell (1.54 → 1.44 without crypto; 1.68 → 1.59 with crypto). This is the classic sign of a weak book overfitting the mix.
+- **Excluded.** `strategy_stack.py` only includes it with `INCLUDE_DOD=1`.
+- The live DoD feed question is moot.

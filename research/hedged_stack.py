@@ -25,7 +25,7 @@ print("BETAS (dev) and hedged-book stats")
 HEDGE = os.environ.get("HEDGE", "IWM")          # IWM | SPY | BOTH (BOTH embeds a size bet -- see note)
 idx = ["SPY", "IWM"] if HEDGE == "BOTH" else [HEDGE]
 print(f"hedge instrument(s): {idx}")
-for c in ("SLOW", "PEAD", "INSIDER", "CONTRACT", "LIVEFIX"):
+for c in [x for x in ("SLOW", "PEAD", "INSIDER", "CONTRACT", "DOD", "LIVEFIX") if x in R.columns]:
     X = np.c_[np.ones(dev.sum()), mk.loc[dev, idx].to_numpy()]
     b = np.linalg.lstsq(X, R.loc[dev, c].to_numpy(), rcond=None)[0]
     H[c + "_h"] = R[c] - sum(b[j + 1] * mk[ix] for j, ix in enumerate(idx))
