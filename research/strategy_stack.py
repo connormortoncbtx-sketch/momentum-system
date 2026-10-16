@@ -9,6 +9,8 @@ Weekly return series (calendar weeks ending Friday), 2017-01 .. 2026-09:
             wins + dev-adopted filters, 10-day hold, 1/vol weights, 25% cap)
   ETFTREND  cross-asset ETF trend, 63-day, long-only, vol-targeted (research/trend_test.py)
   CRYPTO    crypto trend, 50-day MA, long/cash, vol-targeted (2021-06+; cash before)
+  PEAD      earnings drift, pre-registered dev pick (research/pead.py via research/extra_books.py)
+  INSIDER   insider buying + 12-1 momentum, pre-registered dev pick (research/insiders.py)
 Mixes chosen on DEV 2017-2023 only: equal weight, inverse-vol, and max-Sharpe (long-only,
 weights sum to 1). Scored once on HOLDOUT 2024-2026. Leverage: full / half Kelly from DEV,
 financing 6%/yr on the borrowed part.
@@ -35,6 +37,11 @@ import avoid_stack as A  # noqa: E402
 SER = {"SLOW": weekly_from_formation(A.sim("SLOW", [])),   # no stop: daily-bar check (research/stop_daily_check.py) showed it hurts
        "LIVEFIX": weekly_from_formation(A.sim("LIVE", ["no_spike", "no_topvol", "no_late", "no_distress", "no_merger",
                                                        "no_offering", "no_badnews", "stop10", "hold50"]))}
+_xb = f"{P}/results/extra_books.csv"          # research/extra_books.py (pre-registered dev picks)
+if os.path.exists(_xb):
+    _x = pd.read_csv(_xb, index_col=0, parse_dates=True)
+    for _c in _x.columns:
+        SER[_c] = weekly_from_formation(_x[_c])
 cb = pd.read_csv(f"{P}/results/contract_filters_daily.csv", index_col=0, parse_dates=True)["best"]
 SER["CONTRACT"] = weekly_from_daily(cb)
 

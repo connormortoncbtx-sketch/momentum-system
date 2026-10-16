@@ -1,0 +1,37 @@
+BETAS (dev) and hedged-book stats
+hedge instrument(s): ['IWM']
+  SLOW      beta IWM +0.80 | alpha +25.3%/yr | SLOW hedged                        dev   19.0%/yr Sh  0.63 DD  -43.5% | holdout   26.1%/yr Sh  0.71 DD  -47.2% (+0.45%/wk)
+  PEAD      beta IWM +0.70 | alpha +12.3%/yr | PEAD hedged                        dev   11.2%/yr Sh  0.67 DD  -24.8% | holdout    8.2%/yr Sh  0.47 DD  -30.0% (+0.15%/wk)
+  INSIDER   beta IWM +0.78 | alpha +12.2%/yr | INSIDER hedged                     dev   11.0%/yr Sh  0.65 DD  -20.7% | holdout    3.0%/yr Sh  0.25 DD  -20.6% (+0.06%/wk)
+  CONTRACT  beta IWM +0.74 | alpha +26.1%/yr | CONTRACT hedged                    dev   24.9%/yr Sh  0.91 DD  -26.0% | holdout   37.5%/yr Sh  1.10 DD  -28.3% (+0.61%/wk)
+  LIVEFIX   beta IWM +0.47 | alpha -0.1%/yr | LIVEFIX hedged                     dev   -2.6%/yr Sh -0.00 DD  -37.1% | holdout    5.7%/yr Sh  0.34 DD  -27.5% (+0.11%/wk)
+
+CORRELATION of hedged books (dev)
+            SLOW_h  PEAD_h  INSIDER_h  CONTRACT_h  LIVEFIX_h  ETFTREND  CRYPTO   SPY
+SLOW_h        1.00    0.45       0.63        0.14       0.45     -0.06    0.03 -0.10
+PEAD_h        0.45    1.00       0.61        0.03       0.45      0.02    0.04  0.01
+INSIDER_h     0.63    0.61       1.00        0.13       0.43     -0.04    0.03 -0.10
+CONTRACT_h    0.14    0.03       0.13        1.00       0.01     -0.16    0.06 -0.10
+LIVEFIX_h     0.45    0.45       0.43        0.01       1.00      0.16    0.04  0.01
+ETFTREND     -0.06    0.02      -0.04       -0.16       0.16      1.00   -0.00  0.72
+CRYPTO        0.03    0.04       0.03        0.06       0.04     -0.00    1.00  0.05
+SPY          -0.10    0.01      -0.10       -0.10       0.01      0.72    0.05  1.00
+
+MIXES (dev-chosen weights; weights sum to 1, long-only in each sleeve)
+  hedged books + ETF + crypto + SPY  dev   17.1%/yr Sh  1.48 DD  -11.7% | holdout   24.9%/yr Sh  1.72 DD   -8.9% (+0.43%/wk)
+      weights SLOW_h 0.06, PEAD_h 0.16, INSIDER_h 0.07, CONTRACT_h 0.25, ETFTREND 0.09, CRYPTO 0.12, SPY 0.26
+  hedged books + ETF + crypto (no SPY) dev   17.9%/yr Sh  1.41 DD  -11.0% | holdout   27.2%/yr Sh  1.68 DD  -10.0% (+0.46%/wk)
+      weights SLOW_h 0.06, PEAD_h 0.20, INSIDER_h 0.05, CONTRACT_h 0.29, ETFTREND 0.23, CRYPTO 0.16
+  hedged books + ETF (no crypto, no SPY) dev   20.6%/yr Sh  1.39 DD  -11.8% | holdout   28.5%/yr Sh  1.54 DD  -13.3% (+0.48%/wk)
+      weights SLOW_h 0.07, PEAD_h 0.24, INSIDER_h 0.06, CONTRACT_h 0.35, ETFTREND 0.28
+
+LEVERAGE (Kelly from dev; financing 6%/yr on the borrowed part)
+  hedged books + ETF + crypt x2.00   dev   27.5%/yr Sh  1.21 DD  -25.8% | holdout   44.4%/yr Sh  1.50 DD  -18.0% (+0.71%/wk)
+  hedged books + ETF + crypt x3.00   dev   37.2%/yr Sh  1.12 DD  -39.2% | holdout   63.8%/yr Sh  1.42 DD  -26.5% (+0.95%/wk)
+  hedged books + ETF + crypt x5.04   dev   53.1%/yr Sh  1.05 DD  -61.7% | holdout  100.8%/yr Sh  1.36 DD  -42.1% (+1.35%/wk)
+  hedged books + ETF + crypt x2.00   dev   29.0%/yr Sh  1.17 DD  -25.4% | holdout   49.0%/yr Sh  1.48 DD  -20.6% (+0.77%/wk)
+  hedged books + ETF + crypt x3.00   dev   39.1%/yr Sh  1.09 DD  -39.1% | holdout   70.8%/yr Sh  1.41 DD  -30.3% (+1.03%/wk)
+  hedged books + ETF + crypt x4.45   dev   51.1%/yr Sh  1.03 DD  -56.1% | holdout  100.2%/yr Sh  1.37 DD  -43.2% (+1.34%/wk)
+  hedged books + ETF (no cry x2.00   dev   34.4%/yr Sh  1.18 DD  -23.6% | holdout   50.9%/yr Sh  1.37 DD  -27.2% (+0.79%/wk)
+  hedged books + ETF (no cry x3.00   dev   46.7%/yr Sh  1.11 DD  -34.9% | holdout   72.1%/yr Sh  1.31 DD  -39.8% (+1.05%/wk)
+  hedged books + ETF (no cry x3.92   dev   56.2%/yr Sh  1.08 DD  -46.9% | holdout   89.3%/yr Sh  1.28 DD  -50.2% (+1.23%/wk)
