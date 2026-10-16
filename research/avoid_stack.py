@@ -126,7 +126,7 @@ def fmt(d):
 
 
 FIXES = ["no_spike", "no_topvol", "no_late", "no_distress", "no_merger", "no_offering", "no_badnews", "stop10"]
-for base in ("LIVE", "SLOW"):
+for base in (("LIVE", "SLOW") if __name__ == "__main__" else ()):
     fixes = FIXES + (["hold50"] if base == "LIVE" else [])
     r0 = sim(base, []); d0, h0 = both(r0)
     print(f"\n=== {base} ===\n  {'base':28s} dev {fmt(d0)} | holdout {fmt(h0)}")

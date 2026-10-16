@@ -1438,3 +1438,44 @@ The account's shape (up, then a steady slide) is the shape of short-term momentu
 - Book (members with positive filings inside the top-3 "quiet good" clusters, 26-week hold): dev 6.0%/yr (Sharpe 0.35), holdout 12.6% (Sharpe 0.65). Equal-weight universe: 9.4% (Sharpe 0.51) / 13.9% (Sharpe 0.79).
 
 **Verdict:** filing news spreading through a theme does not lead its prices. Company-level contract wins still work (see the contract-win book); theme-level aggregation does not add anything.
+
+### Strategy stack: diversify the surviving books, then lever (`research/strategy_stack.py`, `research/results/strategy_stack.txt`, Oct 16)
+
+**Components** (weekly, 2017–2026, 364 dev weeks / 143 holdout weeks):
+
+| Component | Dev | Holdout |
+|---|---|---|
+| SLOW (slow momentum + 10% stop) | Sharpe 0.81, 27%/yr | Sharpe 0.86, 36%/yr |
+| CONTRACT (dev-chosen contract-win book) | 0.99, 32% | 1.28, 52% |
+| ETFTREND (63-day, long-only) | 0.63, 15% | 1.39, 31% |
+| CRYPTO (trend 50-day; cash before Jun 2021) | 0.31 | 0.73 |
+| LIVEFIX (live proxy + all fixes) | 0.18 | 0.58 |
+
+- Correlations are low: SLOW–CONTRACT 0.28–0.32, CONTRACT–ETF 0.21–0.39, CRYPTO about 0 to everything.
+
+**Mixes** (weights chosen on dev, scored on holdout):
+
+| Mix | Weights | Dev | Holdout |
+|---|---|---|---|
+| Max Sharpe | SLOW 0.19, CONTRACT 0.35, ETF 0.19, CRYPTO 0.27 | Sharpe 1.18, 22.7%/yr, max DD −21% | Sharpe 1.64, 39.3%/yr, max DD −14% |
+| Max Sharpe, no crypto | SLOW 0.26, CONTRACT 0.48, ETF 0.26 | 1.16, 29.7%, max DD −24% | 1.50, 46.4%, max DD −22% |
+| Equal weight | | 0.99 | 1.51 |
+
+- LIVEFIX gets zero weight in every optimized mix.
+
+**Leverage** (Kelly from dev; financing 6%/yr):
+
+| Mix | Leverage | Dev | Holdout |
+|---|---|---|---|
+| Max Sharpe | 2.0× | 37%/yr (0.61%/wk), max DD −42% | 74%/yr (1.08%/wk), max DD −27% |
+| Max Sharpe | 2.58× (half Kelly) | 44%/yr (0.70%/wk), max DD −53% | 95%/yr (1.29%/wk), max DD −35% |
+| No crypto | 2.0× (half Kelly) | 49%/yr (0.77%/wk), max DD −47% | 87%/yr (1.21%/wk), max DD −42% |
+
+**Caveats**
+- The components were included because they survived earlier tests, so holdout Sharpe (1.5–1.6) is optimistic; dev (about 1.15) is the better guide.
+- 2024–26 was a strong market for every component.
+- The contract book's 2017–23 data has survivorship bias.
+- Crypto is zero before 2021, which flatters its dev risk.
+- Leverage needs margin; a Roth cannot lever, and small caps have higher margin requirements.
+
+**Verdict:** this is the first combination at or above Sharpe 1.1 on data it was not designed on. About 1%/week becomes plausible at about 2× leverage, with roughly −40% to −50% drawdowns.
