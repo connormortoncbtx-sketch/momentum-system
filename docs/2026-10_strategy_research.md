@@ -1598,3 +1598,53 @@ The stop is dropped. The strategy stack, re-run with SLOW without a stop, is unc
 - Started at shadow #4's Oct 12 mark; first mark about Oct 20. The live data path was dry-run on Oct 16: all 41 ETFs and 16 coins present.
 
 **Review.** The Jan 5, 2027 review task was updated to evaluate #4–#7. It also uses the Oct 19 universe-fix start for the live system and the price-based shadows.
+
+## Kalshi passive market making, weather markets (Oct 16, 2026): `research/kalshi/market_making.py`
+
+**Question.** Can a small account earn the spread by resting orders on Kalshi daily-high temperature markets? The aim is an uncorrelated income stream that funds the stack.
+
+**Data.** 5,950 settled markets (14.7% stratified sample of 40,582, 14 cities, Jun 2024 to Oct 2026): 3.0M trades, 110M contracts. Dev runs to Oct 1, 2025; the holdout runs after. The maker side of each trade is held to settlement. All 14 series use the `quadratic` fee type: takers pay 0.07·p(1−p) and makers pay nothing.
+
+**Maker edge, cents per contract**
+
+| Cut | Dev | Holdout |
+|---|---|---|
+| All trades | 1.39 | 0.76 |
+| Price buckets | 0.5 to 6.6, all positive | 0.4 to 1.8, all positive |
+| Hours-left buckets | 1.2 to 2.2, all positive | 0.4 to 1.1, all positive |
+| Single trades at the touch | 0.35 | 0.49 |
+| Sweeps (taker crosses >1 price level) | 2.90 | 1.29 |
+| Deepest level of a sweep | 3.39 | 1.95 |
+
+- **Price impact after the trade.** On single trades the price ten minutes later has barely moved (about 0, maker's view). On sweeps the maker gains about 1.2–2.8¢ by then.
+- **By month.** Every month from Jun 2024 to Oct 2026 is positive, but the edge is shrinking: about 2–4¢ in mid-2024, about 1¢ in 2025, about 0.6–0.9¢ in 2026, and 0.06¢ in a partial Oct 2026.
+- **By city.** The newer series show losses in the holdout (TBOS, TDC, TSATX, TEWR).
+
+**Passive book vs placebo.** The placebo shuffles the taker side within each market.
+
+| Book | Sharpe, dev | Sharpe, holdout | Return on fill collateral |
+|---|---|---|---|
+| Real | 4.3 to 7.2 | 4.8 to 7.4 | about 4–9%/month |
+| Placebo | −1.9 to +0.3 | −4.0 to +2.0 | about −2% to +2.6%/month |
+
+- The real book wins on about 63–67% of days.
+- The real book beats the placebo in every share and cap setting, in both periods.
+- This is the first test in this program whose holdout result is not ambiguous.
+
+**Why the backtest overstates it**
+
+1. **The edge is the average maker's.** The book assumes we get our share of every trade. Back-of-queue fills are worse, and the queue at the touch is where pros cancel ahead of news. Single-trade fills at the touch earn only about 0.4¢.
+2. **Resting orders tie up collateral.** Kalshi reserves funds for unfilled orders too. The capital figure above counts only fills, so true capital needs are 2–3x higher.
+3. **The edge is decaying** as competition grows: from about 2.4¢ to about 0.6¢ in two years.
+4. **Fees can change.** If Kalshi starts charging makers 0.0175·p(1−p), that takes about 0.2–0.4¢ off.
+
+**Where the money is.** Most of the edge sits deeper in the book, where impatient sweeps hit. That suggests quoting a few cents behind the touch rather than at it: fewer fills, much better fills, and less racing against pros.
+
+**Realistic size.** After a 50–75% haircut, expect roughly 1–3% a month on deployed capital:
+- $2k → about $20–60/month
+- $5k → about $50–150/month
+- $10k → about $100–300/month
+
+Capacity is not the binding constraint at these sizes. The deep-level pot alone is about $1–2M/yr market-wide.
+
+**Verdict.** The edge is real and robust: positive in every bucket, period and month, and far above the placebo. It is small per contract and shrinking, and its size for a back-of-queue participant is unknown. The next step is a small live test (deep quotes, a few hundred dollars, about 8 weeks), measuring realized cents per contract against the 1.3–1.9¢ deep-level benchmark.
