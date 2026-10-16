@@ -1364,3 +1364,44 @@ Some clusters are mixed, with no coherent story.
 | Equal-weight universe | +9.4% | +13.9% |
 
 **Verdict.** Themes are easy to see and useful as a dashboard, but by the time a theme shows up in prices, its next month is a coin flip at best. This matches the earlier industry-momentum result. Horizons beyond 4 weeks were not tested.
+
+### Forensic audit: what changed around the end of May? (Oct 16)
+
+**Code, config and workflow changes, May 15 – Jul 5:**
+- May 31: holiday guard now checks the *upcoming* week. This was a correct fix; without it, stale scores would have been traded.
+- Jun 5–6: `collect_returns` day-count fix (training labels).
+- **Jun 5: stage-5 rerank fix.** Live ranking changed from 0.5 × alpha + 0.5 × EV to alpha with a momentum tie-break.
+- Weekly weight refinements.
+- Model retrains on Jun 1, 6, 13 and 27. Feature importances drift gradually (volume surge / RS / momentum stay on top); there is no break.
+- Nothing changed in `alpaca_trader` or `alpaca_monitor` in that window.
+
+**The ranking change did not cause the decline** (`research/rank_formula_test.py`). Both formulas were re-scored on every logged week over the same eligible names; "actual" matches OLD before Jun 5 and NEW after.
+
+| Ranking | Before (7 weeks) | After (11 weeks) | Pick volatility |
+|---|---|---|---|
+| OLD | +1.1%/wk | −2.04%/wk (−22%) | 13–20% |
+| NEW | +2.6%/wk | −1.38%/wk (−15%) | 9–12% |
+
+Reverting the formula would have lost more.
+
+**What did change: the factor the model bets on flipped market-wide.** Top-decile excess return per week, across all logged names (`research/results/version_replay.txt` and inline check):
+
+| Factor | Apr 10 – May 22 | May 29 – Oct 2 |
+|---|---|---|
+| Short-term RS | +0.61% | −0.89% |
+| Regime-adjusted momentum | +0.79% | −0.37% |
+| Volume surge | +0.01% | −0.39% |
+
+The account's shape (up, then a steady slide) is the shape of short-term momentum in this period: a rebound rally in which chasing worked, then a market in which it reversed. The May 22 snapshot, frozen with no later changes, also lost −1.55%/wk out of sample.
+
+### Themes at longer horizons (`research/theme_clusters.py` §1b/3b)
+
+- Cluster-heat IC at 13 and 26 weeks is −0.05 to +0.02 in both periods.
+- Books held 13–26 weeks do better than 4-week books but at best match the equal-weight universe:
+
+| Book | Dev 2017–23 | Holdout 2024–26 |
+|---|---|---|
+| Early themes, 26-week hold | 10.2%/yr, Sharpe 0.50, max DD −41% | 8.7%/yr, Sharpe 0.46 |
+| Equal-weight universe | 9.4%, Sharpe 0.51 | 13.9%, Sharpe 0.79 |
+
+**Verdict:** "early" detected from price alone carries no edge. Getting in before a theme forms needs non-price information.

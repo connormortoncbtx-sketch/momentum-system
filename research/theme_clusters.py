@@ -39,6 +39,10 @@ resid = r1.sub(r1.where(U).mean(axis=1), axis=0)
 r13 = C / C.shift(13) - 1
 F4 = (d1c.shift(-5) / d1c.shift(-1) - 1).where(lambda x: x.abs() < 5)
 F4x = F4.sub(F4.where(U).mean(axis=1), axis=0)
+FX = {4: F4x}
+for h in (13, 26):
+    Fh = (d1c.shift(-(h + 1)) / d1c.shift(-1) - 1).where(lambda x: x.abs() < 20)
+    FX[h] = Fh.sub(Fh.where(U).mean(axis=1), axis=0)
 START, SPLIT, LOOK = pd.Timestamp("2017-01-06"), pd.Timestamp("2024-01-01"), 26
 COST = 25.0
 names = pd.read_parquet(f"{P}/assets.parquet").set_index("symbol").reindex(S)["name"].fillna("")
@@ -69,9 +73,11 @@ for n, i in enumerate(idx):
     r4 = f["r4w"].iloc[i].to_numpy()[cols]; r13v = r13.iloc[i].to_numpy()[cols]
     r4p = (C.iloc[i - 4] / C.iloc[i - 8] - 1).to_numpy()[cols]
     fx = F4x.iloc[i].to_numpy()[cols]
-    df = pd.DataFrame({"c": lab, "r4": r4, "r13": r13v, "r4p": r4p, "fx": fx, "sym": S[cols]})
+    df = pd.DataFrame({"c": lab, "r4": r4, "r13": r13v, "r4p": r4p, "fx": fx, "sym": S[cols],
+                       "fx13": FX[13].iloc[i].to_numpy()[cols], "fx26": FX[26].iloc[i].to_numpy()[cols]})
     g = df.groupby("c").agg(n=("sym", "size"), c_r4=("r4", "mean"), c_r13=("r13", "mean"),
-                            breadth=("r4", lambda x: (x > 0).mean()), c_r4p=("r4p", "mean"), c_fx=("fx", "mean"))
+                            breadth=("r4", lambda x: (x > 0).mean()), c_r4p=("r4p", "mean"), c_fx=("fx", "mean"),
+                            c_fx13=("fx13", "mean"), c_fx26=("fx26", "mean"))
     g["accel"] = g.c_r4 - g.c_r4p
     # breadth 4 weeks ago for the same members (cluster ids are not stable over time)
     r4_old = (C.iloc[i - 4] / C.iloc[i - 8] - 1).to_numpy()[cols]
@@ -189,6 +195,28 @@ for nm, sel in books.items():
     print(f"  {nm:62s} dev {st(r[r.index < SPLIT])} | holdout {st(r[r.index >= SPLIT])}")
 e = ew[(ew.index >= START)]
 print(f"  {'equal-weight universe':62s} dev {st(e[e.index < SPLIT])} | holdout {st(e[e.index >= SPLIT])}")
+
+# 1b. longer horizons
+print("\n1b. CLUSTER IC at 13 and 26 weeks (t on non-overlapping blocks)")
+for h, col in ((13, "c_fx13"), (26, "c_fx26")):
+    kw = set(wk_all[::h])
+    for feat in ("c_r4", "c_r13", "breadth", "accel", "d_breadth"):
+        ic = CL.dropna(subset=[col]).groupby("week").apply(lambda g: g[feat].rank().corr(g[col].rank()))
+        out = []
+        for per in ("dev", "holdout"):
+            x = ic[[(w < SPLIT) == (per == "dev") for w in ic.index]]
+            xn = x[[w in kw for w in x.index]]
+            t = xn.mean() / xn.std() * np.sqrt(len(xn)) if len(xn) > 2 else np.nan
+            out.append(f"{per} IC {x.mean():+.3f} (t {t:+.2f}, n {len(xn)})")
+        print(f"  {h:2d}w {feat:10s} " + " | ".join(out))
+
+print("\n3b. LONG-HOLD BOOKS (13 / 26-week hold, staggered tranches, 25 bps per side)")
+for H in (13, 26):
+    for nm, sel in (("top 10 by own 13w (no clusters)", top_plain()),
+                    ("hottest 3 clusters by c_r13 -> top 10 by own 13w", top_in_hot("c_r13")),
+                    ("early themes -> top 10 by own 4w", early_themes())):
+        r = book(sel, H=H)
+        print(f"  H{H:2d} {nm:52s} dev {st(r[r.index < SPLIT])} | holdout {st(r[r.index >= SPLIT])}")
 
 # 4. snapshot
 w = max(labels)

@@ -28,6 +28,26 @@
   early themes (accelerating, breadth rising, not yet top) -> top 10 by own 4w dev CAGR   -2.6%  Sharpe  0.06  maxDD  -53.7% | holdout CAGR    0.4%  Sharpe  0.16  maxDD  -43.4%
   equal-weight universe                                          dev CAGR    9.4%  Sharpe  0.51  maxDD  -41.7% | holdout CAGR   13.9%  Sharpe  0.79  maxDD  -22.1%
 
+1b. CLUSTER IC at 13 and 26 weeks (t on non-overlapping blocks)
+  13w c_r4       dev IC -0.022 (t +0.71, n 27) | holdout IC -0.029 (t -1.17, n 10)
+  13w c_r13      dev IC -0.010 (t +0.21, n 27) | holdout IC -0.052 (t -0.95, n 10)
+  13w breadth    dev IC -0.020 (t +0.37, n 27) | holdout IC -0.019 (t -1.44, n 10)
+  13w accel      dev IC -0.006 (t +0.30, n 27) | holdout IC +0.002 (t -0.98, n 10)
+  13w d_breadth  dev IC -0.006 (t +0.54, n 27) | holdout IC +0.020 (t -0.79, n 10)
+  26w c_r4       dev IC -0.020 (t +1.25, n 14) | holdout IC -0.028 (t -1.63, n 4)
+  26w c_r13      dev IC +0.013 (t +0.68, n 14) | holdout IC -0.021 (t +0.35, n 4)
+  26w breadth    dev IC -0.020 (t +0.38, n 14) | holdout IC -0.022 (t -1.57, n 4)
+  26w accel      dev IC -0.024 (t +0.72, n 14) | holdout IC -0.019 (t -2.63, n 4)
+  26w d_breadth  dev IC -0.021 (t +0.30, n 14) | holdout IC -0.021 (t -2.14, n 4)
+
+3b. LONG-HOLD BOOKS (13 / 26-week hold, staggered tranches, 25 bps per side)
+  H13 top 10 by own 13w (no clusters)                      dev CAGR  -12.8%  Sharpe -0.08  maxDD  -83.7% | holdout CAGR  -28.7%  Sharpe -0.35  maxDD  -65.7%
+  H13 hottest 3 clusters by c_r13 -> top 10 by own 13w     dev CAGR    9.3%  Sharpe  0.42  maxDD  -67.1% | holdout CAGR   -4.0%  Sharpe  0.15  maxDD  -49.1%
+  H13 early themes -> top 10 by own 4w                     dev CAGR    8.1%  Sharpe  0.42  maxDD  -44.1% | holdout CAGR    1.3%  Sharpe  0.18  maxDD  -35.0%
+  H26 top 10 by own 13w (no clusters)                      dev CAGR   -5.3%  Sharpe  0.07  maxDD  -80.6% | holdout CAGR  -19.1%  Sharpe -0.25  maxDD  -53.9%
+  H26 hottest 3 clusters by c_r13 -> top 10 by own 13w     dev CAGR   10.3%  Sharpe  0.45  maxDD  -64.4% | holdout CAGR    0.7%  Sharpe  0.22  maxDD  -38.2%
+  H26 early themes -> top 10 by own 4w                     dev CAGR   10.2%  Sharpe  0.50  maxDD  -41.4% | holdout CAGR    8.7%  Sharpe  0.46  maxDD  -30.7%
+
 4. SNAPSHOT 2026-10-02: hottest clusters by 13-week return
   cluster  54 n  33 | 4w  +7.7% 13w  +42.7% breadth 0.52 accel -26.6 | YDES (YD Bio Limited Ordinar), QMCO (Quantum Corporation Co), P (Everpure, Inc.), HTFL (Heartflow, Inc. Common), VREX (Varex Imaging Corporat), NIQ (NIQ Global Intelligenc), TISI (Team, Inc.), CD (Chaince Digital Holdin), SBC (SBC Medical Group Hold), RSKD (Riskified Ltd.), HZO (MarineMax, Inc.), BWMN (Bowman Consulting Grou)
   cluster  51 n  46 | 4w  +2.9% 13w  +33.8% breadth 0.50 accel  +5.4 | IOVA (Iovance Biotherapeutic), OESX (Orion Energy Systems, ), HELP (Helus Pharma Inc. Comm), MTW (The Manitowoc Company,), HBB (Hamilton Beach Brands ), MATV (Mativ Holdings, Inc.), SGHT (Sight Sciences, Inc. C), CAI (Caris Life Sciences, I), SOPH (SOPHiA GENETICS SA Ord), CRCT (Cricut, Inc. Class A C), WPP (WPP PLC), NEWP (New Pacific Metals Cor)
