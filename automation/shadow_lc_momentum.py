@@ -86,6 +86,12 @@ def live_equity_on(date: dt.date):
             from zoneinfo import ZoneInfo
             if dt.datetime.fromtimestamp(ts, ZoneInfo("America/New_York")).date() == date and eq:
                 return float(eq)
+        # Daily history often lacks TODAY's bar at the 6:30pm ET run: after the close,
+        # current account equity is that day's closing equity.
+        from zoneinfo import ZoneInfo
+        now = dt.datetime.now(ZoneInfo("America/New_York"))
+        if date == now.date() and now.hour >= 16:
+            return float(tc.get_account().equity)
     except Exception as e:
         log.warning(f"live equity unavailable: {e}")
     return None
