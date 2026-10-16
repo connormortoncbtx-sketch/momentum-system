@@ -1,0 +1,2 @@
+{"ts": "2026-10-16T19:45:25+00:00", "mode": "dry", "event": "start", "params": {"series": ["KXHIGHNY", "KXHIGHCHI", "KXHIGHLAX", "KXHIGHMIA", "KXHIGHPHIL", "KXHIGHDEN", "KXHIGHAUS", "KXHIGHTDAL"], "offset": 0.02, "size": 5, "inv_cap": 25, "budget": 200.0, "daily_loss": 40.0, "min_h": 1.0, "max_h": 48.0}}
+{"ts": "2026-10-16T19:51:47+00:00", "mode": "dry", "event": "stop"}
