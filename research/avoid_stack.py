@@ -76,7 +76,15 @@ BLOCK = {k: v.reindex(index=W, columns=S).fillna(False).to_numpy(dtype=bool) for
 print("blocks ready:", {k: round(float(v[W >= START].mean()) * 100, 2) for k, v in BLOCK.items()}, "% of name-weeks", flush=True)
 
 
-def sim(base, fixes, n=10):
+HOLDLOG = []          # (week, symbol) held, filled when sim(..., log=True)
+STOP_OVR = {}
+if os.environ.get("STOP_DAILY") and os.path.exists(os.environ["STOP_DAILY"]):
+    _o = pd.read_parquet(os.environ["STOP_DAILY"])
+    STOP_OVR = {(pd.Timestamp(w), s): r for w, s, r in zip(_o.week, _o.symbol, _o.r_stop)}
+    print(f"daily-validated stop returns loaded: {len(STOP_OVR):,}", flush=True)
+
+
+def sim(base, fixes, n=10, log=False):
     score = SCORES[base].where(U).to_numpy(); Wr = WR.to_numpy(); Lo = LOWR.to_numpy()
     blk = np.zeros_like(score, dtype=bool)
     for fx in fixes:
@@ -99,10 +107,14 @@ def sim(base, fixes, n=10):
         tgt = {c: 1.0 / len(new) for c in new}
         cost = sum(abs(tgt.get(c, 0) - w.get(c, 0)) for c in set(tgt) | set(w)) * COST / 1e4
         r = np.nan_to_num(np.array([Wr[i, c] for c in tgt]))
+        if log:
+            HOLDLOG.extend((wk, S[c]) for c in tgt)
         if stop:
             lo = np.array([Lo[i, c] for c in tgt])
             hit = np.isfinite(lo) & (lo <= -stop)
             r = np.where(hit, -stop - COST / 1e4, r)
+            if STOP_OVR:
+                r = np.array([STOP_OVR.get((wk, S[c]), rr) for c, rr in zip(tgt, r)])
         wt = np.array(list(tgt.values()))
         out[wk] = float((wt * r).sum()) - cost
         nw = wt * (1 + r); w = dict(zip(tgt.keys(), nw / nw.sum()))
