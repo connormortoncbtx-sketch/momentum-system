@@ -2997,3 +2997,4 @@
 {"timestamp": "2026-10-16T16:55:42.738006+00:00", "workflow": "shadow_filings", "status": "success", "message": "Shadow filings: 16 judged-eligible, new long 1, new short 5, open trades 72, diversified-book NAV 98.66", "metrics": {}, "errors": []}
 {"timestamp": "2026-10-16T19:46:08.368649+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=exit", "metrics": {}, "errors": []}
 {"timestamp": "2026-10-16T19:46:09.634269+00:00", "workflow": "alpaca_trader", "status": "success", "message": "Exit: all 4 closed (week -5.79%)", "metrics": {"closed": 4, "failed": 0, "cancelled_stops": 3, "week_open": 65568.05, "week_close": 61772.25, "week_return_pct": -5.79, "symbols_failed": []}, "errors": []}
+{"timestamp": "2026-10-16T22:12:01.619204+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=exit", "metrics": {}, "errors": []}
