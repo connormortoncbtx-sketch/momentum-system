@@ -1290,3 +1290,33 @@ The best design on early data: contract value ≥ 10% of market cap, hold 20 ses
 **Ceiling: about 0.7–1.0%/week at survivable leverage.** 3%/week is not supported by anything tested.
 
 **Live tracking (Oct 11):** shadow #6 now runs a third book on the same judgements, `long_contract_div`. It is all contract wins (direction ≥ 1), held 10 sessions, weighted by 1/vol60 with a 25% cap per name, 25 bps per side. It is tracked as a daily NAV in `data/shadow_filings_state.json` (`div`) plus closed trades in the ledger. There is no extra LLM cost, and no orders are placed.
+
+### Would reverting to the Apr–May version help? (`research/version_replay.py`, `research/probes/alpaca_equity.py`, Oct 16)
+
+**The account itself**
+- Apr 17 – May 29: +8.0%, versus SPY +6.5% and IWM +5.3%.
+- Almost all of it came from one week: +12.1% in the week ending May 22. The picks that week were an AI/optical/space theme (FCEL +48%, PENG +18%, INTC +13%, MXL, POET, NBIS, LITE, RKLB, VECO and AAOI all up 7–13%). Without that week the stretch is about −4%.
+- Peak $111,589 on May 22; −43.6% since.
+
+**There is no single "version" to revert to.** Over Apr 20 – May 29:
+- weights changed 8 times (Apr 20: catalyst 0.40 / sentiment 0.25 → May 22: momentum 0.35 / fundamentals 0.27);
+- the ranking logic was redesigned on May 4;
+- exclusion filters were added on Apr 20;
+- the LightGBM model was retrained weekly.
+
+**Replay.** Each snapshot's model, weights and feature list was re-scored on every logged week, using the top-10 forward 1-week return. In sample, every snapshot looks great: the current model averages +8.4%/week on the weeks it was trained on. After each snapshot's date (out of sample):
+
+| Snapshot | Mean per week | Cumulative | Weeks |
+|---|---|---|---|
+| Apr 20 | −0.42% | −7% | 15 |
+| May 08 | +0.04% | −1% | 13 |
+| May 22 | −2.59% | −25% | 11 |
+| May 29 | −2.45% | −22% | 10 |
+| Jun 13 | −1.66% | −13% | 8 |
+| Aug 01 | +1.17% | +5% | 4 |
+| All names (benchmark) | +0.05% to +0.30% | | |
+
+**Verdict:**
+- The good stretch was a rising market plus one theme week, not a better version.
+- The weekly self-refine/retrain loop fits the past and fails forward. That is why the stack is frozen.
+- Reverting to May 22 would have lost about 25% more than the universe.
