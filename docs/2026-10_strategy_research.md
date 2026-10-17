@@ -2047,3 +2047,54 @@ The equity-curve filters cut books after losses and miss the rebounds. That matc
 **Conclusion.** Every added back-off rule lowers dev Sharpe. Together with the earlier failures (regime labels, 12 stress features, options/credit/short-volume signals, fixed stops, drawdown de-levering) and the successes (vol targeting; vol-managed + macro momentum, shadow #3):
 - **drawdowns are not predictable from these signals, but volatility is**;
 - the stack-level vol target already in shadow #7 v2 is the protection that works.
+
+## Kalshi cross-market scan: results (Oct 17): `research/kalshi/mm_scan.py`, `scan_analysis.py`
+
+Coverage: 10,429 of 15,187 series cached (the rest were request failures, not cached; re-dispatched to fill in).
+1,970 series had enough settled volume (>= 20k contracts): 18,652 sampled markets, 12.2M trades, 1.45B contracts.
+Samples are volume-weighted, 12 markets per (series, first 90 days / last 90 days), up to 3,000 trades per market
+(the most recent ones), so the data is mostly 2026 and mostly high-volume markets.
+
+**Average maker edge** (maker side of every trade, held to settlement, clustered by market): +0.71c, t 5.8.
+- By series age at close: 0-30 days +1.14c (t 6.5); 31-90d +0.30 (t 1.3); 91-180d +1.17 (t 3.1); 181-365d +0.12 (t 0.4); >1y -0.57.
+- Same series, early vs late window (n = 479): median 0.94c -> 0.39c. New-series edge is real but modest, and
+  "new" is confounded with one-off political/election series.
+- Categories: Sports +0.72 early / +0.52 late (most of the volume); Financials late -6.4c (t -6.1, makers lose);
+  Weather +0.2 (small sample here; the dedicated study found 0.76c holdout); Politics +1.4 early / -0.2 late.
+- Per-series rankings are mostly noise: of 289 eligible late-window series, 11% have t > 2 and 7% have t < -2
+  (12 markets each). The stand-outs with big t are multi-outcome longshot markets (NBA triple double t 13.8,
+  Korn Ferry t 9.8, NFL first TD t 8.0, DP World R1 leader t 8.1, F1 pole t 6.3) -- the same longshot bias below.
+- Sports by contract type: spreads/totals early +2.1c / +1.2c but negative late; props +0.9 / +1.9; game winners +0.3 / +0.4.
+  NHL (-4.9c, t -3.5), Serie A and CS2 negative; MLB +2.7, NBA +1.6 (t ~2.5).
+
+**Calibration (all categories): a strong favourite-longshot bias.**
+
+| YES price | 0-5 | 5-10 | 10-20 | 20-35 | 35-50 | 50-65 | 65-80 | 80-90 | 90-95 | 95-100 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| settled minus price (c) | -1.3 | -4.3 | -5.9 | -4.9 | -1.0 | -0.7 | +6.1 | +3.7 | +3.0 | +0.5 |
+
+**Longshot fade** (buy NO as a taker when YES is cheap, at the prices where takers actually sold YES, held to
+settlement, after the 0.07*p*(1-p) taker fee; clustered by event):
+
+| YES price | events | fade c/contract | t | return on NO cost |
+|---|---|---|---|---|
+| 0-5c | 9,855 | +0.85 | 5.0 | 0.9% |
+| 5-10c | 8,863 | +2.61 | 6.1 | 2.8% |
+| 10-20c | 9,449 | +4.17 | 6.6 | 4.9% |
+| 20-35c | 9,602 | +3.91 | 3.6 | 5.4% |
+| 35-50c | 8,934 | -1.25 | -0.7 | -2.2% |
+
+Positive in 2026 for sports (+2.4 / +3.9 / +3.3c in the 5-10 / 10-20 / 20-35 buckets) and non-sports (+4.1 / +6.6 / +8.7c),
+and in 2023-2025 where there is data. Negative only in Weather, Mentions, Commodities.
+Caveats: essentially one year (2026) of data; sampled markets are high-volume; returns are per settlement cycle
+(days for sports), with a lose-the-stake tail (NO at ~85c pays -85c when the longshot hits); depth at the bid
+limits size. This matches the published Kalshi maker/taker findings (cheap contracts are overpriced).
+
+**Proposals (not built; need Connor's approval):**
+1. Paper shadow "longshot fade": each day, markets closing within 24h with YES bid 5-35c, ex Weather/Mentions/
+   Commodities: record buying NO at the NO ask, fixed $ per event, mark at settlement. 8 weeks before real money.
+2. Bot tilt: in the weather MM bot, quote only the NO side when YES is under 35c (sell longshots, don't buy them):
+   maker edge plus the bias, no taker fee.
+3. Weekly new-series watch (`NEW_ONLY=1`): edge in a series' first 30 days is ~1.1c vs ~0.3c later. Worth a weekly
+   run, but the current NEW_ONLY path re-lists all 15k series; it needs a filter on series first-close date
+   before fetching trades to be cheap.
