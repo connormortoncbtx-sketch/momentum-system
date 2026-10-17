@@ -37,22 +37,21 @@ def norm(s):
 
 
 def edgar_names():
+    """master.idx is pipe-delimited: CIK|Company Name|Form Type|Date Filed|Filename."""
     rows = []
     for y in range(2016, 2025):
         for q in (1, 2, 3, 4):
-            raw = F.get(f"https://www.sec.gov/Archives/edgar/full-index/{y}/QTR{q}/company.idx", binary=True)
+            raw = F.get(f"https://www.sec.gov/Archives/edgar/full-index/{y}/QTR{q}/master.idx", binary=True)
             if not raw:
-                print(f"  index {y}Q{q} missing"); continue
-            txt = raw.decode("latin-1").splitlines()
-            start = next(i for i, l in enumerate(txt) if l.startswith("-----")) + 1
-            for l in txt[start:]:
-                # fixed-width: Company Name | Form Type | CIK | Date Filed | File Name
-                m = re.match(r"^(.*?)\s{2,}(\S.*?)\s{2,}(\d+)\s+(\d{4}-\d{2}-\d{2})\s+(\S+)$", l)
-                if m and m.group(2) in ("8-K", "10-K", "10-Q", "20-F", "6-K", "S-1", "424B4"):
-                    rows.append((m.group(1).strip(), int(m.group(3))))
+                print(f"::warning::index {y}Q{q} missing"); continue
+            for l in raw.decode("latin-1").splitlines():
+                parts = l.split("|")
+                if len(parts) == 5 and parts[0].isdigit() and parts[2] in ("8-K", "10-K", "10-Q", "20-F", "6-K", "S-1", "424B4"):
+                    rows.append((parts[1].strip(), int(parts[0])))
         print(f"  index {y}: {len(rows):,} rows", flush=True)
     d = pd.DataFrame(rows, columns=["name", "cik"]).drop_duplicates()
     d["key"] = d.name.map(norm)
+    print(f"::notice::EDGAR index: {len(d):,} name/CIK pairs, {d.cik.nunique():,} CIKs; sample {d.head(3).to_dict('records')}")
     return d
 
 
@@ -63,7 +62,9 @@ def main():
     cur = json.loads(F.get("https://www.sec.gov/files/company_tickers.json"))
     cur_cik = {int(v["cik_str"]) for v in cur.values()}
     e = edgar_names()
+    print(f"::notice::current CIKs {len(cur_cik):,}; inactive keys sample {a.key.head(5).tolist()}")
     e = e[~e.cik.isin(cur_cik) & (e.key.str.len() >= 4)]
+    print(f"::notice::non-current EDGAR names: {len(e):,}; overlap of keys with inactive symbols: {len(set(e.key) & set(a.key)):,}")
     ciks_per_key = e.groupby("key").cik.nunique()
     uniq = e[e.key.isin(ciks_per_key[ciks_per_key == 1].index)].drop_duplicates("key")
     m = a.merge(uniq[["key", "cik", "name"]].rename(columns={"name": "edgar_name"}), on="key", how="left")
