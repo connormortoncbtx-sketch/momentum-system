@@ -42,6 +42,24 @@ N, BETA = 10, 0.67
 START = dt.date(2026, 10, 19)          # first entry close of the shadow (Monday)
 
 
+def bars_recent(symbols, start):
+    """Daily bars up to ~20 minutes ago (the free SIP feed refuses queries for the most recent
+    15 minutes, which fetch_daily's end-of-tomorrow bound always hits for today)."""
+    import os
+    from alpaca.data.historical import StockHistoricalDataClient
+    from alpaca.data.requests import StockBarsRequest
+    from alpaca.data.timeframe import TimeFrame
+    from alpaca.data.enums import Adjustment, DataFeed
+    cl = StockHistoricalDataClient(os.environ["ALPACA_API_KEY"], os.environ["ALPACA_SECRET_KEY"])
+    end = dt.datetime.now(dt.timezone.utc) - dt.timedelta(minutes=20)
+    df = cl.get_stock_bars(StockBarsRequest(symbol_or_symbols=sorted(set(symbols)), timeframe=TimeFrame.Day,
+                                            start=dt.datetime.combine(start, dt.time()), end=end,
+                                            adjustment=Adjustment.ALL, feed=DataFeed.SIP)).df
+    d = df.reset_index()[["symbol", "timestamp", "open", "close"]]
+    d["date"] = pd.to_datetime(d.timestamp).dt.tz_convert("America/New_York").dt.date
+    return d
+
+
 def form_friday(d):
     """Most recent Friday strictly before date d (the formation for entries on/after the Monday after it)."""
     back = (d.weekday() - 4) % 7 or 7
@@ -86,8 +104,7 @@ def main():
     # nights to mark: trading days t (open dates) after START and after the last marked one
     look_from = START if not state["last_open_date"] else dt.date.fromisoformat(state["last_open_date"])
     # gather all formation baskets that may be needed
-    bars = fetch_daily(["IWM", "SPY"], look_from - dt.timedelta(days=10), today, "all")
-    bars["date"] = pd.to_datetime(bars.timestamp).dt.tz_convert("America/New_York").dt.date
+    bars = bars_recent(["IWM", "SPY"], look_from - dt.timedelta(days=10))
     tdays = sorted(d for d in set(bars.date) if d > look_from)
     alldays = sorted(set(bars.date))
     if not tdays:
@@ -103,8 +120,7 @@ def main():
             names = picks_for(fri, state)
         except Exception as e:
             log.warning(f"picks for {fri}: {e} -- stop and retry next run"); break
-        px = fetch_daily(names + ["IWM"], prev - dt.timedelta(days=5), t, "all")
-        px["date"] = pd.to_datetime(px.timestamp).dt.tz_convert("America/New_York").dt.date
+        px = bars_recent(names + ["IWM"], prev - dt.timedelta(days=5))
         O = px.pivot_table(index="date", columns="symbol", values="open")
         C = px.pivot_table(index="date", columns="symbol", values="close")
         if t not in O.index or prev not in C.index:
