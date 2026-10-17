@@ -2029,3 +2029,21 @@ Momentum names mostly beat on earnings.
 | LIVE top 50 | 5 | 1.26 | 1.04 | | |
 
 Shadow #8 now applies cap 2 (SIC from SEC submissions, cached in state; workflow passes SEC_USER_AGENT). Dry run: OKTA (the third SIC-73 name) was replaced by IOVA; the Oct 12–16 week was still −7.2%, a broad momentum gap that sector caps cannot diversify away.
+
+## Drawdown protection beyond stack-level vol targeting (Oct 17)
+
+Connor asked for confidence measures and back-off rules to protect gains. Tested on the honest 4-book stack with the current v2 8-week stack-level vol target (~2x).
+
+| Version | Dev exSh | Dev CAGR | Dev DD | Holdout exSh | Holdout DD |
+|---|---|---|---|---|---|
+| **Current v2** | **1.06** | **21.1%** | **−16.4%** | **1.31** | −12.5% |
+| + per-book vol targeting (8/13/26 wk) | 0.85–0.97 | | −15 to −18% | 0.95–1.25 | −11 to −13% |
+| + per-book equity-curve filter (cut a book to 50% when its trailing 13/26-week return < 0) | 0.76–0.86 | | worse, −18 to −21% | 1.25 | |
+| Same filter cutting to 0% | 0.34–0.51 | | | | |
+| Both combined | 0.67 | | | 1.02 | −9.9% |
+
+The equity-curve filters cut books after losses and miss the rebounds. That matches the factor-momentum finding: momentum outperforms *after* lagging.
+
+**Conclusion.** Every added back-off rule lowers dev Sharpe. Together with the earlier failures (regime labels, 12 stress features, options/credit/short-volume signals, fixed stops, drawdown de-levering) and the successes (vol targeting; vol-managed + macro momentum, shadow #3):
+- **drawdowns are not predictable from these signals, but volatility is**;
+- the stack-level vol target already in shadow #7 v2 is the protection that works.
