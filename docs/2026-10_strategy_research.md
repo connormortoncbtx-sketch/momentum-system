@@ -1662,3 +1662,28 @@ Capacity is not the binding constraint at these sizes. The deep-level pot alone 
 **Tests.** Offline tests pass for quote logic and Ed25519/RSA signing. A 6-minute dry run against live public books parsed every series and produced about 40 two-sided quotes per cycle (≈$190 collateral if all rested). Touch spreads were typically 1¢.
 
 **Next.** Demo-exchange run once demo API keys are stored as the GitHub secrets KALSHI_DEMO_KEY_ID and KALSHI_DEMO_PRIVATE_KEY. After that comes a funded small live test on an always-on host.
+
+## IRA-compatible stack and risk overlays (Oct 17, 2026): `research/ira_stack.py`
+
+**Caveat found.** The ETF-trend research book runs at a mean 3.2x gross (95th percentile 4.6x). The "1x" stack is therefore really about 1.6x gross, and financing on the extra ~0.6x (about 3–4%/yr) is not charged in the stack backtests or in shadow #7. This should be corrected before any capital decision.
+
+**IRA version.** No margin, no shorting, no crypto, so:
+- the IWM hedge becomes an inverse-ETF hedge, which costs cash: w·(1+β) of capital per book;
+- crypto becomes BTC+ETH ETFs only;
+- the ETF sleeve is capped at 1x gross.
+
+**Results** (dev 2017–23 | holdout 2024–26):
+
+| Version | Dev CAGR | Dev Sharpe | Dev max DD | Holdout CAGR | Holdout Sharpe | Holdout max DD |
+|---|---|---|---|---|---|---|
+| Taxable 1x | 19.9% | 1.35 | | 34.0% | 1.72 | |
+| Taxable 2x | 32.7% | 1.14 | −28.5% | 63.7% | 1.55 | −24.8% |
+| IRA 1x, ETF capped | 11.4% | 1.16 | −10.6% | 21.3% | 1.70 | −9.7% |
+
+**IRA conclusion.** Sharpe survives, but returns are about one-third of taxable 2x. After roughly 24% annual tax, taxable 2x still compounds about twice as fast. The Roth is better used for a plain index core; the strategy stays taxable unless the IRA uses futures for leverage.
+
+**Risk overlays on taxable 2x.**
+- **Volatility targeting, 8-week lookback (best on dev):** Sharpe 1.14→1.40 dev, 1.55→1.61 holdout. Max drawdown −28.5→−23.5% dev, −24.8→−19.4% holdout. Average leverage in the holdout was 1.47.
+- **13-week lookback:** holdout Sharpe 1.77, DD −19%.
+- **Halve leverage beyond a 10/15/20% drawdown:** lowers dev Sharpe (1.03–1.10) and gives mixed holdout results. Rejected.
+- **Recommendation:** vol targeting (8–13 week lookback) for any leveraged deployment.
