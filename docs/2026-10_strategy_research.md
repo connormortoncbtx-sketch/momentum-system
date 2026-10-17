@@ -1885,3 +1885,10 @@ So the original test **was** handicapped: METAR missed the high a third of the t
 **Verdict.** Much closer to break-even than the original −2 to −3¢, but no robust edge: traders price the live readings better than this model. **Closed fairly this time.**
 
 **Side benefit for the MM bot.** After about 14:00 local, the market knows the day's high. Resting quotes late in the day face informed takers, so the bot's 1-hour cutoff should probably move earlier for markets whose high is already in. Candidate for the live test.
+
+**Shadow #7 v2 (approved by Connor, Oct 17).** `automation/shadow_stack.py` now also tracks the honest stack, beside the original (v1) and from its next mark:
+- ETF and crypto sleeves capped at 1x gross, idle cash at about 3.8%;
+- weights SLOW_h 0.104 / CONTRACT_h 0.238 / ETF 0.504 / CRYPTO 0.154;
+- NAV at 1x and with 8-week vol targeting (leverage = 0.020698 / std of the last 8 weekly returns, clipped 0.5–3x, seeded with research returns Aug 7 – Sep 25), with 6% financing on the borrowed part.
+
+Ledger rows carry a `v2` block; state is in `state["v2"]`. The Jan 5 review should compare v1, v2 at 1x and v2 vol-targeted.

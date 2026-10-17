@@ -43,6 +43,12 @@ SLOW_LEDGER, FILINGS_STATE = DATA / "shadow_slow_ledger.jsonl", DATA / "shadow_f
 W = {"SLOW_h": 0.145, "CONTRACT_h": 0.353, "ETFTREND": 0.294, "CRYPTO": 0.208}
 BETA = {"SLOW_h": 0.798, "CONTRACT_h": 0.743}
 LEVERAGE, FIN_YR = (1.0, 2.0, 3.0), 0.06
+# v2 (Oct 17 audit, approved by Connor): ETF and crypto sleeves capped at 1x gross with idle cash at
+# T-bill rates, weights re-chosen on 2017-23 (research/stack_v2.py), plus 8-week vol targeting.
+W2 = {"SLOW_h": 0.104, "CONTRACT_h": 0.238, "ETFTREND": 0.504, "CRYPTO": 0.154}
+CASH_YR = 0.038                      # approx. T-bill yield earned on idle sleeve cash
+VT_K, VT_LO, VT_HI = 0.020698, 0.5, 3.0   # leverage = VT_K / std(last 8 weekly 1x returns), clipped
+VT_SEED = [0.01458, 0.04166, -0.02333, -0.01383, 0.00268, -0.00444, 0.02415, -0.00052]  # research, Aug 7 - Sep 25
 ETFS = ['BITO', 'COPX', 'DBA', 'DBC', 'DIA', 'EEM', 'EFA', 'EWJ', 'FXB', 'FXE', 'FXI', 'FXY', 'GDX', 'GLD', 'HYG',
         'IBIT', 'IEF', 'IWM', 'LQD', 'QQQ', 'SHY', 'SLV', 'SMH', 'SPY', 'TIP', 'TLT', 'UNG', 'URA', 'USO', 'UUP',
         'VNQ', 'XBI', 'XLB', 'XLE', 'XLF', 'XLI', 'XLK', 'XLP', 'XLU', 'XLV', 'XLY']
@@ -74,7 +80,7 @@ def crypto_daily(start):
     return d.pivot_table(index="date", columns="symbol", values="close").sort_index()
 
 
-def etf_book(px):
+def etf_book(px, cap=False):
     """Daily returns of the ETF trend book (same rules as research/trend_test.py, 63-day, long-only)."""
     ret = px.pct_change(); vol = ret.rolling(60, min_periods=40).std() * np.sqrt(252)
     me = [px.index[px.index <= m][-1] for m in px.resample("ME").last().index if (px.index <= m).any()]
@@ -86,21 +92,31 @@ def etf_book(px):
         sig = np.sign(px.loc[d] / px.shift(63).loc[d] - 1).clip(lower=0)
         tgt = (sig * (0.10 / vol.loc[d]).clip(upper=2.0)).fillna(0)
         tgt = tgt / max((tgt != 0).sum(), 1) * 4
+        if cap and tgt.sum() > 1:
+            tgt = tgt / tgt.sum()
         nxt = me[i + 1] if i + 1 < len(me) else px.index[-1] + pd.Timedelta(days=1)
         w.loc[(w.index > d) & (w.index <= nxt)] = tgt.values
         after = px.index[px.index > d]
         if len(after):
             cost.loc[after[0]] = (tgt - prev).abs().sum() * 5 / 1e4
         prev = tgt
-    return (w * ret.fillna(0)).sum(axis=1) - cost
+    out = (w * ret.fillna(0)).sum(axis=1) - cost
+    if cap:
+        out = out + (1 - w.sum(axis=1)).clip(lower=0) * CASH_YR / 252
+    return out
 
 
-def crypto_book(cp):
+def crypto_book(cp, cap=False):
     cr = cp.pct_change(); cv = cr.rolling(30, min_periods=20).std() * np.sqrt(365)
     sig = (cp > cp.rolling(50, min_periods=50).mean()).astype(float).shift(1)
     w = (sig * (0.40 / cv.shift(1)).clip(upper=1.5)).where(cp.notna())
     w = w.div(w.notna().sum(axis=1).clip(lower=1), axis=0).fillna(0)
-    return (w * cr.fillna(0)).sum(axis=1) - w.diff().abs().sum(axis=1) * 25 / 1e4
+    if cap:
+        w = w.div(w.sum(axis=1).clip(lower=1), axis=0)
+    out = (w * cr.fillna(0)).sum(axis=1) - w.diff().abs().sum(axis=1) * 25 / 1e4
+    if cap:
+        out = out + (1 - w.sum(axis=1)).clip(lower=0) * CASH_YR / 365
+    return out
 
 
 def window_ret(daily, a, b):
@@ -125,9 +141,10 @@ def main():
         log.info(f"No new shadow #4 mark since {state['last_date']}"); return
     prev_nav = {r["date"]: r["shadow_nav"] for r in rows}
     start = dt.date.fromisoformat(state["last_date"]) - dt.timedelta(days=420)
-    px = etf_daily(start); etf = etf_book(px)
+    px = etf_daily(start); etf = etf_book(px); etf2 = etf_book(px, cap=True)
     iwm = px["IWM"].pct_change().fillna(0)
-    cry = crypto_book(crypto_daily(start))
+    cdaily = crypto_daily(start); cry = crypto_book(cdaily); cry2 = crypto_book(cdaily, cap=True)
+    v2 = state.setdefault("v2", {"start": state["last_date"], "nav": {"1x": 100.0, "volt": 100.0}, "hist": list(VT_SEED)})
     hist = {pd.Timestamp(k): v for k, v in json.loads(FILINGS_STATE.read_text()).get("div", {}).get("history", {}).items()} \
         if FILINGS_STATE.exists() else {}
     cn = pd.Series(hist).sort_index()
@@ -151,14 +168,24 @@ def main():
                 state["nav"][f"{k:g}x"] *= 1 + k * stack - max(k - 1, 0) * FIN_YR * days / 365
             for k, v in sl.items():
                 state["sleeves"][k] *= 1 + v
-            row = {"date": b, "from": a, "iwm_ret": round(r_iwm, 5), "sleeve_ret": {k: round(v, 5) for k, v in sl.items()},
+            sl2 = dict(sl, ETFTREND=window_ret(etf2, a, b), CRYPTO=window_ret(cry2, a, b))
+            s2 = sum(W2[k] * v for k, v in sl2.items())
+            sd = float(np.std(v2["hist"][-8:], ddof=1))
+            lev = float(np.clip(VT_K / sd, VT_LO, VT_HI)) if sd > 0 else 2.0
+            v2["nav"]["1x"] *= 1 + s2
+            v2["nav"]["volt"] *= 1 + lev * s2 - max(lev - 1, 0) * FIN_YR * days / 365
+            v2["hist"].append(s2)
+            row = {"date": b, "from": a,
+                   "v2": {"stack_ret": round(s2, 5), "vol_target_lev": round(lev, 3), "etf_ret": round(sl2["ETFTREND"], 5),
+                          "crypto_ret": round(sl2["CRYPTO"], 5), "nav": {k: round(v, 3) for k, v in v2["nav"].items()}}, "iwm_ret": round(r_iwm, 5), "sleeve_ret": {k: round(v, 5) for k, v in sl.items()},
                    "stack_ret": round(stack, 5), "nav": {k: round(v, 3) for k, v in state["nav"].items()},
                    "sleeve_nav": {k: round(v, 3) for k, v in state["sleeves"].items()}}
             lf.write(json.dumps(row) + "\n")
             state["last_date"] = b
             log.info(f"{a} -> {b}: stack {stack * 100:+.2f}% | " + " ".join(f"{k} {v * 100:+.2f}%" for k, v in sl.items()))
     STATE.write_text(json.dumps(state, indent=1))
-    msg = "Shadow stack: NAV " + ", ".join(f"{k} {v:.2f}" for k, v in state["nav"].items())
+    msg = ("Shadow stack: NAV " + ", ".join(f"{k} {v:.2f}" for k, v in state["nav"].items()) +
+           " | v2 " + ", ".join(f"{k} {v:.2f}" for k, v in state["v2"]["nav"].items()))
     log.info(msg)
     log_event("shadow_stack", LogStatus.SUCCESS, msg, metrics=state["nav"])
 
