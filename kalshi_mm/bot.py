@@ -38,6 +38,9 @@ LOOP_S = float(E("LOOP_SECONDS", "20"))
 RUN_MIN = float(E("RUN_MINUTES", "0"))            # 0 = run until stopped
 LOG_DIR = E("LOG_DIR", "kalshi_mm_logs")
 KILL_FILE = E("KILL_FILE", "KILL")
+NTFY = E("NTFY_CHANNEL") or ""                    # phone alerts; also the remote stop: any message
+STOP_TOPIC = f"{NTFY}-kmm-stop" if NTFY else ""   # containing "stop" on topic <NTFY_CHANNEL>-kmm-stop
+KILLED_EXIT = 3                                   # systemd does not restart on this code
 
 log = logging.getLogger("kmm")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)-7s %(message)s", datefmt="%H:%M:%S")
@@ -52,6 +55,28 @@ def jlog(name, **rec):
     rec = {"ts": now().isoformat(timespec="seconds"), "mode": MODE, **rec}
     with open(f"{LOG_DIR}/{name}.jsonl", "a") as f:
         f.write(json.dumps(rec) + "\n")
+
+
+def notify(msg, title="Kalshi bot", prio="default"):
+    if not NTFY:
+        return
+    try:
+        urllib.request.urlopen(urllib.request.Request(f"https://ntfy.sh/{NTFY}", data=msg.encode()[:3000],
+                               headers={"Title": f"{title} [{MODE}]", "Priority": prio}), timeout=15)
+    except Exception as e:
+        log.warning(f"ntfy: {e}")
+
+
+def remote_stop(since):
+    """True if a message containing 'stop' was posted to STOP_TOPIC after unix time `since`."""
+    if not STOP_TOPIC:
+        return False
+    try:
+        with urllib.request.urlopen(f"https://ntfy.sh/{STOP_TOPIC}/json?poll=1&since={int(since)}", timeout=15) as r:
+            return any("stop" in (json.loads(l).get("message") or "").lower() for l in r.read().decode().splitlines() if l.strip())
+    except Exception as e:
+        log.warning(f"stop check: {e}")
+        return False
 
 
 def num(x, default=0.0):
@@ -227,11 +252,20 @@ class Bot:
         self.stop = False
         self.day, self.day_start_value = None, None
         self.last_fill_ts = int(time.time())
+        self.t_start = time.time()
+        self.last_stop_check, self.last_err_alert, self.err_count = 0.0, 0.0, 0
         signal.signal(signal.SIGTERM, lambda *_: setattr(self, "stop", True))
         signal.signal(signal.SIGINT, lambda *_: setattr(self, "stop", True))
 
     def killed(self):
-        return os.path.exists(KILL_FILE) or E("KILL") == "1"
+        if os.path.exists(KILL_FILE) or E("KILL") == "1":
+            return True
+        if time.time() - self.last_stop_check > 60:
+            self.last_stop_check = time.time()
+            if remote_stop(self.t_start):
+                open(KILL_FILE, "w").write("remote stop via ntfy\n")   # stays stopped across restarts
+                return True
+        return False
 
     def cancel_all(self, reason):
         """Cancel every resting order: per-order error handling, re-check, up to 5 passes."""
@@ -259,6 +293,8 @@ class Bot:
                 pass
         jlog("events", event="cancel_all", reason=reason, resting_after=left, cancel_errors=errs)
         (log.info if not left else log.error)(f"cancel_all ({reason}): {left} resting left, {errs} errors")
+        if left:
+            notify(f"cancel_all ({reason}) left {left} orders resting -- check kalshi.com", prio="high")
 
     def markets(self):
         out = []
@@ -308,6 +344,7 @@ class Bot:
             if pnl_today < -DAILY_LOSS:
                 self.cancel_all(f"daily loss {pnl_today:.2f}")
                 log.warning("daily loss limit hit; pausing until tomorrow (UTC)")
+                notify(f"Daily loss limit hit ({pnl_today:+.2f}); orders cancelled, paused until tomorrow (UTC)", prio="high")
                 return "paused"
             self.record_fills()
             if int(time.time()) % 3600 < LOOP_S * 2:
@@ -407,22 +444,37 @@ class Bot:
                                                    budget=BUDGET, daily_loss=DAILY_LOSS, min_h=MIN_H, max_h=MAX_H))
         t_end = time.time() + RUN_MIN * 60 if RUN_MIN > 0 else float("inf")
         paused_day = None
+        killed = False
+        if self.killed():
+            log.warning("KILL set at start; cancelling and exiting")
+            self.cancel_all("kill at start")
+            sys.exit(KILLED_EXIT)
+        notify(f"Started: budget ${BUDGET:.0f}, daily loss ${DAILY_LOSS:.0f}, offset {OFFSET * 100:.0f}c, size {SIZE}")
         try:
             while not self.stop and time.time() < t_end:
                 if self.killed():
-                    log.warning("KILL set"); break
+                    log.warning("KILL set"); killed = True; break
                 if paused_day == now().date():
                     time.sleep(60); continue
                 try:
                     if self.cycle() == "paused":
                         paused_day = now().date()
+                    self.err_count = 0
                 except Exception as e:
                     log.error(f"cycle error: {e}")
                     jlog("events", event="error", error=str(e)[:300])
+                    self.err_count += 1
+                    if self.err_count >= 5 and time.time() - self.last_err_alert > 3600:
+                        self.last_err_alert = time.time()
+                        notify(f"{self.err_count} cycle errors in a row; last: {str(e)[:300]}", prio="high")
                 time.sleep(LOOP_S)
         finally:
             self.cancel_all("exit")
-            jlog("events", event="stop")
+            jlog("events", event="stop", killed=killed)
+            notify("Stopped by kill switch; all orders cancelled" if killed else "Stopped; all orders cancelled",
+                   prio="high" if killed else "default")
+        if killed:
+            sys.exit(KILLED_EXIT)
 
 
 if __name__ == "__main__":
