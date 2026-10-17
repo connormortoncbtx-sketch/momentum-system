@@ -20,7 +20,7 @@ import numpy as np, pandas as pd
 RD = os.environ.get("RESEARCH_DATA", "research_data")
 OUT = f"{RD}/kalshi/scan"; os.makedirs(OUT, exist_ok=True); os.makedirs(f"{RD}/results", exist_ok=True)
 API = "https://api.elections.kalshi.com/trade-api/v2"
-PER_WINDOW = int(os.environ.get("PER_WINDOW") or 25)      # markets sampled per (series, early/late)
+PER_WINDOW = int(os.environ.get("PER_WINDOW") or 12)      # markets sampled per (series, early/late)
 MIN_VOL = float(os.environ.get("MIN_VOL") or 20_000)       # contracts traded across settled markets
 NEW_ONLY = os.environ.get("NEW_ONLY") == "1"
 BUDGET_S = float(os.environ.get("BUDGET_MIN") or 300) * 60
@@ -115,7 +115,7 @@ def markets_for(series):
 def trades_for(ticker):
     rows = []
     for path in ("/markets/trades", "/historical/trades"):
-        rows = paged(path, "trades", max_pages=10, ticker=ticker)
+        rows = paged(path, "trades", max_pages=3, ticker=ticker)
         if rows:
             break
     return [dict(ticker=ticker, t=r.get("created_time"), p=f(r.get("yes_price_dollars")), c=f(r.get("count_fp", r.get("count"))),
@@ -134,8 +134,9 @@ def scan_series(s, fee_type, rng):
     mk["window"] = np.where(mk.close_time <= first + pd.Timedelta(days=90), "early",
                             np.where(mk.close_time >= last - pd.Timedelta(days=90), "late", "mid"))
     mk = mk[(mk.window != "mid") & (mk.volume > 0)]
-    smp = mk.groupby("window", group_keys=False).apply(
-        lambda g: g.sample(min(len(g), PER_WINDOW), weights=g.volume.fillna(0) + 1, random_state=int(rng.integers(1e9))))
+    seed = int(rng.integers(1_000_000_000))
+    smp = pd.concat([g.sample(min(len(g), PER_WINDOW), weights=g.volume.fillna(0) + 1, random_state=seed)
+                     for _, g in mk.groupby("window")], ignore_index=True)
     tr = []
     for tk in smp.ticker:
         tr += trades_for(tk)
