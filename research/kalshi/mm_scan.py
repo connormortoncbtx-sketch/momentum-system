@@ -39,12 +39,18 @@ class Lim:
             self.t = max(now, self.t) + self.gap
 
 
-LIM = Lim(15)
+LIM = Lim(8)
+
+
+class Fail(Exception):
+    pass
 
 
 def get(path, **q):
+    """JSON dict; {} for a genuine 400/404; raises Fail after repeated errors / rate limiting
+    (so a failure is never mistaken for 'no data' and cached)."""
     url = f"{API}{path}?{urllib.parse.urlencode(q)}"
-    for i in range(5):
+    for i in range(8):
         LIM.wait()
         try:
             with urllib.request.urlopen(urllib.request.Request(url, headers={"Accept": "application/json"}), timeout=60) as r:
@@ -52,10 +58,10 @@ def get(path, **q):
         except urllib.error.HTTPError as e:
             if e.code in (400, 404):
                 return {}
-            time.sleep(2 * (i + 1))
+            time.sleep(min(60, 3 * 2 ** i) if e.code == 429 else 2 * (i + 1))
         except Exception:
             time.sleep(2 * (i + 1))
-    return {}
+    raise Fail(url[:120])
 
 
 def paged(path, key, max_pages=50, **q):
@@ -117,7 +123,7 @@ def trades_for(ticker):
 
 
 def scan_series(s, fee_type, rng):
-    cache = f"{OUT}/s_{s}.parquet"
+    cache = f"{OUT}/s2_{s}.parquet"           # v2: v1 cached rate-limit failures as empty
     if os.path.exists(cache) and not NEW_ONLY:
         return pd.read_parquet(cache)
     mk = markets_for(s)
@@ -163,13 +169,15 @@ def main():
     fees = dict(zip(S.ticker, S.get("fee_type", pd.Series("", index=S.index))))
     todo = list(S.ticker)
     rng.shuffle(todo)
-    parts, n_done = [], 0
+    parts, n_done, fails = [], 0, []
 
     def job(s):
         if time.time() - T0 > BUDGET_S:
             return None
         try:
             return scan_series(s, fees.get(s), np.random.default_rng(abs(hash(s)) % 2**32))
+        except Fail as e:
+            fails.append(s); return None
         except Exception as e:
             print(f"  {s}: {e}", flush=True)
             return None
@@ -182,7 +190,8 @@ def main():
                     continue
                 parts.append(t)
             if n_done % 200 == 0:
-                print(f"  {n_done:,}/{len(todo):,} series, {len(parts)} with volume, {(time.time() - T0) / 60:.0f} min", flush=True)
+                print(f"  {n_done:,}/{len(todo):,} series, {len(parts)} with volume, {len(fails)} failed, {(time.time() - T0) / 60:.0f} min", flush=True)
+    print(f"request failures (not cached, retry next run): {len(fails)}")
     print(f"scanned {n_done:,} series ({'budget hit' if time.time() - T0 > BUDGET_S else 'complete'}); {len(parts)} with data")
     if not parts:
         return
