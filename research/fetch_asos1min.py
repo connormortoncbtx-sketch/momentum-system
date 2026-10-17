@@ -30,7 +30,12 @@ def month(st, y, m):
             d["valid_utc"] = pd.to_datetime(d.valid_utc, utc=True, errors="coerce")
             d["tmpf"] = pd.to_numeric(d.tmpf, errors="coerce")
             d = d.dropna(subset=["valid_utc", "tmpf"])
-            d = d.set_index("valid_utc").tmpf.resample("5min").max().dropna().reset_index()
+            # ASOS reports a 5-minute running AVERAGE of the 1-minute values (that is what the daily
+            # max is built from); take the max of that average within each 5-minute bin
+            x = d.set_index("valid_utc").tmpf.sort_index()
+            x = x[~x.index.duplicated()].asfreq("1min")
+            avg = x.rolling(5, min_periods=4).mean()
+            d = avg.resample("5min").max().dropna().reset_index()
             d["station"] = st
             return d
         except Exception as e:
@@ -41,7 +46,7 @@ def month(st, y, m):
 
 def main():
     os.makedirs(OUT, exist_ok=True)
-    part = f"{OUT}/asos1min_parts"; os.makedirs(part, exist_ok=True)
+    part = f"{OUT}/asos5avg_parts"; os.makedirs(part, exist_ok=True)
     # probe first: does the endpoint answer with the expected columns?
     p = month("NYC", 2025, 7)
     print(f"::notice::probe NYC 2025-07: {len(p)} 5-min rows, max {p.tmpf.max() if len(p) else None}")
@@ -61,8 +66,8 @@ def main():
     import glob
     df = pd.concat([pd.read_parquet(f) for f in glob.glob(f"{part}/*.parquet") if os.path.getsize(f) > 500], ignore_index=True)
     df["tmpf"] = df.tmpf.astype("float32")
-    df[["station", "valid_utc", "tmpf"]].to_parquet(f"{OUT}/asos1min.parquet", index=False)
-    print(f"::notice::ASOS 1-min: {len(df):,} 5-min bins, {df.station.nunique()} stations, "
+    df[["station", "valid_utc", "tmpf"]].to_parquet(f"{OUT}/asos5avg.parquet", index=False)
+    print(f"::notice::ASOS 5-min running average: {len(df):,} 5-min bins, {df.station.nunique()} stations, "
           f"{df.valid_utc.min():%Y-%m}..{df.valid_utc.max():%Y-%m}; per station {df.station.value_counts().to_dict()}")
 
 

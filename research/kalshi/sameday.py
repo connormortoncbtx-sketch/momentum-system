@@ -69,6 +69,7 @@ def main():
     for c in ("bid", "ask"):
         cd[c] = cd[c].astype(float)
     asos = pd.read_parquet(D / os.environ.get("ASOS_FILE", "asos.parquet"))   # asos1min.parquet: 1-min data (audit redo)
+    asos["station"] = asos.station.where(asos.station.str.len() == 4, "K" + asos.station)
     mos = W.mos_max(pd.read_parquet(D / "mos.parquet"))
     ev = m.groupby("event_ticker").agg(station=("station", "first"), date=("date", "first")).reset_index()
     ev = ev.merge(W.realised(m), on="event_ticker")
