@@ -3000,3 +3000,4 @@
 {"timestamp": "2026-10-16T22:12:01.619204+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=exit", "metrics": {}, "errors": []}
 {"timestamp": "2026-10-16T23:02:01.423583+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=exit", "metrics": {}, "errors": []}
 {"timestamp": "2026-10-16T23:46:38.724132+00:00", "workflow": "health_check", "status": "warning", "message": "Weekly health check complete", "metrics": {"entries_reviewed": 101, "workflows_covered": 19, "errors_in_period": 0, "warnings_in_period": 2, "result": "issues_found"}, "errors": []}
+{"timestamp": "2026-10-17T00:38:16.028284+00:00", "workflow": "health_check", "status": "info", "message": "Skipped: already ran 0.9h ago", "metrics": {}, "errors": []}
