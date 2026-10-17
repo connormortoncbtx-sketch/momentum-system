@@ -131,33 +131,39 @@ def st(r, per_yr=252):
                 DD=(eq / eq.cummax() - 1).min() * 100)
 
 
-iwm_n = night["IWM"].dropna()
-rows, keep = [], {}
-for sc, n, wk in itertools.product(SCORES, TOPN, (True, False)):
-    rn0, rday = run(sc, n, wk, 0.0)
-    for cost in (0.0, 1.0, 2.0, 5.0):
-        rn = rn0 - (2 * cost / 1e4) * (rn0 != 0)
-        dv, hv = rn[rn.index < SPLIT], rn[rn.index >= SPLIT]
-        b = np.polyfit(iwm_n.reindex(dv.index).fillna(0), dv, 1)[0]
-        hed = rn - b * iwm_n.reindex(rn.index).fillna(0)
-        a, h = st(dv), st(hv); ah, hh = st(hed[hed.index < SPLIT]), st(hed[hed.index >= SPLIT])
-        rows.append(dict(score=sc, n=n, weekend=wk, cost_bp=cost, dev_Sh=a["Sh"], dev_ann=a["ann"], dev_DD=a["DD"],
-                         hold_Sh=h["Sh"], hold_ann=h["ann"], hold_DD=h["DD"], beta=b, dev_hSh=ah["Sh"], hold_hSh=hh["Sh"],
-                         day_bp_dev=rday[rday.index < SPLIT].mean() * 1e4, day_bp_hold=rday[rday.index >= SPLIT].mean() * 1e4,
-                         night_bp_dev=rn0[rn0.index < SPLIT].mean() * 1e4, night_bp_hold=rn0[rn0.index >= SPLIT].mean() * 1e4))
-        keep[(sc, n, wk, cost)] = rn
-    print(f"  {sc} n{n} weekend={wk} done", flush=True)
-R = pd.DataFrame(rows)
-pd.set_option("display.width", 250); pd.set_option("display.max_rows", 200)
-print("\nRAW NIGHT / DAY returns of the baskets (bp, before costs)")
-print(R[R.cost_bp == 0][["score", "n", "weekend", "night_bp_dev", "night_bp_hold", "day_bp_dev", "day_bp_hold"]].round(1).to_string(index=False))
-print("\nOVERNIGHT BOOK by cost (Sharpe on daily returns, annualised 252; hSh = IWM-overnight-hedged)")
-print(R[["score", "n", "weekend", "cost_bp", "dev_Sh", "dev_ann", "dev_DD", "hold_Sh", "hold_ann", "hold_DD", "dev_hSh", "hold_hSh", "beta"]]
-      .round(2).to_string(index=False))
-R.to_csv(f"{RD}/results/overnight_momentum.csv", index=False)
-for cost in (1.0, 2.0):
-    best = R[R.cost_bp == cost].sort_values("dev_hSh", ascending=False).iloc[0]
-    print(f"::notice::overnight momentum @ {cost:.0f}bp/side, dev pick {best.score} n{best.n} weekend={best.weekend}: "
-          f"hedged Sharpe dev {best.dev_hSh:.2f} / holdout {best.hold_hSh:.2f}; raw {best.dev_ann:.0f}%/yr / {best.hold_ann:.0f}%/yr")
-    pd.DataFrame({"overnight": keep[(best.score, best.n, best.weekend, cost)]}).to_csv(
-        f"{RD}/results/overnight_daily_{int(cost)}bp.csv")
+def main():
+    global R
+    iwm_n = night["IWM"].dropna()
+    rows, keep = [], {}
+    for sc, n, wk in itertools.product(SCORES, TOPN, (True, False)):
+        rn0, rday = run(sc, n, wk, 0.0)
+        for cost in (0.0, 1.0, 2.0, 5.0):
+            rn = rn0 - (2 * cost / 1e4) * (rn0 != 0)
+            dv, hv = rn[rn.index < SPLIT], rn[rn.index >= SPLIT]
+            b = np.polyfit(iwm_n.reindex(dv.index).fillna(0), dv, 1)[0]
+            hed = rn - b * iwm_n.reindex(rn.index).fillna(0)
+            a, h = st(dv), st(hv); ah, hh = st(hed[hed.index < SPLIT]), st(hed[hed.index >= SPLIT])
+            rows.append(dict(score=sc, n=n, weekend=wk, cost_bp=cost, dev_Sh=a["Sh"], dev_ann=a["ann"], dev_DD=a["DD"],
+                             hold_Sh=h["Sh"], hold_ann=h["ann"], hold_DD=h["DD"], beta=b, dev_hSh=ah["Sh"], hold_hSh=hh["Sh"],
+                             day_bp_dev=rday[rday.index < SPLIT].mean() * 1e4, day_bp_hold=rday[rday.index >= SPLIT].mean() * 1e4,
+                             night_bp_dev=rn0[rn0.index < SPLIT].mean() * 1e4, night_bp_hold=rn0[rn0.index >= SPLIT].mean() * 1e4))
+            keep[(sc, n, wk, cost)] = rn
+        print(f"  {sc} n{n} weekend={wk} done", flush=True)
+    R = pd.DataFrame(rows)
+    pd.set_option("display.width", 250); pd.set_option("display.max_rows", 200)
+    print("\nRAW NIGHT / DAY returns of the baskets (bp, before costs)")
+    print(R[R.cost_bp == 0][["score", "n", "weekend", "night_bp_dev", "night_bp_hold", "day_bp_dev", "day_bp_hold"]].round(1).to_string(index=False))
+    print("\nOVERNIGHT BOOK by cost (Sharpe on daily returns, annualised 252; hSh = IWM-overnight-hedged)")
+    print(R[["score", "n", "weekend", "cost_bp", "dev_Sh", "dev_ann", "dev_DD", "hold_Sh", "hold_ann", "hold_DD", "dev_hSh", "hold_hSh", "beta"]]
+          .round(2).to_string(index=False))
+    R.to_csv(f"{RD}/results/overnight_momentum.csv", index=False)
+    for cost in (1.0, 2.0):
+        best = R[R.cost_bp == cost].sort_values("dev_hSh", ascending=False).iloc[0]
+        print(f"::notice::overnight momentum @ {cost:.0f}bp/side, dev pick {best.score} n{best.n} weekend={best.weekend}: "
+              f"hedged Sharpe dev {best.dev_hSh:.2f} / holdout {best.hold_hSh:.2f}; raw {best.dev_ann:.0f}%/yr / {best.hold_ann:.0f}%/yr")
+        pd.DataFrame({"overnight": keep[(best.score, best.n, best.weekend, cost)]}).to_csv(
+            f"{RD}/results/overnight_daily_{int(cost)}bp.csv")
+
+
+if __name__ == "__main__":
+    main()

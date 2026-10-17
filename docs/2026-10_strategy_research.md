@@ -1929,3 +1929,49 @@ On the 5-minute data (the proxy's weekly top-15 picks, 2017–26):
 Closing and opening auction orders (MOC/MOO) fill at the official print with no spread, so real costs could be about 1 bp.
 
 **Full test running:** `research/overnight_momentum.py`. Official daily open/close prints, full universe, three signals × top 10/20/50, with and without the weekend night, 0/1/2/5 bp, IWM-hedged, dev pick then holdout once.
+
+## Overnight-only momentum, full test (Oct 17): `research/overnight_momentum.py`
+
+**Setup.** Official daily open/close prints (Alpaca SIP), 2017–26, weekly signals, buy at the close and sell at the next open every night.
+
+**Average night / day per basket (bp, before costs).**
+
+| Basket | Night dev | Night holdout | Day dev | Day holdout | Beta to IWM night |
+|---|---|---|---|---|---|
+| LIVE top 10 | 12.3 | 12.4 | −6.9 | −6.6 | 0.7 |
+| 12-1 top 50 | 13.8 | 19.7 | −2.6 | −11.8 | 1.0 |
+| Last-week hot | about 0 | | | | |
+
+IWM's own night is +6.3 bp in both periods.
+
+- The 5-minute preview (+12/+18 bp on weekday nights alone) was overstated: the last 5-minute bar is not the official closing print.
+- The weekend night is the biggest single night (LIVE: 16.9 / 26.2 bp vs 11.0 / 8.4 on weekday nights).
+
+**Breadth.**
+- The median name earns only about the market's night (+5–9 bp).
+- Winsorised 10/90 baskets earn +10–13 bp; 52–54% of names rise overnight.
+- The best 20 of 2,456 nights supply 26–31% of the cumulative total.
+- **Real but right-tail-heavy.**
+
+**Books** (Sharpe on daily returns; hedged = minus beta × IWM night):
+
+| | Hedged Sharpe dev | Hedged Sharpe holdout | Raw return dev | Raw return holdout |
+|---|---|---|---|---|
+| Dev pick, 1 bp/side (LIVE top 10, with weekend) | 1.27 | 0.77 | 28%/yr | 26%/yr |
+| Dev pick, 2 bp/side | 0.85 | 0.52 | | |
+| 12-1 top 50, 1 bp (not the dev pick) | 1.07 | 1.76 | | |
+
+At 0 bp the hedged Sharpe is about 1.7–1.8 in dev; the edge roughly halves with every basis point of cost.
+
+**In the honest stack (weekly, IWM-hedged).**
+- At 1 bp the dev optimizer gives it 55%. Dev excess Sharpe 1.12→1.64, but holdout **1.38→1.37**. At 2 bp: holdout 1.38→1.29.
+- Correlation with the other books: −0.11 to +0.25.
+- Classic dev-only gain: **does not improve the stack out of sample.**
+
+**Against the pre-registered kill criteria.**
+1. At least +5 bp hedged: borderline pass (winsorised hedged dev 3–6 bp, holdout 7–8 bp).
+2. Survives 2 bp in both periods: weak pass (0.85/0.52).
+3. Not a handful of names: partial (right-tail driven, median ≈ market).
+4. Dev pick holds in holdout: degraded (1.27→0.77).
+
+**Verdict.** A real, documented effect, but modest here, and decisively dependent on costs of 1 bp or less per side. Not a stack improvement on current evidence. The only way to settle the cost question is real auction fills: a paper shadow (MOC buys / MOO sells of the LIVE top 10 nightly on Alpaca paper) would measure fill price vs the official print. Proposed, not built.
