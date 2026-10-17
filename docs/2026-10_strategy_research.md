@@ -1791,3 +1791,74 @@ These were checked and the verdicts stand:
 
 - **Survivorship:** about 417 delisted names are missing, and Alpaca keeps limited delisted history. This flatters small-cap long books.
 - **One split:** a single dev/holdout split with a short (2.75-year), very bullish holdout that has been looked at many times. Holdout Sharpes are optimistic. Year-by-year (walk-forward) tables and a deflated Sharpe should accompany any capital decision.
+
+## Audit redo 1: the stack, rebuilt honestly (Oct 17): `research/stack_v2.py`
+
+**Changes.**
+- ETF and crypto sleeves capped at 1x gross;
+- idle cash earns T-bills;
+- borrowing at 6%;
+- Sharpe on excess-over-T-bill returns;
+- IWM hedge betas from dev (SLOW 0.798, CONTRACT 0.743);
+- weights re-chosen on dev.
+
+**Sleeves (excess Sharpe, dev / holdout).**
+
+| Sleeve | Dev | Holdout |
+|---|---|---|
+| SLOW_h | 0.59 | 0.62 |
+| CONTRACT_h | 0.85 | 0.97 |
+| ETFTREND (1x) | 0.41 | 0.83 |
+| CRYPTO (1x) | 0.29 | 0.69 |
+| PEAD_h | 0.57 | 0.27 |
+| INSIDER_h | 0.55 | 0.02 |
+
+Dev correlations between the four live sleeves are all within ±0.14.
+
+**Mixes at 1x.**
+
+| Mix | Weights | Dev | Holdout |
+|---|---|---|---|
+| Shadow #7 frozen weights | | exSh 1.08, 15.9%/yr, DD −14% | exSh 1.34, 27.8%/yr |
+| Re-optimised live 4 | SLOW 0.10, CONTRACT 0.24, ETF 0.50, CRYPTO 0.15 | exSh 1.12, 12.6%/yr, vol 9.4%, DD −9.7% | exSh 1.38, 22.4%/yr, DD −8.5% |
+| Adding PEAD/INSIDER | | 1.19 | 1.30 |
+
+Adding PEAD/INSIDER is the overfitting pattern again; rejected.
+
+**Year by year (re-optimised, 1x, total return %).**
+
+| 2017 | 2018 | 2019 | 2020 | 2021 | 2022 | 2023 | 2024 | 2025 | 2026 YTD |
+|---|---|---|---|---|---|---|---|---|---|
+| +12.0 | +6.6 | +11.0 | +27.3 | +9.3 | +2.1 | +21.9 | +19.6 | +32.8 | +9.8 |
+
+No losing year.
+
+**Leverage (borrowing at 6% lowers excess Sharpe as leverage rises).**
+
+| Leverage | Dev | Holdout |
+|---|---|---|
+| 2x fixed | 18.4%/yr, exSh 0.90, DD −22% | 39.1%/yr, exSh 1.31, DD −18% |
+| **Vol-target, avg 2x on dev (8-week lookback)** | **23.2%/yr, exSh 1.16, DD −16%** | **30.2%/yr, exSh 1.35, DD −13%** (avg leverage 1.41) |
+
+**Deflated Sharpe** (full 2017–26 Sharpe 1.20, assuming trial-Sharpe dispersion of 0.5):
+
+| Designs tried | P(the Sharpe is real) |
+|---|---|
+| 100 | 0.42 |
+| 500 | 0.15 |
+| 2,000 | 0.05 |
+
+This research program has tried hundreds of designs. Even honest numbers carry a real chance of being selection luck; shadow #7's live record is the arbiter.
+
+**Bottom line.**
+- Realistic, pre-tax: about 20–25%/yr (0.35–0.45%/wk) at vol-targeted ~2x, with drawdowns around −15 to −20%. That is about the previous "realistic" figure, now reached with smaller drawdowns and without hidden leverage.
+- Shadow #7 still uses the uncapped ETF sleeve and the old weights. **Proposed change (needs Connor's approval):** cap the ETF sleeve at 1x, use the re-optimised weights, and add 8-week vol targeting.
+
+## Audit redo 2: earnings drift with a real surprise (Oct 17): `research/pead_v2.py`
+
+**Surprise.** XBRL seasonal EPS surprise (XSUE): 61,577 company-quarters, 5,406 companies; usable events 48,988.
+- **Event study, 13-week excess by XSUE quintile.** Dev Q5−Q1 is −0.35% (t −0.7); holdout +0.94% (t 1.8). XSUE and EAR both positive: −0.33% vs −0.82% for the rest in dev; −0.38% vs −0.44% in the holdout.
+- **Grid (48 designs).** The dev pick is still the old announcement-return score: exSh 0.83 / 0.86, unhedged, beta 0.61. XSUE designs: median 0.60 / 0.80.
+- **Hedged, in the honest stack.** Dev 1.13→1.36 but holdout 1.37→1.24: overfit. Rejected.
+
+**Verdict.** With a proper surprise measure, earnings drift adds nothing here. XSUE is only known at the 10-Q filing; 8-K exhibit EPS would be earlier, but the dev spread is not even positive.
