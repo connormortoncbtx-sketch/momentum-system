@@ -1975,3 +1975,22 @@ At 0 bp the hedged Sharpe is about 1.7–1.8 in dev; the edge roughly halves wit
 4. Dev pick holds in holdout: degraded (1.27→0.77).
 
 **Verdict.** A real, documented effect, but modest here, and decisively dependent on costs of 1 bp or less per side. Not a stack improvement on current evidence. The only way to settle the cost question is real auction fills: a paper shadow (MOC buys / MOO sells of the LIVE top 10 nightly on Alpaca paper) would measure fill price vs the official print. Proposed, not built.
+
+## Audit redo 4: contract-win book with delisted filers (Oct 17)
+
+**Added.** 591 later-delisted issuers (29% of inactive symbols matched by name via the EDGAR master index), 6,544 small-cap 8-Ks 2017–23, judged by the same LLM prompt (`llm_delist/`). Contract wins in dev went to n 1,138.
+
+| | Survivors only | With delisted filers |
+|---|---|---|
+| Dev contract-win drift (20d, vs all 8-Ks −0.28%) | | +0.48% (p 0.105) |
+| Base book (≥10% of mcap, equal weight), dev Sharpe | 0.43 | 0.42 |
+| Dev-best design (all wins + filters, 10-day, 1/vol, 25% cap), dev Sharpe | 1.04 | **0.92** |
+| Same design, holdout Sharpe | 1.18 | 1.17 (46%/yr) |
+
+- Hedged CONTRACT sleeve: dev excess Sharpe 0.85→0.72, holdout 0.97→0.95.
+- **Honest stack:** re-optimised live 4 at 1x goes from 1.12 / 1.38 to **1.04 / 1.37**. Vol-target ~2x: dev 21.1%/yr (DD −16%), holdout 29.0%/yr. Re-optimised weights barely move (0.115 / 0.214 / 0.506 / 0.165 vs shadow v2's 0.104 / 0.238 / 0.504 / 0.154), so shadow #7 v2 is left as is.
+- Deflated Sharpe: P(real) is 0.35 at 100 trials and 0.11 at 500.
+
+**Verdict.** Survivorship flattered the contract book's dev result by about 0.1 Sharpe. The holdout is unaffected, and the conclusions hold. Coverage is still partial (71% of delisted symbols unmatched), so the true dev figure is likely a little lower again.
+
+**Audit redos complete:** stack rebuilt; PEAD (real surprise) rejected; same-day weather closed fairly; contract survivorship measured. The cross-market Kalshi scan is re-running after its third bug fix (sampling dropped the window column).
