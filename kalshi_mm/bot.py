@@ -234,16 +234,31 @@ class Bot:
         return os.path.exists(KILL_FILE) or E("KILL") == "1"
 
     def cancel_all(self, reason):
+        """Cancel every resting order: per-order error handling, re-check, up to 5 passes."""
         if MODE == "dry":
             return
-        try:
-            for o in self.k.resting():
-                self.k.cancel(o["order_id"], o.get("ticker"))
-            left = len(self.k.resting())
-            jlog("events", event="cancel_all", reason=reason, resting_after=left)
-            log.info(f"cancelled all resting orders ({reason})")
-        except Exception as e:
-            log.error(f"cancel_all failed: {e}")
+        left, errs = None, 0
+        for attempt in range(5):
+            try:
+                rest = self.k.resting()
+            except Exception as e:
+                log.error(f"cancel_all list failed: {e}"); time.sleep(2); continue
+            left = len(rest)
+            if not rest:
+                break
+            for o in rest:
+                try:
+                    self.k.cancel(o["order_id"], o.get("ticker"))
+                except Exception as e:
+                    errs += 1; log.warning(f"cancel {o.get('order_id')}: {e}")
+            time.sleep(1.5)
+        else:
+            try:
+                left = len(self.k.resting())
+            except Exception:
+                pass
+        jlog("events", event="cancel_all", reason=reason, resting_after=left, cancel_errors=errs)
+        (log.info if not left else log.error)(f"cancel_all ({reason}): {left} resting left, {errs} errors")
 
     def markets(self):
         out = []

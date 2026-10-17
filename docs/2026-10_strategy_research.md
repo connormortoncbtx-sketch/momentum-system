@@ -1687,3 +1687,32 @@ Capacity is not the binding constraint at these sizes. The deep-level pot alone 
 - **13-week lookback:** holdout Sharpe 1.77, DD −19%.
 - **Halve leverage beyond a 10/15/20% drawdown:** lowers dev Sharpe (1.03–1.10) and gives mixed holdout results. Rejected.
 - **Recommendation:** vol targeting (8–13 week lookback) for any leveraged deployment.
+
+## Theme / industry ETF momentum (Oct 17, 2026): `research/etf_momentum.py`
+
+**Setup.** 4,144 ETFs (3,186 active plus delisted fund-named), excluding leveraged, inverse, option-income, buffer and bond funds. Point-in-time liquidity of at least $2M/day and one year of history. Grid of 120 configurations:
+- lookback: 1, 3, 6 or 12 months, and 12 months skipping the last month;
+- top 5, 10 or 20;
+- weekly or monthly rebalance;
+- optional absolute filter and de-duplication;
+- 10 bps costs.
+
+**Results.**
+
+| | Dev Sharpe | Dev CAGR | Holdout Sharpe | Holdout CAGR | Max DD |
+|---|---|---|---|---|---|
+| Best on dev (12-1 month, top 20, monthly) | 0.67 | 15% | 0.44 | 10% | about −36% (both periods) |
+| Grid median | 0.25 | | 0.73 | | |
+| IWM-hedged best | | | 0.20 | | |
+
+- Across configurations, dev and holdout Sharpe correlate at only 0.2: the ranking is mostly luck.
+- Every configuration is below buy-and-hold SPY on a risk-adjusted basis in dev, with deep drawdowns (−30 to −45%). The absolute filter made no difference: some ETFs always have positive 12-month returns.
+
+**Verdict.** Rejected. Industry/theme momentum via ETFs does not beat the market, and with the market hedged out it has almost no Sharpe left. That is consistent with the earlier stock-level theme work (detectable but not predictive). Survivorship bias would only make the true result worse.
+
+**Stack check.** Adding the IWM-hedged ETF momentum book to the 4 live books:
+- the dev optimizer gives it 9.7%;
+- stack Sharpe goes 1.35→1.36 in dev and 1.72→1.64 in the holdout;
+- its correlation with ETFTREND is 0.31.
+
+Not added.
