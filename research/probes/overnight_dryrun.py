@@ -8,6 +8,7 @@ S.STATE, S.LEDGER = tmp / "state.json", tmp / "ledger.jsonl"
 S.START = dt.date(2026, 10, 12)
 st = {"picks": {}, "last_open_date": None, "nav": {"raw_1bp": 100.0, "raw_2bp": 100.0, "hedged_1bp": 100.0, "day_only": 100.0, "iwm_night": 100.0}}
 picks = S.picks_for(dt.date(2026, 10, 9), st)
+print(f"::notice::SIC2 of picks: {[st['sic2'].get(x) for x in picks]}")
 print(f"::notice::formation Oct 9 top 10: {picks}")
 try:
     S.main()

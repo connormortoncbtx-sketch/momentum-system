@@ -39,6 +39,8 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)-7s %(me
 DATA = ROOT / "data"
 STATE, LEDGER, SCORES = DATA / "shadow_overnight_state.json", DATA / "shadow_overnight_ledger.jsonl", DATA / "scores_final.csv"
 N, BETA = 10, 0.67
+SECTOR_CAP = 2       # max picks per SEC SIC 2-digit industry group (added Oct 17 before the first mark:
+                     # top-10 hedged Sharpe 1.27 -> 1.39 dev, 0.77 -> 0.87 holdout, worst night -12.2% -> -7.4%)
 START = dt.date(2026, 10, 19)          # first entry close of the shadow (Monday)
 
 
@@ -58,6 +60,31 @@ def bars_recent(symbols, start):
     d = df.reset_index()[["symbol", "timestamp", "open", "close"]]
     d["date"] = pd.to_datetime(d.timestamp).dt.tz_convert("America/New_York").dt.date
     return d
+
+
+def sic2(symbols, state):
+    """SEC SIC code (first 2 digits) per symbol, cached in state; None when unavailable."""
+    import os, time, urllib.request
+    cache = state.setdefault("sic2", {})
+    need = [x for x in symbols if x not in cache]
+    if need:
+        ua = {"User-Agent": os.environ.get("SEC_USER_AGENT") or "MomentumAlpha research momentum-bot@users.noreply.github.com"}
+        if "_tickers" not in state:
+            raw = urllib.request.urlopen(urllib.request.Request("https://www.sec.gov/files/company_tickers.json", headers=ua), timeout=60).read()
+            state["_tickers"] = {v["ticker"].upper().replace("-", "."): int(v["cik_str"]) for v in json.loads(raw).values()}
+        for x in need:
+            cik = state["_tickers"].get(x)
+            code = None
+            if cik:
+                try:
+                    sub = json.loads(urllib.request.urlopen(urllib.request.Request(
+                        f"https://data.sec.gov/submissions/CIK{cik:010d}.json", headers=ua), timeout=30).read())
+                    code = str(sub.get("sic") or "")[:2] or None
+                except Exception as e:
+                    log.warning(f"SIC {x}: {e}")
+                time.sleep(0.15)
+            cache[x] = code
+    return {x: cache.get(x) for x in symbols}
 
 
 def form_friday(d):
@@ -86,7 +113,17 @@ def picks_for(fri, state):
     live = (0.35 * rk(f["rs_live"]) + 0.25 * rk(f["trend"]) + 0.20 * rk(f["hi52"])) / 0.80
     w = pd.Timestamp(fri)
     s = live.loc[w].where(U.loc[w]).dropna().sort_values(ascending=False)
-    top = list(s.index[:N])
+    cand = list(s.index[: N * 5])
+    codes = sic2(cand, state)
+    top, cnt = [], {}
+    for x in cand:                                    # same rule as the research: unknown SIC is never capped
+        g = codes.get(x)
+        if g is not None and cnt.get(g, 0) >= SECTOR_CAP:
+            continue
+        cnt[g] = cnt.get(g, 0) + 1
+        top.append(x)
+        if len(top) == N:
+            break
     state["picks"][key] = top
     log.info(f"formation {fri}: {top}")
     return top
@@ -147,6 +184,7 @@ def main():
         with LEDGER.open("a") as fh:
             for row in rows:
                 fh.write(json.dumps(row) + "\n")
+    state.pop("_tickers", None)
     STATE.write_text(json.dumps(state, indent=1))
     msg = f"Shadow overnight: {len(rows)} night(s) marked; NAV " + ", ".join(f"{k} {v:.2f}" for k, v in state["nav"].items())
     log.info(msg)
