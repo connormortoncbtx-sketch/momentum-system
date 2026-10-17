@@ -2017,3 +2017,15 @@ Momentum names mostly beat on earnings.
 **Excluding them lowers Sharpe** (LIVE top 10 hedged at 1 bp: 1.27→0.94 dev, 0.47→0.18 holdout) **and does not change the worst night or drawdown** (worst −7.8% / −12.2% either way). The book's tail risk is market/sector-wide momentum gaps (like Oct 14–15), not single-name earnings.
 
 **Keep earnings nights.** Manage the tail with breadth (top 50 was steadier), the IWM hedge and possibly sector caps.
+
+**Sector cap (Oct 17, before shadow #8's first mark; approved by Connor).** At most N picks per SEC SIC 2-digit industry; unknown SIC is never capped.
+
+| Basket | Cap | Hedged Sharpe dev | Hedged Sharpe holdout | Holdout worst night | Holdout max DD |
+|---|---|---|---|---|---|
+| LIVE top 10 | none | 1.27 | 0.77 | −12.2% | −28% |
+| LIVE top 10 | 3 | 1.26 | 0.78 | −8.0% | |
+| LIVE top 10 | **2 (dev best)** | **1.39** | **0.87** | **−7.4%** | **−25%** |
+| 12-1 top 50 | 10 / 5 | no gain | | | |
+| LIVE top 50 | 5 | 1.26 | 1.04 | | |
+
+Shadow #8 now applies cap 2 (SIC from SEC submissions, cached in state; workflow passes SEC_USER_AGENT). Dry run: OKTA (the third SIC-73 name) was replaced by IOVA; the Oct 12–16 week was still −7.2%, a broad momentum gap that sector caps cannot diversify away.
