@@ -2003,3 +2003,17 @@ At 0 bp the hedged Sharpe is about 1.7–1.8 in dev; the edge roughly halves wit
 - **No orders:** official prints stand in for auction fills, so fill quality still needs real orders to measure.
 - **Dry run on Oct 12–16** (formation Oct 9: MRNA, HPE, DELL, PAYS, TEAM, OKTA, ECO, LITE, HZO, ASX): nights −184, −203, −370, −6 bp; raw NAV 100 → 92.5. Verified against raw prints (DELL 507.93 → 471.21, LITE 896 → 845 overnight on Oct 14–15) as a genuine momentum gap-down week, not a bug. It is a reminder that the left tail is real.
 - **Fix found:** the free SIP feed refuses queries ending within 15 minutes of now, so the shadow queries bars up to 20 minutes ago.
+
+**Earnings nights in the overnight book (Oct 17).** Earnings name-nights are those whose open is the first reaction session.
+
+| Basket | Share of name-nights | Share of the cumulative night return | Mean earnings night (sd) |
+|---|---|---|---|
+| LIVE top 10 | 1.2% | 18% | +179 / +202 bp (sd 7–11%) |
+| LIVE top 50 | 1.3% | 11% | |
+| 12-1 top 50 | 1.2% | 7% | |
+
+Momentum names mostly beat on earnings.
+
+**Excluding them lowers Sharpe** (LIVE top 10 hedged at 1 bp: 1.27→0.94 dev, 0.47→0.18 holdout) **and does not change the worst night or drawdown** (worst −7.8% / −12.2% either way). The book's tail risk is market/sector-wide momentum gaps (like Oct 14–15), not single-name earnings.
+
+**Keep earnings nights.** Manage the tail with breadth (top 50 was steadier), the IWM hedge and possibly sector caps.
