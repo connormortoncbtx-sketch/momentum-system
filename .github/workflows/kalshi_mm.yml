@@ -19,6 +19,10 @@ on:
         description: 'Cents behind the best bid'
         required: false
         default: '2'
+      budget_usd:
+        description: 'Max collateral in positions + resting orders'
+        required: false
+        default: '200'
 
 permissions:
   contents: write
@@ -45,6 +49,7 @@ jobs:
           MODE: ${{ inputs.mode }}
           RUN_MINUTES: ${{ inputs.minutes }}
           OFFSET_C: ${{ inputs.offset_c }}
+          BUDGET_USD: ${{ inputs.budget_usd }}
           LOG_DIR: research_data/kalshi_mm/${{ inputs.mode }}
           KALSHI_KEY_ID: ${{ secrets.KALSHI_DEMO_KEY_ID }}
           KALSHI_PRIVATE_KEY: ${{ secrets.KALSHI_DEMO_PRIVATE_KEY }}
