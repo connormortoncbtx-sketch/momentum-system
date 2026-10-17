@@ -150,6 +150,10 @@ class Kalshi:
         d = self.req("GET", "/portfolio/orders", auth=True, status="resting", limit=1000)
         return d.get("orders", [])
 
+    def settlements(self, min_ts):
+        d = self.req("GET", "/portfolio/settlements", auth=True, min_ts=min_ts, limit=1000)
+        return d.get("settlements", [])
+
     def fills(self, min_ts):
         d = self.req("GET", "/portfolio/fills", auth=True, min_ts=min_ts, limit=1000)
         return d.get("fills", [])
@@ -235,7 +239,8 @@ class Bot:
         try:
             for o in self.k.resting():
                 self.k.cancel(o["order_id"], o.get("ticker"))
-            jlog("events", event="cancel_all", reason=reason)
+            left = len(self.k.resting())
+            jlog("events", event="cancel_all", reason=reason, resting_after=left)
             log.info(f"cancelled all resting orders ({reason})")
         except Exception as e:
             log.error(f"cancel_all failed: {e}")
@@ -290,12 +295,24 @@ class Bot:
                 log.warning("daily loss limit hit; pausing until tomorrow (UTC)")
                 return "paused"
             self.record_fills()
+            if int(time.time()) % 3600 < LOOP_S * 2:
+                self.record_settlements()
         else:
             used = 0.0
 
         hours = dict(mkts)
         placed = cancelled = 0
         resting_cost = sum(order_price(o, order_side(o)) * remaining(o) for o in rest)
+        if live and used + resting_cost > BUDGET:            # fills moved money into positions: trim
+            for o in sorted(rest, key=lambda o: -order_price(o, order_side(o)) * remaining(o)):
+                if used + resting_cost <= BUDGET:
+                    break
+                try:
+                    self.k.cancel(o["order_id"], o.get("ticker")); cancelled += 1
+                    resting_cost -= order_price(o, order_side(o)) * remaining(o)
+                    mine.get((o["ticker"], order_side(o)), []).remove(o) if o in mine.get((o["ticker"], order_side(o)), []) else None
+                except Exception as e:
+                    log.warning(f"trim cancel: {e}")
         for tk, (y, n) in books.items():
             want = targets(y, n, pos.get(tk, 0.0), hours.get(tk, -1))
             if not live:
@@ -344,14 +361,29 @@ class Bot:
         seen = set()
         path = f"{LOG_DIR}/fills.jsonl"
         if os.path.exists(path):
-            seen = {json.loads(l).get("trade_id") for l in open(path) if l.strip()}
+            seen = {json.loads(l).get("trade_id") or (json.loads(l).get("fill") or {}).get("trade_id")
+                    for l in open(path) if l.strip()}
         for f in fs:
             if f.get("trade_id") in seen:
                 continue
-            jlog("fills", **f)
+            jlog("fills", trade_id=f.get("trade_id"), fill=f)
             ts = f.get("created_time")
             if ts:
                 self.last_fill_ts = max(self.last_fill_ts, int(dt.datetime.fromisoformat(ts.replace("Z", "+00:00")).timestamp()))
+
+    def record_settlements(self):
+        path = f"{LOG_DIR}/settlements.jsonl"
+        seen = set()
+        if os.path.exists(path):
+            seen = {json.loads(l).get("key") for l in open(path) if l.strip()}
+        try:
+            ss = self.k.settlements(int(time.time()) - 14 * 86400)
+        except Exception as e:
+            log.warning(f"settlements: {e}"); return
+        for x in ss:
+            key = f"{x.get('ticker')}|{x.get('settled_time')}"
+            if key not in seen:
+                jlog("settlements", key=key, settlement=x)
 
     def run(self):
         log.info(f"MODE={MODE} series={','.join(SERIES)} offset={OFFSET * 100:.0f}c size={SIZE} cap={INV_CAP} "
