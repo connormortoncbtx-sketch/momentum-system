@@ -605,3 +605,9 @@
 {"ts": "2026-10-17T10:04:02+00:00", "mode": "demo", "open_markets": 48, "books": 48, "placed": 2, "cancelled": 2, "resting_usd": 62.75, "positions_usd": 26.45}
 {"ts": "2026-10-17T10:04:34+00:00", "mode": "demo", "open_markets": 48, "books": 48, "placed": 1, "cancelled": 1, "resting_usd": 62.65, "positions_usd": 26.37}
 {"ts": "2026-10-17T10:05:08+00:00", "mode": "demo", "open_markets": 48, "books": 48, "placed": 6, "cancelled": 6, "resting_usd": 61.75, "positions_usd": 28.24}
+{"ts": "2026-10-17T10:07:37+00:00", "mode": "demo", "open_markets": 48, "books": 48, "placed": 28, "cancelled": 0, "resting_usd": 60.0, "positions_usd": 29.96}
+{"ts": "2026-10-17T10:08:10+00:00", "mode": "demo", "open_markets": 48, "books": 48, "placed": 2, "cancelled": 1, "resting_usd": 59.95, "positions_usd": 29.96}
+{"ts": "2026-10-17T10:08:45+00:00", "mode": "demo", "open_markets": 48, "books": 48, "placed": 6, "cancelled": 2, "resting_usd": 61.2, "positions_usd": 28.69}
+{"ts": "2026-10-17T10:09:21+00:00", "mode": "demo", "open_markets": 48, "books": 48, "placed": 6, "cancelled": 3, "resting_usd": 59.95, "positions_usd": 29.96}
+{"ts": "2026-10-17T10:09:54+00:00", "mode": "demo", "open_markets": 48, "books": 48, "placed": 0, "cancelled": 0, "resting_usd": 59.95, "positions_usd": 29.96}
+{"ts": "2026-10-17T10:10:28+00:00", "mode": "demo", "open_markets": 48, "books": 48, "placed": 4, "cancelled": 1, "resting_usd": 60.6, "positions_usd": 28.76}
