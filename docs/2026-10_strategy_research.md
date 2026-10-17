@@ -1892,3 +1892,40 @@ So the original test **was** handicapped: METAR missed the high a third of the t
 - NAV at 1x and with 8-week vol targeting (leverage = 0.020698 / std of the last 8 weekly returns, clipped 0.5–3x, seeded with research returns Aug 7 – Sep 25), with 6% financing on the borrowed part.
 
 Ledger rows carry a `v2` block; state is in `state["v2"]`. The Jan 5 review should compare v1, v2 at 1x and v2 vol-targeted.
+
+## Bugs that helped: what was really going on (Oct 17)
+
+Connor's rule: when a "bug" beats the corrected version, find out why before discarding it. Every such case in this log:
+
+**1. Weekly-low stop approximation (looked better than the daily-validated stop).** It booked gap-downs at exactly −10%, a fill that cannot happen. Nothing to keep.
+
+**2. ETF-trend book at 3.2x with no financing.**
+- Re-tested with financing: leverage inside the low-vol ETF sleeve vs the same total volatility from account-level borrowing gives dev excess Sharpe 1.04 vs 0.95 and holdout 1.34 vs 1.33.
+- A marginal risk-parity benefit. The apparent gain was mostly free borrowing. Nothing to adopt.
+
+**3. The live system's mistimed trades (Tue-open in, Mon-open out beat the designed Mon-close timing, Round 1). A real effect.**
+
+On the 5-minute data (the proxy's weekly top-15 picks, 2017–26):
+
+| | Night (close→open) | Day (open→close) |
+|---|---|---|
+| Dev | +11.8 bp (t 9.4) | −11.7 bp (t −5.7) |
+| Holdout | +16.4 bp (t 4.7) | −18.4 bp (t −4.4) |
+
+- Monday daytime is the worst (−18 / −31 bp). This is the documented overnight/intraday "tug of war" in momentum stocks.
+- After hedging out IWM's own overnight return: +7.3 / +11.5 bp per night (t 4.2 / 2.5).
+
+**Execution lessons** (`scratchpad/timing.py`, weekly panel):
+- **Never buy hot momentum names at the open.** LIVE book, buys at Monday open instead of close: dev −15.2%/yr vs −3.4%, holdout −11.3% vs +0.7%.
+- **For slow momentum, sell timing barely matters.** Selling at Monday open hurts (0.75→0.67) because names being sold have already lost momentum. Tuesday-open exits are neutral.
+
+**Overnight-only book (5-minute data, weekend excluded).** Before costs Sharpe 1.98 / 1.85. Very cost-sensitive:
+
+| Cost per side | Dev Sharpe | Holdout Sharpe |
+|---|---|---|
+| 2 bp | 1.31 | 1.43 |
+| 5 bp | 0.30 | 0.80 |
+
+Closing and opening auction orders (MOC/MOO) fill at the official print with no spread, so real costs could be about 1 bp.
+
+**Full test running:** `research/overnight_momentum.py`. Official daily open/close prints, full universe, three signals × top 10/20/50, with and without the weekend night, 0/1/2/5 bp, IWM-hedged, dev pick then holdout once.
