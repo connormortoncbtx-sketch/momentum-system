@@ -30,7 +30,10 @@ FULL_START = os.environ.get("FULL_START") or "2024-01-01"
 FULL_END = os.environ.get("FULL_END") or END
 FULL_OUT = os.environ.get("FULL_OUT") or "research/samples/llm_8k_full.parquet"
 
-fi = pd.concat(pd.read_parquet(f) for f in sorted(glob.glob(f"{SEC}/filings_20[12][0-9].parquet")))
+_files = sorted(glob.glob(f"{SEC}/filings_20[12][0-9].parquet"))
+if os.environ.get("DELISTED_ONLY") == "1":          # audit redo: filers that later delisted
+    _files = [f"{SEC}/filings_delisted.parquet"]
+fi = pd.concat(pd.read_parquet(f) for f in _files)
 k = fi[(fi.form == "8-K") & (fi.accepted_et >= (FULL_START if FULL else DEV0)) & (fi.accepted_et < (FULL_END if FULL else END))].copy()
 k["item_set"] = k["items"].fillna("").str.split(",").apply(lambda xs: {x.strip() for x in xs})
 k = k[k.item_set.apply(lambda s: bool(s & ITEMS))]
@@ -61,7 +64,9 @@ k["period"] = np.where(k.accepted_et >= HOLD0, "holdout", "dev")
 print(k.groupby("period").size())
 rng = np.random.default_rng(7)
 if FULL:
-    done = set(pd.read_parquet("research/samples/llm_8k_sample.parquet").accession)
+    done = set()
+    for _s in glob.glob("research/samples/llm_8k_*.parquet"):
+        done |= set(pd.read_parquet(_s, columns=["accession"]).accession)
     sel = k[(k.accepted_et >= FULL_START) & (k.accepted_et < FULL_END) & ~k.accession.isin(done)]
 else:
     dev = k[k.period == "dev"]; hold = k[k.period == "holdout"]

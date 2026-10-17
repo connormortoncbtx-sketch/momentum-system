@@ -34,7 +34,7 @@ class Tee:
 
 def load():
     J, E = [], []
-    for d in [f"{RD}/llm"] + sorted(glob.glob(f"{RD}/llm_full/part*")) + sorted(glob.glob(f"{RD}/llm_hist/part*")):
+    for d in [f"{RD}/llm"] + sorted(glob.glob(f"{RD}/llm_full/part*")) + sorted(glob.glob(f"{RD}/llm_hist/part*")) + sorted(glob.glob(f"{RD}/llm_delist/part*")):
         if os.path.exists(f"{d}/judgements.parquet") and os.path.exists(f"{d}/events.parquet"):
             J.append(pd.read_parquet(f"{d}/judgements.parquet")); E.append(pd.read_parquet(f"{d}/events.parquet"))
     ev = pd.concat(E).drop_duplicates("accession").merge(pd.concat(J).drop_duplicates("accession"), on="accession")
