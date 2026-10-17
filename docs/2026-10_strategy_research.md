@@ -1729,3 +1729,65 @@ Not added.
 4. Settlement records are now logged hourly, for realized P&L per contract.
 
 **Status.** Mechanics verified. Next: a funded real account (a few hundred dollars) plus an always-on host for an 8-week edge measurement.
+
+## Audit of failed and accepted tests (Oct 17, 2026)
+
+Every test in this log was re-read against its code. Findings, most important first.
+
+### Errors that change accepted numbers
+
+**1. The stack's Sharpe was overstated.**
+- The ETF-trend book holds 3.2x gross on average. The stack's account gross was 1.5x on average (95th percentile 1.9x) with no financing charged.
+- Net of 6% financing on the true gross:
+
+| | Before | Net of financing |
+|---|---|---|
+| Stack 1x Sharpe (dev / holdout) | 1.35 / 1.72 | 1.14 / 1.56 |
+| "2x" Sharpe (dev / holdout) | | 0.93 / 1.40 |
+| "2x" CAGR (dev / holdout) | | 25% / 55% |
+
+- "2x" is really about 3x gross on average (max 4.3x).
+- All Sharpes in this log are computed on total, not excess-over-cash, returns. Relative comparisons hold; absolute levels are a further ~0.1–0.2 too high.
+- **Redo:** re-optimize the stack with the ETF sleeve capped at 1x gross (or financed) and excess-return Sharpes, then update shadow #7 expectations.
+
+**2. Look-ahead in the weekly simulators.** `backtest.py` and `avoid_stack.sim` only consider names whose next-week return exists. That silently skips stocks about to be delisted or halted, and the +150% clip removes huge winners.
+- Measured on SLOW (`scratchpad/lookahead.py`):
+  - removing the look-ahead and the clip: dev Sharpe 0.78→0.79, holdout 0.96→1.05;
+  - booking every non-acquisition-like disappearance (178 of 471 name-weeks) at −100%: dev Sharpe 0.76.
+- **Immaterial for SLOW.** The same pattern exists in other weekly studies; with an effect this size it changes no verdict.
+
+### Tests that were incomplete and deserve a better redo
+
+| Test | What was missing | Could the verdict flip? | Redo |
+|---|---|---|---|
+| Contract-win book 2017–23 (35% of the stack) | The SEC filing set only includes companies that still have a ticker; 2017–23 filers that later delisted are absent | Moderate: dev Sharpe could fall | **Yes.** Add delisted filers via the EDGAR full index, mapped to Alpaca inactive tickers by name |
+| Earnings drift (PEAD) | "Surprise" is the 2-day announcement return (EAR), not earnings vs expectation; weekly entry | Could strengthen a hedged PEAD book (currently 0.77/0.78) | **Yes.** XBRL seasonal-EPS surprise plus EAR, daily entry, IWM-hedged |
+| Same-day Kalshi weather | Used METAR obs (routine + special), not the 1-minute data the NWS daily max is built from; the true max falls between obs and suffers C→F rounding | Possibly. The market won by a lot, but the model had a handicap traders don't | **Yes, cheap.** IEM 1-minute ASOS plus the 6-hour max groups. Also useful to the MM bot (avoid quoting after the max is effectively known) |
+| Insider buying | No routine vs opportunistic split (Cohen-Malloy-Pomorski), the documented source of insider alpha | Possibly a modest book | Yes, lower priority |
+| Kalshi cross-market scan | Rate-limit failures cached as "no data" | Unknown; nothing was measured | Rerunning (fixed) |
+| XBRL accruals | Broken (1% coverage: cash flow is year-to-date) | Unlikely (factor decay) | Low priority |
+| DoD awards | 16% ticker mapping, dominated by primes; obligation date ≠ announcement time | Unlikely: small contractors already 8-K, and those are in the contract book | No |
+| Straddles | Traded/VWAP option prices, not bid/ask; holdout only | Unlikely: realized/implied was the same as controls | No |
+| IPO lock-ups | Estimated dates, weekly data | Unlikely | No |
+
+### Failures that hold up on review
+
+These were checked and the verdicts stand:
+- weekly-turnover momentum;
+- regime / macro / options / flow switches (multiple splits, 60-year test);
+- rank tranches and bands;
+- post-scoring filters;
+- large-cap reversal;
+- themes and industry momentum (stocks, clusters, filing flow, ETFs; 4–26 week horizons);
+- spike signatures (direction);
+- precursors;
+- avoid filters on slow momentum;
+- the 10% stop (daily-validated);
+- AI headline classification (clean post-cutoff fail);
+- the forecast-based Kalshi weather model;
+- ETF theme momentum.
+
+### Systemic limits (not fixable with free data)
+
+- **Survivorship:** about 417 delisted names are missing, and Alpaca keeps limited delisted history. This flatters small-cap long books.
+- **One split:** a single dev/holdout split with a short (2.75-year), very bullish holdout that has been looked at many times. Holdout Sharpes are optimistic. Year-by-year (walk-forward) tables and a deflated Sharpe should accompany any capital decision.
