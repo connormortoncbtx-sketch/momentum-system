@@ -1,5 +1,5 @@
 {
- "since": "2026-10-16T12:08:44-04:00",
+ "since": "2026-10-16T17:30:58-04:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -723,6 +723,206 @@
    "decided": "2026-10-16T12:55:38.821751-04:00",
    "event_type": "litigation",
    "summary": "Company settled $1.3M consulting dispute for $825K, dismissing lawsuit filed September 2026.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "OPNW",
+   "accession": "0001214659-26-013011",
+   "decided": "2026-10-17T01:49:52.034726-04:00",
+   "event_type": "dilution_other",
+   "summary": "Director departure and authorization of 500M blockchain common stock blank check shares",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CNDT",
+   "accession": "0001677703-26-000138",
+   "decided": "2026-10-17T01:49:54.289187-04:00",
+   "event_type": "litigation",
+   "summary": "Company settles data breach class action for $80M; cyber insurance expected to cover impact.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "GBFH",
+   "accession": "0001193125-26-424295",
+   "decided": "2026-10-17T01:49:56.605914-04:00",
+   "event_type": "exec_departure",
+   "summary": "Principal Financial Officer resigned; interim replacements designated; CFO search underway.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "TWI",
+   "accession": "0000899751-26-000075",
+   "decided": "2026-10-17T01:49:59.444222-04:00",
+   "event_type": "exec_appointment",
+   "summary": "CEO awarded $2.3M deferred compensation vesting 2030; 332k shares to trust.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "NB",
+   "accession": "0001539497-26-002705",
+   "decided": "2026-10-17T01:50:05.173617-04:00",
+   "event_type": "prelim_results_good",
+   "summary": "Prelim Q3 2026 results show $3.7M net income vs $42.7M loss YoY, driven by warrant mark-to-market gains.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "SBMT",
+   "accession": "0001539497-26-002704",
+   "decided": "2026-10-17T01:50:08.517075-04:00",
+   "event_type": "dilution_other",
+   "summary": "CEO granted 2M performance warrants plus 200k vested warrants; pending shareholder approval.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ARI",
+   "accession": "0001193125-26-424253",
+   "decided": "2026-10-17T01:50:11.193779-04:00",
+   "event_type": "listing_deficiency",
+   "summary": "Company delisting from NYSE; liquidating remaining assets; transitioning to liquidating trust structure.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_win",
+   "symbol": "NB",
+   "accession": "0001539497-26-002703",
+   "decided": "2026-10-17T01:50:14.215653-04:00",
+   "event_type": "contract_win",
+   "summary": "Elk Creek Resources secured comprehensive 15-year offtake agreement with Traxys covering ferroniobium and rare earth products from Nebraska project.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_div",
+   "symbol": "NB",
+   "accession": "0001539497-26-002703",
+   "decided": "2026-10-17T01:50:14.215653-04:00",
+   "event_type": "contract_win",
+   "summary": "Elk Creek Resources secured comprehensive 15-year offtake agreement with Traxys covering ferroniobium and rare earth products from Nebraska project.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "HURA",
+   "accession": "0001193125-26-424228",
+   "decided": "2026-10-17T01:50:16.966127-04:00",
+   "event_type": "debt_financing",
+   "summary": "Company draws $650K from $50M revolving credit facility; affiliate lender conflict noted.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ALEC",
+   "accession": "0001193125-26-424204",
+   "decided": "2026-10-17T01:50:23.682733-04:00",
+   "event_type": "equity_financing",
+   "summary": "Biotech company priced $75M equity offering at $2.05/share, significant dilution event.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "NKLR",
+   "accession": "0001140361-26-039929",
+   "decided": "2026-10-17T01:50:31.315128-04:00",
+   "event_type": "auditor_change",
+   "summary": "Auditor change from KPMG to MaloneBailey; material weaknesses in internal controls remain unresolved.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "BMRC",
+   "accession": "0001403475-26-000041",
+   "decided": "2026-10-17T01:50:38.307301-04:00",
+   "event_type": "exec_departure",
+   "summary": "Executive Vice President and Head of Retail Banking terminated; mutual separation agreement reached.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "OCUL",
+   "accession": "0001104659-26-116617",
+   "decided": "2026-10-17T01:50:42.383864-04:00",
+   "event_type": "exec_departure",
+   "summary": "Chief Strategy Officer Sanjay Nayak resigned effective October 16, 2026 to lead private company.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ASUR",
+   "accession": "0001104659-26-116616",
+   "decided": "2026-10-17T01:50:45.480773-04:00",
+   "event_type": "debt_financing",
+   "summary": "Refinanced $85M term loan from MUFG, repaid prior MidCap facility. High leverage for revenue scale.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "QUCY",
+   "accession": "0001213900-26-110237",
+   "decided": "2026-10-17T01:50:47.727539-04:00",
+   "event_type": "exec_departure",
+   "summary": "Peter O'Rourke resigned as Board member and Quantum Drones President; replaced by retired Army general.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "FOXF",
+   "accession": "0001424929-26-000061",
+   "decided": "2026-10-17T01:50:55.093377-04:00",
+   "event_type": "exec_departure",
+   "summary": "CEO Michael Dennison resigned; interim CEO appointed; Q3 results below expectations.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "SITC",
+   "accession": "0001193125-26-424065",
+   "decided": "2026-10-17T01:50:57.507424-04:00",
+   "event_type": "listing_deficiency",
+   "summary": "Company voluntarily de-listing from NYSE effective December 2026 post-asset sale.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "MAZE",
+   "accession": "0001193125-26-424067",
+   "decided": "2026-10-17T01:51:00.537055-04:00",
+   "event_type": "dilution_other",
+   "summary": "Company exchanged 2.78M shares for pre-funded warrants exercisable at $0.001/share, creating substantial dilution risk.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "WYY",
+   "accession": "0001654954-26-008985",
+   "decided": "2026-10-17T01:51:02.507426-04:00",
+   "event_type": "exec_departure",
+   "summary": "CFO Robert George resigned effective upon Q3 10-Q filing for personal reasons.",
    "entry_date": null,
    "entry": null
   }
