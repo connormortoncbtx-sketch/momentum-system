@@ -9,7 +9,13 @@ S.START = dt.date(2026, 10, 12)
 st = {"picks": {}, "last_open_date": None, "nav": {"raw_1bp": 100.0, "raw_2bp": 100.0, "hedged_1bp": 100.0, "day_only": 100.0, "iwm_night": 100.0}}
 picks = S.picks_for(dt.date(2026, 10, 9), st)
 print(f"::notice::formation Oct 9 top 10: {picks}")
-S.main()
+try:
+    S.main()
+except Exception:
+    import traceback
+    for l in traceback.format_exc().strip().splitlines()[-8:]:
+        print(f"::error::{l}")
+    raise
 rows = [json.loads(l) for l in open(S.LEDGER)] if S.LEDGER.exists() else []
 for r in rows:
     print(f"::notice::{r['entry_close']}->{r['open_date']} form {r['formation']} night {r['basket_night_bp']}bp median {r['median_name_bp']} IWM {r['iwm_night_bp']} nav {r['nav']}")
