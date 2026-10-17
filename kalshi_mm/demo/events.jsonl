@@ -7,3 +7,6 @@
 {"ts": "2026-10-16T20:27:25+00:00", "mode": "demo", "event": "start", "params": {"series": ["KXHIGHNY", "KXHIGHCHI", "KXHIGHLAX", "KXHIGHMIA", "KXHIGHPHIL", "KXHIGHDEN", "KXHIGHAUS", "KXHIGHTDAL"], "offset": 0.02, "size": 5, "inv_cap": 25, "budget": 200.0, "daily_loss": 40.0, "min_h": 1.0, "max_h": 48.0}}
 {"ts": "2026-10-16T20:32:08+00:00", "mode": "demo", "event": "cancel_all", "reason": "exit"}
 {"ts": "2026-10-16T20:32:08+00:00", "mode": "demo", "event": "stop"}
+{"ts": "2026-10-17T04:16:59+00:00", "mode": "demo", "event": "start", "params": {"series": ["KXHIGHNY", "KXHIGHCHI", "KXHIGHLAX", "KXHIGHMIA", "KXHIGHPHIL", "KXHIGHDEN", "KXHIGHAUS", "KXHIGHTDAL"], "offset": 0.02, "size": 5, "inv_cap": 25, "budget": 90.0, "daily_loss": 40.0, "min_h": 1.0, "max_h": 48.0}}
+{"ts": "2026-10-17T09:17:15+00:00", "mode": "demo", "event": "cancel_all", "reason": "exit"}
+{"ts": "2026-10-17T09:17:15+00:00", "mode": "demo", "event": "stop"}
