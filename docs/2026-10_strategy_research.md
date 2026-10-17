@@ -1862,3 +1862,26 @@ This research program has tried hundreds of designs. Even honest numbers carry a
 - **Hedged, in the honest stack.** Dev 1.13→1.36 but holdout 1.37→1.24: overfit. Rejected.
 
 **Verdict.** With a proper surprise measure, earnings drift adds nothing here. XSUE is only known at the 10-Q filing; 8-K exhibit EPS would be earlier, but the dev spread is not even positive.
+
+## Audit redo 3: same-day Kalshi weather on official-basis temperatures (Oct 17)
+
+**Data.** `research/fetch_asos1min.py`: IEM 1-minute ASOS, 14 stations, Jun 2021 – Oct 2026, stored as 5-minute running averages (ASOS's reporting basis).
+
+**Agreement with the settled high** (full-day max inside the settled bucket):
+
+| Source | Inside | Below | Above |
+|---|---|---|---|
+| METAR (original test) | 64.7% | 35.2% | 0.1% |
+| Raw 1-minute max | 63.8% | | 24.8% |
+| **5-minute average** | **87.5%** | 11.9% | 0.6% |
+
+So the original test **was** handicapped: METAR missed the high a third of the time.
+
+**Rerun** (`ASOS_FILE=asos5avg.parquet python research/kalshi/sameday.py`).
+- **Model log loss improved sharply** (16:00 holdout 0.13; raw 1-minute was 0.57), but the market is still about 3x better: 0.04 at 16:00, 0.12 at 14:00 (model 0.20).
+- **Dev-chosen trade** (14:00, edge threshold 0.10): dev +2.6¢/contract (t 2.5), holdout +0.5¢ (t 0.6).
+- 16:00 shows +1.4¢ in the holdout (t 2.2), but it was not the dev pick (dev +0.5¢).
+
+**Verdict.** Much closer to break-even than the original −2 to −3¢, but no robust edge: traders price the live readings better than this model. **Closed fairly this time.**
+
+**Side benefit for the MM bot.** After about 14:00 local, the market knows the day's high. Resting quotes late in the day face informed takers, so the bot's 1-hour cutoff should probably move earlier for markets whose high is already in. Candidate for the live test.
