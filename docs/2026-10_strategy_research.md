@@ -1716,3 +1716,16 @@ Capacity is not the binding constraint at these sizes. The deep-level pot alone 
 - its correlation with ETFTREND is 0.31.
 
 Not added.
+
+**Demo-exchange run (Oct 17, 5 h, $90 budget).**
+- 560 cycles; 691 orders placed and 632 replaced as books moved.
+- 21 fills (105 contracts), all as maker, zero fees.
+- Max position 15 contracts (cap 25); one harmless "post-only would cross" rejection.
+
+**Bugs found and fixed.**
+1. Fill records overwrote the log timestamp.
+2. Resting orders were not trimmed when fills pushed total exposure past the budget (peak $104 vs $90).
+3. Cancel-all left 2 orders behind. It now handles per-order errors, re-checks, and confirms `resting_after: 0`; verified on demo.
+4. Settlement records are now logged hourly, for realized P&L per contract.
+
+**Status.** Mechanics verified. Next: a funded real account (a few hundred dollars) plus an always-on host for an 8-week edge measurement.
