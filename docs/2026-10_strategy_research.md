@@ -1994,3 +1994,12 @@ At 0 bp the hedged Sharpe is about 1.7–1.8 in dev; the edge roughly halves wit
 **Verdict.** Survivorship flattered the contract book's dev result by about 0.1 Sharpe. The holdout is unaffected, and the conclusions hold. Coverage is still partial (71% of delisted symbols unmatched), so the true dev figure is likely a little lower again.
 
 **Audit redos complete:** stack rebuilt; PEAD (real surprise) rejected; same-day weather closed fairly; contract survivorship measured. The cross-market Kalshi scan is re-running after its third bug fix (sampling dropped the window column).
+
+**Shadow #8 live (approved by Connor, Oct 17): overnight-only momentum.** `automation/shadow_overnight.py`, `.github/workflows/shadow_overnight.yml`.
+- **Picks:** LIVE-proxy top 10 each Friday, through the same panel builder and research code as #4.
+- **Marking:** every trading morning, last official close → today's official open.
+- **NAVs:** raw at 1 and 2 bp/side, IWM-hedged (beta 0.67) at 1 bp, the basket's daytime return, and IWM's own night.
+- **Schedule:** cron weekdays 11:20 ET plus an 18:20 ET backup; idempotent and catches up missed nights. First entry close Mon Oct 19, first mark Tue Oct 20.
+- **No orders:** official prints stand in for auction fills, so fill quality still needs real orders to measure.
+- **Dry run on Oct 12–16** (formation Oct 9: MRNA, HPE, DELL, PAYS, TEAM, OKTA, ECO, LITE, HZO, ASX): nights −184, −203, −370, −6 bp; raw NAV 100 → 92.5. Verified against raw prints (DELL 507.93 → 471.21, LITE 896 → 845 overnight on Oct 14–15) as a genuine momentum gap-down week, not a bug. It is a reminder that the left tail is real.
+- **Fix found:** the free SIP feed refuses queries ending within 15 minutes of now, so the shadow queries bars up to 20 minutes ago.
