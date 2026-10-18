@@ -2133,3 +2133,26 @@ Weather +2.8 (now positive), Mentions +1.7 (weak); Financials, Commodities, Scie
 
 **Verdict:** both findings are stronger on full data. The proposals stand, with the exclusion list updated to
 Financials / Commodities / Science-Tech / World (Weather and Mentions no longer excluded, Mentions low priority).
+
+## Longshot fade as a strategy: does NOT hold (Oct 18): `research/kalshi/longshot_fade.py`
+
+The scan's longshot result (+3-5c per contract) was contract/trade-weighted across all trades. Tested as rules one could run:
+- **First-time-in-band entry** (per market, $10 NO, max 3 per event): taker -6 to -8% per trade on 2026, t -10 to -16.
+  Cause: contracts that end up winning pass through every price band on the way to $1, so "ever traded in band"
+  over-selects winners. Same data, per market: in-band YES settled 26% vs ~17c average price; markets that FELL into
+  the band settled YES 29%. Market-equal fade -10c (holdout) vs +2c trade-weighted vs +4c contract-weighted.
+- **Snapshot rule** (no path selection: price = last trade at close-h, h = 1-96h; bands 5-15 ... 20-40c):
+  dev-picked cell 5-15c at 1h: dev +4.7% (t 7.6) -> holdout -0.8% (t -1.7) at a 0.5c half-spread, -1.4% at 1c.
+  Holdout is negative in essentially every cell (-0.3% to -6%). Maker version (rest an offer at p, filled only if a
+  later taker buys YES at >= p) is worse: -5% holdout at the dev pick -- adverse selection.
+- **New-series market-making edge, re-weighted per market:** 0-30d series +0.25c (t 1.9) on 2026 vs +1.21c contract-weighted;
+  older series ~0. The contract-weighted figure is driven by large fills a fixed-size bot won't get.
+
+**Verdict:** rejected. The bias exists in aggregate but sits in large trades / paths that a rule can't select in advance.
+None of the three proposals (paper fade, bot tilt, new-series watch) go ahead. Lesson for every Kalshi study here:
+report per-market (and per-fill) results, not only contract-weighted ones. The weather MM edge (1.39c / 0.76c) was
+measured contract-weighted too; the real-money pilot's per-fill P&L is the test that settles it.
+
+Demo vs prod (probe, Oct 18 afternoon): same tickers, but demo 24h volume per weather market 20-390 contracts vs
+2,000-23,000 on prod, and demo books were empty while prod had 1,000-4,000 contracts at the best bid. Demo is a
+separate, thin exchange: real events and settlements, not real prices or fills.
