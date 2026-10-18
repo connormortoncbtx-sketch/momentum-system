@@ -2048,7 +2048,10 @@ The equity-curve filters cut books after losses and miss the rebounds. That matc
 - **drawdowns are not predictable from these signals, but volatility is**;
 - the stack-level vol target already in shadow #7 v2 is the protection that works.
 
-## Kalshi cross-market scan: results (Oct 17): `research/kalshi/mm_scan.py`, `scan_analysis.py`
+## Kalshi cross-market scan: results (Oct 17)
+
+> **Superseded by the full-coverage update below (Oct 18).** The numbers in this section came from 1,970 of 6,654
+> series with volume: a sampling bug silently skipped every series whose volume was concentrated in a few markets.: `research/kalshi/mm_scan.py`, `scan_analysis.py`
 
 Coverage: 10,429 of 15,187 series cached (the rest were request failures, not cached; re-dispatched to fill in).
 1,970 series had enough settled volume (>= 20k contracts): 18,652 sampled markets, 12.2M trades, 1.45B contracts.
@@ -2098,3 +2101,35 @@ limits size. This matches the published Kalshi maker/taker findings (cheap contr
 3. Weekly new-series watch (`NEW_ONLY=1`): edge in a series' first 30 days is ~1.1c vs ~0.3c later. Worth a weekly
    run, but the current NEW_ONLY path re-lists all 15k series; it needs a filter on series first-close date
    before fetching trades to be cheap.
+
+### Full-coverage update (Oct 18)
+
+**Bug:** `scan_series` drew markets with pandas' weighted `sample(replace=False)`, which raises when one market carries
+more than 1/n of a series' volume. The exception was caught and printed, not cached, so ~4,750 series -- many of the
+biggest one-off events, Mentions and soccer markets -- were silently skipped (the follow-up run looked like
+"request failures"). Fixed with numpy sequential weighted sampling; code errors now surface as ::warning:: and a
+coverage notice. Re-run: 15,187 series attempted, 0 request failures, 0 code errors; 6,654 series with data.
+
+**Maker edge, full coverage:**
+- By series age at close: 0-30d +1.16c (t 17.6); 31-90d +0.63 (t 4.5); 91-180d +0.88 (t 4.4); 181-365d +0.33 (t 1.7); >1y +0.63 (t 2.1).
+  New series still pay most, but the drop after launch is gentler than the partial sample suggested.
+- Sports +1.24c early (t 11.5) / +0.68 late (t 3.1); Mentions +1.37 / +0.99; Entertainment +1.24 early but 0.02 late;
+  Weather +0.33 / +0.54; Financials ~0 (the -6.4c late figure was a small-sample artifact).
+
+**Longshot fade, full coverage** (taker-NO prices, after fee, clustered by event):
+
+| YES price | events | fade c/contract | t | return on NO cost |
+|---|---|---|---|---|
+| 0-5c | 21,771 | +1.06 | 13.3 | 1.1% |
+| 5-10c | 19,399 | +3.33 | 10.7 | 3.6% |
+| 10-20c | 20,362 | +4.86 | 10.5 | 5.7% |
+| 20-35c | 20,236 | +5.36 | 7.4 | 7.4% |
+| 35-50c | 18,993 | +0.36 | 0.3 | 0.6% |
+
+YES 5-35c by half-year: 2024-H2 +6.6c, 2025-H1 +5.3, 2025-H2 +4.4, 2026-H1 +4.3, 2026-H2 +3.6 (t 3-7 each; earlier halves are thin
+and mixed). Positive every half since 2024 but slowly shrinking -- the same decay seen in the weather maker edge.
+By category (5-35c): Sports +4.9c (t 14.1, 36k events), Politics +5.1, Elections +4.5, Entertainment +3.5, Crypto +5.5,
+Weather +2.8 (now positive), Mentions +1.7 (weak); Financials, Commodities, Science/Tech and World are zero or negative.
+
+**Verdict:** both findings are stronger on full data. The proposals stand, with the exclusion list updated to
+Financials / Commodities / Science-Tech / World (Weather and Mentions no longer excluded, Mentions low priority).
