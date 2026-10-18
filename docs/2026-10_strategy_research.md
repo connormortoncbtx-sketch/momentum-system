@@ -2156,3 +2156,19 @@ measured contract-weighted too; the real-money pilot's per-fill P&L is the test 
 Demo vs prod (probe, Oct 18 afternoon): same tickers, but demo 24h volume per weather market 20-390 contracts vs
 2,000-23,000 on prod, and demo books were empty while prod had 1,000-4,000 contracts at the best bid. Demo is a
 separate, thin exchange: real events and settlements, not real prices or fills.
+
+## Weather MM edge re-measured per fill (Oct 18): `research/kalshi/mm_perfill.py` -- holds
+
+After the longshot result flipped under re-weighting, the weather MM edge was re-measured the way the bot earns it
+(bot filters: 1-48h to close, 3-97c; dev < 2025-10-01 <= holdout; 3.0M trades, weather sample).
+
+| holdout | per contract | per trade | per fixed-5 fill | per market (t) |
+|---|---|---|---|---|
+| maker at the touch | +0.90c | +0.81c | +0.95c | +0.94c (7.8) |
+| deep fill, 2c behind (sweep reached our level) | +2.85c | +2.86c | +2.85c | +3.55c (14.4) |
+
+Weighting barely matters here (unlike the longshot fade): the edge is spread evenly across trades and markets.
+Deep fills are certain when a sweep trades beyond our level (price priority), so the fill proxy is sound; the edge is
+net of the adverse selection in those sweeps. Positive in every price bucket; by time to close, 6-48h carries it
+(6-12h +2.2c, 12-24h +3.7c, 24-48h +2.4c) while 3-6h is ~0 (thin, 600 fills) -- consider MIN_HOURS = 6 for the pilot.
+Verdict: the real-money pilot is justified; expect ~+2-3c per filled contract before any queue/latency slippage.
