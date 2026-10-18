@@ -134,9 +134,17 @@ def scan_series(s, fee_type, rng):
     mk["window"] = np.where(mk.close_time <= first + pd.Timedelta(days=90), "early",
                             np.where(mk.close_time >= last - pd.Timedelta(days=90), "late", "mid"))
     mk = mk[(mk.window != "mid") & (mk.volume > 0)]
-    seed = int(rng.integers(1_000_000_000))
-    smp = pd.concat([g.sample(min(len(g), PER_WINDOW), weights=g.volume.fillna(0) + 1, random_state=seed)
-                     for _, g in mk.groupby("window")], ignore_index=True)
+    if not len(mk):
+        pd.DataFrame({"ticker": []}).to_parquet(cache, index=False)
+        return None
+    # volume-weighted sampling without replacement (numpy draws sequentially; pandas' weighted sample refuses
+    # when one market carries more than 1/n of the volume -- that silently dropped ~4,750 series in v2)
+    parts = []
+    for _, g in mk.groupby("window"):
+        w = (g.volume.fillna(0) + 1).to_numpy(float)
+        idx = rng.choice(len(g), size=min(len(g), PER_WINDOW), replace=False, p=w / w.sum())
+        parts.append(g.iloc[np.sort(idx)])
+    smp = pd.concat(parts, ignore_index=True)
     tr = []
     for tk in smp.ticker:
         tr += trades_for(tk)
@@ -170,7 +178,7 @@ def main():
     fees = dict(zip(S.ticker, S.get("fee_type", pd.Series("", index=S.index))))
     todo = list(S.ticker)
     rng.shuffle(todo)
-    parts, n_done, fails = [], 0, []
+    parts, n_done, fails, errs = [], 0, [], []
 
     def job(s):
         if time.time() - T0 > BUDGET_S:
@@ -180,7 +188,7 @@ def main():
         except Fail as e:
             fails.append(s); return None
         except Exception as e:
-            print(f"  {s}: {e}", flush=True)
+            errs.append(s); print(f"::warning::{s}: {type(e).__name__}: {str(e)[:150]}", flush=True)
             return None
 
     with cf.ThreadPoolExecutor(6) as ex:
@@ -192,7 +200,8 @@ def main():
                 parts.append(t)
             if n_done % 200 == 0:
                 print(f"  {n_done:,}/{len(todo):,} series, {len(parts)} with volume, {len(fails)} failed, {(time.time() - T0) / 60:.0f} min", flush=True)
-    print(f"request failures (not cached, retry next run): {len(fails)}")
+    print(f"request failures (not cached, retry next run): {len(fails)}; code errors: {len(errs)}")
+    print(f"::notice::mm_scan coverage: {n_done:,} attempted, {len(fails)} request failures, {len(errs)} code errors")
     print(f"scanned {n_done:,} series ({'budget hit' if time.time() - T0 > BUDGET_S else 'complete'}); {len(parts)} with data")
     if not parts:
         return
