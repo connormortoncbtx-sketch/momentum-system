@@ -30,6 +30,18 @@ SERIES = E("SERIES", "KXHIGHNY,KXHIGHCHI,KXHIGHLAX,KXHIGHMIA,KXHIGHPHIL,KXHIGHDE
 OFFSET = float(E("OFFSET_C", "2")) / 100          # cents behind the best bid
 SIZE = int(E("SIZE", "5"))                        # contracts per quote
 INV_CAP = int(E("INV_CAP", "25"))                 # max |net position| per market, contracts
+EVENT_CAP = float(E("EVENT_CAP", "30"))           # max total |contracts| across one event (city-day: all its buckets),
+                                                  # held + resting orders that would add to it. The buckets of one
+                                                  # city-day are one temperature, so they're one bet.
+
+
+def event_of(ticker):
+    return ticker.rsplit("-", 1)[0]
+
+
+def adds_exposure(side, pos):
+    """True if a fill on this side would increase |position| in its market."""
+    return (side == "yes" and pos >= 0) or (side == "no" and pos <= 0)
 BUDGET = float(E("BUDGET_USD", "200"))            # max collateral in positions + resting orders
 DAILY_LOSS = float(E("DAILY_LOSS_USD", "40"))     # stop for the day beyond this mark-to-market loss
 # Relative sizing (overrides the fixed $ numbers when > 0): budget = BUDGET_PCT x account value (cash + positions
@@ -381,6 +393,13 @@ class Bot:
 
         hours = dict(mkts)
         placed = cancelled = 0
+        ev_held, ev_exp = {}, {}
+        for t_, p_ in pos.items():
+            ev_held[event_of(t_)] = ev_held.get(event_of(t_), 0.0) + abs(p_)
+        ev_exp.update(ev_held)
+        for o in rest:
+            if adds_exposure(order_side(o), pos.get(o["ticker"], 0.0)):
+                ev_exp[event_of(o["ticker"])] = ev_exp.get(event_of(o["ticker"]), 0.0) + remaining(o)
         resting_cost = sum(order_price(o, order_side(o)) * remaining(o) for o in rest)
         if live and used + resting_cost > budget:            # fills moved money into positions: trim
             for o in sorted(rest, key=lambda o: -order_price(o, order_side(o)) * remaining(o)):
@@ -394,6 +413,9 @@ class Bot:
                     log.warning(f"trim cancel: {e}")
         for tk, (y, n) in books.items():
             want = targets(y, n, pos.get(tk, 0.0), hours.get(tk, -1))
+            ev = event_of(tk)
+            if live and ev_held.get(ev, 0.0) + SIZE > EVENT_CAP:     # event full: only quote sides that reduce it
+                want = {sd: px for sd, px in want.items() if not adds_exposure(sd, pos.get(tk, 0.0))}
             if not live:
                 if want:
                     jlog("dry_quotes", ticker=tk, hours_left=round(hours[tk], 2), best_yes_bid=y[0][0], best_no_bid=n[0][0],
@@ -417,9 +439,14 @@ class Bot:
                     continue
                 if used + resting_cost + tgt * SIZE > budget:
                     continue
+                grows = adds_exposure(side, pos.get(tk, 0.0))
+                if grows and ev_exp.get(ev, 0.0) + SIZE > EVENT_CAP:
+                    continue
                 try:
                     o = self.k.place(tk, side, tgt, SIZE)
                     resting_cost += tgt * SIZE; placed += 1
+                    if grows:
+                        ev_exp[ev] = ev_exp.get(ev, 0.0) + SIZE
                     jlog("orders", ticker=tk, side=side, price=tgt, count=SIZE, hours_left=round(hours[tk], 2),
                          best_yes_bid=y[0][0], best_no_bid=n[0][0], order_id=o.get("order_id"),
                          filled=o.get("fill_count"), remaining=o.get("remaining_count"))
@@ -465,9 +492,9 @@ class Bot:
                 jlog("settlements", key=key, settlement=x)
 
     def run(self):
-        log.info(f"MODE={MODE} series={','.join(SERIES)} offset={OFFSET * 100:.0f}c size={SIZE} cap={INV_CAP} "
+        log.info(f"MODE={MODE} series={','.join(SERIES)} offset={OFFSET * 100:.0f}c size={SIZE} cap={INV_CAP} event_cap={EVENT_CAP:.0f} "
                  f"budget={sizing_desc()}")
-        jlog("events", event="start", params=dict(series=SERIES, offset=OFFSET, size=SIZE, inv_cap=INV_CAP,
+        jlog("events", event="start", params=dict(series=SERIES, offset=OFFSET, size=SIZE, inv_cap=INV_CAP, event_cap=EVENT_CAP,
                                                    budget=BUDGET, budget_pct=BUDGET_PCT, budget_max=BUDGET_MAX,
                                                    daily_loss=DAILY_LOSS, daily_loss_pct=DAILY_LOSS_PCT, min_h=MIN_H, max_h=MAX_H))
         t_end = time.time() + RUN_MIN * 60 if RUN_MIN > 0 else float("inf")

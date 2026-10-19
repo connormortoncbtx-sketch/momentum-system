@@ -49,6 +49,15 @@ def test_sign_roundtrip():
                                                           salt_length=padding.PSS.DIGEST_LENGTH), hashes.SHA256())
 
 
+def test_event_cap_helpers():
+    from bot import event_of, adds_exposure
+    assert event_of("KXHIGHPHIL-26OCT19-B66.5") == event_of("KXHIGHPHIL-26OCT19-T67") == "KXHIGHPHIL-26OCT19"
+    assert event_of("KXHIGHPHIL-26OCT20-B72.5") != "KXHIGHPHIL-26OCT19"
+    assert adds_exposure("yes", 0) and adds_exposure("no", 0)       # flat: any fill adds
+    assert adds_exposure("yes", 5) and not adds_exposure("no", 5)   # long YES: buying NO reduces
+    assert adds_exposure("no", -5) and not adds_exposure("yes", -5)
+
+
 if __name__ == "__main__":
-    for f in (test_targets, test_order_side, test_order_price, test_sign_roundtrip):
+    for f in (test_targets, test_order_side, test_order_price, test_event_cap_helpers, test_sign_roundtrip):
         f(); print("ok", f.__name__)

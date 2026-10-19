@@ -37,6 +37,8 @@ BUDGET_USD=200
 DAILY_LOSS_USD=25
 SIZE=5
 INV_CAP=25
+# max contracts across all buckets of one city-day (they're one temperature = one bet)
+EVENT_CAP=30
 OFFSET_C=2
 # quote only 6-48h before close (the per-fill study found the last 6h earns ~nothing)
 MIN_HOURS=6
