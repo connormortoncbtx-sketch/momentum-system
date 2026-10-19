@@ -1,0 +1,46 @@
+name: Kalshi new-series watch
+
+# Weekly: find new Kalshi series, watch the recurring non-sports/politics ones, and run the bot's deep-fill test
+# on each once it has >= 20 settled markets (automation/kalshi_new_series.py). Report goes to ntfy.
+on:
+  schedule:
+    - cron: '7 14 * * 1'    # Mondays ~9am Central
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kalshi-watch
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - name: Install dependencies
+        run: pip install -r requirements.txt pyarrow
+      - name: Scan
+        env:
+          NTFY_CHANNEL: ${{ secrets.NTFY_CHANNEL }}
+        run: python automation/kalshi_new_series.py
+      - name: Commit watch state
+        run: |
+          git config user.name  "momentum-bot"
+          git config user.email "momentum-bot@users.noreply.github.com"
+          for f in data/kalshi_series_seen.json data/kalshi_watchlist.json; do if [ -e "$f" ]; then git add "$f"; fi; done
+          git diff --cached --quiet && exit 0
+          git commit -q -m "kalshi watch: $(date +%Y-%m-%d)"
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push; then break; fi
+            git rebase --abort 2>/dev/null || true
+            git pull origin main --no-rebase --strategy=recursive -X theirs --no-edit 2>/dev/null || true
+            [ $attempt -eq 5 ] && exit 1
+            sleep $((RANDOM % 5 + 2))
+          done
