@@ -30,10 +30,13 @@ KALSHI_KEY_ID=paste-your-key-id-here
 KALSHI_PRIVATE_KEY_FILE=/etc/kmm/kalshi.pem
 # risk limits
 BUDGET_USD=200
-DAILY_LOSS_USD=40
+DAILY_LOSS_USD=25
 SIZE=5
 INV_CAP=25
 OFFSET_C=2
+# quote only 6-48h before close (the per-fill study found the last 6h earns ~nothing)
+MIN_HOURS=6
+MAX_HOURS=48
 # phone alerts (same ntfy channel the momentum system uses; leave blank to disable)
 NTFY_CHANNEL=
 LOG_DIR=/home/kmm/data
