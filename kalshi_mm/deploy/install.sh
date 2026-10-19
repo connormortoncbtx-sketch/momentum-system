@@ -28,7 +28,11 @@ MODE=demo
 I_UNDERSTAND_REAL_MONEY=no
 KALSHI_KEY_ID=paste-your-key-id-here
 KALSHI_PRIVATE_KEY_FILE=/etc/kmm/kalshi.pem
-# risk limits
+# risk limits: budget = BUDGET_PCT x account value (grows/shrinks with the account), capped at BUDGET_MAX_USD;
+# daily loss stop = DAILY_LOSS_PCT x the day's starting value. (BUDGET_USD / DAILY_LOSS_USD apply only if the PCTs are 0.)
+BUDGET_PCT=0.9
+BUDGET_MAX_USD=3000
+DAILY_LOSS_PCT=0.15
 BUDGET_USD=200
 DAILY_LOSS_USD=25
 SIZE=5

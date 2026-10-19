@@ -32,6 +32,28 @@ SIZE = int(E("SIZE", "5"))                        # contracts per quote
 INV_CAP = int(E("INV_CAP", "25"))                 # max |net position| per market, contracts
 BUDGET = float(E("BUDGET_USD", "200"))            # max collateral in positions + resting orders
 DAILY_LOSS = float(E("DAILY_LOSS_USD", "40"))     # stop for the day beyond this mark-to-market loss
+# Relative sizing (overrides the fixed $ numbers when > 0): budget = BUDGET_PCT x account value (cash + positions
+# at mid), capped at BUDGET_MAX_USD if set; daily loss limit = DAILY_LOSS_PCT x the day's starting value.
+BUDGET_PCT = float(E("BUDGET_PCT", "0"))
+BUDGET_MAX = float(E("BUDGET_MAX_USD", "0"))
+DAILY_LOSS_PCT = float(E("DAILY_LOSS_PCT", "0"))
+
+
+def budget_for(value):
+    if BUDGET_PCT > 0 and value > 0:
+        b = BUDGET_PCT * value
+        return min(b, BUDGET_MAX) if BUDGET_MAX > 0 else b
+    return BUDGET
+
+
+def sizing_desc():
+    b = f"{BUDGET_PCT:.0%} of value" + (f" (max ${BUDGET_MAX:.0f})" if BUDGET_MAX > 0 else "") if BUDGET_PCT > 0 else f"${BUDGET:.0f}"
+    d = f"{DAILY_LOSS_PCT:.0%} of day-start value" if DAILY_LOSS_PCT > 0 else f"${DAILY_LOSS:.0f}"
+    return f"{b} daily_loss={d}"
+
+
+def loss_limit(day_start_value):
+    return DAILY_LOSS_PCT * day_start_value if DAILY_LOSS_PCT > 0 and day_start_value else DAILY_LOSS
 MIN_H, MAX_H = float(E("MIN_HOURS", "1")), float(E("MAX_HOURS", "48"))
 P_LO, P_HI = 0.03, 0.97                           # don't quote markets priced outside this
 LOOP_S = float(E("LOOP_SECONDS", "20"))
@@ -317,7 +339,7 @@ class Bot:
         for o in rest:
             mine.setdefault((o["ticker"], order_side(o)), []).append(o)
 
-        books, marks = {}, {}
+        books, marks, bids = {}, {}, {}
         for tk, h in mkts:
             if MIN_H - 0.5 <= h <= MAX_H or tk in pos:
                 try:
@@ -328,6 +350,7 @@ class Bot:
                 y, n = books[tk]
                 if y and n:
                     marks[tk] = (y[0][0] + 1 - n[0][0]) / 2
+                bids[tk] = (y[0][0] if y else 0.0, n[0][0] if n else 0.0)
 
         # risk: budget and daily loss
         if live:
@@ -339,9 +362,13 @@ class Bot:
             if self.day != today:
                 self.day, self.day_start_value = today, value
             pnl_today = value - self.day_start_value
+            # size off a CONSERVATIVE value: positions at what they'd sell for now (the bid), not the mid
+            liq = bal + sum(p * bids.get(t, (0, 0))[0] if p > 0 else -p * bids.get(t, (0, 0))[1] for t, p in pos.items())
+            budget, max_loss = budget_for(liq), loss_limit(self.day_start_value)
             jlog("snapshots", balance=round(bal, 2), position_value=round(pos_val, 2), value=round(value, 2),
-                 pnl_today=round(pnl_today, 2), positions={t: p for t, p in pos.items() if p}, n_resting=len(rest))
-            if pnl_today < -DAILY_LOSS:
+                 pnl_today=round(pnl_today, 2), positions={t: p for t, p in pos.items() if p}, n_resting=len(rest),
+                 budget=round(budget, 2), loss_limit=round(max_loss, 2))
+            if pnl_today < -max_loss:
                 self.cancel_all(f"daily loss {pnl_today:.2f}")
                 log.warning("daily loss limit hit; pausing until tomorrow (UTC)")
                 notify(f"Daily loss limit hit ({pnl_today:+.2f}); orders cancelled, paused until tomorrow (UTC)", prio="high")
@@ -350,14 +377,14 @@ class Bot:
             if int(time.time()) % 3600 < LOOP_S * 2:
                 self.record_settlements()
         else:
-            used = 0.0
+            used, budget = 0.0, BUDGET
 
         hours = dict(mkts)
         placed = cancelled = 0
         resting_cost = sum(order_price(o, order_side(o)) * remaining(o) for o in rest)
-        if live and used + resting_cost > BUDGET:            # fills moved money into positions: trim
+        if live and used + resting_cost > budget:            # fills moved money into positions: trim
             for o in sorted(rest, key=lambda o: -order_price(o, order_side(o)) * remaining(o)):
-                if used + resting_cost <= BUDGET:
+                if used + resting_cost <= budget:
                     break
                 try:
                     self.k.cancel(o["order_id"], o.get("ticker")); cancelled += 1
@@ -388,7 +415,7 @@ class Bot:
                             log.warning(f"cancel {o.get('order_id')}: {e}")
                 if tgt is None or keep is not None:
                     continue
-                if used + resting_cost + tgt * SIZE > BUDGET:
+                if used + resting_cost + tgt * SIZE > budget:
                     continue
                 try:
                     o = self.k.place(tk, side, tgt, SIZE)
@@ -439,9 +466,10 @@ class Bot:
 
     def run(self):
         log.info(f"MODE={MODE} series={','.join(SERIES)} offset={OFFSET * 100:.0f}c size={SIZE} cap={INV_CAP} "
-                 f"budget=${BUDGET:.0f} daily_loss=${DAILY_LOSS:.0f}")
+                 f"budget={sizing_desc()}")
         jlog("events", event="start", params=dict(series=SERIES, offset=OFFSET, size=SIZE, inv_cap=INV_CAP,
-                                                   budget=BUDGET, daily_loss=DAILY_LOSS, min_h=MIN_H, max_h=MAX_H))
+                                                   budget=BUDGET, budget_pct=BUDGET_PCT, budget_max=BUDGET_MAX,
+                                                   daily_loss=DAILY_LOSS, daily_loss_pct=DAILY_LOSS_PCT, min_h=MIN_H, max_h=MAX_H))
         t_end = time.time() + RUN_MIN * 60 if RUN_MIN > 0 else float("inf")
         paused_day = None
         killed = False
@@ -449,7 +477,7 @@ class Bot:
             log.warning("KILL set at start; cancelling and exiting")
             self.cancel_all("kill at start")
             sys.exit(KILLED_EXIT)
-        notify(f"Started: budget ${BUDGET:.0f}, daily loss ${DAILY_LOSS:.0f}, offset {OFFSET * 100:.0f}c, size {SIZE}")
+        notify(f"Started: budget {sizing_desc()}, offset {OFFSET * 100:.0f}c, size {SIZE}")
         try:
             while not self.stop and time.time() < t_end:
                 if self.killed():

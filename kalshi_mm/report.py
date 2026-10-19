@@ -56,8 +56,8 @@ def main():
     msg = (f"{today} | mode {last.get('mode', '?')} | balance ${last.get('balance', 0):.2f}, value ${last.get('value', 0):.2f}\n"
            f"fills today: {len(f_today)} ({contracts_today:.0f} contracts)\n"
            f"settled to date: {len(st)} markets, {n_contracts:.0f} contracts, P&L ${pnl_c / 100:+.2f} "
-           f"= {per:+.2f}c/contract (backtest deep fills ~1.3-1.9c)\n"
-           f"open positions: {len(last.get('positions', {}))} | resting orders: {last.get('n_resting', 0)} | errors today: {len(errs)}")
+           f"= {per:+.2f}c/contract (target from per-fill study: +2-3c)\n"
+           f"budget now: ${last.get('budget', 0):.2f} | open positions: {len(last.get('positions', {}))} | resting orders: {last.get('n_resting', 0)} | errors today: {len(errs)}")
     print(msg)
     ch = os.environ.get("NTFY_CHANNEL")
     if ch:
