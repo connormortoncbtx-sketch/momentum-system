@@ -3052,3 +3052,5 @@
 {"timestamp": "2026-10-17T07:18:04.433339+00:00", "workflow": "weekly_pipeline", "status": "success", "message": "Pipeline complete (42.8 min)", "metrics": {"elapsed_min": 42.8, "stages_run": 6}, "errors": []}
 {"timestamp": "2026-10-19T01:55:26.660371+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Starting weekend refresh (sunday_night)", "metrics": {}, "errors": []}
 {"timestamp": "2026-10-19T02:15:20.310742+00:00", "workflow": "weekend_refresh", "status": "success", "message": "Refresh complete (sunday_night)", "metrics": {"run_label": "sunday_night", "symbols": 2400, "regime": "risk_off_severe", "top_pick": "MXL", "top_score": 0.8846}, "errors": []}
+{"timestamp": "2026-10-19T05:44:33.665118+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Starting weekend refresh (manual_refresh)", "metrics": {}, "errors": []}
+{"timestamp": "2026-10-19T06:05:36.215169+00:00", "workflow": "weekend_refresh", "status": "success", "message": "Refresh complete (manual_refresh)", "metrics": {"run_label": "manual_refresh", "symbols": 2400, "regime": "risk_off_severe", "top_pick": "MXL", "top_score": 1.0}, "errors": []}
