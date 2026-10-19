@@ -2237,3 +2237,22 @@ performance_log.csv: 23 formation weeks with realised forward returns (Sep 2025 
 - So no weighting of alpha and EV can help -- neither carries signal in the live period (consistent with the
   postmortem: the factor the model bets on, short-term RS/momentum, reversed from late May). 23 weeks is short, but it
   is every live week there is. The stack's edge comes from the separately tested books, not these scores.
+
+## Alpha / EV rebuilt (Oct 19): `research/alpha_v2.py` -- both versions fail the holdout
+
+Price/volume features a weekly shadow could compute (r1w, r4w, r13w, 12-1 / 6-1 / 3-1 momentum, 52-week-high
+distance, 12-week vol, trend, log $ volume, log price), research universe, target = next 4-week excess return.
+Books: top 20, 4-week overlapping tranches, 15 bp/side, excess vs the equal-weight universe.
+
+| Book | dev 2017-23 excess/yr (Sharpe) | holdout 2024-26 excess/yr (Sharpe) |
+|---|---|---|
+| v2a LightGBM (rank target, trained 2017-22, early-stopped 2023) | +20.2% (1.41) | **-6.5% (-0.58)** |
+| v2b dev-IC-weighted blend (log price, log $vol, -r4w, -vol12, hi52, -r1w) | +0.9% (0.13) | **-11.2% (-0.90)** |
+| 12-1 momentum, same book | +5.6% (0.33) | -4.7% (0.03) |
+| LIVE proxy, same book | -3.1% (-0.06) | +5.9% (0.39) |
+- Dev 4-week rank ICs are all small (|IC| <= 0.034, t <= 2.3): no price/volume feature predicts 4-week relative returns
+  reliably. The ML model's dev Sharpe is fit, not edge.
+- Calibration does not survive: holdout names with alpha_prob 0.55-0.60 beat the universe 43% of the time; EV deciles
+  invert (dev top decile +1.09% per 4 weeks -> holdout -0.26%). The EV > 0 filter changed nothing (all top-20 had EV > 0).
+Verdict: a better alpha/EV at the weekly-to-monthly horizon can't be built from price/volume; the edges that hold are
+specific setups (overnight, contract filings, slow momentum's long holds), not a general score. No shadows built.
