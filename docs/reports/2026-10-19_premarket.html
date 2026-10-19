@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="refresh" content="300">
+<title>PRE-MARKET // MONDAY 2026-10-19</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#080c0f; --bg2:#0d1318; --bg3:#111820;
+  --border:#1e2d38; --border2:#243545;
+  --text:#c8d8e4; --text2:#6a8a9f; --text3:#3d5a6b;
+  --accent:#00c8ff; --green:#00e676; --amber:#ffab00; --red:#ff4444;
+  --mono:'IBM Plex Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:13px;line-height:1.5;}
+.header{padding:14px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.logo{font-size:18px;font-weight:600;letter-spacing:.15em;color:var(--accent);}
+.logo span{color:var(--text3);font-weight:300;}
+.meta{font-size:11px;color:var(--text2);}
+.checks-strip{display:flex;gap:0;border-bottom:1px solid var(--border);}
+.check-pill{padding:8px 20px;font-size:10px;letter-spacing:.08em;border-right:1px solid var(--border);color:var(--text3);}
+.check-pill.done{color:var(--text2);}
+.check-pill.active{color:var(--accent);border-bottom:2px solid var(--accent);margin-bottom:-1px;}
+.check-pill.pending{color:var(--text3);}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+thead th{background:var(--bg2);padding:8px 12px;text-align:left;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text2);border-bottom:1px solid var(--border2);white-space:nowrap;}
+tbody tr{border-bottom:1px solid var(--border);}
+tbody tr:hover{background:var(--bg2);}
+td{padding:7px 12px;white-space:nowrap;vertical-align:middle;}
+.sym{font-weight:600;font-size:13px;letter-spacing:.04em;}
+.gap-pos{color:var(--green);}
+.gap-neg{color:var(--red);}
+.gap-warn{color:var(--amber);}
+.spark{color:var(--text2);font-size:10px;letter-spacing:.02em;}
+.trend-ramping{color:var(--green);}
+.trend-fading{color:var(--red);}
+.trend-stable{color:var(--text2);}
+.trend-initial{color:var(--text3);}
+.action{display:inline-block;padding:2px 8px;font-size:10px;font-weight:600;letter-spacing:.08em;border-radius:2px;}
+.action-GO{background:rgba(0,230,118,.12);color:var(--green);border:1px solid rgba(0,230,118,.3);}
+.action-CAUTION{background:rgba(255,171,0,.10);color:var(--amber);border:1px solid rgba(255,171,0,.3);}
+.action-WATCH{background:rgba(255,171,0,.10);color:var(--amber);border:1px solid rgba(255,171,0,.3);}
+.action-WAIT{background:rgba(255,171,0,.08);color:var(--amber);border:1px solid rgba(255,171,0,.2);}
+.action-SKIP{background:rgba(255,68,68,.12);color:var(--red);border:1px solid rgba(255,68,68,.3);}
+.action-REVIEW{background:rgba(255,68,68,.10);color:var(--red);border:1px solid rgba(255,68,68,.25);}
+.reason{color:var(--text2);font-size:10px;max-width:320px;white-space:normal;line-height:1.4;}
+.rank{color:var(--text3);font-size:11px;}
+.thesis{color:var(--text3);font-size:10px;max-width:200px;white-space:normal;line-height:1.4;}
+.footer{padding:10px 24px;border-top:1px solid var(--border);font-size:10px;color:var(--text3);display:flex;justify-content:space-between;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+/* ── DECISION GUIDE ── */
+.guide-bar{
+  padding:8px 24px;
+  background:var(--bg2);
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  gap:12px;
+  cursor:pointer;
+  user-select:none;
+}
+.guide-bar:hover{background:var(--bg3);}
+.guide-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);}
+.guide-pills{display:flex;gap:6px;flex-wrap:wrap;}
+.gpill{padding:2px 8px;font-size:9px;font-weight:600;letter-spacing:.08em;border-radius:2px;cursor:pointer;}
+.gpill-go    {background:rgba(0,230,118,.12);color:var(--green);border:1px solid rgba(0,230,118,.3);}
+.gpill-caution{background:rgba(255,171,0,.10);color:var(--amber);border:1px solid rgba(255,171,0,.3);}
+.gpill-skip  {background:rgba(255,68,68,.12);color:var(--red);border:1px solid rgba(255,68,68,.3);}
+.gpill-wait  {background:rgba(255,171,0,.08);color:var(--amber);border:1px solid rgba(255,171,0,.2);}
+.guide-toggle{margin-left:auto;font-size:10px;color:var(--text3);}
+
+.guide-panel{
+  display:none;
+  background:var(--bg3);
+  border-bottom:2px solid var(--border2);
+  padding:16px 24px 20px;
+}
+.guide-panel.open{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+@media(max-width:600px){.guide-panel.open{grid-template-columns:1fr;}}
+
+.guide-section-title{
+  font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text3);margin-bottom:10px;padding-bottom:6px;
+  border-bottom:1px solid var(--border);
+}
+.guide-step{
+  display:flex;gap:10px;margin-bottom:8px;font-size:11px;line-height:1.5;
+}
+.guide-step-num{
+  flex-shrink:0;width:18px;height:18px;border-radius:50%;
+  background:var(--bg2);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;color:var(--text3);margin-top:1px;
+}
+.guide-step-body{color:var(--text2);}
+.guide-step-body strong{color:var(--text);font-weight:500;}
+.guide-rule{
+  font-size:10px;line-height:1.6;color:var(--text2);
+  padding:6px 10px;background:var(--bg2);border-radius:4px;
+  border-left:2px solid var(--border2);margin-bottom:6px;
+}
+.guide-rule.r-go    {border-left-color:var(--green);}
+.guide-rule.r-caution{border-left-color:var(--amber);}
+.guide-rule.r-skip  {border-left-color:var(--red);}
+.guide-rule .rl{font-weight:500;}
+.guide-rule .rl.go    {color:var(--green);}
+.guide-rule .rl.caution{color:var(--amber);}
+.guide-rule .rl.skip  {color:var(--red);}
+</style>
+</head>
+<body>
+<div class="header">
+  <div style="display:flex;align-items:center;gap:16px">
+    <a href="../index.html" style="font-size:10px;color:var(--text3);text-decoration:none;letter-spacing:.08em;border:1px solid var(--border);padding:4px 10px;border-radius:2px">← HUB</a>
+    <div>
+      <div class="logo">PRE-MARKET<span>//</span>MONDAY</div>
+      <div class="meta">2026-10-19 &nbsp;·&nbsp; top 17 tickers &nbsp;·&nbsp; auto-refreshes every 5 min</div>
+    </div>
+  </div>
+  <div class="meta" style="text-align:right">
+    last check: <span style="color:var(--accent)">11:01:19</span><br>
+    next check: <span style="color:var(--text2)">6:30 AM CT</span>
+  </div>
+</div>
+
+<div class="checks-strip">
+
+  <div class="check-pill done">6:00 AM CT</div>
+
+  <div class="check-pill active">6:30 AM CT</div>
+
+  <div class="check-pill pending">7:00 AM CT</div>
+
+  <div class="check-pill pending">7:30 AM CT</div>
+
+  <div class="check-pill pending">8:00 AM CT</div>
+
+</div>
+
+<!-- DECISION GUIDE -->
+<div class="guide-bar" onclick="toggleGuide()">
+  <span class="guide-label">Entry decision guide</span>
+  <div class="guide-pills">
+    <span class="gpill gpill-go">GO = enter</span>
+    <span class="gpill gpill-caution">CAUTION = smaller / wait</span>
+    <span class="gpill gpill-wait">WAIT = Tuesday</span>
+    <span class="gpill gpill-skip">SKIP = pass entirely</span>
+  </div>
+  <span class="guide-toggle" id="guide-toggle-label">▼ expand</span>
+</div>
+
+<div class="guide-panel" id="guide-panel">
+
+  <div>
+    <div class="guide-section-title">Step-by-step entry procedure</div>
+
+    <div class="guide-step">
+      <div class="guide-step-num">1</div>
+      <div class="guide-step-body">
+        <strong>Check regime (index page).</strong><br>
+        Risk-on → bias Monday. Everything else → bias Tuesday unless overridden below.
+      </div>
+    </div>
+
+    <div class="guide-step">
+      <div class="guide-step-num">2</div>
+      <div class="guide-step-body">
+        <strong>Open pre-market monitor at 7:30am CT.</strong><br>
+        Read the Action column. It is binary.</div>
+    </div>
+
+    <div class="guide-step">
+      <div class="guide-step-num">3</div>
+      <div class="guide-step-body">
+        <strong>Read Trend + Gap together.</strong> See rules →
+      </div>
+    </div>
+
+    <div class="guide-step">
+      <div class="guide-step-num">4</div>
+      <div class="guide-step-body">
+        <strong>Confirm with sparkline.</strong><br>
+        Last 2 checks both higher than prior 2 → ramping confirmed.<br>
+        Last 2 checks both lower → fading confirmed.<br>
+        Alternating → stable, use gap size rule.
+      </div>
+    </div>
+
+    <div class="guide-step">
+      <div class="guide-step-num">5</div>
+      <div class="guide-step-body">
+        <strong>If deferred to Tuesday:</strong> check Monday close vs Friday close.<br>
+        Monday closed above Friday → enter Tuesday open.<br>
+        Monday closed &gt;5% below Friday → check for news, skip if none found.<br>
+        Monday closed within 5% either direction → enter Tuesday open.
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="guide-section-title">Trend + gap decision rules</div>
+
+    <div class="guide-rule r-go">
+      <span class="rl go">GO — Monday open</span><br>
+      Gap &lt;10% + any trend · Gap &lt;25% + ramping (↑↑)
+    </div>
+
+    <div class="guide-rule r-go">
+      <span class="rl go">GO — Monday open</span><br>
+      Gap &lt;10% + stable (→)
+    </div>
+
+    <div class="guide-rule r-caution">
+      <span class="rl caution">TUESDAY — defer entry</span><br>
+      Gap 10-25% + stable (→) · Gap any + fading (↓) over 10%
+    </div>
+
+    <div class="guide-rule r-caution">
+      <span class="rl caution">CAUTION — enter smaller</span><br>
+      Gap 10-25% + ramping · reduce position size, not thesis
+    </div>
+
+    <div class="guide-rule r-skip">
+      <span class="rl skip">SKIP — pass entirely</span><br>
+      Gap &gt;25% + fading (↓↓) · move exhausted, revisit next week
+    </div>
+
+    <div class="guide-rule r-skip">
+      <span class="rl skip">REVIEW — check news first</span><br>
+      Gapping down &gt;5% + fading · specific neg catalyst = skip,
+      no news = treat as caution
+    </div>
+
+    <div class="guide-section-title" style="margin-top:14px">WATCH action</div>
+    <div class="guide-rule r-caution">
+      <span class="rl caution">WATCH = possible squeeze</span><br>
+      Gap &gt;25% still ramping. Do not chase at open.
+      Wait for first 5-min candle to close, enter on pullback only.
+      Set hard stop at pre-market low.
+    </div>
+  </div>
+
+</div>
+
+<table>
+<thead>
+  <tr>
+    <th>Rank</th>
+    <th>Symbol</th>
+    <th>Sector</th>
+    <th>Prior Close</th>
+    <th>Pre-Mkt</th>
+    <th>Gap</th>
+    <th>Trend</th>
+    <th>Checks</th>
+    <th>Action</th>
+    <th>Reason</th>
+    <th>Thesis</th>
+  </tr>
+</thead>
+<tbody>
+
+<tr>
+  <td class="rank">#1</td>
+  <td class="sym">MXL</td>
+  <td style="color:var(--text3);font-size:10px">Technology</td>
+  <td style="text-align:right">$71.32</td>
+  <td style="text-align:right;color:var(--accent)">$74.73</td>
+  <td class="gap-pos" style="text-align:right;font-weight:500">
+    +4.8%
+  </td>
+  <td class="trend-initial">· initial</td>
+  <td class="spark">—</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap +4.8% — thesis intact, proceed as planned.</td>
+  <td class="thesis">99.6th percentile RS with top analyst signal upgrade driving #1 alpha rank across 2400 tickers.</td>
+</tr>
+
+<tr>
+  <td class="rank">#7</td>
+  <td class="sym">TXG</td>
+  <td style="color:var(--text3);font-size:10px">Healthcare</td>
+  <td style="text-align:right">$69.86</td>
+  <td style="text-align:right;color:var(--accent)">$71.95</td>
+  <td class="gap-pos" style="text-align:right;font-weight:500">
+    +3.0%
+  </td>
+  <td class="trend-initial">· initial</td>
+  <td class="spark">—</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap +3.0% — thesis intact, proceed as planned.</td>
+  <td class="thesis">99.9th percentile RS with surging analyst upgrades drives outperformance in risk-off flight to quality.</td>
+</tr>
+
+<tr>
+  <td class="rank">#23</td>
+  <td class="sym">SENS</td>
+  <td style="color:var(--text3);font-size:10px">Healthcare</td>
+  <td style="text-align:right">$7.77</td>
+  <td style="text-align:right;color:var(--accent)">$8.0</td>
+  <td class="gap-pos" style="text-align:right;font-weight:500">
+    +3.0%
+  </td>
+  <td class="trend-initial">· initial</td>
+  <td class="spark">—</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap +3.0% — thesis intact, proceed as planned.</td>
+  <td class="thesis">Top-decile RS, maximum analyst signal, and insider buying converge on small-cap healthcare breakout.</td>
+</tr>
+
+<tr>
+  <td class="rank">#8</td>
+  <td class="sym">UMC</td>
+  <td style="color:var(--text3);font-size:10px">Technology</td>
+  <td style="text-align:right">$19.82</td>
+  <td style="text-align:right;color:var(--accent)">$20.34</td>
+  <td class="gap-pos" style="text-align:right;font-weight:500">
+    +2.6%
+  </td>
+  <td class="trend-initial">· initial</td>
+  <td class="spark">—</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap +2.6% — thesis intact, proceed as planned.</td>
+  <td class="thesis">Top-1% relative strength with strong fundamentals drives outperformance as risk-off capital rotates into profitable semi</td>
+</tr>
+
+<tr>
+  <td class="rank">#12</td>
+  <td class="sym">DELL</td>
+  <td style="color:var(--text3);font-size:10px">Technology</td>
+  <td style="text-align:right">$451.71</td>
+  <td style="text-align:right;color:var(--accent)">$463.2</td>
+  <td class="gap-pos" style="text-align:right;font-weight:500">
+    +2.5%
+  </td>
+  <td class="trend-initial">· initial</td>
+  <td class="spark">—</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap +2.5% — thesis intact, proceed as planned.</td>
+  <td class="thesis">99.5th percentile RS with top analyst upgrades and strong fundamental growth drives outperformance.</td>
+</tr>
+
+<tr>
+  <td class="rank">#21</td>
+  <td class="sym">TWST</td>
+  <td style="color:var(--text3);font-size:10px">Healthcare</td>
+  <td style="text-align:right">$132.75</td>
+  <td style="text-align:right;color:var(--accent)">$135.0</td>
+  <td class="gap-pos" style="text-align:right;font-weight:500">
+    +1.7%
+  </td>
+  <td class="trend-initial">· initial</td>
+  <td class="spark">—</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap +1.7% — thesis intact, proceed as planned.</td>
+  <td class="thesis">99.8th percentile RS with max analyst upgrade signal driving pure momentum leadership.</td>
+</tr>
+
+<tr>
+  <td class="rank">#16</td>
+  <td class="sym">RNG</td>
+  <td style="color:var(--text3);font-size:10px">Technology</td>
+  <td style="text-align:right">$75.44</td>
+  <td style="text-align:right;color:var(--accent)">$76.58</td>
+  <td class="gap-pos" style="text-align:right;font-weight:500">
+    +1.5%
+  </td>
+  <td class="trend-initial">· initial</td>
+  <td class="spark">—</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap +1.5% — thesis intact, proceed as planned.</td>
+  <td class="thesis">98.6th percentile RS with earnings catalyst imminent drives breakout continuation.</td>
+</tr>
+
+<tr>
+  <td class="rank">#1</td>
+  <td class="sym">ILMN</td>
+  <td style="color:var(--text3);font-size:10px">Healthcare</td>
+  <td style="text-align:right">$262.54</td>
+  <td style="text-align:right;color:var(--accent)">$265.0</td>
+  <td class="gap-pos" style="text-align:right;font-weight:500">
+    +0.9%
+  </td>
+  <td class="trend-initial">· initial</td>
+  <td class="spark">—</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap +0.9% — thesis intact, proceed as planned.</td>
+  <td class="thesis">97.5th percentile RS with top-4 alpha rank signals flight-to-quality rotation into ILMN.</td>
+</tr>
+
+<tr>
+  <td class="rank">#27</td>
+  <td class="sym">PSX</td>
+  <td style="color:var(--text3);font-size:10px">Energy</td>
+  <td style="text-align:right">$293.17</td>
+  <td style="text-align:right;color:var(--accent)">$290.91</td>
+  <td class="gap-neg" style="text-align:right;font-weight:500">
+    -0.8%
+  </td>
+  <td class="trend-initial">· initial</td>
+  <td class="spark">—</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap -0.8% — thesis intact, proceed as planned.</td>
+  <td class="thesis">Top-decile RS with perfect trend quality and breakout proximity screams relative strength leadership in energy flight.</td>
+</tr>
+
+<tr>
+  <td class="rank">#1</td>
+  <td class="sym">FSLY</td>
+  <td style="color:var(--text3);font-size:10px">Technology</td>
+  <td style="text-align:right">$22.47</td>
+  <td style="text-align:right;color:var(--accent)">$22.62</td>
+  <td class="gap-pos" style="text-align:right;font-weight:500">
+    +0.7%
+  </td>
+  <td class="trend-initial">· initial</td>
+  <td class="spark">—</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap +0.7% — thesis intact, proceed as planned.</td>
+  <td class="thesis">Top-3 alpha rank driven by 96th-percentile RS and maximum analyst upgrade signal.</td>
+</tr>
+
+<tr>
+  <td class="rank">#28</td>
+  <td class="sym">SG</td>
+  <td style="color:var(--text3);font-size:10px">Consumer Cyclical</td>
+  <td style="text-align:right">$10.04</td>
+  <td style="text-align:right;color:var(--accent)">$10.0</td>
+  <td class="gap-neg" style="text-align:right;font-weight:500">
+    -0.4%
+  </td>
+  <td class="trend-initial">· initial</td>
+  <td class="spark">—</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap -0.4% — thesis intact, proceed as planned.</td>
+  <td class="thesis">High short interest (80th percentile) plus perfect trend quality signals squeeze potential.</td>
+</tr>
+
+<tr>
+  <td class="rank">#29</td>
+  <td class="sym">PD</td>
+  <td style="color:var(--text3);font-size:10px">Technology</td>
+  <td style="text-align:right">$16.16</td>
+  <td style="text-align:right;color:var(--accent)">$16.2</td>
+  <td class="gap-pos" style="text-align:right;font-weight:500">
+    +0.2%
+  </td>
+  <td class="trend-initial">· initial</td>
+  <td class="spark">—</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap +0.2% — thesis intact, proceed as planned.</td>
+  <td class="thesis">Top-decile RS with perfect trend quality score signals PD outperforms despite sector pressure.</td>
+</tr>
+
+<tr>
+  <td class="rank">#20</td>
+  <td class="sym">VLO</td>
+  <td style="color:var(--text3);font-size:10px">Energy</td>
+  <td style="text-align:right">$444.71</td>
+  <td style="text-align:right;color:var(--accent)">$443.99</td>
+  <td class="gap-neg" style="text-align:right;font-weight:500">
+    -0.2%
+  </td>
+  <td class="trend-initial">· initial</td>
+  <td class="spark">—</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap -0.2% — thesis intact, proceed as planned.</td>
+  <td class="thesis">Top-2% RS rank with perfect trend quality and breakout proximity screams relative strength leadership.</td>
+</tr>
+
+<tr>
+  <td class="rank">#9</td>
+  <td class="sym">TEAM</td>
+  <td style="color:var(--text3);font-size:10px">Technology</td>
+  <td style="text-align:right">$207.82</td>
+  <td style="text-align:right;color:var(--accent)">$208.0</td>
+  <td class="gap-pos" style="text-align:right;font-weight:500">
+    +0.1%
+  </td>
+  <td class="trend-initial">· initial</td>
+  <td class="spark">—</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap +0.1% — thesis intact, proceed as planned.</td>
+  <td class="thesis">97.7th percentile RS with perfect trend quality and analyst upgrades accelerating—momentum leadership in risk-off flight</td>
+</tr>
+
+<tr>
+  <td class="rank">#17</td>
+  <td class="sym">DHT</td>
+  <td style="color:var(--text3);font-size:10px">Energy</td>
+  <td style="text-align:right">$23.6</td>
+  <td style="text-align:right;color:var(--accent)">$23.62</td>
+  <td class="gap-pos" style="text-align:right;font-weight:500">
+    +0.1%
+  </td>
+  <td class="trend-initial">· initial</td>
+  <td class="spark">—</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap +0.1% — thesis intact, proceed as planned.</td>
+  <td class="thesis">Top-5% RS with perfect trend quality and strong analyst upgrades driving tanker sector bid.</td>
+</tr>
+
+<tr>
+  <td class="rank">#19</td>
+  <td class="sym">HALO</td>
+  <td style="color:var(--text3);font-size:10px">Healthcare</td>
+  <td style="text-align:right">$121.84</td>
+  <td style="text-align:right;color:var(--accent)">$121.94</td>
+  <td class="gap-pos" style="text-align:right;font-weight:500">
+    +0.1%
+  </td>
+  <td class="trend-initial">· initial</td>
+  <td class="spark">—</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap +0.1% — thesis intact, proceed as planned.</td>
+  <td class="thesis">Top-decile RS, perfect trend quality, at breakout with strong fundamentals in defensive healthcare.</td>
+</tr>
+
+<tr>
+  <td class="rank">#18</td>
+  <td class="sym">GH</td>
+  <td style="color:var(--text3);font-size:10px">Healthcare</td>
+  <td style="text-align:right">$158.6</td>
+  <td style="text-align:right;color:var(--accent)">$158.6</td>
+  <td class="gap-neg" style="text-align:right;font-weight:500">
+    -0.0%
+  </td>
+  <td class="trend-initial">· initial</td>
+  <td class="spark">—</td>
+  <td><span class="action action-GO">GO</span></td>
+  <td class="reason">Gap -0.0% — thesis intact, proceed as planned.</td>
+  <td class="thesis">98th-percentile RS with max analyst upgrade signal and strong revenue growth driving outperformance.</td>
+</tr>
+
+</tbody>
+</table>
+
+<div class="footer">
+  <span>MOMENTUM//ALPHA Pre-Market Monitor · 2026-10-19</span>
+  <span>Prices delayed · Not investment advice · Always verify with your broker</span>
+</div>
+<script>
+function toggleGuide() {
+  const panel  = document.getElementById('guide-panel');
+  const label  = document.getElementById('guide-toggle-label');
+  const isOpen = panel.classList.toggle('open');
+  label.textContent = isOpen ? '▲ collapse' : '▼ expand';
+}
+</script>
+</body>
+</html>
