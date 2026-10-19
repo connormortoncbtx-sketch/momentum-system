@@ -3058,3 +3058,5 @@
 {"timestamp": "2026-10-19T13:01:42.010386+00:00", "workflow": "premarket_monitor", "status": "success", "message": "Completed 5 premarket checks", "metrics": {"date": "2026-10-19", "checks_done": 5, "tickers_tracked": 30, "go": 26, "caution": 0, "skip": 0}, "errors": []}
 {"timestamp": "2026-10-19T16:42:32.067591+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Starting weekend refresh (manual_refresh)", "metrics": {}, "errors": []}
 {"timestamp": "2026-10-19T16:42:32.069715+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Skipped: manual_refresh already ran today (2026-10-19)", "metrics": {}, "errors": []}
+{"timestamp": "2026-10-19T17:17:29.887407+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Starting weekend refresh (manual_refresh)", "metrics": {}, "errors": []}
+{"timestamp": "2026-10-19T17:17:29.889368+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Skipped: manual_refresh already ran today (2026-10-19)", "metrics": {}, "errors": []}
