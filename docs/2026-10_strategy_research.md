@@ -2256,3 +2256,20 @@ Books: top 20, 4-week overlapping tranches, 15 bp/side, excess vs the equal-weig
   invert (dev top decile +1.09% per 4 weeks -> holdout -0.26%). The EV > 0 filter changed nothing (all top-20 had EV > 0).
 Verdict: a better alpha/EV at the weekly-to-monthly horizon can't be built from price/volume; the edges that hold are
 specific setups (overnight, contract filings, slow momentum's long holds), not a general score. No shadows built.
+
+## Trading after the station has decided a bucket (Oct 19): `research/kalshi/obs_decided.py`
+
+3M weather trades, 14 stations, 2021-2026. A bucket is decided when the high so far already exceeds its top (certain NO)
+or a "greater than" threshold (certain YES); readings must be 10 / 30 min old at the trade; margin 0 / 1 F.
+- **Defense (maker side):** in decided markets makers are on the losing side for only 1-7% of contracts (vs ~40% in
+  open markets) and earn +1.0-1.2c (holdout) vs +0.7c in open markets. No filter needed -- the bot isn't being
+  picked off there (and MIN_HOURS=6 already avoids most of it).
+- **Sniping with the precise 5-minute averages** (the official basis, but assembled after the fact): certain-NO
+  buckets still traded at ~75c on 351 city-days in 2025-26, +22.6c per contract after fees, wrong 0.13%. Looks huge,
+  but those readings are not public in real time.
+- **Sniping with real-time hourly METAR** (what a bot can actually read): the certain side trades at 98-99c almost
+  always; only ~100 trades on 13 city-days in 2025-26 were at <= 97c (+7.7c). Total edge ~+1c/contract at 99c, i.e. the
+  market prices public readings within minutes.
+Verdict: no snipe with public data. The gap between the two runs is the value of faster/more precise readings than
+the hourly METAR (5-minute ASOS feeds exist via NWS/MADIS in whole degrees C, commercial feeds in finer detail) --
+untested whether any real-time feed is precise and fast enough; that would be its own project.
