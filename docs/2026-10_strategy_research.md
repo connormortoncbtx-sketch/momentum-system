@@ -2273,3 +2273,21 @@ or a "greater than" threshold (certain YES); readings must be 10 / 30 min old at
 Verdict: no snipe with public data. The gap between the two runs is the value of faster/more precise readings than
 the hourly METAR (5-minute ASOS feeds exist via NWS/MADIS in whole degrees C, commercial feeds in finer detail) --
 untested whether any real-time feed is precise and fast enough; that would be its own project.
+
+## Non-weather expansion (Oct 19): `research/kalshi/other_expand.py` (weather_expand on 147 candidates)
+
+The bot's deep-fill test (2c behind, size 5, held to settlement) on 147 recurring non-sports/politics series
+(112 with enough fills), windows 6-48h (the bot's) and any time >= 6h before close (needed for weekly/monthly markets).
+Control: the weather highs, same run, median +2.6c per market.
+- Broadly positive: 69% of series positive per market; t > 2 in 21, t < -2 in 5 (6h+ window; ~3 each by chance).
+  By category (median per market): Commodities +6.2c, Economics +4.0c, Crypto +2.6c, Entertainment +2.5c;
+  Financials -2.1c and Science/Tech -4.3c negative.
+- Strongest with real fills (t clustered by event; monthly series have few events, so t is generous):
+  WTI oil weekly range (KXWTIW) +10.3c t 7.4 (4 fills/market), LA monthly rain (KXRAINLAXM) +6.9c t 7.0 (5),
+  Bitcoin monthly one-touch (KXBTCMAXMON) +5.3c t 3.7 (9, high volume), SpaceX launch count (KXSPACEXCOUNT) +3.9c t 3.0
+  (34), CPI (KXCPI) +6.5c t 2.3 (22). Mentions (Trump/Fed word counts) also score high but are live-event markets
+  with informed traders and thin books -- excluded. Central-bank decisions score high t but < 1 fill per market.
+- Practicality: these are weekly/monthly, so the bot would quote them for days to weeks (capital tied up longer) and
+  needs a per-series quoting window (MAX_HOURS is global, 48h). Their fills per market are lower than weather's.
+Verdict: real second-tier opportunity. Add when the bot's budget outgrows the weather markets (resting + positions
+regularly below budget). Shortlist: KXWTIW, KXBTCMAXMON, KXSPACEXCOUNT, KXCPI, KXRAINLAXM. Needs a per-series window.
