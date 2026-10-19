@@ -2201,3 +2201,20 @@ so more series spread the same money over more markets rather than adding profit
   holdout -8.5 bp net, gross -2.5 bp. Holdout gross is ~0 across all variants.
 - C opening-range breakout: negative in dev and holdout (holdout gross +0.4 bp median, below any realistic cost).
 Verdict: at retail costs there's nothing at 5-minute to 1-day horizons here; gross edges are 0-1 bp vs 2-4 bp round-trip costs.
+
+## Intraday follow-ups (Oct 19): `research/intraday_timing.py`
+
+**Overnight execution timing** (live-proxy top-10 picks, 5-min bars, weekday nights; vs buying at the close auction
+and selling at the open auction): every alternative is worse or equal. Moving the entry earlier (15:30 / 15:45 / TWAP of
+the last 30 min) changes ~0 bp; moving the exit later costs 4-6 bp per night by 09:35-10:00 and ~12 bp by 10:30 (dev
+t -2 to -5; holdout same sign). Conditional exits (hold if gapped up / first bar up) are worse still. And leaving the
+auctions adds spread. Verdict: the MOC-in / MOO-out design is already the best execution; a live version must use
+auction orders (sell ON the open, not a market order a minute after it).
+
+**Multi-timeframe trend + dip** (62 liquid symbols; long when the 60-min trend is up, the prior 15 min dipped and the
+current bar turned up; optional 20-day filter; hold 30/60 min or to the close): the dev pick (60m > 0.4%, dip > 0.3%,
+hold to close, long only, no daily filter) earned **+3.5 bp gross per trade in dev and +3.7 bp in the holdout** --
+the only intraday signal here with a stable pre-cost edge -- but -0.5 / -0.3 bp net at 2 bp per side (break-even
+~1.8 bp per side), holdout daily Sharpe -1.7. The 20-day filter and short side hurt. Not tradable at the assumed cost;
+the open question is real cost: entry is a market order (half-spread, ~0.3-2 bp across these names) and the exit could
+be a closing-auction order (no spread). Worth one cost-realistic re-score before dropping it.
