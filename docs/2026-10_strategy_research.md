@@ -2218,3 +2218,22 @@ the only intraday signal here with a stable pre-cost edge -- but -0.5 / -0.3 bp 
 ~1.8 bp per side), holdout daily Sharpe -1.7. The 20-day filter and short side hurt. Not tradable at the assumed cost;
 the open question is real cost: entry is a market order (half-spread, ~0.3-2 bp across these names) and the exit could
 be a closing-auction order (no spread). Worth one cost-realistic re-score before dropping it.
+
+**MTF cost re-check** (`research/mtf_costcheck.py`; same signals, entry half of a 1c spread + 0.2 bp, exit at the closing
+auction + 0.2 bp): net +1.9 bp/trade dev, +2.9 bp holdout, but t 0.75 / 0.93 and daily Sharpe -0.3 / -1.1 (returns are
+noisy and day-clustered). Rejected -- not distinguishable from zero.
+
+## Live alpha / EV scores, tested directly on the logged weeks (Oct 19)
+
+performance_log.csv: 23 formation weeks with realised forward returns (Sep 2025 - Oct 2026), ~1.8k names/week.
+| Score | mean weekly rank IC | t | top-decile excess/wk | top-10 excess/wk |
+|---|---|---|---|---|
+| alpha (LightGBM) | -0.009 | -0.3 | -0.02% | -0.49% |
+| EV | -0.021 | -0.6 | -0.42% | -1.12% |
+| 50/50 alpha+EV | -0.015 | -0.5 | +0.08% | -0.94% |
+| raw momentum signal | -0.036 | -1.3 | -0.21% | -1.43% |
+- alpha is not calibrated: names scored 0.95-1.00 beat the weekly average 44% of the time (excess -0.36%/wk).
+- The EV veto points the wrong way: EV > 0 names -0.25%/wk excess vs +0.08% for EV <= 0.
+- So no weighting of alpha and EV can help -- neither carries signal in the live period (consistent with the
+  postmortem: the factor the model bets on, short-term RS/momentum, reversed from late May). 23 weeks is short, but it
+  is every live week there is. The stack's edge comes from the separately tested books, not these scores.
