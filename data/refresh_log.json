@@ -1,37 +1,5 @@
 [
   {
-    "run_label": "sunday_night",
-    "timestamp": "2026-08-17T00:55:32.344247",
-    "regime": "risk_on",
-    "top_5": [
-      {
-        "symbol": "ZIM",
-        "alpha_score": 0.6858190000000001,
-        "alpha_rank": 2
-      },
-      {
-        "symbol": "WVE",
-        "alpha_score": 0.7069099999999999,
-        "alpha_rank": 1
-      },
-      {
-        "symbol": "CBRL",
-        "alpha_score": 0.5791099999999999,
-        "alpha_rank": 8
-      },
-      {
-        "symbol": "LRCX",
-        "alpha_score": 0.53191,
-        "alpha_rank": 13
-      },
-      {
-        "symbol": "ONTO",
-        "alpha_score": 0.485151,
-        "alpha_rank": 25
-      }
-    ]
-  },
-  {
     "run_label": "manual_refresh",
     "timestamp": "2026-08-17T02:45:39.144144",
     "regime": "risk_on",
@@ -636,6 +604,38 @@
         "symbol": "XP",
         "alpha_score": 0.8994019999999999,
         "alpha_rank": 7
+      }
+    ]
+  },
+  {
+    "run_label": "sunday_night",
+    "timestamp": "2026-10-19T02:15:20.307126",
+    "regime": "risk_off_severe",
+    "top_5": [
+      {
+        "symbol": "MXL",
+        "alpha_score": 0.884595,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "TEAM",
+        "alpha_score": 0.779202,
+        "alpha_rank": 11
+      },
+      {
+        "symbol": "AMPL",
+        "alpha_score": 0.8563919999999999,
+        "alpha_rank": 2
+      },
+      {
+        "symbol": "FSLY",
+        "alpha_score": 0.8491829999999999,
+        "alpha_rank": 3
+      },
+      {
+        "symbol": "GRAL",
+        "alpha_score": 0.775504,
+        "alpha_rank": 13
       }
     ]
   }
