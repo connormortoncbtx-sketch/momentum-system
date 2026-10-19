@@ -2172,3 +2172,32 @@ Deep fills are certain when a sweep trades beyond our level (price priority), so
 net of the adverse selection in those sweeps. Positive in every price bucket; by time to close, 6-48h carries it
 (6-12h +2.2c, 12-24h +3.7c, 24-48h +2.4c) while 3-6h is ~0 (thin, 600 fills) -- consider MIN_HOURS = 6 for the pilot.
 Verdict: the real-money pilot is justified; expect ~+2-3c per filled contract before any queue/latency slippage.
+
+## Weather expansion: which other temperature series earn (Oct 19): `research/kalshi/weather_expand.py`
+
+The bot's per-fill deep-fill edge (2c behind, size 5, 6-48h to close) on every daily high/low temperature series,
+~52-60 sampled settled markets per series from the last 365 days, full trade histories. Control = the current series
+measured identically (Austin was dropped by a filter bug -- `US$` also matched KXHIGHAUS -- so it was not re-tested).
+
+- Control (7 current cities): per-market edge 0.9-5.7c, median 3.5c; t 0.4-3.4 (only ~52 markets each). Dallas 5.7c,
+  Philadelphia 3.8, Miami 3.7, NYC 3.5, LA 1.5, Chicago 1.0, Denver 0.9.
+- 36 other series with data: 67% positive per market; t > 2 in 3, t < -2 in none (about 1 would pass t > 2 by luck).
+  Daily HIGHS median +2.2c per market; daily LOWS +1.0c with thin volume (1-4 fills per market) -- skip the lows.
+- Pass (per-market > 1.5c, t > 2.5, recent-180d > 0.5c, >= 5 fills/market): **Atlanta high (KXHIGHTATL) +5.5c t 3.4,
+  Boston high (KXHIGHTBOS) +4.8c t 2.7, Las Vegas high (KXHIGHTLV) +4.1c t 3.2** -- volume ~4-7k contracts/market,
+  similar to the control; positive in both halves of the year.
+- Next tier (positive, not significant): Houston, Minneapolis, Phoenix, Seattle, San Francisco highs (2-3c, t 1.0-1.7).
+
+Verdict: add ATL, BOS, LV. At the current $90 budget the bot is already capital-bound (resting orders fill the budget),
+so more series spread the same money over more markets rather than adding profit; the value shows up when the budget grows.
+
+## Intraday strategies: all rejected (Oct 19): `research/intraday_strats.py`
+
+5-minute SIP bars 2017-2026 for SPY/QQQ/IWM/DIA, 10 sector SPDRs, 48 large stocks; costs 1 bp/side (index ETFs),
+2 bp (others). Dev 2017-23 pick, holdout 2024-26.
+- A intraday momentum (first half hour -> last half hour, index ETFs): dev pick Sharpe -0.37; holdout -2.06, gross -1.3 bp/trade.
+  No variant has positive gross returns in the holdout worth trading (best +0.7 bp). The published effect is gone.
+- B short-term reversal (stock drops vs SPY, buy, SPY-hedged, hold 15-60 min): dev pick +3.9 bp net (Sharpe 1.35) ->
+  holdout -8.5 bp net, gross -2.5 bp. Holdout gross is ~0 across all variants.
+- C opening-range breakout: negative in dev and holdout (holdout gross +0.4 bp median, below any realistic cost).
+Verdict: at retail costs there's nothing at 5-minute to 1-day horizons here; gross edges are 0-1 bp vs 2-4 bp round-trip costs.
