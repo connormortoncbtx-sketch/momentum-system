@@ -242,6 +242,139 @@
           "pm_volume": 0
         }
       }
+    },
+    {
+      "check_num": 3,
+      "check_name": "7:00",
+      "timestamp": "12:01:28",
+      "prices": {
+        "CLMT": {
+          "premarket_price": 57.9,
+          "prior_close": 57.75,
+          "gap_pct": 0.0026,
+          "pm_volume": 0
+        },
+        "AMPL": {
+          "premarket_price": 15.61,
+          "prior_close": 14.75,
+          "gap_pct": 0.058,
+          "pm_volume": 0
+        },
+        "ILMN": {
+          "premarket_price": 265.0,
+          "prior_close": 262.54,
+          "gap_pct": 0.0094,
+          "pm_volume": 0
+        },
+        "NEO": {
+          "premarket_price": 16.61,
+          "prior_close": 16.65,
+          "gap_pct": -0.0024,
+          "pm_volume": 0
+        },
+        "FSLY": {
+          "premarket_price": 22.8,
+          "prior_close": 22.47,
+          "gap_pct": 0.0147,
+          "pm_volume": 0
+        },
+        "MXL": {
+          "premarket_price": 75.75,
+          "prior_close": 71.32,
+          "gap_pct": 0.0621,
+          "pm_volume": 0
+        },
+        "TXG": {
+          "premarket_price": 71.0,
+          "prior_close": 69.86,
+          "gap_pct": 0.0163,
+          "pm_volume": 0
+        },
+        "UMC": {
+          "premarket_price": 20.55,
+          "prior_close": 19.82,
+          "gap_pct": 0.0368,
+          "pm_volume": 0
+        },
+        "TEAM": {
+          "premarket_price": 206.45,
+          "prior_close": 207.82,
+          "gap_pct": -0.0066,
+          "pm_volume": 0
+        },
+        "DELL": {
+          "premarket_price": 465.0,
+          "prior_close": 451.71,
+          "gap_pct": 0.0294,
+          "pm_volume": 0
+        },
+        "RNG": {
+          "premarket_price": 75.63,
+          "prior_close": 75.44,
+          "gap_pct": 0.0025,
+          "pm_volume": 0
+        },
+        "DHT": {
+          "premarket_price": 23.7,
+          "prior_close": 23.6,
+          "gap_pct": 0.0042,
+          "pm_volume": 0
+        },
+        "GH": {
+          "premarket_price": 158.6,
+          "prior_close": 158.6,
+          "gap_pct": -0.0,
+          "pm_volume": 0
+        },
+        "HALO": {
+          "premarket_price": 121.94,
+          "prior_close": 121.84,
+          "gap_pct": 0.0008,
+          "pm_volume": 0
+        },
+        "VLO": {
+          "premarket_price": 440.2,
+          "prior_close": 444.71,
+          "gap_pct": -0.0101,
+          "pm_volume": 0
+        },
+        "TWST": {
+          "premarket_price": 134.99,
+          "prior_close": 132.75,
+          "gap_pct": 0.0169,
+          "pm_volume": 0
+        },
+        "SENS": {
+          "premarket_price": 8.0,
+          "prior_close": 7.77,
+          "gap_pct": 0.0296,
+          "pm_volume": 0
+        },
+        "PSX": {
+          "premarket_price": 290.91,
+          "prior_close": 293.17,
+          "gap_pct": -0.0077,
+          "pm_volume": 0
+        },
+        "SG": {
+          "premarket_price": 10.0,
+          "prior_close": 10.04,
+          "gap_pct": -0.004,
+          "pm_volume": 0
+        },
+        "PD": {
+          "premarket_price": 16.2,
+          "prior_close": 16.16,
+          "gap_pct": 0.0025,
+          "pm_volume": 0
+        },
+        "HNST": {
+          "premarket_price": 4.95,
+          "prior_close": 5.0,
+          "gap_pct": -0.0105,
+          "pm_volume": 0
+        }
+      }
     }
   ]
 }
