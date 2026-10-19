@@ -1,1 +1,857 @@
-{}
+{
+ "KX10YRDIRLM": {
+  "title": "10Y how low monthly",
+  "category": "Financials",
+  "frequency": "monthly",
+  "fee_type": "",
+  "first_seen": "2026-09-30",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KX2YRDIRLM": {
+  "title": "2Y how low monthly",
+  "category": "Financials",
+  "frequency": "monthly",
+  "fee_type": "",
+  "first_seen": "2026-10-01",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KX30YMORTW": {
+  "title": "30-year mortgage rate this week",
+  "category": "Economics",
+  "frequency": "weekly",
+  "fee_type": "",
+  "first_seen": "2026-08-27",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KX30YRDIRLM": {
+  "title": "30Y how low monthly",
+  "category": "Financials",
+  "frequency": "monthly",
+  "fee_type": "",
+  "first_seen": "2026-09-30",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KX5YRDIRLM": {
+  "title": "5Y how low monthly",
+  "category": "Financials",
+  "frequency": "monthly",
+  "fee_type": "",
+  "first_seen": "2026-10-01",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KX7YRDIRLM": {
+  "title": "7Y how low monthly",
+  "category": "Financials",
+  "frequency": "monthly",
+  "fee_type": "",
+  "first_seen": "2026-10-01",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDAK": {
+  "title": "Alaska gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-10-01",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDAL": {
+  "title": "Alabama gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-10-08",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDAR": {
+  "title": "Arkansas gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-10-09",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDAZ": {
+  "title": "Arizona gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-09-10",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDCA": {
+  "title": "California gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-08-26",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDCO": {
+  "title": "Colorado gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-09-17",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDCT": {
+  "title": "Connecticut gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-09-24",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDDE": {
+  "title": "Delaware gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-10-09",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDFL": {
+  "title": "Florida gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-08-26",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDGA": {
+  "title": "Georgia gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-09-02",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDHI": {
+  "title": "Hawaii gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-10-09",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDIA": {
+  "title": "Iowa gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-10-08",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDID": {
+  "title": "Idaho gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-10-09",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDIL": {
+  "title": "Illinois gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-08-26",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDIN": {
+  "title": "Indiana gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-09-24",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDKS": {
+  "title": "Kansas gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-10-01",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDKY": {
+  "title": "Kentucky gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-10-09",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDLA": {
+  "title": "Louisiana gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-10-09",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDMA": {
+  "title": "Massachusetts gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-09-10",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDMD": {
+  "title": "Maryland gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-09-17",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDME": {
+  "title": "Maine gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-10-01",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDMI": {
+  "title": "Michigan gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-09-10",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDMN": {
+  "title": "Minnesota gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-09-17",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDMO": {
+  "title": "Missouri gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-09-24",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDMS": {
+  "title": "Mississippi gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-10-09",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDMT": {
+  "title": "Montana gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-10-08",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDNC": {
+  "title": "North Carolina gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-09-02",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDND": {
+  "title": "North Dakota gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-10-09",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDNE": {
+  "title": "Nebraska gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-10-09",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDNH": {
+  "title": "New Hampshire gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-10-08",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDNJ": {
+  "title": "New Jersey gas prices",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-08-26",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDNM": {
+  "title": "New Mexico gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-10-01",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDNV": {
+  "title": "Nevada gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-09-24",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDNY": {
+  "title": "New York gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-08-26",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDOH": {
+  "title": "Ohio gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-09-02",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDOK": {
+  "title": "Oklahoma gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-10-09",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDOR": {
+  "title": "Oregon gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-09-17",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDPA": {
+  "title": "Pennsylvania gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-09-02",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDSC": {
+  "title": "South Carolina gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-09-17",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDSD": {
+  "title": "South Dakota gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-10-09",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDTN": {
+  "title": "Tennessee gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-09-10",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDTX": {
+  "title": "TX gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-08-24",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDUT": {
+  "title": "Utah gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-10-01",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDVA": {
+  "title": "Virginia gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-09-10",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDVT": {
+  "title": "Vermont gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-10-09",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDWA": {
+  "title": "Washington gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-09-02",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDWI": {
+  "title": "Wisconsin gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-09-24",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDWV": {
+  "title": "West Virginia gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-10-09",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASDWY": {
+  "title": "Wyoming gas price",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-10-08",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAAAGASMINM": {
+  "title": "US lowest gas price monthly",
+  "category": "Economics",
+  "frequency": "monthly",
+  "fee_type": "",
+  "first_seen": "2026-09-30",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXANTHVREQ": {
+  "title": "Anthropic Vercel requests share",
+  "category": "Science and Technology",
+  "frequency": "custom",
+  "fee_type": "",
+  "first_seen": "2026-09-23",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXANTHVSPEND": {
+  "title": "Anthropic Vercel spend share",
+  "category": "Science and Technology",
+  "frequency": "custom",
+  "fee_type": "",
+  "first_seen": "2026-09-23",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAUDUSDAD": {
+  "title": "AUDUSD Daily",
+  "category": "Financials",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-08-26",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAVGTKAUS": {
+  "title": "Average Weekly Temp in Austin ",
+  "category": "Climate and Weather",
+  "frequency": "weekly",
+  "fee_type": "",
+  "first_seen": "2026-08-24",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAVGTKDFW": {
+  "title": "Average Weekly Temp in Dallas ",
+  "category": "Climate and Weather",
+  "frequency": "weekly",
+  "fee_type": "",
+  "first_seen": "2026-08-24",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAVGTKIAH": {
+  "title": "Average Weekly Temp in Houston (Bush) ",
+  "category": "Climate and Weather",
+  "frequency": "weekly",
+  "fee_type": "",
+  "first_seen": "2026-08-24",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAVGTKLAS": {
+  "title": "Average Weekly Temp in Las Vegas ",
+  "category": "Climate and Weather",
+  "frequency": "weekly",
+  "fee_type": "",
+  "first_seen": "2026-08-24",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAVGTKPHX": {
+  "title": "Average Weekly Temp in Phoenix ",
+  "category": "Climate and Weather",
+  "frequency": "weekly",
+  "fee_type": "",
+  "first_seen": "2026-08-24",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAVGTKSAN": {
+  "title": "Average Weekly Temp in San Diego ",
+  "category": "Climate and Weather",
+  "frequency": "weekly",
+  "fee_type": "",
+  "first_seen": "2026-08-24",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXAVGTKSAT": {
+  "title": "Average Weekly Temp in San Antonio ",
+  "category": "Climate and Weather",
+  "frequency": "weekly",
+  "fee_type": "",
+  "first_seen": "2026-08-24",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXBIGGESTQUAKE": {
+  "title": "Biggest earthquake",
+  "category": "Climate and Weather",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-09-02",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXCBDPOLAND": {
+  "title": "Poland interest rate decision",
+  "category": "Economics",
+  "frequency": "custom",
+  "fee_type": "",
+  "first_seen": "2026-09-09",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXDEEPVREQ": {
+  "title": "DeepSeek Vercel requests share",
+  "category": "Science and Technology",
+  "frequency": "custom",
+  "fee_type": "",
+  "first_seen": "2026-09-23",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXEIACRUDEW": {
+  "title": "U.S. crude oil inventories",
+  "category": "Economics",
+  "frequency": "weekly",
+  "fee_type": "",
+  "first_seen": "2026-09-02",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXGBPUSDAD": {
+  "title": "GBPUSD Daily",
+  "category": "Financials",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-08-26",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXGOOGVREQ": {
+  "title": "Google Vercel requests share",
+  "category": "Science and Technology",
+  "frequency": "custom",
+  "fee_type": "",
+  "first_seen": "2026-09-23",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXHIGHTEWR": {
+  "title": "Newark, NJ (EWR) Daily Max Temp",
+  "category": "Climate and Weather",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-08-27",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXHIGHTSAN": {
+  "title": "High Temperature San Diego",
+  "category": "Climate and Weather",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-08-20",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXHIGHTSDF": {
+  "title": "HIGHEST Temperature SATX",
+  "category": "Climate and Weather",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-08-29",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXHIGHTTTN": {
+  "title": "Trenton, NJ Daily Max Temp",
+  "category": "Climate and Weather",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-08-27",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXLOWTEWR": {
+  "title": "Newark, NJ (EWR) Daily Low Temp",
+  "category": "Climate and Weather",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-08-27",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXLOWTSAN": {
+  "title": "Low Temperature San Diego",
+  "category": "Climate and Weather",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-08-20",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXLOWTSDF": {
+  "title": "Lowest Temperature SDX",
+  "category": "Climate and Weather",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-08-29",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXLOWTTTN": {
+  "title": "Trenton Daily low temp ",
+  "category": "Climate and Weather",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-08-27",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXMOONVSPEND": {
+  "title": "Moonshot AI Vercel spend share",
+  "category": "Science and Technology",
+  "frequency": "custom",
+  "fee_type": "",
+  "first_seen": "2026-09-23",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXMVECROSSCATEGORY": {
+  "title": "MVE Cross Category",
+  "category": "Exotics",
+  "frequency": "custom",
+  "fee_type": "",
+  "first_seen": "2026-08-16",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXMVECROSSCATEGORY0": {
+  "title": "MVE Cross Category",
+  "category": "Exotics",
+  "frequency": "custom",
+  "fee_type": "",
+  "first_seen": "2026-10-16",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXOAIPERSONALAGENT": {
+  "title": "OpenAI personal AI agent",
+  "category": "Science and Technology",
+  "frequency": "custom",
+  "fee_type": "",
+  "first_seen": "2026-10-01",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXOER": {
+  "title": "Owners' equivalent rent for [month]",
+  "category": "Economics",
+  "frequency": "monthly",
+  "fee_type": "",
+  "first_seen": "2026-09-11",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXOPENADOPT": {
+  "title": "OpenAI AI adoption rate",
+  "category": "Science and Technology",
+  "frequency": "monthly",
+  "fee_type": "",
+  "first_seen": "2026-09-09",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXOPENVREQ": {
+  "title": "OpenAI Vercel requests share",
+  "category": "Science and Technology",
+  "frequency": "custom",
+  "fee_type": "",
+  "first_seen": "2026-09-23",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXOPENVSPEND": {
+  "title": "OpenAI Vercel spend share",
+  "category": "Science and Technology",
+  "frequency": "custom",
+  "fee_type": "",
+  "first_seen": "2026-09-23",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXRAINWKND": {
+  "title": "Where will it rain this weekend?",
+  "category": "Climate and Weather",
+  "frequency": "weekly",
+  "fee_type": "",
+  "first_seen": "2026-08-24",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXTAKEOVERACQWB": {
+  "title": "Warner Brothers acquisition",
+  "category": "Financials",
+  "frequency": "custom",
+  "fee_type": "",
+  "first_seen": "2026-10-06",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXTXERCOTPEAKD": {
+  "title": "Texas ERCOT peak electricity demand",
+  "category": "Economics",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-08-29",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXUSDCADAD": {
+  "title": "USDCAD Daily",
+  "category": "Financials",
+  "frequency": "daily",
+  "fee_type": "",
+  "first_seen": "2026-08-26",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXUSHOMEINVENT": {
+  "title": "US Active Housing Inventory",
+  "category": "Economics",
+  "frequency": "monthly",
+  "fee_type": "",
+  "first_seen": "2026-10-01",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXWAYMOCITY": {
+  "title": "Waymo new city",
+  "category": "Science and Technology",
+  "frequency": "custom",
+  "fee_type": "",
+  "first_seen": "2026-10-14",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ },
+ "KXZAISHARE": {
+  "title": "Z.ai market share",
+  "category": "Science and Technology",
+  "frequency": "weekly",
+  "fee_type": "",
+  "first_seen": "2026-09-21",
+  "checks": [],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+ }
+}
