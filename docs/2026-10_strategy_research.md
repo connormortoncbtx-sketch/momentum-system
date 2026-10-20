@@ -2314,3 +2314,14 @@ Implication (unverified until Kalshi pays): the bot's resting orders (~$90 at ~5
 and it rewards keeping the budget fully resting, which argues for more markets (lows, ATL/BOS/LV all pay) before
 larger size. Caveats: my reading of the scoring rules; competition changes daily; Kalshi can change/end the program.
 Verification: rewards shown in the Kalshi account after payout.
+
+## Polymarket US and cross-venue arbitrage (Oct 19): `research/probes/pmus_markets.py`, `xvenue_arb.py`
+
+- Polymarket US (CFTC-regulated, available in Texas) has a public gateway + authenticated trading API (Ed25519 keys).
+  20,000+ open markets: sports (futures, props, game lines) and politics, a few macro (Fed, GDP); essentially no
+  weather (1 temperature market) and no CPI. Taker fee 0.0695 p(1-p) (~Kalshi's). Maker rebate (-0.0125) was made
+  volume-tiered on Oct 19, 2026: nothing below $10M/month. Liquidity rewards exist (e.g. NBA props $25-300 per period,
+  target 1,000-1,500). -> No natural home for the weather bot.
+- Cross-venue game-winner arbitrage (75 NBA/NFL/college games matched, 20 min, 1,341 snapshots): PM vs Kalshi mid
+  correlation 0.95, median gap 0.5c (p90 1.5c); best net of both taker fees median -6.4c per contract. The only
+  "positive" case (+45c, one college game) was a team-code mismatch between venues, not a price gap. No arbitrage.
