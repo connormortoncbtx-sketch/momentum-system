@@ -94,8 +94,11 @@ def main():
     pocs = sum(1 for e in rows("events") if e.get("event") == "post_only_cross" and str(e.get("ts", "")).startswith(today))
     per = pnl_c / n_contracts if n_contracts else float("nan")
     dep = num(os.environ.get("DEPOSITS_USD"))                  # net money put in (deposits - withdrawals), set in /etc/kmm/env
-    score = (f"BOTTOM LINE: {'+' if last.get('value', 0) >= dep else '-'}${abs(last.get('value', 0) - dep):.2f} overall "
-             f"(value ${last.get('value', 0):.2f} vs ${dep:.2f} deposited; open positions at mid)\n") if dep else \
+    # conservative: open positions at what they'd sell for NOW (the bid); the mid flatters dying buckets late in the day
+    v, how = (last["value_at_bid"], "open positions at the bid, i.e. sold now") if "value_at_bid" in last else \
+             (last.get("value", 0), "open positions at mid -- optimistic until the bot logs value_at_bid")
+    score = (f"BOTTOM LINE: {'+' if v >= dep else '-'}${abs(v - dep):.2f} overall "
+             f"(${v:.2f} vs ${dep:.2f} deposited; {how})\n") if dep else \
             "BOTTOM LINE: set DEPOSITS_USD in /etc/kmm/env to see profit vs money put in\n"
     msg = (score + f"{today} | mode {last.get('mode', '?')} | balance ${last.get('balance', 0):.2f}, value ${last.get('value', 0):.2f}\n"
            f"fills today: {len(f_today)} ({contracts_today:.0f} contracts)\n"

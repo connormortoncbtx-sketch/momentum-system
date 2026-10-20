@@ -411,14 +411,15 @@ class Bot:
             cost = getattr(self.k, "cost", {}) or {}
             # budget counts what positions COST (money actually tied up); mark value only if the cost field is missing
             used = sum(cost[t] if t in cost else collateral(p, marks.get(t, 0.5)) for t, p in pos.items() if p)
+            # size off a CONSERVATIVE value: positions at what they'd sell for now (the bid), not the mid
+            liq = bal + sum(p * bids.get(t, (0, 0))[0] if p > 0 else -p * bids.get(t, (0, 0))[1] for t, p in pos.items())
             today = trading_day()
             if self.day != today:
                 self.day, self.day_start_value = today, day_baseline(today, value)
             pnl_today = value - self.day_start_value
-            # size off a CONSERVATIVE value: positions at what they'd sell for now (the bid), not the mid
-            liq = bal + sum(p * bids.get(t, (0, 0))[0] if p > 0 else -p * bids.get(t, (0, 0))[1] for t, p in pos.items())
             budget, max_loss = budget_for(liq), loss_limit(self.day_start_value)
             jlog("snapshots", balance=round(bal, 2), position_value=round(pos_val, 2), value=round(value, 2),
+                 value_at_bid=round(liq, 2),
                  pnl_today=round(pnl_today, 2), positions={t: p for t, p in pos.items() if p}, n_resting=len(rest),
                  budget=round(budget, 2), loss_limit=round(max_loss, 2), used_cost=round(used, 2), used_mark=round(used_mark, 2))
             if pnl_today < -max_loss:
