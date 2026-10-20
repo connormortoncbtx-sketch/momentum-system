@@ -2433,3 +2433,10 @@ Hourly last-trade price per market, 1-48h before close; RSI(6-hour EWM) and 3-ho
   favourites are fairly priced; the Polymarket specialist's edge is either Polymarket's thinner weather books
   (possibly priced off Kalshi) or a faster live-observation feed. Nothing to get ahead of on Kalshi without a
   faster feed (see the NWS feed probe).
+- **Mirroring the weather specialist onto Kalshi** (`research/pm_weather_mirror.py`): of 2,604 high-temperature buys,
+  only 9% had an exactly matching Kalshi bucket (edges differ by city), 243 resolved, 132 with Kalshi 1-min asks.
+  Buying the same bucket on Kalshi at its ask + fee at 0 / 1 / 5 min: +3.2 / +3.7 / +4.0c per contract, t 1.3 on 22
+  city-days -- not significant. And the "same" bucket is often a different bet: Polymarket and Kalshi resolve on
+  different stations/sources, so prices diverge wildly (San Francisco: Polymarket 59c vs Kalshi 14c, Kalshi won 17%;
+  Atlanta 37c vs 16c). Only NYC lined up (66c vs 73c). ~0.6 usable signals a day at a few contracts each: even if real,
+  pennies. Dropped.
