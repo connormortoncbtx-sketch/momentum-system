@@ -30,6 +30,8 @@ def main():
         if not os.path.exists(p):
             continue
         T = pd.read_parquet(p)
+        if not len(T) or "tenor" not in T:
+            continue
         T["W"] = T.W.astype(str)
         if u == "SPY":
             T = T[T.credit < 0.6 * T.W.astype(float)]

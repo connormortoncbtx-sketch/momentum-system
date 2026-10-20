@@ -113,7 +113,10 @@ def fetch(spot, close):
         return out
     for j, d in enumerate(days):
         i = tdays.index(d)
-        nxt = [x for x in tdays[i:] if x >= d + pd.Timedelta(days=7)]
+        if UND == "SPY":                                  # SPY lists every weekday: first trading day >= D + 7
+            nxt = [x for x in tdays[i:] if x >= d + pd.Timedelta(days=7)]
+        else:                                             # many ETFs only list Friday weeklies: Friday 6-12 days out
+            nxt = [x for x in tdays[i:] if x >= d + pd.Timedelta(days=6) and x.weekday() == 4]
         tenors = {"0DTE": d, "1DTE": tdays[i + 1] if i + 1 < len(tdays) else None, "7DTE": nxt[0] if nxt else None}
         s0 = float(spot[d]); atm = round(s0)
         todo = {ten: e for ten, e in tenors.items() if e is not None and (d, ten) not in done}
@@ -217,6 +220,8 @@ def main():
     print(f"::notice::{UND} option prices: {ok[['d','tenor']].drop_duplicates().shape[0]} day-tenors with an ATM price, "
           f"{ok.px.notna().mean():.0%} of legs priced; {P[P.M.isna()][['d','tenor']].drop_duplicates().shape[0]} day-tenors missing ATM")
     T = pd.concat([trades(P, close, vx, c) for c in (0.01, 0.03)], ignore_index=True)
+    if not len(T):
+        print(f"::notice::{UND}: no trades (no option prices found)"); return
     T.to_parquet(f"{RD}/results/options_premium_trades{SUF}.parquet", index=False)
     S = summarise(T)
     S.to_csv(f"{RD}/results/options_premium_summary{SUF}.csv", index=False)
