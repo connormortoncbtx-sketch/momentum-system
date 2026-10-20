@@ -2347,3 +2347,20 @@ hold to settlement 871 | take at +2/4/8/12%: 533/677/824/847 | take then stop fo
 trailing (sell if a +X% day halves): 695/808/861/871 (+12% never fired). Every rule earns less; the best Sharpe
 gain (11.2 -> 11.8, take+stop 4%) does not hold in dev (6.2 -> 5.4). Selling early gives back the 2c the quote was
 paid plus the fee. Absolute returns here are inflated (fills assumed at sweep prices, no queue competition); compare rules only.
+
+## Selling SPY option premium with defined risk -- Oct 20, 2026: PROMISING, cost-sensitive (paper only)
+`research/options_premium.py` (Alpaca option 1-min bars, Feb 2024 - Oct 2026; first half to Jun 2025 picks, second
+half checks). Entry 10:00 ET at the 15-min VWAP, held to expiry, settled at the SPY close. 70k simulated trades;
+983 with an impossible credit (>= 60% of width: an untraded wing) dropped. Realised SPY moves averaged 94% of the
+implied move at every tenor (0DTE/1DTE/7DTE): a premium exists, but it is about 6% of the straddle price.
+- Best consistent setup: **0DTE iron condor, short strikes 1x the implied move out, $5 wings.** At $0.01/leg cost:
+  first half RoR +3.1%/trade (Sharpe 1.55) -> second half +3.1% (Sharpe 1.69); all 677 days t 2.6, win 74%,
+  22 max-loss days (3%), 23 of 33 months positive, worst month Feb 2025. At 2% of equity risked per trade:
+  ~16%/yr, max drawdown -7%. Neighbouring 0DTE condors (k 0.5 / 1.5, $5 wings) also positive.
+- **Costs decide it:** at $0.03/leg the same setup is +1.2%/trade, t 1.0. $5 wings beat $2 everywhere (costs per $ risk).
+- 7DTE put spreads look best in the second half (Sharpe ~5) but not the first, and 7DTE call spreads lose: that is
+  the 2024-26 rally (SPY +0.33%/week, 59% of weeks up), not premium. Rejected as a premium strategy.
+- Aug 5 2024: 0DTE entered at 10:00 *after* the gap and made money that day; the big losses were ordinary -2% days
+  (Aug 1, Aug 7 2024, Apr 4 2024). Same-day entry avoids overnight gaps.
+- Caveats: only ~2.7 years (no 2017-23 period); the fill assumption is the whole result; Alpaca paper fills are
+  optimistic, so a paper shadow must log the live bid/ask at order time to measure real cost.
