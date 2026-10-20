@@ -2325,3 +2325,16 @@ Verification: rewards shown in the Kalshi account after payout.
 - Cross-venue game-winner arbitrage (75 NBA/NFL/college games matched, 20 min, 1,341 snapshots): PM vs Kalshi mid
   correlation 0.95, median gap 0.5c (p90 1.5c); best net of both taker fees median -6.4c per contract. The only
   "positive" case (+45c, one college game) was a team-code mismatch between venues, not a price gap. No arbitrage.
+
+## ForecastEx (Interactive Brokers) as a second venue -- Oct 19, 2026: REJECTED
+Probe `research/probes/forecastex.py` pulled ForecastEx's public daily files (forecastex.com/api/download: `pairs` =
+every trade, `prices` = daily OHLC/OI/settlement) for Aug 6 - Oct 19 2026: 866k trades, 47M contracts. It lists daily
+high temps for ~30 US cities (plus lows and hourly), $0 maker fee, API via IBKR. Weather is 70% of its volume (LA alone 18M).
+No aggressor flag, so the side is inferred with the tick rule; checked on Kalshi weather 6-48h (2025-26), where the
+true taker side is known: tick rule +0.88c/contract vs true +0.86c (68% accuracy, unbiased in aggregate).
+- Touch maker, daily highs 6-48h: +0.38c/contract but -1.20c per city-day (t -6.4); lows -3.5c; hourly -0.7c.
+  Only LA/NYC/Austin/Miami are ~0 to +1.4c, none significant. Kalshi same measure: +0.86c (t 5.7).
+- Deep-quote proxy (a print >= 2c through the previous print within 10s, filled 2c behind): ForecastEx daily highs
+  -6.3c per fill, -12.0c per city-day (t -31.6); non-weather -15c. Kalshi same proxy: +1.77c per city-day (t 7.6).
+Reading: ForecastEx's price jumps are informed (they keep going), so a resting deep quote is run over; the $0 maker fee
+doesn't come close to covering it. Not pursued. Scripts: research/kalshi/forecastex_mm.py, forecastex_deep.py.
