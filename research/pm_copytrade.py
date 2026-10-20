@@ -157,7 +157,7 @@ def main():
     samp = []
     for gname in ("top50", "bottom half"):
         x = test[test.wallet.isin(groups[gname])]
-        x = x.groupby("wallet", group_keys=False).apply(lambda g: g.sample(min(len(g), 150), random_state=7))
+        x = x.sample(frac=1, random_state=7).groupby("wallet").head(150)
         samp.append(x.assign(group=gname))
     S = pd.concat(samp, ignore_index=True)
     cache = f"{OUT}/later_prices.json"
