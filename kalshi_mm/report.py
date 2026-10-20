@@ -93,7 +93,11 @@ def main():
             and "post only cross" not in str(e.get("error", ""))]      # older logs: book-moved refusals aren't errors
     pocs = sum(1 for e in rows("events") if e.get("event") == "post_only_cross" and str(e.get("ts", "")).startswith(today))
     per = pnl_c / n_contracts if n_contracts else float("nan")
-    msg = (f"{today} | mode {last.get('mode', '?')} | balance ${last.get('balance', 0):.2f}, value ${last.get('value', 0):.2f}\n"
+    dep = num(os.environ.get("DEPOSITS_USD"))                  # net money put in (deposits - withdrawals), set in /etc/kmm/env
+    score = (f"BOTTOM LINE: {'+' if last.get('value', 0) >= dep else '-'}${abs(last.get('value', 0) - dep):.2f} overall "
+             f"(value ${last.get('value', 0):.2f} vs ${dep:.2f} deposited; open positions at mid)\n") if dep else \
+            "BOTTOM LINE: set DEPOSITS_USD in /etc/kmm/env to see profit vs money put in\n"
+    msg = (score + f"{today} | mode {last.get('mode', '?')} | balance ${last.get('balance', 0):.2f}, value ${last.get('value', 0):.2f}\n"
            f"fills today: {len(f_today)} ({contracts_today:.0f} contracts)\n"
            f"ALL fills in settled markets: {f_n} fills, {f_cnt:.0f} contracts, P&L ${(f_pnl - f_fee) / 100:+.2f} "
            f"= {(f_pnl - f_fee) / f_cnt if f_cnt else float('nan'):+.2f}c/contract after ${f_fee / 100:.2f} fees "
