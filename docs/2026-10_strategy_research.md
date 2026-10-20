@@ -2379,3 +2379,5 @@ Realised/implied same-day moves are < 1 on every ETF (0.75-0.94): the premium ex
 option markets the trade-to-trade prices and spreads eat it. 7DTE condors: no consistent result anywhere.
 Next: QQQ is the only addition; split the 2% daily risk between SPY and QQQ rather than adding risk.
 Data note: Alpaca refuses same-day option bars ("OPRA agreement is not signed"); the shadow settles next morning.
+- Shadow #9 now also books QQQ (~0.8% wings) and a COMBO (1% SPY + 1% QQQ) per pricing (Connor approved Oct 20).
+  QQQ's first entry (Oct 20) was at 10:58 ET, not 10:00; from Oct 21 both enter at 10:00.
