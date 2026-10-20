@@ -1,5 +1,5 @@
 {
- "since": "2026-10-19T14:46:37-04:00",
+ "since": "2026-10-19T17:27:39-04:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -1055,6 +1055,136 @@
    "decided": "2026-10-19T14:51:04.115794-04:00",
    "event_type": "exec_departure",
    "summary": "CFO Chris Polimeni resigned; separation plus $10k/month consulting through March 2027.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "VENU",
+   "accession": "0001493152-26-047620",
+   "decided": "2026-10-20T02:15:45.494841-04:00",
+   "event_type": "equity_financing",
+   "summary": "Aramark completes $5.01M Series B preferred equity tranche; President departs; debenture principal reduced $12.5M.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ALGT",
+   "accession": "0001362468-26-000053",
+   "decided": "2026-10-20T02:15:47.896339-04:00",
+   "event_type": "debt_financing",
+   "summary": "Company drew $177.5M aircraft-secured and $71.8M Boeing 737-MAX pre-delivery financing facilities.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "GTY",
+   "accession": "0001193125-26-425357",
+   "decided": "2026-10-20T02:15:53.193123-04:00",
+   "event_type": "debt_financing",
+   "summary": "Getty Realty secured $200M unsecured term loan at 5.03%, refinancing Refuel acquisition debt.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "HBCP",
+   "accession": "0001628280-26-066322",
+   "decided": "2026-10-20T02:16:03.495791-04:00",
+   "event_type": "prelim_results_bad",
+   "summary": "Q3 net income down 13% Q/Q; CEO retiring; loan stress emerging; dividend maintained.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "JELD",
+   "accession": "0001674335-26-000129",
+   "decided": "2026-10-20T02:16:12.174388-04:00",
+   "event_type": "exec_departure",
+   "summary": "CFO Samantha Stoddard resigns effective November 13; internal appointment of interim CFO with recent hire.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "COSO",
+   "accession": "0001193125-26-425283",
+   "decided": "2026-10-20T02:16:26.637259-04:00",
+   "event_type": "prelim_results_good",
+   "summary": "Q3 2026 earnings beat: $0.71 EPS vs $0.59 prior quarter; record performance with strong loan production.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "IART",
+   "accession": "0001193125-26-425271",
+   "decided": "2026-10-20T02:16:29.493257-04:00",
+   "event_type": "debt_financing",
+   "summary": "Amended $1.65B credit facility and $450M senior secured notes due 2033 at 9.5% interest.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CURV",
+   "accession": "0001792781-26-000042",
+   "decided": "2026-10-20T02:16:43.078143-04:00",
+   "event_type": "exec_departure",
+   "summary": "CFO Paula Dempsey resigned; interim CFO appointed from Belk with retail experience only.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "EPAC",
+   "accession": "0001140361-26-040100",
+   "decided": "2026-10-20T02:16:45.777619-04:00",
+   "event_type": "debt_financing",
+   "summary": "Refinanced $625M revolving + $200M term loan into $550M + $300M facility, maturing 2031.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "HOST",
+   "accession": "0001493152-26-047581",
+   "decided": "2026-10-20T02:16:48.512109-04:00",
+   "event_type": "routine",
+   "summary": "CEO letter addressing AI data center market concerns and capital structure strategy.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "COLL",
+   "accession": "0001104659-26-116876",
+   "decided": "2026-10-20T02:16:53.452621-04:00",
+   "event_type": "litigation",
+   "summary": "Settlement of patent litigation; $17M payment; Nucynta license terminated; patents assigned to company.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "GTM",
+   "accession": "0001794515-26-000062",
+   "decided": "2026-10-20T02:16:56.165346-04:00",
+   "event_type": "litigation",
+   "summary": "Securities class action settlement agreed for $44M; multiple other lawsuits remain pending.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ACVA",
+   "accession": "0001193125-26-425225",
+   "decided": "2026-10-20T02:16:58.868363-04:00",
+   "event_type": "acquisition",
+   "summary": "Copart completed acquisition of ACV for $10.50/share cash; company now private subsidiary.",
    "entry_date": null,
    "entry": null
   }
