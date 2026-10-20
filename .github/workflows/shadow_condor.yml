@@ -2,12 +2,11 @@ name: Shadow Condor (#9, no orders)
 
 # Same-day SPY iron condor shadow: enters ~10:00 ET from live quotes, settles at the official close.
 # Entry is fired by the exact-time dispatcher (netlify-dispatcher, 09:00 CT); the schedules below are
-# backups (the script only enters inside 09:58-11:30 ET and is idempotent) and the after-close settlement.
+# backups (the script only enters inside 09:58-11:30 ET and is idempotent). Each run first settles earlier days.
 on:
   schedule:
     - cron: '7 14 * * 1-5'    # 10:07 EDT / 09:07 EST backup entry (EST: settles only)
     - cron: '7 15 * * 1-5'    # 11:07 EDT / 10:07 EST backup entry
-    - cron: '40 21 * * 1-5'   # 17:40 EDT / 16:40 EST settlement
   workflow_dispatch:
 
 permissions:

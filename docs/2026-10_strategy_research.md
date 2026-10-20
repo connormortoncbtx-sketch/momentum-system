@@ -2367,3 +2367,15 @@ implied move at every tenor (0DTE/1DTE/7DTE): a premium exists, but it is about 
 - **Shadow #9 (Oct 20, 2026, Connor approved): `automation/shadow_condor.py`**, no orders. Daily ~10:00 ET (dispatcher
   09:00 CT + GitHub backups), live quotes (OPRA if available, else indicative; logged), settled at the official
   close. Three books at 2% risk/day: NATURAL (bid/ask), MID, VWAP1C (the backtest's price). Review alongside the others.
+
+### Same test on other ETFs (`research/options_premium_etfs.py`, Oct 20, 2026)
+The SPY-chosen setup (0DTE iron condor, 1x implied move, ~0.8% wings) run unchanged on each ETF -- out of sample.
+Return on risk per trade at $0.01/leg, first half -> second half (t):
+QQQ +6.0% (2.9) -> +4.5% (2.4), still positive at $0.03 (+3.3 / +2.6) -- PASSES, but its daily P&L correlates
+0.86 with SPY's: the same bet, not diversification. | IWM +3.1 (1.5) -> -1.6 (-0.7): fails. | DIA +1.2 -> +7.1 on
+~75 days a half (daily expiries only recently): too short. | GLD +5.5 (2.4) -> +1.4 (0.6), negative at $0.03;
+correlation 0.09 with SPY -- the only real diversifier, but unproven. | TLT, SLV, XLE, XLF, EEM: negative.
+Realised/implied same-day moves are < 1 on every ETF (0.75-0.94): the premium exists everywhere, but on thinner
+option markets the trade-to-trade prices and spreads eat it. 7DTE condors: no consistent result anywhere.
+Next: QQQ is the only addition; split the 2% daily risk between SPY and QQQ rather than adding risk.
+Data note: Alpaca refuses same-day option bars ("OPRA agreement is not signed"); the shadow settles next morning.

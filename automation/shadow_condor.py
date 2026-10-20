@@ -15,7 +15,7 @@ Shadow #9 (no orders): same-day SPY iron condor (research/options_premium.py, Oc
 
 It places no orders (Alpaca paper fills are optimistic, so paper orders would not answer the cost question).
 Quotes come from the OPRA feed when the account has it, else Alpaca's indicative feed (logged per entry).
-Each run: settle open entries whose close is final, then enter today if inside 09:58-11:30 ET and not yet entered.
+Each run: settle earlier days' entries (next morning, so same-day option bars are available), then enter today if inside 09:58-11:30 ET and not yet entered.
 State: data/shadow_condor_state.json   Ledger: data/shadow_condor_ledger.jsonl (one row per settled day)
 """
 import datetime as dt
@@ -148,8 +148,8 @@ def settle(state, oc, sc, now):
     for key in sorted(state["open"]):
         e = state["open"][key]
         day = dt.date.fromisoformat(key)
-        if day == now.date() and now.time() < dt.time(16, 20):
-            continue
+        if day >= now.date():          # settle the next trading morning: without a signed OPRA agreement Alpaca refuses
+            continue                   # same-day option bars, which the backtest-price (VWAP1C) book needs
         sT = official_close(sc, day)
         if sT is None:
             log.info(f"{key}: close not available yet"); continue
