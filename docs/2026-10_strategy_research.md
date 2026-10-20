@@ -2381,3 +2381,14 @@ Next: QQQ is the only addition; split the 2% daily risk between SPY and QQQ rath
 Data note: Alpaca refuses same-day option bars ("OPRA agreement is not signed"); the shadow settles next morning.
 - Shadow #9 now also books QQQ (~0.8% wings) and a COMBO (1% SPY + 1% QQQ) per pricing (Connor approved Oct 20).
   QQQ's first entry (Oct 20) was at 10:58 ET, not 10:00; from Oct 21 both enter at 10:00.
+
+## Forecast-uncertainty filter for the weather bot (step 1 of an LLM "forecast confidence" idea) -- Oct 20, 2026: REJECTED
+`research/kalshi/mm_uncertainty.py`: the bot's simulated deep fills (53k, 3,327 city-days; mostly 2025-26), edge to
+settlement by city-day forecast uncertainty known in advance: GFS-vs-NBM disagreement (eve / morning) and the overnight
+NBM shift; plus hindsight |actual - forecast| ("bust") as the ceiling any uncertainty signal could reach.
+- Holdout edge per contract is flat across every feature (1.9-2.8c); on the most uncertain days it is the same or higher.
+- Even with hindsight, the biggest forecast-bust fifth of city-days earned +2.5c/contract vs +1.7c on the calmest fifth.
+- Skipping the most uncertain fifth: edge 2.23c -> 2.26c, but keeps only 84-92% of the P&L. Net loss.
+Reading: uncertain days bring bigger impatient sweeps that pay the deep quotes; the bot's losers are not forecast-
+uncertainty days. Since a perfect hindsight signal doesn't separate winners from losers, an LLM reading forecaster
+discussions can't either -- step 2 (AFD + Haiku) not run.
