@@ -202,8 +202,17 @@ class Kalshi:
         return num(d.get("balance")) / 100
 
     def positions(self):
+        """{ticker: net position}; also sets self.cost = {ticker: $ cost basis} from Kalshi's market_exposure
+        (what the position cost; used for the budget so paper gains don't crowd out new quotes)."""
         d = self.req("GET", "/portfolio/positions", auth=True, limit=1000, count_filter="position")
-        return {p["ticker"]: num(p.get("position_fp", p.get("position"))) for p in d.get("market_positions", [])}
+        mp = d.get("market_positions", [])
+        self.cost = {}
+        for p in mp:
+            if p.get("market_exposure_dollars") is not None:
+                self.cost[p["ticker"]] = num(p["market_exposure_dollars"])
+            elif p.get("market_exposure") is not None:
+                self.cost[p["ticker"]] = num(p["market_exposure"]) / 100
+        return {p["ticker"]: num(p.get("position_fp", p.get("position"))) for p in mp}
 
     def resting(self):
         d = self.req("GET", "/portfolio/orders", auth=True, status="resting", limit=1000)
@@ -369,7 +378,10 @@ class Bot:
             bal = self.k.balance()
             pos_val = sum(p * marks.get(t, 0.5) if p > 0 else -p * (1 - marks.get(t, 0.5)) for t, p in pos.items())
             value = bal + pos_val
-            used = sum(collateral(p, marks.get(t, 0.5)) for t, p in pos.items())
+            used_mark = sum(collateral(p, marks.get(t, 0.5)) for t, p in pos.items())
+            cost = getattr(self.k, "cost", {}) or {}
+            # budget counts what positions COST (money actually tied up); mark value only if the cost field is missing
+            used = sum(cost[t] if t in cost else collateral(p, marks.get(t, 0.5)) for t, p in pos.items() if p)
             today = now().date().isoformat()
             if self.day != today:
                 self.day, self.day_start_value = today, value
@@ -379,7 +391,7 @@ class Bot:
             budget, max_loss = budget_for(liq), loss_limit(self.day_start_value)
             jlog("snapshots", balance=round(bal, 2), position_value=round(pos_val, 2), value=round(value, 2),
                  pnl_today=round(pnl_today, 2), positions={t: p for t, p in pos.items() if p}, n_resting=len(rest),
-                 budget=round(budget, 2), loss_limit=round(max_loss, 2))
+                 budget=round(budget, 2), loss_limit=round(max_loss, 2), used_cost=round(used, 2), used_mark=round(used_mark, 2))
             if pnl_today < -max_loss:
                 self.cancel_all(f"daily loss {pnl_today:.2f}")
                 log.warning("daily loss limit hit; pausing until tomorrow (UTC)")
@@ -389,7 +401,7 @@ class Bot:
             if int(time.time()) % 3600 < LOOP_S * 2:
                 self.record_settlements()
         else:
-            used, budget = 0.0, BUDGET
+            used, budget, bal = 0.0, BUDGET, 0.0
 
         hours = dict(mkts)
         placed = cancelled = 0
@@ -438,6 +450,8 @@ class Bot:
                 if tgt is None or keep is not None:
                     continue
                 if used + resting_cost + tgt * SIZE > budget:
+                    continue
+                if live and resting_cost + tgt * SIZE > 0.98 * bal:     # never rest more than the cash on hand
                     continue
                 grows = adds_exposure(side, pos.get(tk, 0.0))
                 if grows and ev_exp.get(ev, 0.0) + SIZE > EVENT_CAP:
