@@ -70,6 +70,7 @@ def main():
         if r in ("yes", "no"):
             result[s.get("ticker")] = 1.0 if r == "yes" else 0.0
     f_pnl, f_n, f_cnt, f_fee = 0.0, 0, 0.0, 0.0
+    city = {}                                                   # series -> city-day -> [pnl cents, contracts]
     for f in fills:
         x = f.get("fill") or f
         R = result.get(x.get("ticker"))
@@ -79,9 +80,13 @@ def main():
         side, act = str(x.get("side", "")).lower(), str(x.get("action", "")).lower()
         p = dollars_field(x, "yes_price" if side == "yes" else "no_price") / 100
         win = R if side == "yes" else 1 - R                     # payout of the side traded
-        f_pnl += (win - p if act == "buy" else p - win) * c * 100
-        f_fee += dollars_field(x, "fee_cost")
+        fee = dollars_field(x, "fee_cost")
+        pl = (win - p if act == "buy" else p - win) * c * 100
+        f_pnl += pl; f_fee += fee
         f_n += 1; f_cnt += c
+        tk = str(x.get("ticker", ""))
+        cd = city.setdefault(tk.split("-")[0], {}).setdefault(tk.rsplit("-", 1)[0], [0.0, 0.0])
+        cd[0] += pl - fee; cd[1] += c
     snaps = rows("snapshots")
     last = snaps[-1] if snaps else {}
     errs = [e for e in rows("errors") if str(e.get("ts", "")).startswith(today)
@@ -97,6 +102,21 @@ def main():
            f"= {per:+.2f}c/contract (the leftover inventory, biased toward losers)\n"
            f"budget now: ${last.get('budget', 0):.2f} | open positions: {len(last.get('positions', {}))} | resting orders: {last.get('n_resting', 0)} | errors today: {len(errs)}"
            f" | post-only refusals (book moved, not errors): {pocs}")
+    # per city: edge per contract and its uncertainty from city-day to city-day. Watch only -- a city is a CUT
+    # candidate only after >= 60 city-days with the edge clearly below zero (research: city differences are noise)
+    lines = []
+    for ser, days in sorted(city.items()):
+        per_day = [v[0] / v[1] for v in days.values() if v[1] > 0]
+        tot_p, tot_c = sum(v[0] for v in days.values()), sum(v[1] for v in days.values())
+        n = len(per_day)
+        mean = sum(per_day) / n if n else float("nan")
+        se = (sum((x - mean) ** 2 for x in per_day) / (n - 1)) ** 0.5 / n ** 0.5 if n > 2 else float("nan")
+        flag = " <- CUT candidate" if n >= 60 and mean + 2 * se < 0 else ""
+        lines.append(f"  {ser.replace('KXHIGHT', '').replace('KXHIGH', '')}: {n} city-days, {tot_c:.0f} contracts, "
+                     f"{tot_p / tot_c if tot_c else float('nan'):+.1f}c/contract"
+                     + (f" (city-day avg {mean:+.1f}c +/- {se:.1f})" if n > 2 else "") + flag)
+    if lines:
+        msg += "\nby city (settled; watch only until ~60 city-days each):\n" + "\n".join(lines)
     print(msg)
     ch = os.environ.get("NTFY_CHANNEL")
     if ch:
