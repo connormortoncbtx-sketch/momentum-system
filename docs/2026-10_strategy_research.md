@@ -2440,3 +2440,12 @@ Hourly last-trade price per market, 1-48h before close; RSI(6-hour EWM) and 3-ho
   different stations/sources, so prices diverge wildly (San Francisco: Polymarket 59c vs Kalshi 14c, Kalshi won 17%;
   Atlanta 37c vs 16c). Only NYC lined up (66c vs 73c). ~0.6 usable signals a day at a few contracts each: even if real,
   pennies. Dropped.
+
+### NWS real-time feed, afternoon re-run (Oct 20, 2026 ~20:45-21:25Z, highs forming) -- free feed unusable, PARKED
+`research/probes/nws_feed.py` (fixed: blank temperatures crashed two runs; errors now annotated). Unlike Oct 19, new
+observations did arrive (59 in 40 min across 8 stations, 5-minute spacing), but:
+- **latency 12-28 min, median 19.8 min (p90 25)** from observation time to appearing on api.weather.gov;
+- **whole degrees C** in 88% of 5-minute obs (1 C = 1.8 F against 2 F-wide buckets) -- tenths only in hourly METARs;
+- **KNYC (Kalshi's NYC station) reports hourly only**, newest obs ~53 min old at the start.
+A decided-bucket snipe needs < ~10 min latency and F-level precision; the free feed gives neither. Parked unless a
+faster precise source appears (e.g. a paid ASOS 1-minute / Synoptic feed).
