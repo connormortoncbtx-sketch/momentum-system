@@ -2424,3 +2424,12 @@ Hourly last-trade price per market, 1-48h before close; RSI(6-hour EWM) and 3-ho
   so the edge (~2c) is gone by the time a copy fills. The smoke test's $20-200k "sweet spot" did not survive.
 - 29 wallets were top in both halves (results/pm_copy2_watchlist.csv). Not actionable: copying them late loses, and
   copying within seconds would need a real-time chain monitor on a venue Connor can't trade. Idea parked.
+- **Profiling the 29 persistent wallets** (what they trade): 45% sports, 26% other, 12% weather, 10% politics.
+  One is a pure weather specialist on Polymarket's daily-high markets (+4.6c/share, 2,923 buys): buys only on the
+  target day, mostly 1-5pm ET, and its edge is in the leading bucket at 50-90c (wins 71-87%, +8-10c); its cheap
+  buckets lose. (The "+34c" wallet is not weather -- it fades long-dated hype markets, e.g. "China invades Taiwan
+  before GTA VI?".) **Same idea on Kalshi -- buy the leading same-day bucket at 50-90c at 11am-5pm local, taker:**
+  -0.4c to -9.6c per contract after fee + 1c in every hour, both periods (gross -7c to +2c). Kalshi's afternoon
+  favourites are fairly priced; the Polymarket specialist's edge is either Polymarket's thinner weather books
+  (possibly priced off Kalshi) or a faster live-observation feed. Nothing to get ahead of on Kalshi without a
+  faster feed (see the NWS feed probe).
