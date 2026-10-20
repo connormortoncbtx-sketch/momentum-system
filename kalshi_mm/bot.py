@@ -465,6 +465,12 @@ class Bot:
                          best_yes_bid=y[0][0], best_no_bid=n[0][0], order_id=o.get("order_id"),
                          filled=o.get("fill_count"), remaining=o.get("remaining_count"))
                 except Exception as e:
+                    if "post only cross" in str(e):
+                        # not an error: the book moved through our price before the order arrived, and post-only
+                        # refused to let it trade as a taker -- the safety working. Logged as an event, not an error.
+                        log.info(f"place {tk} {side} {tgt}: post-only refused (book moved)")
+                        jlog("events", event="post_only_cross", ticker=tk, side=side, price=tgt)
+                        continue
                     log.warning(f"place {tk} {side} {tgt}: {e}")
                     jlog("errors", where="place", ticker=tk, side=side, price=tgt, error=str(e)[:300])
         jlog("cycles", open_markets=len(mkts), books=len(books), placed=placed, cancelled=cancelled,

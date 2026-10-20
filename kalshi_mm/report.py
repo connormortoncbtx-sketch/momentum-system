@@ -84,7 +84,9 @@ def main():
         f_n += 1; f_cnt += c
     snaps = rows("snapshots")
     last = snaps[-1] if snaps else {}
-    errs = [e for e in rows("errors") if str(e.get("ts", "")).startswith(today)]
+    errs = [e for e in rows("errors") if str(e.get("ts", "")).startswith(today)
+            and "post only cross" not in str(e.get("error", ""))]      # older logs: book-moved refusals aren't errors
+    pocs = sum(1 for e in rows("events") if e.get("event") == "post_only_cross" and str(e.get("ts", "")).startswith(today))
     per = pnl_c / n_contracts if n_contracts else float("nan")
     msg = (f"{today} | mode {last.get('mode', '?')} | balance ${last.get('balance', 0):.2f}, value ${last.get('value', 0):.2f}\n"
            f"fills today: {len(f_today)} ({contracts_today:.0f} contracts)\n"
@@ -93,7 +95,8 @@ def main():
            f"(target from per-fill study: +2-3c)\n"
            f"  of which still held at settlement: {len(st)} markets, {n_contracts:.0f} contracts, ${pnl_c / 100:+.2f} "
            f"= {per:+.2f}c/contract (the leftover inventory, biased toward losers)\n"
-           f"budget now: ${last.get('budget', 0):.2f} | open positions: {len(last.get('positions', {}))} | resting orders: {last.get('n_resting', 0)} | errors today: {len(errs)}")
+           f"budget now: ${last.get('budget', 0):.2f} | open positions: {len(last.get('positions', {}))} | resting orders: {last.get('n_resting', 0)} | errors today: {len(errs)}"
+           f" | post-only refusals (book moved, not errors): {pocs}")
     print(msg)
     ch = os.environ.get("NTFY_CHANNEL")
     if ch:
