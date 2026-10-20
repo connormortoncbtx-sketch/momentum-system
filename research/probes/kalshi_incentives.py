@@ -15,6 +15,9 @@ for _ in range(50):
     cur = d.get("next_cursor")
     if not cur: break
 d = pd.DataFrame(rows)
+import os
+os.makedirs(os.environ.get("RESEARCH_DATA", "research_data") + "/kalshi", exist_ok=True)
+d.to_csv(os.environ.get("RESEARCH_DATA", "research_data") + "/kalshi/incentives_active.csv", index=False)
 try:
     _main_ok = True
     print(f"::notice::active liquidity programs: {len(d)}; columns {list(d.columns)}")
