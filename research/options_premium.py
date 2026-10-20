@@ -22,18 +22,30 @@ import numpy as np, pandas as pd
 
 RD = os.environ.get("RESEARCH_DATA", "research_data")
 OUT = f"{RD}/options"; os.makedirs(OUT, exist_ok=True); os.makedirs(f"{RD}/results", exist_ok=True)
-CACHE = f"{OUT}/spy_prem_prices_v2.parquet"   # v1 used adjusted SPY prices (wrong strikes)
+UND = os.environ.get("UNDERLYING", "SPY").upper()
+# v1 of the SPY cache used dividend-adjusted prices (wrong strikes)
+CACHE = f"{OUT}/spy_prem_prices_v2.parquet" if UND == "SPY" else f"{OUT}/{UND.lower()}_prem_prices.parquet"
 START, MID = pd.Timestamp("2024-02-05"), pd.Timestamp("2025-07-01")
-KS, WS, COST, RISK_FRAC = (0.5, 1.0, 1.5), (2, 5), 0.03, 0.02
+SUF = "" if UND == "SPY" else f"_{UND}"
+KS, COST, RISK_FRAC = (0.5, 1.0, 1.5), 0.03, 0.02
+
+
+def widths(s0):
+    """(label, dollars) of the insurance distance. SPY: $2 / $5 (the original grid); other ETFs: ~0.4% / ~0.8% of the
+    price (SPY's $5 is ~0.8%), at least $1."""
+    if UND == "SPY":
+        return [(2, 2), (5, 5)]
+    return [("0.4%", max(1, round(0.004 * s0))), ("0.8%", max(1, round(0.008 * s0)))]
 
 
 def occ(exp, cp, k):
-    return f"SPY{exp:%y%m%d}{cp}{int(round(k * 1000)):08d}"
+    return f"{UND}{exp:%y%m%d}{cp}{int(round(k * 1000)):08d}"
 
 
 def spy_days():
-    """RAW (unadjusted) SPY 5-minute bars: option strikes are in raw dollars (the research cache is dividend-adjusted)."""
-    p = f"{OUT}/spy_5m_raw.parquet"
+    """RAW (unadjusted) 5-minute bars of the underlying: option strikes are in raw dollars (the research cache is
+    dividend-adjusted)."""
+    p = f"{OUT}/{UND.lower()}_5m_raw.parquet"
     if os.path.exists(p) and os.environ.get("SKIP_FETCH") == "1":
         b = pd.read_parquet(p)
     else:
@@ -42,7 +54,7 @@ def spy_days():
         from alpaca.data.timeframe import TimeFrame, TimeFrameUnit
         from alpaca.data.enums import Adjustment, DataFeed
         sc = StockHistoricalDataClient(os.environ["ALPACA_API_KEY"], os.environ["ALPACA_SECRET_KEY"])
-        b = sc.get_stock_bars(StockBarsRequest(symbol_or_symbols="SPY", timeframe=TimeFrame(5, TimeFrameUnit.Minute),
+        b = sc.get_stock_bars(StockBarsRequest(symbol_or_symbols=UND, timeframe=TimeFrame(5, TimeFrameUnit.Minute),
                               start=dt.datetime(2024, 1, 25), adjustment=Adjustment.RAW, feed=DataFeed.SIP)).df.reset_index()
         b["ts"] = b.timestamp.dt.tz_convert("America/New_York").dt.tz_localize(None)
         b = b[(b.ts.dt.strftime("%H:%M") >= "09:30") & (b.ts.dt.strftime("%H:%M") < "16:00")][["ts", "open", "close"]]
@@ -103,23 +115,27 @@ def fetch(spot, close):
         i = tdays.index(d)
         nxt = [x for x in tdays[i:] if x >= d + pd.Timedelta(days=7)]
         tenors = {"0DTE": d, "1DTE": tdays[i + 1] if i + 1 < len(tdays) else None, "7DTE": nxt[0] if nxt else None}
-        s0 = float(spot[d])
-        for ten, e in tenors.items():
-            if e is None or (d, ten) in done:
-                continue
-            atm = round(s0)
-            b1 = bars([occ(e, "C", atm), occ(e, "P", atm)], d)
+        s0 = float(spot[d]); atm = round(s0)
+        todo = {ten: e for ten, e in tenors.items() if e is not None and (d, ten) not in done}
+        if not todo:
+            continue
+        b1 = bars(sorted({occ(e, cp, atm) for e in todo.values() for cp in "CP"}), d)   # one request: ATM, all tenors
+        Ms, need = {}, {}
+        for ten, e in todo.items():
             c, p = b1.get(occ(e, "C", atm)), b1.get(occ(e, "P", atm))
             if not c or not p:
                 rows.append(dict(d=d, tenor=ten, exp=e, spot=s0, M=np.nan, sym=None, cp=None, k=np.nan, px=np.nan, n=0)); continue
-            M = c[0] + p[0]
-            need = set()
-            for kk, W in itertools.product(KS, WS):
+            M = c[0] + p[0]; Ms[ten] = (M, c[1] + p[1])
+            nd = set()
+            for kk, (_, W) in itertools.product(KS, widths(s0)):
                 ps, cs = round(s0 - kk * M), round(s0 + kk * M)
-                need |= {("P", ps), ("P", ps - W), ("C", cs), ("C", cs + W)}
-            b2 = bars([occ(e, cp, k) for cp, k in sorted(need)], d)
-            rows.append(dict(d=d, tenor=ten, exp=e, spot=s0, M=M, sym="ATM", cp="CP", k=atm, px=M, n=c[1] + p[1]))
-            for cp, k in need:
+                nd |= {("P", ps), ("P", ps - W), ("C", cs), ("C", cs + W)}
+            need[ten] = nd
+        b2 = bars(sorted({occ(todo[ten], cp, k) for ten, nd in need.items() for cp, k in nd}), d)  # one request
+        for ten, (M, n) in Ms.items():
+            e = todo[ten]
+            rows.append(dict(d=d, tenor=ten, exp=e, spot=s0, M=M, sym="ATM", cp="CP", k=atm, px=M, n=n))
+            for cp, k in need[ten]:
                 v = b2.get(occ(e, cp, k))
                 rows.append(dict(d=d, tenor=ten, exp=e, spot=s0, M=M, sym=occ(e, cp, k), cp=cp, k=k,
                                  px=v[0] if v else np.nan, n=v[1] if v else 0))
@@ -139,7 +155,7 @@ def trades(P, close, vx, cost=COST):
             continue
         sT = float(close[e])
         px = {(r.cp, r.k): r.px for r in g.itertuples() if r.cp in ("P", "C")}
-        for kk, W in itertools.product(KS, WS):
+        for kk, (WL, W) in itertools.product(KS, widths(s0)):
             ps, cs = round(s0 - kk * M), round(s0 + kk * M)
             legs = {}
             for side, (sk, lk) in (("put", (ps, ps - W)), ("call", (cs, cs + W))):
@@ -159,9 +175,9 @@ def trades(P, close, vx, cost=COST):
                     continue
                 cr = sum(legs[s][0] for s in sides); ls = sum(legs[s][1] for s in sides)
                 risk = W - cr
-                if cr <= 0 or risk <= 0:
+                if cr <= 0 or risk <= 0 or cr >= 0.6 * W:      # credit >= 60% of width on OTM spreads = bad price
                     continue
-                out.append(dict(cost=cost, d=d, tenor=ten, struct=struct, k=kk, W=W, credit=cr, pnl=cr - ls, risk=risk,
+                out.append(dict(cost=cost, d=d, tenor=ten, struct=struct, k=kk, W=WL, Wd=W, credit=cr, pnl=cr - ls, risk=risk,
                                 ror=(cr - ls) / risk, vix=vx.asof(d - pd.Timedelta(days=1)) if len(vx) else np.nan,
                                 move=sT / s0 - 1, M_pct=M / s0))
     return pd.DataFrame(out)
@@ -198,12 +214,12 @@ def main():
     vx = vix()
     P = fetch(spot, close) if os.environ.get("SKIP_FETCH") != "1" else pd.read_parquet(CACHE)
     ok = P[P.M.notna()]
-    print(f"::notice::option prices: {ok[['d','tenor']].drop_duplicates().shape[0]} day-tenors with an ATM price, "
+    print(f"::notice::{UND} option prices: {ok[['d','tenor']].drop_duplicates().shape[0]} day-tenors with an ATM price, "
           f"{ok.px.notna().mean():.0%} of legs priced; {P[P.M.isna()][['d','tenor']].drop_duplicates().shape[0]} day-tenors missing ATM")
     T = pd.concat([trades(P, close, vx, c) for c in (0.01, 0.03)], ignore_index=True)
-    T.to_parquet(f"{RD}/results/options_premium_trades.parquet", index=False)
+    T.to_parquet(f"{RD}/results/options_premium_trades{SUF}.parquet", index=False)
     S = summarise(T)
-    S.to_csv(f"{RD}/results/options_premium_summary.csv", index=False)
+    S.to_csv(f"{RD}/results/options_premium_summary{SUF}.csv", index=False)
     if not len(S):
         print(f"::notice::premium: {len(T)} trades, too few for a summary"); return
     pd.set_option("display.width", 250); pd.set_option("display.max_rows", 400)
@@ -215,7 +231,7 @@ def main():
       f = S[(S.half == "first") & (S.trades >= 100) & (S.cost == c)].sort_values("sharpe", ascending=False).iloc[0]
       s = S[(S.half == "second") & (S.cost == c) & (S.tenor == f.tenor) & (S.struct == f.struct) & (S.k == f.k) & (S.W == f.W) & (S["filter"] == f["filter"])]
       s = s.iloc[0] if len(s) else None
-      print(f"::notice::premium cost {c}: first-half pick [{f.tenor} {f.struct} k{f.k} W{f.W} {f['filter']}] Sharpe {f.sharpe:.2f}, "
+      print(f"::notice::{UND} premium cost {c}: first-half pick [{f.tenor} {f.struct} k{f.k} W{f.W} {f['filter']}] Sharpe {f.sharpe:.2f}, "
           f"RoR {f.ror_mean_pct:+.1f}%/trade, win {f.win_pct:.0f}% -> second half "
           + (f"Sharpe {s.sharpe:.2f}, RoR {s.ror_mean_pct:+.1f}%/trade (t {s.t:.1f}), win {s.win_pct:.0f}%, "
              f"CAGR {s.cagr_pct:+.1f}% maxDD {s.maxdd_pct:.1f}% at 2% risk/trade" if s is not None else "n/a"))
