@@ -2,57 +2,118 @@
  "nav": {
   "natural": 100000.0,
   "mid": 100000.0,
-  "vwap1c": 100000.0
+  "vwap1c": 100000.0,
+  "qqq_natural": 100000.0,
+  "qqq_mid": 100000.0,
+  "qqq_vwap1c": 100000.0,
+  "combo_natural": 100000.0,
+  "combo_mid": 100000.0,
+  "combo_vwap1c": 100000.0
  },
  "open": {
   "2026-10-20": {
-   "date": "2026-10-20",
-   "entered_at": "2026-10-20T10:01:47-04:00",
-   "spot": 768.09,
-   "spot_feed": "iex",
-   "quote_feed": "indicative",
-   "implied_move": 3.03,
-   "put_strikes": [
-    765,
-    760
-   ],
-   "call_strikes": [
-    771,
-    776
-   ],
-   "legs": {
-    "short_put": "SPY261020P00765000",
-    "long_put": "SPY261020P00760000",
-    "short_call": "SPY261020C00771000",
-    "long_call": "SPY261020C00776000"
-   },
-   "quotes": {
-    "short_put": {
-     "bid": 0.54,
-     "ask": 0.55,
-     "t": "2026-10-20T14:01:47.862124+00:00"
+   "SPY": {
+    "date": "2026-10-20",
+    "entered_at": "2026-10-20T10:01:47-04:00",
+    "spot": 768.09,
+    "spot_feed": "iex",
+    "quote_feed": "indicative",
+    "implied_move": 3.03,
+    "put_strikes": [
+     765,
+     760
+    ],
+    "call_strikes": [
+     771,
+     776
+    ],
+    "legs": {
+     "short_put": "SPY261020P00765000",
+     "long_put": "SPY261020P00760000",
+     "short_call": "SPY261020C00771000",
+     "long_call": "SPY261020C00776000"
     },
-    "long_put": {
-     "bid": 0.09,
-     "ask": 0.14,
-     "t": "2026-10-20T14:01:47.779304+00:00"
+    "quotes": {
+     "short_put": {
+      "bid": 0.54,
+      "ask": 0.55,
+      "t": "2026-10-20T14:01:47.862124+00:00"
+     },
+     "long_put": {
+      "bid": 0.09,
+      "ask": 0.14,
+      "t": "2026-10-20T14:01:47.779304+00:00"
+     },
+     "short_call": {
+      "bid": 0.37,
+      "ask": 0.38,
+      "t": "2026-10-20T14:01:48.034560+00:00"
+     },
+     "long_call": {
+      "bid": 0.04,
+      "ask": 0.05,
+      "t": "2026-10-20T14:01:47.927150+00:00"
+     }
     },
-    "short_call": {
-     "bid": 0.37,
-     "ask": 0.38,
-     "t": "2026-10-20T14:01:48.034560+00:00"
+    "credit": {
+     "natural": 0.72,
+     "mid": 0.76
     },
-    "long_call": {
-     "bid": 0.04,
-     "ask": 0.05,
-     "t": "2026-10-20T14:01:47.927150+00:00"
-    }
+    "leg_spread_avg": 0.02,
+    "und": "SPY",
+    "width": 5
    },
-   "credit": {
-    "natural": 0.72,
-    "mid": 0.76
-   },
-   "leg_spread_avg": 0.02
+   "QQQ": {
+    "und": "QQQ",
+    "date": "2026-10-20",
+    "entered_at": "2026-10-20T10:58:41-04:00",
+    "spot": 722.325,
+    "spot_feed": "iex",
+    "quote_feed": "indicative",
+    "implied_move": 3.87,
+    "width": 6,
+    "put_strikes": [
+     718,
+     712
+    ],
+    "call_strikes": [
+     726,
+     732
+    ],
+    "legs": {
+     "short_put": "QQQ261020P00718000",
+     "long_put": "QQQ261020P00712000",
+     "short_call": "QQQ261020C00726000",
+     "long_call": "QQQ261020C00732000"
+    },
+    "quotes": {
+     "short_put": {
+      "bid": 0.6,
+      "ask": 0.61,
+      "t": "2026-10-20T14:58:43.432931+00:00"
+     },
+     "long_put": {
+      "bid": 0.13,
+      "ask": 0.18,
+      "t": "2026-10-20T14:58:43.569907+00:00"
+     },
+     "short_call": {
+      "bid": 0.57,
+      "ask": 0.58,
+      "t": "2026-10-20T14:58:43.030005+00:00"
+     },
+     "long_call": {
+      "bid": 0.05,
+      "ask": 0.06,
+      "t": "2026-10-20T14:58:43.784316+00:00"
+     }
+    },
+    "credit": {
+     "natural": 0.93,
+     "mid": 0.97
+    },
+    "leg_spread_avg": 0.02
+   }
   }
  },
  "done_days": []
