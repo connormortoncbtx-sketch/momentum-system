@@ -22,7 +22,7 @@ import numpy as np, pandas as pd
 
 RD = os.environ.get("RESEARCH_DATA", "research_data")
 OUT = f"{RD}/options"; os.makedirs(OUT, exist_ok=True); os.makedirs(f"{RD}/results", exist_ok=True)
-CACHE = f"{OUT}/spy_prem_prices.parquet"
+CACHE = f"{OUT}/spy_prem_prices_v2.parquet"   # v1 used adjusted SPY prices (wrong strikes)
 START, MID = pd.Timestamp("2024-02-05"), pd.Timestamp("2025-07-01")
 KS, WS, COST, RISK_FRAC = (0.5, 1.0, 1.5), (2, 5), 0.03, 0.02
 
@@ -32,7 +32,21 @@ def occ(exp, cp, k):
 
 
 def spy_days():
-    b = pd.read_parquet(f"{RD}/intraday_liquid/5m_SPY.parquet")
+    """RAW (unadjusted) SPY 5-minute bars: option strikes are in raw dollars (the research cache is dividend-adjusted)."""
+    p = f"{OUT}/spy_5m_raw.parquet"
+    if os.path.exists(p) and os.environ.get("SKIP_FETCH") == "1":
+        b = pd.read_parquet(p)
+    else:
+        from alpaca.data.historical.stock import StockHistoricalDataClient
+        from alpaca.data.requests import StockBarsRequest
+        from alpaca.data.timeframe import TimeFrame, TimeFrameUnit
+        from alpaca.data.enums import Adjustment, DataFeed
+        sc = StockHistoricalDataClient(os.environ["ALPACA_API_KEY"], os.environ["ALPACA_SECRET_KEY"])
+        b = sc.get_stock_bars(StockBarsRequest(symbol_or_symbols="SPY", timeframe=TimeFrame(5, TimeFrameUnit.Minute),
+                              start=dt.datetime(2024, 1, 25), adjustment=Adjustment.RAW, feed=DataFeed.SIP)).df.reset_index()
+        b["ts"] = b.timestamp.dt.tz_convert("America/New_York").dt.tz_localize(None)
+        b = b[(b.ts.dt.strftime("%H:%M") >= "09:30") & (b.ts.dt.strftime("%H:%M") < "16:00")][["ts", "open", "close"]]
+        b.to_parquet(p, index=False)
     b["d"] = b.ts.dt.normalize(); b["tm"] = b.ts.dt.strftime("%H:%M")
     spot = b[b.tm == "10:00"].set_index("d").open
     close = b.groupby("d").close.last()
@@ -190,6 +204,8 @@ def main():
     T.to_parquet(f"{RD}/results/options_premium_trades.parquet", index=False)
     S = summarise(T)
     S.to_csv(f"{RD}/results/options_premium_summary.csv", index=False)
+    if not len(S):
+        print(f"::notice::premium: {len(T)} trades, too few for a summary"); return
     pd.set_option("display.width", 250); pd.set_option("display.max_rows", 400)
     W = S[S.half != "all"].pivot_table(index=["tenor", "struct", "k", "W", "filter"], columns="half",
                                        values=["ror_mean_pct", "t", "win_pct", "sharpe", "maxdd_pct"])
