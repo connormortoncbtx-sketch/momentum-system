@@ -16,6 +16,8 @@ if [ -d "$APP/.git" ]; then sudo -u kmm git -C "$APP" pull -q; else sudo -u kmm 
 sudo -u kmm python3 -m venv /home/kmm/venv
 sudo -u kmm /home/kmm/venv/bin/pip install -q --upgrade pip cryptography
 sudo -u kmm /home/kmm/venv/bin/python "$APP/kalshi_mm/test_bot.py"
+sudo -u kmm env LOG_DIR="$(sudo -u kmm mktemp -d)" KILL_FILE=/tmp/kmm-lottery-test-kill \
+  /home/kmm/venv/bin/python "$APP/kalshi_mm/test_lottery.py" | grep -v INFO
 sudo -u kmm mkdir -p "$DATA"
 
 echo "==> settings ($ETC, readable by the bot user only)"
@@ -79,6 +81,25 @@ User=kmm
 EnvironmentFile=$ETC/env
 ExecStart=/home/kmm/venv/bin/python $APP/kalshi_mm/report.py
 EOF
+cat > /etc/systemd/system/kmm-lottery.service <<EOF
+[Unit]
+Description=Kalshi weekly roll (lottery ticket)
+[Service]
+Type=oneshot
+User=kmm
+WorkingDirectory=$DATA
+EnvironmentFile=$ETC/env
+ExecStart=/home/kmm/venv/bin/python $APP/kalshi_mm/lottery.py
+EOF
+cat > /etc/systemd/system/kmm-lottery.timer <<EOF
+[Unit]
+Description=Kalshi weekly roll every 15 minutes
+[Timer]
+OnCalendar=*:0/15
+Persistent=true
+[Install]
+WantedBy=timers.target
+EOF
 cat > /etc/systemd/system/kmm-report.timer <<EOF
 [Unit]
 Description=Kalshi bot daily report (9pm Central)
@@ -90,20 +111,22 @@ WantedBy=timers.target
 EOF
 cat > /usr/local/bin/kmm <<'KMM'
 #!/usr/bin/env bash
-# kmm status | stop | resume | logs [n] | report | update      (run with sudo)
+# kmm status | stop | resume | logs [n] | report | lottery | update      (run with sudo)
 case "${1:-status}" in
   status) systemctl --no-pager status kmm | head -5; tail -n 1 /home/kmm/data/snapshots.jsonl 2>/dev/null; echo ;;
   stop)   sudo -u kmm touch /home/kmm/data/KILL; echo "kill switch set: the bot cancels all orders within ~30s and stays stopped" ;;
   resume) rm -f /home/kmm/data/KILL; systemctl restart kmm; echo "resumed" ;;
   logs)   journalctl -u kmm -n "${2:-40}" --no-pager ;;
   report) sudo -u kmm bash -c 'set -a; . /etc/kmm/env; /home/kmm/venv/bin/python /home/kmm/app/kalshi_mm/report.py' ;;
+  lottery) cat /home/kmm/data/lottery.json 2>/dev/null || echo "no weekly roll yet"; echo; journalctl -u kmm-lottery -n "${2:-10}" --no-pager | grep -v systemd ;;
   update) curl -fsSL https://raw.githubusercontent.com/connormortoncbtx-sketch/momentum-system/main/kalshi_mm/deploy/install.sh | bash ;;
-  *) echo "usage: kmm status|stop|resume|logs [n]|report|update" ;;
+  *) echo "usage: kmm status|stop|resume|logs [n]|report|lottery|update" ;;
 esac
 KMM
 chmod 755 /usr/local/bin/kmm
 systemctl daemon-reload
 systemctl enable -q kmm-report.timer && systemctl start kmm-report.timer
+systemctl enable -q kmm-lottery.timer && systemctl start kmm-lottery.timer
 systemctl enable -q kmm
 
 if grep -q "paste-your-key-id-here" "$ETC/env" || [ ! -s "$ETC/kalshi.pem" ]; then
@@ -116,5 +139,5 @@ else
   systemctl restart kmm
   echo "Installed and (re)started."
 fi
-echo "Commands (with sudo): kmm status | kmm logs | kmm report | kmm stop | kmm resume | kmm update"
+echo "Commands (with sudo): kmm status | kmm logs | kmm report | kmm lottery | kmm stop | kmm resume | kmm update"
 echo "Remote stop from your phone: in the ntfy app, publish 'stop' to topic <your NTFY_CHANNEL>-kmm-stop"

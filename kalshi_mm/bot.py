@@ -120,6 +120,9 @@ def num(x, default=0.0):
         return default
 
 
+LOTTERY_PREFIX = "lot-"                            # client_order_id prefix of kalshi_mm/lottery.py orders
+
+
 # --- API client -----------------------------------------------------------------------------
 class Kalshi:
     def __init__(self, mode):
@@ -214,9 +217,11 @@ class Kalshi:
                 self.cost[p["ticker"]] = num(p["market_exposure"]) / 100
         return {p["ticker"]: num(p.get("position_fp", p.get("position"))) for p in mp}
 
-    def resting(self):
+    def resting(self, include_lottery=False):
+        """Resting orders; the lottery's own orders (client_order_id 'lot-...') are left out unless asked for."""
         d = self.req("GET", "/portfolio/orders", auth=True, status="resting", limit=1000)
-        return d.get("orders", [])
+        return [o for o in d.get("orders", [])
+                if include_lottery or not str(o.get("client_order_id") or "").startswith(LOTTERY_PREFIX)]
 
     def settlements(self, min_ts):
         d = self.req("GET", "/portfolio/settlements", auth=True, min_ts=min_ts, limit=1000)
@@ -226,14 +231,15 @@ class Kalshi:
         d = self.req("GET", "/portfolio/fills", auth=True, min_ts=min_ts, limit=1000)
         return d.get("fills", [])
 
-    def place(self, ticker, side, price, count):
+    def place(self, ticker, side, price, count, coid_prefix=""):
         """side 'yes' = buy YES at price (book bid); side 'no' = buy NO at price, i.e. sell YES
-        at 1 - price (book ask). V2 orders are expressed on the YES leg only."""
+        at 1 - price (book ask). V2 orders are expressed on the YES leg only. coid_prefix tags orders that belong to
+        another component (the lottery uses 'lot-'), which the market maker then leaves alone."""
         yes_px = price if side == "yes" else 1 - price
         body = {"ticker": ticker, "side": "bid" if side == "yes" else "ask", "count": f"{count:.2f}",
                 "price": f"{yes_px:.4f}", "time_in_force": "good_till_canceled",
                 "self_trade_prevention_type": "maker", "post_only": True,
-                "client_order_id": str(uuid.uuid4()), "cancel_order_on_pause": True}
+                "client_order_id": coid_prefix + str(uuid.uuid4()), "cancel_order_on_pause": True}
         return self.req("POST", "/portfolio/events/orders", body=body, auth=True)
 
     def cancel(self, order_id, ticker=None):
