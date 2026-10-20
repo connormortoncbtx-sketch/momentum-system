@@ -2392,3 +2392,15 @@ NBM shift; plus hindsight |actual - forecast| ("bust") as the ceiling any uncert
 Reading: uncertain days bring bigger impatient sweeps that pay the deep quotes; the bot's losers are not forecast-
 uncertainty days. Since a perfect hindsight signal doesn't separate winners from losers, an LLM reading forecaster
 discussions can't either -- step 2 (AFD + Haiku) not run.
+
+## Copying top prediction-market traders (Polymarket proxy) -- Oct 20, 2026: REJECTED
+Kalshi's data terms forbid harvesting its site (profiles), so `research/pm_copytrade.py` used Polymarket's public
+Data API: 400 top-volume wallets, 1.7M trades sampled (latest 500 per wallet per 30 days), ranked on BUY edge to
+resolution Oct 2025-Apr 2026, tested Apr-Oct 2026 (377k resolved test BUYs).
+- No persistence. Ranked by formation t-stat (n >= 200): top 10 went from +26c/share (t 35) to -0.8c; top 25 +17c ->
+  -0.2c; top 50 +14c -> -0.4c; bottom half -0.7c. Correlation of formation skill with test edge 0.05-0.09.
+- Copying late (+1c spread): top 10 -2.4 / -2.5 / -4.2c at 5 / 15 / 60 min; top 25 -3.3c; top 50 -1.0 to -1.2c.
+  Their own $-weighted test edge was negative (-1.4 to -4.6c).
+- Consensus (>= 3 top-25 wallets buying the same outcome within 24h): only 4 cases in six months.
+Reading: leaderboard skill doesn't persist out of sample; copying adds a lag cost on top. Not pursued, and Kalshi
+profiles would not be expected to differ.
