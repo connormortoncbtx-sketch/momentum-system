@@ -58,6 +58,17 @@ def test_event_cap_helpers():
     assert adds_exposure("no", -5) and not adds_exposure("yes", -5)
 
 
+def test_day_baseline_survives_restart():
+    import tempfile, datetime as dt
+    p = os.path.join(tempfile.mkdtemp(), "day_start.json")
+    assert B.day_baseline("2026-10-20", 380.0, p) == 380.0          # first sight of the day: saved
+    assert B.day_baseline("2026-10-20", 367.0, p) == 380.0          # restart same day: original baseline kept
+    assert B.day_baseline("2026-10-21", 366.0, p) == 366.0          # new day: new baseline
+    t = dt.datetime(2026, 10, 21, 1, 30, tzinfo=dt.timezone.utc)    # 8:30pm Central on Oct 20
+    assert B.trading_day(t) == "2026-10-20"
+
+
 if __name__ == "__main__":
-    for f in (test_targets, test_order_side, test_order_price, test_event_cap_helpers, test_sign_roundtrip):
+    for f in (test_targets, test_order_side, test_order_price, test_event_cap_helpers, test_sign_roundtrip,
+              test_day_baseline_survives_restart):
         f(); print("ok", f.__name__)

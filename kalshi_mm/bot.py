@@ -289,6 +289,29 @@ def targets(yes_bids, no_bids, pos, hours_left):
     return out
 
 
+def trading_day(t=None):
+    """The loss stop's day: the Central-time calendar date (was UTC, which rolled over at 7pm Central)."""
+    from zoneinfo import ZoneInfo
+    return (t or now()).astimezone(ZoneInfo("America/Chicago")).date().isoformat()
+
+
+def day_baseline(day, value, path=None):
+    """Start-of-day account value for the daily loss stop, saved to disk so a restart (kmm update, crash) on the same
+    day keeps the original baseline instead of quietly resetting the stop to the value at the restart."""
+    path = path or os.path.join(LOG_DIR, "day_start.json")
+    try:
+        d = json.load(open(path))
+        if d.get("day") == day and isinstance(d.get("value"), (int, float)):
+            return float(d["value"])
+    except Exception:
+        pass
+    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+    with open(path + ".tmp", "w") as f:
+        json.dump({"day": day, "value": round(value, 2)}, f)
+    os.replace(path + ".tmp", path)
+    return value
+
+
 def collateral(pos, mark_yes):
     """Approximate money tied up in a position (cost basis unknown -> mark)."""
     return pos * mark_yes if pos > 0 else -pos * (1 - mark_yes)
@@ -388,9 +411,9 @@ class Bot:
             cost = getattr(self.k, "cost", {}) or {}
             # budget counts what positions COST (money actually tied up); mark value only if the cost field is missing
             used = sum(cost[t] if t in cost else collateral(p, marks.get(t, 0.5)) for t, p in pos.items() if p)
-            today = now().date().isoformat()
+            today = trading_day()
             if self.day != today:
-                self.day, self.day_start_value = today, value
+                self.day, self.day_start_value = today, day_baseline(today, value)
             pnl_today = value - self.day_start_value
             # size off a CONSERVATIVE value: positions at what they'd sell for now (the bid), not the mid
             liq = bal + sum(p * bids.get(t, (0, 0))[0] if p > 0 else -p * bids.get(t, (0, 0))[1] for t, p in pos.items())
