@@ -1,34 +1,34 @@
 {
- "nav_a": 100.0,
- "nav_b": 100.0,
+ "nav_a": 91.17228821965222,
+ "nav_b": 91.17228821965222,
  "open": {
-  "entry": "2026-10-12",
+  "entry": "2026-10-19",
   "a": [
-   "CDNA",
-   "SPT",
-   "MTSI",
+   "CLMT",
+   "AMPL",
+   "ILMN",
+   "NEO",
+   "FSLY",
    "MXL",
-   "VECO",
-   "XP",
-   "NTAP",
-   "AMLX",
-   "PAYS",
-   "FIVN"
+   "TXG",
+   "UMC",
+   "TEAM",
+   "FTRE"
   ],
   "b": [
-   "CDNA",
-   "SPT",
-   "MTSI",
+   "CLMT",
+   "AMPL",
+   "ILMN",
+   "NEO",
+   "FSLY",
    "MXL",
-   "VECO",
-   "XP",
-   "NTAP",
-   "AMLX",
-   "PAYS",
-   "FIVN"
+   "TXG",
+   "UMC",
+   "TEAM",
+   "FTRE"
   ],
   "earn_names": [],
   "dropped": []
  },
- "last_entry": "2026-10-12"
+ "last_entry": "2026-10-19"
 }
