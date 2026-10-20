@@ -2364,3 +2364,6 @@ implied move at every tenor (0DTE/1DTE/7DTE): a premium exists, but it is about 
   (Aug 1, Aug 7 2024, Apr 4 2024). Same-day entry avoids overnight gaps.
 - Caveats: only ~2.7 years (no 2017-23 period); the fill assumption is the whole result; Alpaca paper fills are
   optimistic, so a paper shadow must log the live bid/ask at order time to measure real cost.
+- **Shadow #9 (Oct 20, 2026, Connor approved): `automation/shadow_condor.py`**, no orders. Daily ~10:00 ET (dispatcher
+  09:00 CT + GitHub backups), live quotes (OPRA if available, else indicative; logged), settled at the official
+  close. Three books at 2% risk/day: NATURAL (bid/ask), MID, VWAP1C (the backtest's price). Review alongside the others.

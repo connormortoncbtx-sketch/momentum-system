@@ -21,6 +21,7 @@ const DAYS = { Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5 };
 export const SCHEDULE = [
   [["Mon", "Tue"], "06:00", "premarket_monitor.yml"],
   [["Mon", "Tue", "Wed", "Thu", "Fri"], "08:30", "alpaca_monitor.yml"],
+  [["Mon", "Tue", "Wed", "Thu", "Fri"], "09:00", "shadow_condor.yml"],
   [["Mon", "Tue", "Wed", "Thu", "Fri"], "11:15", "alpaca_monitor.yml"],
   [["Mon", "Tue", "Wed", "Thu", "Fri"], "14:00", "alpaca_monitor.yml"],
   [["Mon", "Tue"], "14:45", "alpaca_entry.yml"],

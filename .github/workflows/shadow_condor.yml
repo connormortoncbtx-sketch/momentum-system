@@ -1,0 +1,53 @@
+name: Shadow Condor (#9, no orders)
+
+# Same-day SPY iron condor shadow: enters ~10:00 ET from live quotes, settles at the official close.
+# Entry is fired by the exact-time dispatcher (netlify-dispatcher, 09:00 CT); the schedules below are
+# backups (the script only enters inside 09:58-11:30 ET and is idempotent) and the after-close settlement.
+on:
+  schedule:
+    - cron: '7 14 * * 1-5'    # 10:07 EDT / 09:07 EST backup entry (EST: settles only)
+    - cron: '7 15 * * 1-5'    # 11:07 EDT / 10:07 EST backup entry
+    - cron: '40 21 * * 1-5'   # 17:40 EDT / 16:40 EST settlement
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: shadow-condor
+  cancel-in-progress: false
+
+jobs:
+  condor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Shadow condor
+        env:
+          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+          NTFY_CHANNEL: ${{ secrets.NTFY_CHANNEL }}
+        run: python automation/shadow_condor.py
+      - name: Commit ledger
+        run: |
+          git config user.name  "momentum-bot"
+          git config user.email "momentum-bot@users.noreply.github.com"
+          for f in data/shadow_condor_state.json data/shadow_condor_ledger.jsonl data/system_log.jsonl; do if [ -e "$f" ]; then git add "$f"; fi; done
+          git diff --cached --quiet && exit 0
+          git commit -q -m "shadow condor: $(date +%Y-%m-%d) update"
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push; then break; fi
+            git rebase --abort 2>/dev/null || true
+            git pull origin main --no-rebase --strategy=recursive -X theirs --no-edit 2>/dev/null || true
+            [ $attempt -eq 5 ] && exit 1
+            sleep $((RANDOM % 5 + 2))
+          done
