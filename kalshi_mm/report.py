@@ -38,6 +38,18 @@ def cents(d, key):
     return num(d.get(key))
 
 
+def dollars_field(d, key):
+    """Price/fee in CENTS from whichever form Kalshi sent: <key>_dollars / <key>_fixed (dollars), or <key>
+    (integer cents, or a dollar string like '0.0175' in newer responses)."""
+    for k in (f"{key}_dollars", f"{key}_fixed"):
+        if d.get(k) is not None:
+            return num(d[k]) * 100
+    v = d.get(key)
+    if isinstance(v, str) and "." in v:
+        return num(v) * 100
+    return num(v)
+
+
 def main():
     today = dt.datetime.now(dt.timezone.utc).date().isoformat()
     fills = rows("fills")
@@ -49,14 +61,38 @@ def main():
         cost = cents(s, "yes_total_cost") + cents(s, "no_total_cost")
         pnl_c += cents(s, "revenue") - cost
         n_contracts += num(s.get("yes_count_fp", s.get("yes_count"))) + num(s.get("no_count_fp", s.get("no_count")))
+    # The research's measure: EVERY fill in a settled market, valued at the result. Settlement records alone only
+    # show the net position left at settlement; round trips (bought and later sold) net out before that, so the
+    # settlement line on its own leans toward the inventory that went against the bot.
+    result = {}
+    for s in st:
+        r = str(s.get("market_result", "")).lower()
+        if r in ("yes", "no"):
+            result[s.get("ticker")] = 1.0 if r == "yes" else 0.0
+    f_pnl, f_n, f_cnt, f_fee = 0.0, 0, 0.0, 0.0
+    for f in fills:
+        x = f.get("fill") or f
+        R = result.get(x.get("ticker"))
+        if R is None:
+            continue
+        c = num(x.get("count_fp", x.get("count")))
+        side, act = str(x.get("side", "")).lower(), str(x.get("action", "")).lower()
+        p = dollars_field(x, "yes_price" if side == "yes" else "no_price") / 100
+        win = R if side == "yes" else 1 - R                     # payout of the side traded
+        f_pnl += (win - p if act == "buy" else p - win) * c * 100
+        f_fee += dollars_field(x, "fee_cost")
+        f_n += 1; f_cnt += c
     snaps = rows("snapshots")
     last = snaps[-1] if snaps else {}
     errs = [e for e in rows("errors") if str(e.get("ts", "")).startswith(today)]
     per = pnl_c / n_contracts if n_contracts else float("nan")
     msg = (f"{today} | mode {last.get('mode', '?')} | balance ${last.get('balance', 0):.2f}, value ${last.get('value', 0):.2f}\n"
            f"fills today: {len(f_today)} ({contracts_today:.0f} contracts)\n"
-           f"settled to date: {len(st)} markets, {n_contracts:.0f} contracts, P&L ${pnl_c / 100:+.2f} "
-           f"= {per:+.2f}c/contract (target from per-fill study: +2-3c)\n"
+           f"ALL fills in settled markets: {f_n} fills, {f_cnt:.0f} contracts, P&L ${(f_pnl - f_fee) / 100:+.2f} "
+           f"= {(f_pnl - f_fee) / f_cnt if f_cnt else float('nan'):+.2f}c/contract after ${f_fee / 100:.2f} fees "
+           f"(target from per-fill study: +2-3c)\n"
+           f"  of which still held at settlement: {len(st)} markets, {n_contracts:.0f} contracts, ${pnl_c / 100:+.2f} "
+           f"= {per:+.2f}c/contract (the leftover inventory, biased toward losers)\n"
            f"budget now: ${last.get('budget', 0):.2f} | open positions: {len(last.get('positions', {}))} | resting orders: {last.get('n_resting', 0)} | errors today: {len(errs)}")
     print(msg)
     ch = os.environ.get("NTFY_CHANNEL")
