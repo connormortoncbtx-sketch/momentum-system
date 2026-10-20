@@ -2338,3 +2338,12 @@ true taker side is known: tick rule +0.88c/contract vs true +0.86c (68% accuracy
   -6.3c per fill, -12.0c per city-day (t -31.6); non-weather -15c. Kalshi same proxy: +1.77c per city-day (t 7.6).
 Reading: ForecastEx's price jumps are informed (they keep going), so a resting deep quote is run over; the $0 maker fee
 doesn't come close to covering it. Not pursued. Scripts: research/kalshi/forecastex_mm.py, forecastex_deep.py.
+
+## Locking in daily gains (take-profit / trailing stop) -- Oct 20, 2026: REJECTED
+`research/kalshi/profit_lock.py`: the bot's deep fills (6-48h, 5-lot 2c behind, 25/market cap) on 14 weather series,
+marked hourly at last trade; day P&L from Central midnight; a lock-in sells everything at mark -/+1c plus taker fee.
+Profit over the period, % of capital (95th pct of cost at risk); holdout Oct 2025-Oct 2026 (dev 2021-25 agrees):
+hold to settlement 871 | take at +2/4/8/12%: 533/677/824/847 | take then stop for the day: 467/654/805/838 |
+trailing (sell if a +X% day halves): 695/808/861/871 (+12% never fired). Every rule earns less; the best Sharpe
+gain (11.2 -> 11.8, take+stop 4%) does not hold in dev (6.2 -> 5.4). Selling early gives back the 2c the quote was
+paid plus the fee. Absolute returns here are inflated (fills assumed at sweep prices, no queue competition); compare rules only.
