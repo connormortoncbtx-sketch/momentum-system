@@ -131,7 +131,7 @@ def fetch(spot, close):
     return allp
 
 
-def trades(P, close, vx):
+def trades(P, close, vx, cost=COST):
     out = []
     for (d, ten), g in P[P.M.notna()].groupby(["d", "tenor"]):
         s0, M, e = g.spot.iloc[0], g.M.iloc[0], g.exp.iloc[0]
@@ -148,7 +148,7 @@ def trades(P, close, vx):
                     continue
                 if not np.isfinite(b):
                     b = 0.01                                   # untraded far wing: assume a penny
-                credit = a - b - 2 * COST
+                credit = a - b - 2 * cost
                 if side == "put":
                     loss = min(max(sk - sT, 0), W)
                 else:
@@ -161,7 +161,7 @@ def trades(P, close, vx):
                 risk = W - cr
                 if cr <= 0 or risk <= 0:
                     continue
-                out.append(dict(d=d, tenor=ten, struct=struct, k=kk, W=W, credit=cr, pnl=cr - ls, risk=risk,
+                out.append(dict(cost=cost, d=d, tenor=ten, struct=struct, k=kk, W=W, credit=cr, pnl=cr - ls, risk=risk,
                                 ror=(cr - ls) / risk, vix=vx.asof(d - pd.Timedelta(days=1)) if len(vx) else np.nan,
                                 move=sT / s0 - 1, M_pct=M / s0))
     return pd.DataFrame(out)
@@ -169,7 +169,7 @@ def trades(P, close, vx):
 
 def summarise(T):
     rows = []
-    for key, g in T.groupby(["tenor", "struct", "k", "W"]):
+    for key, g in T.groupby(["tenor", "struct", "k", "W", "cost"]):
         for filt in ("none", "VIX<=25"):
             x = g if filt == "none" else g[~(g.vix > 25)]
             for half, m in (("first", x.d < MID), ("second", x.d >= MID), ("all", x.d >= START)):
@@ -183,7 +183,7 @@ def summarise(T):
                 eq = (1 + daily).cumprod()
                 yrs = (y.d.max() - y.d.min()).days / 365.25
                 r20 = daily.rolling(20).sum().min()
-                rows.append(dict(tenor=key[0], struct=key[1], k=key[2], W=key[3], filter=filt, half=half, trades=len(y),
+                rows.append(dict(tenor=key[0], struct=key[1], k=key[2], W=key[3], cost=key[4], filter=filt, half=half, trades=len(y),
                                  win_pct=(y.pnl > 0).mean() * 100, ror_mean_pct=y.ror.mean() * 100,
                                  t=y.ror.mean() / y.ror.std() * np.sqrt(len(y) / hold),
                                  credit_avg=y.credit.mean(), worst_ror_pct=y.ror.min() * 100,
@@ -200,25 +200,26 @@ def main():
     ok = P[P.M.notna()]
     print(f"::notice::option prices: {ok[['d','tenor']].drop_duplicates().shape[0]} day-tenors with an ATM price, "
           f"{ok.px.notna().mean():.0%} of legs priced; {P[P.M.isna()][['d','tenor']].drop_duplicates().shape[0]} day-tenors missing ATM")
-    T = trades(P, close, vx)
+    T = pd.concat([trades(P, close, vx, c) for c in (0.01, 0.03)], ignore_index=True)
     T.to_parquet(f"{RD}/results/options_premium_trades.parquet", index=False)
     S = summarise(T)
     S.to_csv(f"{RD}/results/options_premium_summary.csv", index=False)
     if not len(S):
         print(f"::notice::premium: {len(T)} trades, too few for a summary"); return
     pd.set_option("display.width", 250); pd.set_option("display.max_rows", 400)
-    W = S[S.half != "all"].pivot_table(index=["tenor", "struct", "k", "W", "filter"], columns="half",
+    W = S[S.half != "all"].pivot_table(index=["tenor", "struct", "k", "W", "cost", "filter"], columns="half",
                                        values=["ror_mean_pct", "t", "win_pct", "sharpe", "maxdd_pct"])
     W.columns = [f"{a}_{b}" for a, b in W.columns]
     print(W.round(2).sort_values("sharpe_first", ascending=False).to_string())
-    f = S[(S.half == "first") & (S.trades >= 100)].sort_values("sharpe", ascending=False).iloc[0]
-    s = S[(S.half == "second") & (S.tenor == f.tenor) & (S.struct == f.struct) & (S.k == f.k) & (S.W == f.W) & (S["filter"] == f["filter"])]
-    s = s.iloc[0] if len(s) else None
-    print(f"::notice::premium: first-half pick [{f.tenor} {f.struct} k{f.k} W{f.W} {f['filter']}] Sharpe {f.sharpe:.2f}, "
+    for c in (0.01, 0.03):
+      f = S[(S.half == "first") & (S.trades >= 100) & (S.cost == c)].sort_values("sharpe", ascending=False).iloc[0]
+      s = S[(S.half == "second") & (S.cost == c) & (S.tenor == f.tenor) & (S.struct == f.struct) & (S.k == f.k) & (S.W == f.W) & (S["filter"] == f["filter"])]
+      s = s.iloc[0] if len(s) else None
+      print(f"::notice::premium cost {c}: first-half pick [{f.tenor} {f.struct} k{f.k} W{f.W} {f['filter']}] Sharpe {f.sharpe:.2f}, "
           f"RoR {f.ror_mean_pct:+.1f}%/trade, win {f.win_pct:.0f}% -> second half "
           + (f"Sharpe {s.sharpe:.2f}, RoR {s.ror_mean_pct:+.1f}%/trade (t {s.t:.1f}), win {s.win_pct:.0f}%, "
              f"CAGR {s.cagr_pct:+.1f}% maxDD {s.maxdd_pct:.1f}% at 2% risk/trade" if s is not None else "n/a"))
-    a = T[T.d == pd.Timestamp("2024-08-05")]
+    a = T[(T.d == pd.Timestamp("2024-08-05")) & (T.cost == 0.01)]
     if len(a):
         print("Aug 5 2024 trades:\n" + a.groupby(["tenor", "struct", "k", "W"]).ror.mean().mul(100).round(0).to_string())
 
