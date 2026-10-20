@@ -2291,3 +2291,26 @@ Control: the weather highs, same run, median +2.6c per market.
   needs a per-series quoting window (MAX_HOURS is global, 48h). Their fills per market are lower than weather's.
 Verdict: real second-tier opportunity. Add when the bot's budget outgrows the weather markets (resting + positions
 regularly below budget). Shortlist: KXWTIW, KXBTCMAXMON, KXSPACEXCOUNT, KXCPI, KXRAINLAXM. Needs a per-series window.
+
+## Kalshi Liquidity Incentive Program (Oct 19): `research/probes/kalshi_incentives.py`, `lip_capture.py`
+
+GET /incentive_programs (public): 6,735 active liquidity programs across 600 series, ~$100 per market per weekly period
+typical; every daily high/low weather market (all cities incl. ATL/BOS/LV and the lows) pays $20 per market per ~26 h
+period (~$22/market/day), target size 1,000, discount 50% per tick below the reference price. Runs to Jan 1, 2027.
+Scoring (help.kalshi.com): per second, per side, reference price = level where cumulative size from the best bid
+reaches target/5; size counts until the target is reached; full credit at/above the reference, 0.5^ticks below;
+reward split by share; snapshot void unless both sides have >= target.
+Order-book probe (58 open weather markets, 15 min, our hypothetical 5-contract order):
+| order placement | reward per contract-day | capital per contract | reward / capital per day |
+|---|---|---|---|
+| at best bid | 1.28c | 49c | 2.6% |
+| 1c behind | 1.30c | 57c | 2.3% |
+| 2c behind (the bot today) | 1.26c | 59c | 2.1% |
+- The reference price usually sits below the best bid (deep books), so the bot's 2c-behind quotes already qualify.
+- By price (at the bid): 5-10c 0.8c/day, 20-80c 1.7-2.1c/day, > 90c 1.25c/day; snapshots void ~30% of the time in
+  the tails (thin side).
+Implication (unverified until Kalshi pays): the bot's resting orders (~$90 at ~50c = ~180-200 contracts) may earn
+~$2-2.5/day from the program on top of the trading edge -- comparable to or larger than the spread edge at this size,
+and it rewards keeping the budget fully resting, which argues for more markets (lows, ATL/BOS/LV all pay) before
+larger size. Caveats: my reading of the scoring rules; competition changes daily; Kalshi can change/end the program.
+Verification: rewards shown in the Kalshi account after payout.
