@@ -2,7 +2,16 @@
 daily-high buckets early? Polls latest observations for several Kalshi stations every 30 s for MINUTES minutes and
 records, per new observation: its timestamp, when we first saw it (latency), temperature value and precision, and
 the raw METAR text (hourly/special vs 5-minute 'high-frequency' reports)."""
-import json, os, statistics, time, urllib.request, datetime as dt
+import json, os, statistics, sys, time, traceback, urllib.request, datetime as dt
+
+
+def _hook(t, v, tb):                                   # surface any crash as annotations (logs aren't readable)
+    for line in "".join(traceback.format_exception(t, v, tb)).strip().splitlines()[-8:]:
+        print(f"::error::{line}")
+    sys.__excepthook__(t, v, tb)
+
+
+sys.excepthook = _hook
 import pandas as pd
 
 STATIONS = os.environ.get("STATIONS", "KNYC,KMDW,KAUS,KMIA,KPHL,KDEN,KLAX,KDFW").split(",")
@@ -45,7 +54,7 @@ if not rows:
 d = pd.DataFrame(rows)
 d["obs_time"] = pd.to_datetime(d.obs_time, utc=True); d["first_seen"] = pd.to_datetime(d.first_seen, utc=True)
 d["latency_min"] = (d.first_seen - d.obs_time).dt.total_seconds() / 60
-d["tenths"] = d.temp_c.map(lambda v: v is not None and abs(round(v * 10) - round(v) * 10) > 0)
+d["tenths"] = d.temp_c.map(lambda v: v == v and v is not None and abs(round(v * 10) - round(v) * 10) > 0)
 d["kind"] = d.raw.map(lambda r: "SPECI" if " SPECI " in f" {r} " or r.startswith("SPECI") else ("METAR" if r else "no raw text"))
 os.makedirs(f"{RD}/kalshi", exist_ok=True)
 d.to_csv(f"{RD}/kalshi/nws_feed_probe.csv", index=False)
