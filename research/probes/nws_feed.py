@@ -16,7 +16,7 @@ def get(url):
         return json.loads(r.read())
 
 
-seen, rows = set(), []
+seen, rows, errs = set(), [], {}
 t_end = time.time() + MINUTES * 60
 first = True
 while time.time() < t_end:
@@ -25,7 +25,8 @@ while time.time() < t_end:
         try:
             feats = get(f"https://api.weather.gov/stations/{st}/observations?limit=12")["features"]
         except Exception as e:
-            print(f"  {st}: {e}"); continue
+            errs[str(e)[:120]] = errs.get(str(e)[:120], 0) + 1
+            continue
         for f in feats:
             p = f["properties"]; ts = p["timestamp"]
             if (st, ts) in seen:
@@ -37,6 +38,10 @@ while time.time() < t_end:
     first = False
     time.sleep(30)
 
+for e, n in list(errs.items())[:5]:
+    print(f"::warning::request errors x{n}: {e}")
+if not rows:
+    print("::error::no observations fetched at all"); raise SystemExit(1)
 d = pd.DataFrame(rows)
 d["obs_time"] = pd.to_datetime(d.obs_time, utc=True); d["first_seen"] = pd.to_datetime(d.first_seen, utc=True)
 d["latency_min"] = (d.first_seen - d.obs_time).dt.total_seconds() / 60
