@@ -50,7 +50,8 @@ def dollars_field(d, key):
     return num(v)
 
 
-def main():
+def build():
+    """The report text -- shared by the daily ntfy report and the dashboard."""
     today = dt.datetime.now(dt.timezone.utc).date().isoformat()
     fills = rows("fills")
     f_today = [f for f in fills if str((f.get("fill") or f).get("created_time", "")).startswith(today)]
@@ -124,6 +125,11 @@ def main():
                      + (f" (city-day avg {mean:+.1f}c +/- {se:.1f})" if n > 2 else "") + flag)
     if lines:
         msg += "\nby city (settled; watch only until ~60 city-days each):\n" + "\n".join(lines)
+    return msg
+
+
+def main():
+    msg = build()
     print(msg)
     ch = os.environ.get("NTFY_CHANNEL")
     if ch:

@@ -15,8 +15,9 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import bot as B  # noqa: E402
 
 
-def main():
-    k = B.Kalshi(B.MODE)
+def collect(k=None):
+    """(rows, cash) for the open book -- shared by 'kmm positions' and the dashboard."""
+    k = k or B.Kalshi(B.MODE)
     pos = k.positions()
     cost = getattr(k, "cost", {}) or {}
     bal = k.balance()
@@ -49,6 +50,11 @@ def main():
         rows.append(dict(city=city, day=day, bucket=bucket, side=side, n=c, cost=cost.get(tk, 0.0), sell=sell,
                          ev=c * p_win, p=p_win, spread=yask - ybid, src=src))
     rows.sort(key=lambda r: (r["day"], r["city"], r["bucket"]))
+    return rows, bal
+
+
+def main():
+    rows, bal = collect()
     print(f"{'day':8} {'city':5} {'bucket':7} {'side':4} {'n':>6} {'cost':>7} {'chance':>7} {'sell now':>9} {'exp. value':>10}")
     for r in rows:
         flag = "  decided-loser" if r["p"] < 0.03 else ("  decided-winner" if r["p"] > 0.97 else "")

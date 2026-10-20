@@ -81,6 +81,20 @@ User=kmm
 EnvironmentFile=$ETC/env
 ExecStart=/home/kmm/venv/bin/python $APP/kalshi_mm/report.py
 EOF
+cat > /etc/systemd/system/kmm-dash.service <<EOF
+[Unit]
+Description=Kalshi bot read-only dashboard (127.0.0.1:8787; reach it via 'tailscale serve')
+After=network-online.target
+[Service]
+User=kmm
+WorkingDirectory=$DATA
+EnvironmentFile=$ETC/env
+ExecStart=/home/kmm/venv/bin/python $APP/kalshi_mm/dashboard.py
+Restart=always
+RestartSec=10
+[Install]
+WantedBy=multi-user.target
+EOF
 cat > /etc/systemd/system/kmm-lottery.service <<EOF
 [Unit]
 Description=Kalshi weekly roll (lottery ticket)
@@ -128,6 +142,7 @@ chmod 755 /usr/local/bin/kmm
 systemctl daemon-reload
 systemctl enable -q kmm-report.timer && systemctl start kmm-report.timer
 systemctl enable -q kmm-lottery.timer && systemctl start kmm-lottery.timer
+systemctl enable -q kmm-dash && systemctl restart kmm-dash
 systemctl enable -q kmm
 
 if grep -q "paste-your-key-id-here" "$ETC/env" || [ ! -s "$ETC/kalshi.pem" ]; then
@@ -141,4 +156,6 @@ else
   echo "Installed and (re)started."
 fi
 echo "Commands (with sudo): kmm status | kmm logs | kmm report | kmm positions | kmm lottery | kmm stop | kmm resume | kmm update"
+echo "Dashboard: http://127.0.0.1:8787 on the server; to open it from your phone, once: install Tailscale here"
+echo "  (curl -fsSL https://tailscale.com/install.sh | sh && tailscale up) and run: tailscale serve --bg 8787"
 echo "Remote stop from your phone: in the ntfy app, publish 'stop' to topic <your NTFY_CHANNEL>-kmm-stop"
