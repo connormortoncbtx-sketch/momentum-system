@@ -2404,3 +2404,12 @@ resolution Oct 2025-Apr 2026, tested Apr-Oct 2026 (377k resolved test BUYs).
 - Consensus (>= 3 top-25 wallets buying the same outcome within 24h): only 4 cases in six months.
 Reading: leaderboard skill doesn't persist out of sample; copying adds a lag cost on top. Not pursued, and Kalshi
 profiles would not be expected to differ.
+
+## Technical analysis on Kalshi weather odds (RSI, 3-hour momentum) -- Oct 20, 2026: REJECTED
+Hourly last-trade price per market, 1-48h before close; RSI(6-hour EWM) and 3-hour change. Dev < Oct 2025 <= holdout.
+- Taker signals (buy at the price + 2c + fee): holdout after costs RSI<25 buy YES -4.6c, RSI>75 buy NO -1.8c,
+  3h drop >= 10c buy YES -1.7c, 3h rise >= 10c buy NO -0.7c per contract. Gross there is mild reversion (spikes give
+  back 1-3c over the next 3h), but crossing the spread and paying the fee eats it.
+- Maker tilt (do the bot's deep fills earn more when they fade a recent move?): dev said yes for >= 10c moves
+  (+5.6c fade vs -0.1c), holdout no (+2.3c fade vs +2.5c). The reversion is what the deep quotes already harvest; no
+  extra tilt survives. Not changed.
