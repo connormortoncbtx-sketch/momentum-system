@@ -1,0 +1,154 @@
+product_id,product_name,product_category,total_pairs
+AUDEC,Reserve Bank of Australia Decision,Economic Indicators,10
+AXXAK,Alaska Senate General Election,Elections,200
+AXXME,Maine Senate General Election,Elections,160
+AXXMI,Michigan Senate General Election,Elections,1
+CADEC,Bank of Canada Decision,Economic Indicators,10
+CAGDP,Canada Real GDP,Economic Indicators,60
+CAUNR,Canada Unemployment Rate,Economic Indicators,10
+CFBTC,Bitcoin Price,Financial Markets,1386
+CFETH,Ethereum Price,Financial Markets,220
+CFSOL,Solana Price,Financial Markets,410
+CFXRP,XRP Price,Financial Markets,251
+CHICC,China Containerized Freight Index Value,Economic Indicators,60
+COMCO,WTI Crude Oil Price,Financial Markets,1709
+COMCP,Copper Price,Financial Markets,700
+CPIC,US Core CPI,Economic Indicators,1005
+CPIGE,Consumer Price Index of Germany,Economic Indicators,40
+CPIJP,Consumer Price Index of Japan,Economic Indicators,210
+CPISP,Consumer Price Index of Spain,Economic Indicators,40
+CPIY,US Consumer Price Index Yearly,Economic Indicators,69
+EXXOH,Ohio Senate Special Election,Elections,280
+EZGDP,Eurozone Real GDP,Economic Indicators,30
+FEDRO,Federal Race Outcomes,Elections,60
+FES,S&P 500 Futures Price,Financial Markets,47853
+FF,US Fed Funds Target Rate,Economic Indicators,681
+FFDEC,Fed Decision,Economic Indicators,48700
+FNQ,Nasdaq 100 Futures Price,Financial Markets,20281
+FRERC,Total Freight Traffic from Carloads,Economic Indicators,20
+G01NC,NC-01 General Election,Elections,100
+G01NV,NV-01 General Election,Elections,100
+G02VA,VA-02 General Election,Elections,100
+G03NV,NV-03 General Election,Elections,100
+G07FL,FL-07 General Election,Elections,200
+G07PA,PA-07 General Election,Elections,74
+G08CO,CO-08 General Election,Elections,400
+G09OH,OH-09 General Election,Elections,100
+G13FL,FL-13 General Election,Elections,100
+G14FL,FL-14 General Election,Elections,971
+G22FL,FL-22 General Election,Elections,141
+G27FL,FL-27 General Election,Elections,300
+G31TX,TX-31 General Election,Elections,41
+G32TX,TX-32 General Election,Elections,200
+G35TX,TX-35 General Election,Elections,200
+G40CA,CA-40 General Election,Elections,2
+GROH,Ohio Governor General Election,Elections,500
+GSL,Global Sea Level,Environmental,70
+GT,Global Temperature,Environmental,90
+GTM,Monthly Average Global Temperature,Environmental,1
+HKCPI,Hong Kong Consumer Price Index,Economic Indicators,140
+HORC,US House of Representatives Control,Elections,27000
+HRULGA,New York City Hourly Temperature,Environmental,340
+JPUSD,US Dollar to Japanese Yen Exchange Rate,Financial Markets,551
+MACD,Monthly Atmospheric Carbon Dioxide,Environmental,20
+METLG,Gold Price,Financial Markets,8274
+METLP,Platinum Price,Financial Markets,10
+METLS,Silver Price,Financial Markets,3672
+MHCMA,Atlantic Major Hurricanes,Environmental,10
+MLAXG,Los Angeles Mayoral General Election,Elections,310
+MXXAZ,Arizona Governor General Election,Elections,4585
+MXXMN,Minnesota Governor General Election,Elections,200
+MXXNY,New York Governor General Election,Elections,10
+MXXTX,Texas Governor General Election,Elections,100
+NHS,New Home Sales,Economic Indicators,50
+PCEY,Personal Consumption Expenditures Price Index,Economic Indicators,30
+PREMP,US Payroll Employment,Economic Indicators,640
+PUSEG,Egg Prices,Economic Indicators,30
+RCLAX,Los Angeles CPI,Economic Indicators,30
+RCMWE,Midwestern US CPI,Economic Indicators,20
+RCNET,Northeastern US CPI,Economic Indicators,10
+RCSEA,Seattle CPI,Economic Indicators,40
+RCWST,Western US CPI,Economic Indicators,140
+RSM,US Retail Sales Monthly,Economic Indicators,26
+SENM,US Senate Majority,Elections,8035
+SGCPI,Singapore Consumer Price Index,Economic Indicators,10
+SHDDF,Frankfurt Daily Temperature High,Environmental,120
+SHFPO,Paris Daily Temperature High,Environmental,110
+SHJTT,Tokyo Daily Temperature High,Environmental,20
+SHSSS,Singapore Daily Temperature High,Environmental,265
+SHSSY,Sydney Daily Temperature High,Environmental,290
+SHYHC,Vancouver Daily Temperature High,Environmental,200
+SHYUL,Montreal Daily Temperature High,Environmental,220
+SHYYZ,Toronto Daily Temperature High,Environmental,741
+SWTUS,US Monthly Tornados,Environmental,20
+TRSIF,Freight Transportation Services Index,Economic Indicators,70
+UHATL,Atlanta Daily Temperature High,Environmental,12340
+UHAUS,Austin Daily Temperature High,Environmental,8372
+UHBKF,Denver Daily Temperature High,Environmental,5800
+UHBNA,Nashville Daily Temperature High,Environmental,2033
+UHBOS,Boston Daily Temperature High,Environmental,1411
+UHCLT,Charlotte Daily Temperature High,Environmental,2148
+UHDCA,Washington DC Daily Temperature High,Environmental,1186
+UHDFW,Dallas Daily Temperature High,Environmental,1406
+UHDTW,Detroit Daily Temperature High,Environmental,596
+UHHOU,Houston Daily Temperature High,Environmental,1902
+UHJAX,Jacksonville Daily Temperature High,Environmental,1344
+UHLAS,Las Vegas Daily Temperature High,Environmental,15127
+UHLAX,Los Angeles Daily Temperature High,Environmental,215540
+UHLGA,New York City Daily Temperature High,Environmental,22245
+UHMDW,Chicago Daily Temperature High,Environmental,7982
+UHMIA,Miami Daily Temperature High,Environmental,12386
+UHMSP,Minneapolis-Saint Paul Daily Temperature High,Environmental,790
+UHMSY,New Orleans Daily Temperature High,Environmental,502
+UHOKC,Oklahoma City Daily Temperature High,Environmental,1397
+UHPHL,Philadelphia Daily Temperature High,Environmental,928
+UHPHX,Phoenix Daily Temperature High,Environmental,21037
+UHSAT,San Antonio Daily Temperature High,Environmental,662
+UHSEA,Seattle Daily Temperature High,Environmental,9284
+UHSFO,San Francisco Daily Temperature High,Environmental,27322
+ULATL,Atlanta Daily Temperature Low,Environmental,699
+ULAUS,Austin Daily Temperature Low,Environmental,309
+ULBKF,Denver Daily Temperature Low,Environmental,471
+ULBNA,Nashville Daily Temperature Low,Environmental,485
+ULBOS,Boston Daily Temperature Low,Environmental,723
+ULCLT,Charlotte Daily Temperature Low,Environmental,253
+ULDCA,Washington DC Daily Temperature Low,Environmental,473
+ULDFW,Dallas Daily Temperature Low,Environmental,304
+ULDTW,Detroit Daily Temperature Low,Environmental,297
+ULHOU,Houston Daily Temperature Low,Environmental,234
+ULJAX,Jacksonville Daily Temperature Low,Environmental,130
+ULLAS,Las Vegas Daily Temperature Low,Environmental,233
+ULLAX,Los Angeles Daily Temperature Low,Environmental,733
+ULLGA,New York City Daily Temperature Low,Environmental,361
+ULMDW,Chicago Daily Temperature Low,Environmental,261
+ULMIA,Miami Daily Temperature Low,Environmental,672
+ULMSP,Minneapolis-Saint Paul Daily Temperature Low,Environmental,470
+ULMSY,New Orleans Daily Temperature Low,Environmental,120
+ULOKC,Oklahoma City Daily Temperature Low,Environmental,628
+ULPHL,Philadelphia Daily Temperature Low,Environmental,357
+ULPHX,Phoenix Daily Temperature Low,Environmental,432
+ULSAT,San Antonio Daily Temperature Low,Environmental,119
+ULSEA,Seattle Daily Temperature Low,Environmental,616
+ULSFO,San Francisco Daily Temperature Low,Environmental,382
+UR444,US Retail Sales of Building Material and Garden Eq. and Supplies Dealers,Economic Indicators,10
+UR451,"US Retail Sales of Sporting Goods, Hobby, Musical Instrument, and Book Stores",Economic Indicators,60
+UR453,US Retail Sales of Miscellaneous Store Retailers,Economic Indicators,30
+USAUD,Australian Dollar to US Dollar Exchange Rate,Financial Markets,10
+USCAD,Canadian Dollar to US Dollar Exchange Rate,Financial Markets,9
+USCCI,US Consumer Confidence Index,Economic Indicators,10
+USEUR,Euro to US Dollar Exchange Rate,Financial Markets,23
+UST,US Temperature,Environmental,20
+USTM,Monthly Average United States Temperature,Environmental,90
+UTCBO,UC Berkeley Out-of-State Tuition,Economic Indicators,67
+UTHVT,Harvard Tuition,Economic Indicators,16
+UTLAO,UCLA Out-of-State Tuition,Economic Indicators,18
+UTTAI,UT Austin In-State Tuition,Economic Indicators,100
+YXHBT,Bitcoin Highest Price,Financial Markets,16436
+YXHET,Ethereum Highest Price,Financial Markets,11980
+YXHSO,Solana Highest Price,Financial Markets,464
+YXHXR,XRP Highest Price,Financial Markets,509
+YXLBT,Bitcoin Lowest Price,Financial Markets,13285
+YXLET,Ethereum Lowest Price,Financial Markets,866
+YXLSO,Solana Lowest Price,Financial Markets,3700
+YXLXR,XRP Lowest Price,Financial Markets,72
+ZFFCP,Fed Decision Impact on CPI,Conditional,210

@@ -1,0 +1,124 @@
+product_id,product_name,product_category,total_pairs
+BSTAI,Best AI Base Model,Technology,24
+CACPI,Canada Consumer Price Index,Economic Indicators,50
+CFBTC,Bitcoin Price,Financial Markets,1151
+CFETH,Ethereum Price,Financial Markets,200
+CFSOL,Solana Price,Financial Markets,130
+CHICC,China Containerized Freight Index Value,Economic Indicators,150
+CPIC,US Core CPI,Economic Indicators,130
+CPIGE,Consumer Price Index of Germany,Economic Indicators,60
+CPIIN,Consumer Price Index of India,Economic Indicators,120
+CPISP,Consumer Price Index of Spain,Economic Indicators,140
+CPIY,US Consumer Price Index Yearly,Economic Indicators,2157
+EUCB,EU Central Bank Rate,Economic Indicators,100
+FF,US Fed Funds Target Rate,Economic Indicators,20
+FFDEC,Fed Decision,Economic Indicators,534
+FRERC,Total Freight Traffic from Carloads,Economic Indicators,10
+G20FL,FL-20 General Election,Elections,100
+GCYCO,Global Crop Yield of Corn,Environmental,30
+GSCAL,Gas Prices in California,Economic Indicators,230
+GSNYK,Gas Prices in New York,Economic Indicators,160
+GSTXS,Gas Prices in Texas,Economic Indicators,80
+H01NH,NH-01 Democratic Primary Election,Elections,5
+H06MA,MA-06 Democratic Primary Election,Elections,20
+H24FL,FL-24 Democratic Primary Election,Elections,5
+HKGDP,Hong Kong Real GDP,Economic Indicators,20
+HORC,US House of Representatives Control,Elections,12591
+I01DE,DE-AL Republican Primary Election,Elections,10
+I14FL,FL-14 Republican Primary Election,Elections,10
+I22FL,FL-22 Republican Primary Election,Elections,40
+I25FL,FL-25 Republican Primary Election,Elections,10
+IJC,US Initial Jobless Claims,Economic Indicators,1
+INWEI,Weekly Economic Index,Economic Indicators,20
+MACD,Monthly Atmospheric Carbon Dioxide,Environmental,110
+METLG,Gold Price,Financial Markets,690
+METLP,Platinum Price,Financial Markets,2
+METLS,Silver Price,Financial Markets,799
+NGP,US Natural Gas Production,Economic Indicators,10
+OP,US Oil Production,Economic Indicators,30
+PCD,US Presidential Candidate Democrat,Elections,40
+PCEY,Personal Consumption Expenditures Price Index,Economic Indicators,30
+PCR,US Presidential Candidate Republican,Elections,10
+POTUS,US Presidential Election,Elections,100
+PPIY,US Producer Price Index,Economic Indicators,70
+PREMP,US Payroll Employment,Economic Indicators,50
+PUSEG,Egg Prices,Economic Indicators,70
+RCCHI,Chicago CPI,Economic Indicators,210
+RCDET,Detroit CPI,Economic Indicators,80
+RCLAX,Los Angeles CPI,Economic Indicators,10
+RCMWE,Midwestern US CPI,Economic Indicators,30
+RCNET,Northeastern US CPI,Economic Indicators,30
+RGDP,US Real GDP,Economic Indicators,80
+RSM,US Retail Sales Monthly,Economic Indicators,140
+SHDDF,Frankfurt Daily Temperature High,Environmental,100
+SHJTT,Tokyo Daily Temperature High,Environmental,454
+SHNOR,Hormuz Return to Normal,Economic Indicators,10
+SHSSS,Singapore Daily Temperature High,Environmental,292
+SHYHC,Vancouver Daily Temperature High,Environmental,140
+SHYUL,Montreal Daily Temperature High,Environmental,40
+SHYYZ,Toronto Daily Temperature High,Environmental,777
+UHATL,Atlanta Daily Temperature High,Environmental,4638
+UHAUS,Austin Daily Temperature High,Environmental,6389
+UHBKF,Denver Daily Temperature High,Environmental,9248
+UHBNA,Nashville Daily Temperature High,Environmental,3053
+UHBOS,Boston Daily Temperature High,Environmental,5083
+UHCLT,Charlotte Daily Temperature High,Environmental,978
+UHDCA,Washington DC Daily Temperature High,Environmental,2111
+UHDFW,Dallas Daily Temperature High,Environmental,1739
+UHDTW,Detroit Daily Temperature High,Environmental,890
+UHHOU,Houston Daily Temperature High,Environmental,1918
+UHJAX,Jacksonville Daily Temperature High,Environmental,1052
+UHLAS,Las Vegas Daily Temperature High,Environmental,42400
+UHLAX,Los Angeles Daily Temperature High,Environmental,301104
+UHLGA,New York City Daily Temperature High,Environmental,18814
+UHMDW,Chicago Daily Temperature High,Environmental,11433
+UHMIA,Miami Daily Temperature High,Environmental,5804
+UHMSP,Minneapolis-Saint Paul Daily Temperature High,Environmental,1043
+UHMSY,New Orleans Daily Temperature High,Environmental,113
+UHOKC,Oklahoma City Daily Temperature High,Environmental,2961
+UHPHL,Philadelphia Daily Temperature High,Environmental,1882
+UHPHX,Phoenix Daily Temperature High,Environmental,44934
+UHSAT,San Antonio Daily Temperature High,Environmental,795
+UHSEA,Seattle Daily Temperature High,Environmental,18117
+UHSFO,San Francisco Daily Temperature High,Environmental,25620
+ULATL,Atlanta Daily Temperature Low,Environmental,225
+ULAUS,Austin Daily Temperature Low,Environmental,205
+ULBKF,Denver Daily Temperature Low,Environmental,345
+ULBNA,Nashville Daily Temperature Low,Environmental,273
+ULBOS,Boston Daily Temperature Low,Environmental,642
+ULCLT,Charlotte Daily Temperature Low,Environmental,193
+ULDCA,Washington DC Daily Temperature Low,Environmental,511
+ULDFW,Dallas Daily Temperature Low,Environmental,199
+ULDTW,Detroit Daily Temperature Low,Environmental,297
+ULHOU,Houston Daily Temperature Low,Environmental,142
+ULJAX,Jacksonville Daily Temperature Low,Environmental,206
+ULLAS,Las Vegas Daily Temperature Low,Environmental,1928
+ULLAX,Los Angeles Daily Temperature Low,Environmental,11125
+ULLGA,New York City Daily Temperature Low,Environmental,269
+ULMDW,Chicago Daily Temperature Low,Environmental,349
+ULMIA,Miami Daily Temperature Low,Environmental,819
+ULMSP,Minneapolis-Saint Paul Daily Temperature Low,Environmental,106
+ULMSY,New Orleans Daily Temperature Low,Environmental,80
+ULOKC,Oklahoma City Daily Temperature Low,Environmental,498
+ULPHL,Philadelphia Daily Temperature Low,Environmental,340
+ULPHX,Phoenix Daily Temperature Low,Environmental,410
+ULSAT,San Antonio Daily Temperature Low,Environmental,261
+ULSEA,Seattle Daily Temperature Low,Environmental,265
+ULSFO,San Francisco Daily Temperature Low,Environmental,281
+UNR,US Unemployment Rate,Economic Indicators,10925
+USDR,United States Drought,Environmental,30
+USGP,US Gasoline Prices,Economic Indicators,170
+USTM,Monthly Average United States Temperature,Environmental,130
+UTHVT,Harvard Tuition,Economic Indicators,613
+UTLAO,UCLA Out-of-State Tuition,Economic Indicators,15
+UTTAI,UT Austin In-State Tuition,Economic Indicators,297
+UVR1O,Top Overall College,Economic Indicators,20
+UVR1P,Top Public University,Economic Indicators,2
+YXHBT,Bitcoin Highest Price,Financial Markets,1828
+YXHDG,Dogecoin Highest Price,Financial Markets,370
+YXHET,Ethereum Highest Price,Financial Markets,351
+YXHSO,Solana Highest Price,Financial Markets,27
+YXHXR,XRP Highest Price,Financial Markets,5360
+YXLBT,Bitcoin Lowest Price,Financial Markets,24227
+YXLET,Ethereum Lowest Price,Financial Markets,174
+YXLXR,XRP Lowest Price,Financial Markets,500

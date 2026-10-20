@@ -1,0 +1,113 @@
+product_id,product_name,product_category,total_pairs
+AXXNC,North Carolina Senate General Election,Elections,200
+AXXNJ,New Jersey Senate General Election,Elections,100
+AXXTX,Texas Senate General Election,Elections,800
+BPMI,US Building Permits Initial,Economic Indicators,40
+COMCP,Copper Price,Financial Markets,41
+CPIC,US Core CPI,Economic Indicators,10
+CPIY,US Consumer Price Index Yearly,Economic Indicators,260
+CS,US Consumer Sentiment,Economic Indicators,120
+FFDEC,Fed Decision,Economic Indicators,1000
+G01AK,AK-AL General Election,Elections,100
+G01NC,NC-01 General Election,Elections,5
+G01VA,VA-01 General Election,Elections,222
+G04TX,TX-04 General Election,Elections,11
+G05IN,IN-05 General Election,Elections,100
+G06FL,FL-06 General Election,Elections,100
+G08TX,TX-08 General Election,Elections,100
+G11CA,CA-11 General Election,Elections,220
+G11TX,TX-11 General Election,Elections,71
+G12IL,IL-12 General Election,Elections,51
+G12OH,OH-12 General Election,Elections,100
+G21NY,NY-21 General Election,Elections,100
+G22FL,FL-22 General Election,Elections,100
+G27TX,TX-27 General Election,Elections,70
+G29TX,TX-29 General Election,Elections,54
+G48CA,CA-48 General Election,Elections,100
+GROH,Ohio Governor General Election,Elections,260
+HLF,Hurricane Landfall,Environmental,2152
+HRULAS,Las Vegas Hourly Temperature,Environmental,8134
+HRULAX,Los Angeles Hourly Temperature,Environmental,18022
+HRULGA,New York City Hourly Temperature,Environmental,17669
+HRUMIA,Miami Hourly Temperature,Environmental,4335
+HRUSFO,San Francisco Hourly Temperature,Environmental,6582
+LHLIS,Hurricane Isaias Peak Wind Location,Environmental,80
+LISFW,Hurricane Isaias Wind Gusts in Fort Walton Beach,Environmental,40
+LISPC,Hurricane Isaias Wind Gusts in Panama City Beach,Environmental,6
+LISPE,Hurricane Isaias Wind Gusts in Pensacola,Environmental,20
+METLG,Gold Price,Financial Markets,698
+METLS,Silver Price,Financial Markets,208
+MHCMA,Atlantic Major Hurricanes,Environmental,140
+MLAXG,Los Angeles Mayoral General Election,Elections,38
+MXXAZ,Arizona Governor General Election,Elections,600
+MXXCA,California Governor General Election,Elections,100
+MXXSC,South Carolina Governor General Election,Elections,100
+MXXSD,South Dakota Governor General Election,Elections,100
+MXXTN,Tennessee Governor General Election,Elections,200
+PCR,US Presidential Candidate Republican,Elections,10
+SHDDF,Frankfurt Daily Temperature High,Environmental,110
+SHFPO,Paris Daily Temperature High,Environmental,70
+SHJTT,Tokyo Daily Temperature High,Environmental,260
+SHSSS,Singapore Daily Temperature High,Environmental,207
+SHSSY,Sydney Daily Temperature High,Environmental,60
+SHYHC,Vancouver Daily Temperature High,Environmental,160
+SHYUL,Montreal Daily Temperature High,Environmental,50
+SHYYZ,Toronto Daily Temperature High,Environmental,105
+SWTUS,US Monthly Tornados,Environmental,50
+TROPA,Atlantic Tropical Storms,Environmental,1000
+UHATL,Atlanta Daily Temperature High,Environmental,2804
+UHAUS,Austin Daily Temperature High,Environmental,13073
+UHBKF,Denver Daily Temperature High,Environmental,1588
+UHBNA,Nashville Daily Temperature High,Environmental,6271
+UHBOS,Boston Daily Temperature High,Environmental,1950
+UHCLT,Charlotte Daily Temperature High,Environmental,510
+UHDCA,Washington DC Daily Temperature High,Environmental,633
+UHDFW,Dallas Daily Temperature High,Environmental,2780
+UHDTW,Detroit Daily Temperature High,Environmental,1401
+UHHOU,Houston Daily Temperature High,Environmental,21907
+UHJAX,Jacksonville Daily Temperature High,Environmental,870
+UHLAS,Las Vegas Daily Temperature High,Environmental,6263
+UHLAX,Los Angeles Daily Temperature High,Environmental,177568
+UHLGA,New York City Daily Temperature High,Environmental,5083
+UHMDW,Chicago Daily Temperature High,Environmental,20805
+UHMIA,Miami Daily Temperature High,Environmental,8762
+UHMSP,Minneapolis-Saint Paul Daily Temperature High,Environmental,1361
+UHMSY,New Orleans Daily Temperature High,Environmental,915
+UHOKC,Oklahoma City Daily Temperature High,Environmental,980
+UHPHL,Philadelphia Daily Temperature High,Environmental,7997
+UHPHX,Phoenix Daily Temperature High,Environmental,3878
+UHSAT,San Antonio Daily Temperature High,Environmental,742
+UHSEA,Seattle Daily Temperature High,Environmental,11503
+UHSFO,San Francisco Daily Temperature High,Environmental,7138
+ULATL,Atlanta Daily Temperature Low,Environmental,981
+ULAUS,Austin Daily Temperature Low,Environmental,331
+ULBKF,Denver Daily Temperature Low,Environmental,360
+ULBNA,Nashville Daily Temperature Low,Environmental,206
+ULBOS,Boston Daily Temperature Low,Environmental,394
+ULCLT,Charlotte Daily Temperature Low,Environmental,464
+ULDCA,Washington DC Daily Temperature Low,Environmental,153
+ULDFW,Dallas Daily Temperature Low,Environmental,296
+ULDTW,Detroit Daily Temperature Low,Environmental,205
+ULHOU,Houston Daily Temperature Low,Environmental,145
+ULJAX,Jacksonville Daily Temperature Low,Environmental,40
+ULLAS,Las Vegas Daily Temperature Low,Environmental,196
+ULLAX,Los Angeles Daily Temperature Low,Environmental,310
+ULLGA,New York City Daily Temperature Low,Environmental,696
+ULMDW,Chicago Daily Temperature Low,Environmental,615
+ULMIA,Miami Daily Temperature Low,Environmental,247
+ULMSP,Minneapolis-Saint Paul Daily Temperature Low,Environmental,98
+ULMSY,New Orleans Daily Temperature Low,Environmental,221
+ULOKC,Oklahoma City Daily Temperature Low,Environmental,293
+ULPHL,Philadelphia Daily Temperature Low,Environmental,382
+ULPHX,Phoenix Daily Temperature Low,Environmental,811
+ULSAT,San Antonio Daily Temperature Low,Environmental,162
+ULSEA,Seattle Daily Temperature Low,Environmental,218
+ULSFO,San Francisco Daily Temperature Low,Environmental,361
+UNR,US Unemployment Rate,Economic Indicators,1081
+USCE,United States Carbon Dioxide Emissions,Environmental,300
+UTHVT,Harvard Tuition,Economic Indicators,134
+UTLAO,UCLA Out-of-State Tuition,Economic Indicators,32
+YXHBT,Bitcoin Highest Price,Financial Markets,4035
+YXHSO,Solana Highest Price,Financial Markets,1728
+YXLBT,Bitcoin Lowest Price,Financial Markets,1286
+YXLSO,Solana Lowest Price,Financial Markets,57

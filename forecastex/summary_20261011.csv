@@ -1,0 +1,110 @@
+product_id,product_name,product_category,total_pairs
+AXXTX,Texas Senate General Election,Elections,600
+COMCP,Copper Price,Financial Markets,37
+CPIC,US Core CPI,Economic Indicators,296
+CPIIN,Consumer Price Index of India,Economic Indicators,30
+CPIY,US Consumer Price Index Yearly,Economic Indicators,540
+CS,US Consumer Sentiment,Economic Indicators,30
+FES,S&P 500 Futures Price,Financial Markets,211
+FFDEC,Fed Decision,Economic Indicators,500
+FNQ,Nasdaq 100 Futures Price,Financial Markets,449
+G01MT,MT-01 General Election,Elections,218
+G01NC,NC-01 General Election,Elections,102
+G04CO,CO-04 General Election,Elections,100
+G04TX,TX-04 General Election,Elections,44
+G05NJ,NJ-05 General Election,Elections,141
+G06OH,OH-06 General Election,Elections,100
+G11CA,CA-11 General Election,Elections,100
+G11NY,NY-11 General Election,Elections,100
+G24TX,TX-24 General Election,Elections,153
+G27CA,CA-27 General Election,Elections,65
+G31CA,CA-31 General Election,Elections,100
+G35CA,CA-35 General Election,Elections,51
+HLF,Hurricane Landfall,Environmental,333
+HORC,US House of Representatives Control,Elections,2295
+HRULAS,Las Vegas Hourly Temperature,Environmental,9310
+HRULAX,Los Angeles Hourly Temperature,Environmental,16349
+HRULGA,New York City Hourly Temperature,Environmental,11116
+HRUMIA,Miami Hourly Temperature,Environmental,12009
+HRUSFO,San Francisco Hourly Temperature,Environmental,5436
+KPTXS,Ken Paxton Margin of Victory in Texas Senate General Election,Elections,90
+LISAP,Hurricane Isaias Wind Gusts in Apalachicola,Environmental,50
+LISFW,Hurricane Isaias Wind Gusts in Fort Walton Beach,Environmental,50
+LISMO,Hurricane Isaias Wind Gusts in Mobile,Environmental,10
+LISPC,Hurricane Isaias Wind Gusts in Panama City Beach,Environmental,50
+METLG,Gold Price,Financial Markets,150
+METLP,Platinum Price,Financial Markets,30
+METLS,Silver Price,Financial Markets,274
+MHCMA,Atlantic Major Hurricanes,Environmental,3030
+MXXAZ,Arizona Governor General Election,Elections,500
+RSM,US Retail Sales Monthly,Economic Indicators,34
+SENM,US Senate Majority,Elections,150
+SGGDP,Singapore Real GDP,Economic Indicators,40
+SHDDF,Frankfurt Daily Temperature High,Environmental,180
+SHFPO,Paris Daily Temperature High,Environmental,120
+SHJTT,Tokyo Daily Temperature High,Environmental,118
+SHSSS,Singapore Daily Temperature High,Environmental,251
+SHSSY,Sydney Daily Temperature High,Environmental,180
+SHYHC,Vancouver Daily Temperature High,Environmental,240
+SHYUL,Montreal Daily Temperature High,Environmental,70
+SHYYZ,Toronto Daily Temperature High,Environmental,269
+SWTUS,US Monthly Tornados,Environmental,69
+TROPA,Atlantic Tropical Storms,Environmental,2594
+UHATL,Atlanta Daily Temperature High,Environmental,1647
+UHAUS,Austin Daily Temperature High,Environmental,15417
+UHBKF,Denver Daily Temperature High,Environmental,2455
+UHBNA,Nashville Daily Temperature High,Environmental,1191
+UHBOS,Boston Daily Temperature High,Environmental,3014
+UHCLT,Charlotte Daily Temperature High,Environmental,831
+UHDCA,Washington DC Daily Temperature High,Environmental,2814
+UHDFW,Dallas Daily Temperature High,Environmental,1575
+UHDTW,Detroit Daily Temperature High,Environmental,340
+UHHOU,Houston Daily Temperature High,Environmental,21833
+UHJAX,Jacksonville Daily Temperature High,Environmental,221
+UHLAS,Las Vegas Daily Temperature High,Environmental,5483
+UHLAX,Los Angeles Daily Temperature High,Environmental,157144
+UHLGA,New York City Daily Temperature High,Environmental,4447
+UHMDW,Chicago Daily Temperature High,Environmental,24189
+UHMIA,Miami Daily Temperature High,Environmental,8891
+UHMSP,Minneapolis-Saint Paul Daily Temperature High,Environmental,804
+UHMSY,New Orleans Daily Temperature High,Environmental,239
+UHOKC,Oklahoma City Daily Temperature High,Environmental,352
+UHPHL,Philadelphia Daily Temperature High,Environmental,9925
+UHPHX,Phoenix Daily Temperature High,Environmental,2121
+UHSAT,San Antonio Daily Temperature High,Environmental,777
+UHSEA,Seattle Daily Temperature High,Environmental,26396
+UHSFO,San Francisco Daily Temperature High,Environmental,16275
+ULATL,Atlanta Daily Temperature Low,Environmental,282
+ULAUS,Austin Daily Temperature Low,Environmental,701
+ULBKF,Denver Daily Temperature Low,Environmental,225
+ULBNA,Nashville Daily Temperature Low,Environmental,100
+ULBOS,Boston Daily Temperature Low,Environmental,100
+ULCLT,Charlotte Daily Temperature Low,Environmental,213
+ULDCA,Washington DC Daily Temperature Low,Environmental,90
+ULDFW,Dallas Daily Temperature Low,Environmental,160
+ULDTW,Detroit Daily Temperature Low,Environmental,174
+ULHOU,Houston Daily Temperature Low,Environmental,111
+ULJAX,Jacksonville Daily Temperature Low,Environmental,158
+ULLAS,Las Vegas Daily Temperature Low,Environmental,1058
+ULLAX,Los Angeles Daily Temperature Low,Environmental,126
+ULLGA,New York City Daily Temperature Low,Environmental,264
+ULMDW,Chicago Daily Temperature Low,Environmental,189
+ULMIA,Miami Daily Temperature Low,Environmental,349
+ULMSP,Minneapolis-Saint Paul Daily Temperature Low,Environmental,628
+ULMSY,New Orleans Daily Temperature Low,Environmental,30
+ULOKC,Oklahoma City Daily Temperature Low,Environmental,280
+ULPHL,Philadelphia Daily Temperature Low,Environmental,194
+ULPHX,Phoenix Daily Temperature Low,Environmental,608
+ULSAT,San Antonio Daily Temperature Low,Environmental,110
+ULSEA,Seattle Daily Temperature Low,Environmental,278
+ULSFO,San Francisco Daily Temperature Low,Environmental,480
+UNR,US Unemployment Rate,Economic Indicators,48
+UTCBO,UC Berkeley Out-of-State Tuition,Economic Indicators,4761
+UTHVT,Harvard Tuition,Economic Indicators,26
+UTLAO,UCLA Out-of-State Tuition,Economic Indicators,2928
+UTTAI,UT Austin In-State Tuition,Economic Indicators,15
+YXHBT,Bitcoin Highest Price,Financial Markets,5137
+YXHDG,Dogecoin Highest Price,Financial Markets,114
+YXHET,Ethereum Highest Price,Financial Markets,166
+YXHXR,XRP Highest Price,Financial Markets,130
+YXLBT,Bitcoin Lowest Price,Financial Markets,180
