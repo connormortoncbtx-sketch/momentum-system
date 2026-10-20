@@ -1,11 +1,16 @@
 name: Kalshi new-series watch
 
-# Weekly: find new Kalshi series, watch the recurring non-sports/politics ones, and run the bot's deep-fill test
+# Daily: alert on new dividend/earnings/buyback-type series. Weekly: find new Kalshi series, watch the recurring non-sports/politics ones, and run the bot's deep-fill test
 # on each once it has >= 20 settled markets (automation/kalshi_new_series.py). Report goes to ntfy.
 on:
   schedule:
-    - cron: '7 14 * * 1'    # Mondays ~9am Central
+    - cron: '7 14 * * 1'    # Mondays ~9am Central: full weekly report
+    - cron: '17 14 * * *'   # daily: alert on new dividend/earnings/buyback-type series only
   workflow_dispatch:
+    inputs:
+      mode:
+        description: 'full (weekly report) or keywords (alert only)'
+        default: 'keywords'
 
 permissions:
   contents: write
@@ -29,12 +34,13 @@ jobs:
       - name: Scan
         env:
           NTFY_CHANNEL: ${{ secrets.NTFY_CHANNEL }}
+          MODE: ${{ inputs.mode || (github.event.schedule == '17 14 * * *' && 'keywords' || 'full') }}
         run: python automation/kalshi_new_series.py
       - name: Commit watch state
         run: |
           git config user.name  "momentum-bot"
           git config user.email "momentum-bot@users.noreply.github.com"
-          for f in data/kalshi_series_seen.json data/kalshi_watchlist.json; do if [ -e "$f" ]; then git add "$f"; fi; done
+          for f in data/kalshi_series_seen.json data/kalshi_watchlist.json data/kalshi_keyword_alerted.json; do if [ -e "$f" ]; then git add "$f"; fi; done
           git diff --cached --quiet && exit 0
           git commit -q -m "kalshi watch: $(date +%Y-%m-%d)"
           for attempt in 1 2 3 4 5; do

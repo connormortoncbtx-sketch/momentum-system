@@ -9,6 +9,10 @@ Each run (weekly, .github/workflows/kalshi_watch.yml):
      deep-fill test (research/kalshi/weather_expand.py: quote 2c behind, size 5, held to settlement) runs on it,
      and the result (per-fill and per-market edge, t, fills per market) is recorded and reported
   4. a short summary goes to the phone via ntfy (NTFY_CHANNEL)
+KEYWORD ALERT (daily, MODE=keywords): any new series whose title mentions company dividends / earnings / buybacks /
+guidance / payouts / splits / revenue (not "mention"/"say" earnings-call markets) is pushed to the phone at once,
+with its open markets and quotes -- new, thin corporate-event markets are where mispriced near-certainties can sit.
+Already-alerted series are kept in data/kalshi_keyword_alerted.json.
 Adding a series to the live bot stays a human decision (SERIES in /etc/kmm/env). Watched series expire after 180 days.
 Why: new series showed somewhat higher maker edge in their first month (+1.1c per contract, +0.25c per market, t 1.9
 -- weak), so the point is early notice plus a real test as soon as there's enough history, not automatic trading.
@@ -16,6 +20,7 @@ Why: new series showed somewhat higher maker edge in their first month (+1.1c pe
 import datetime as dt
 import json
 import os
+import re
 import sys
 import urllib.request
 from pathlib import Path
@@ -30,6 +35,9 @@ import mm_scan as M            # noqa: E402  (get / paged / f, rate-limited publ
 
 DATA = ROOT / "data"
 SEEN, WATCH = DATA / "kalshi_series_seen.json", DATA / "kalshi_watchlist.json"
+ALERTED = DATA / "kalshi_keyword_alerted.json"
+KEYWORDS = re.compile(r"\b(dividends?|earnings|EPS|buybacks?|repurchases?|guidance|payouts?|stock splits?|revenue)\b", re.I)
+NOT_KEYWORDS = re.compile(r"\b(say|says|mention|mentions|tax|tariff|DOGE|stimulus)\b", re.I)
 SKIP_CATS = {"Sports", "Politics", "Elections"}
 RECURRING = {"daily", "weekly", "monthly", "custom", "hourly"}
 GRADUATE_AT, EXPIRE_DAYS = 20, 180
@@ -73,20 +81,52 @@ def graduate(series):
     return {"windows": out, "passes": bool(passed)}
 
 
-def notify(msg):
+def notify(msg, title="Kalshi new-series watch", urgent=False):
     ch = os.environ.get("NTFY_CHANNEL")
     print(msg)
     if ch:
+        h = {"Title": title}
+        if urgent:
+            h.update({"Priority": "high", "Tags": "rotating_light"})
         try:
             urllib.request.urlopen(urllib.request.Request(f"https://ntfy.sh/{ch}", data=msg.encode()[:3500],
-                                                          headers={"Title": "Kalshi new-series watch"}), timeout=20)
+                                                          headers=h), timeout=20)
         except Exception as e:
             print(f"ntfy: {e}")
+
+
+def keyword_check(S, seen):
+    """Alert once for each new series whose title is about a company dividend / earnings / buyback event."""
+    if seen is None:
+        return
+    done = set(json.loads(ALERTED.read_text())) if ALERTED.exists() else set()
+    new = S[~S.ticker.isin(seen) & ~S.ticker.isin(done)]
+    t = new.title.fillna("")
+    hits = new[t.str.contains(KEYWORDS) & ~t.str.contains(NOT_KEYWORDS)]
+    for r in hits.itertuples():
+        try:
+            mk = M.paged("/markets", "markets", max_pages=2, series_ticker=r.ticker, status="open")
+        except Exception as e:
+            mk = []; print(f"markets {r.ticker}: {e}")
+        lines = [f"NEW corporate-event series {r.ticker} ({r.category}, {r.frequency}): {r.title}",
+                 f"{len(mk)} open markets"]
+        for m in mk[:6]:
+            lines.append(f"- {m.get('title', m.get('ticker'))[:70]} | yes bid {M.f(m.get('yes_bid_dollars'))} "
+                         f"ask {M.f(m.get('yes_ask_dollars'))} | vol {M.f(m.get('volume_fp', m.get('volume')))} | "
+                         f"closes {str(m.get('close_time'))[:10]}")
+        lines.append("Check: market price vs the company's history; buy only if the gap beats fees + the chance of a surprise.")
+        notify("\n".join(lines), title="Kalshi: new dividend/earnings-type market", urgent=True)
+        done.add(r.ticker)
+    ALERTED.write_text(json.dumps(sorted(done)))
+    print(f"keyword check: {len(new)} new series, {len(hits)} corporate-event hits")
 
 
 def main():
     S = all_series()
     seen = set(json.loads(SEEN.read_text())) if SEEN.exists() else None
+    keyword_check(S, seen)
+    if os.environ.get("MODE") == "keywords":          # daily: alert only, leave the weekly report its new series
+        return
     watch = json.loads(WATCH.read_text()) if WATCH.exists() else {}
     now = set(S.ticker)
     if seen is None:
