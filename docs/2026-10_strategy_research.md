@@ -2413,3 +2413,14 @@ Hourly last-trade price per market, 1-48h before close; RSI(6-hour EWM) and 3-ho
 - Maker tilt (do the bot's deep fills earn more when they fade a recent move?): dev said yes for >= 10c moves
   (+5.6c fade vs -0.1c), holdout no (+2.3c fade vs +2.5c). The reversion is what the deep quotes already harvest; no
   extra tilt survives. Not changed.
+- **v2 (`research/pm_copytrade2.py`): pool built from the formation period itself, by size band.** ~1,000 wallets with
+  >= 30 resolved formation BUYs, from takers in ~1,500 markets that closed Oct 2025-Apr 2026; t-stats by wallet.
+  Top 10% of each band, own edge in Apr-Oct 2026 vs the band's bottom half:
+  <$2k +0.9c (wallet-t 0.2) vs -0.8c | **$2-20k +1.7c (wallet-t 3.7, 77% of wallets positive) vs -2.1c** |
+  $20-200k +0.4c (t 0.0) vs -1.1c | $200k-2M -2.5c vs -0.7c. Skill-to-skill correlation 0.21 in $2-20k, ~0 elsewhere.
+  So a real but small persistent edge exists among mid-small traders ($2-20k a half-year).
+- Copying it doesn't pay: $2-20k top wallets copied 5 / 15 / 60 min late at +1c: -3.2 / -3.0 / -3.1c (13 wallets,
+  843 trades); every band negative except a noisy +1.2c in $200k-2M (t -0.3). Their trades lead the price by minutes,
+  so the edge (~2c) is gone by the time a copy fills. The smoke test's $20-200k "sweet spot" did not survive.
+- 29 wallets were top in both halves (results/pm_copy2_watchlist.csv). Not actionable: copying them late loses, and
+  copying within seconds would need a real-time chain monitor on a venue Connor can't trade. Idea parked.
