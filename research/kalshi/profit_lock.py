@@ -60,7 +60,7 @@ class Marks:
 def simulate(F, M, closes, R, hours, rule, X, cap):
     fh = {h: g for h, g in F.groupby("hr")}
     close_at = {h: list(v) for h, v in closes.groupby(closes).groups.items()}
-    pos, cash = {}, 0.0
+    pos, cash, risk, risks = {}, 0.0, {}, []
     day_start, cur_day, peak, stopped = 0.0, None, -1e9, False
     daily, n_lock = {}, 0
 
@@ -81,9 +81,12 @@ def simulate(F, M, closes, R, hours, rule, X, cap):
             g = fh[h]
             for tk, q in g.groupby("ticker").q.sum().items():
                 pos[tk] = pos.get(tk, 0) + q
+            for tk, r in g.assign(r=np.where(g.q > 0, g.q * g.px, -g.q * (1 - g.px))).groupby("ticker").r.sum().items():
+                risk[tk] = risk.get(tk, 0) + r
             cash -= float((g.q * g.px).sum())
         for tk in close_at.get(h, []):
-            cash += pos.pop(tk, 0) * R[tk]
+            cash += pos.pop(tk, 0) * R[tk]; risk.pop(tk, None)
+        risks.append(sum(risk.values()))
         if rule == "hold" or not pos:
             continue
         dp = (equity(h) - day_start) / cap * 100
@@ -93,13 +96,14 @@ def simulate(F, M, closes, R, hours, rule, X, cap):
             for tk, q in list(pos.items()):
                 mk = M.at(tk, h); mk = 0.5 if mk != mk else mk
                 cash += q * (mk - np.sign(q) * HALF_SPREAD) - abs(q) * taker_fee(min(max(mk, 0.01), 0.99))
-            pos.clear(); n_lock += 1
+            pos.clear(); risk.clear(); n_lock += 1
             if rule in ("take+stop", "trail"):
                 stopped = True
             if rule == "trail":
                 peak = -1e9
     eq = equity(hours[-1])
     daily[cur_day] = eq - day_start
+    simulate.risk95 = float(np.quantile(risks, 0.95))
     return eq, pd.Series(daily), n_lock
 
 
@@ -117,12 +121,9 @@ def main():
         M = Marks(tt)
         closes = pd.to_datetime(f.groupby("ticker").close.first(), utc=True).dt.ceil("h")
         R = f.groupby("ticker").R.first()
-        # capital: 95th pct of cost at risk of the held book
-        cum = f.sort_values("t").assign(cost=lambda x: np.where(x.q > 0, x.q * x.px, -x.q * (1 - x.px)))
-        risk = cum.set_index("hr").cost.groupby(level=0).sum().reindex(hrs, fill_value=0)
-        settled = cum.groupby(closes.reindex(cum.ticker).values).cost.sum().reindex(hrs, fill_value=0)
-        cap = float((risk.cumsum() - settled.cumsum()).quantile(0.95))
-        base, bd, _ = simulate(f, M, closes, R, hrs, "hold", 0, cap)
+        closes = closes.clip(upper=hrs[-1])
+        base, bd, _ = simulate(f, M, closes, R, hrs, "hold", 0, 1.0)
+        cap = simulate.risk95
         rows.append(dict(period=per, rule="hold to settlement", X=np.nan, pnl_pct_of_cap=base / cap * 100,
                          days=len(bd), day_sd_pct=bd.std() / cap * 100, sharpe_daily=bd.mean() / bd.std() * np.sqrt(365),
                          locks=0, capital=cap))
