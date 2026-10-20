@@ -3,6 +3,7 @@ research/pm_copytrade2.py -- copy-trading v2: a pool built from the formation pe
 (Oct 20, 2026). v1 (pm_copytrade.py) used the top 400 wallets by all-time volume, which favours whales, market makers
 and high-frequency accounts; a skilled low-volume specialist would not be in it.
 
+  t-stats    clustered by wallet (a wallet's trades are not independent)
   pool       wallets that TOOK trades in a broad sample of markets that closed Oct 20 2025 - Apr 20 2026 (Gamma
              closed markets, >= $5k volume), seen in >= 3 sampled markets; nothing about Apr-Oct 2026 is used
   history    per wallet, the latest 500 trades of each 30-day slice Oct 2025 - Oct 2026 (pm_copytrade.wallet_trades)
@@ -31,15 +32,20 @@ def formation_markets():
     if os.path.exists(p):
         return json.load(open(p))
     ms = []
-    for off in range(0, 20000, 500):
-        try:
-            d = P.get(f"{G}/markets?closed=true&end_date_min=2025-10-20T00:00:00Z&end_date_max=2026-04-20T00:00:00Z"
-                      f"&volume_num_min=5000&limit=500&offset={off}")
-        except Exception as e:
-            print(f"::warning::gamma page {off}: {str(e)[:100]}"); break
-        if not d:
-            break
-        ms += [m["conditionId"] for m in d if m.get("conditionId")]
+    edges = pd.date_range("2025-10-20", "2026-04-20", freq="15D").append(pd.DatetimeIndex(["2026-04-20"]))
+    for a, b in zip(edges[:-1], edges[1:]):          # half-month windows: Gamma stops paging at offset ~2500
+        for off in range(0, 2500, 500):
+            try:
+                d = P.get(f"{G}/markets?closed=true&end_date_min={a:%Y-%m-%d}T00:00:00Z&end_date_max={b:%Y-%m-%d}T00:00:00Z"
+                          f"&volume_num_min=5000&limit=500&offset={off}")
+            except Exception as e:
+                print(f"::warning::gamma {a:%Y-%m-%d} page {off}: {str(e)[:100]}"); break
+            if not d:
+                break
+            ms += [m["conditionId"] for m in d if m.get("conditionId")]
+            if len(d) < 500:
+                break
+    ms = sorted(set(ms))
     random.Random(7).shuffle(ms)
     ms = ms[:NMARK]
     json.dump(ms, open(p, "w"))
@@ -111,6 +117,7 @@ def main():
                          test_top_c=tt.edge.mean() * 100,
                          test_top_t=tt.edge.mean() / tt.edge.std() * np.sqrt(len(tt)) if len(tt) > 2 else np.nan,
                          test_top_trades=len(tt), top_wallets_positive=(pe > 0).mean() * 100,
+                         test_top_wallet_t=pe.mean() / pe.std() * np.sqrt(len(pe)) if len(pe) > 2 else np.nan,
                          test_bottom_c=tb.edge.mean() * 100,
                          skill_corr=x.tstat.corr(x.tmean)))
         copyw[b] = list(x.index[:15])
@@ -141,11 +148,13 @@ def main():
             px = pd.Series([lp.get(k, {}).get(str(L)) for k in keys], dtype=float)
             S[f"c{L}"] = S.payout.astype(float).values - (px.values + 0.01)
         for b, x in S.groupby("band"):
-            r = dict(band=b, copy_trades=len(x), own_c=x.edge.mean() * 100)
+            r = dict(band=b, copy_trades=len(x), copy_wallets=x.wallet.nunique(), own_c=x.edge.mean() * 100)
             for L in P.LAGS:
                 e = x[f"c{L}"].dropna()
                 r[f"copy{L}_c"] = e.mean() * 100
-                r[f"copy{L}_t"] = e.mean() / e.std() * np.sqrt(len(e)) if len(e) > 2 else np.nan
+                pw = x.dropna(subset=[f"c{L}"]).groupby("wallet")[f"c{L}"].mean()   # clustered by wallet
+                r[f"copy{L}_t"] = pw.mean() / pw.std() * np.sqrt(len(pw)) if len(pw) > 2 else np.nan
+                r[f"copy{L}_wallets_pos"] = (pw > 0).mean() * 100
             crow.append(r)
     Cp = pd.DataFrame(crow)
     W = g[(g.tn >= 30) & (g.tmean > 0)].copy()
@@ -159,9 +168,9 @@ def main():
     print(f"\nwatchlist candidates: {len(W)}")
     for r in R.dropna(subset=["test_top_c"]).itertuples():
         c = Cp[Cp.band == r.band]
-        cc = f"; copy +15min {c.copy15_c.iloc[0]:+.1f}c (t {c.copy15_t.iloc[0]:.1f})" if len(c) else ""
+        cc = f"; copy +15min {c.copy15_c.iloc[0]:+.1f}c (wallet-t {c.copy15_t.iloc[0]:.1f})" if len(c) else ""
         print(f"::notice::{r.band}: {r.wallets} wallets; top {r.top_k} formation {r.form_top_c:+.1f}c -> test "
-              f"{r.test_top_c:+.2f}c (t {r.test_top_t:.1f}) vs bottom half {r.test_bottom_c:+.2f}c; skill corr {r.skill_corr:.2f}{cc}")
+              f"{r.test_top_c:+.2f}c (wallet-t {r.test_top_wallet_t:.1f}, {r.top_wallets_positive:.0f}% of wallets +) vs bottom half {r.test_bottom_c:+.2f}c; skill corr {r.skill_corr:.2f}{cc}")
 
 
 if __name__ == "__main__":
