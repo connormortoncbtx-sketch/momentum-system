@@ -103,6 +103,47 @@ def convergence():
     return out
 
 
+def caps(event_cap, inv_cap, size):
+    """How close the bot runs to its limits, from the snapshots (positions logged every cycle).
+    'blocked' = held > cap - size: one more lot would breach, so the bot only quotes sides that reduce.
+    Returns dict(now=..., budget_days=[(date, avg %, max %)], market_days=[(date, city-days, blocked, peak held,
+    markets blocked)], open_events=[(event, held, {ticker: held})])."""
+    snaps = [s for s in R.rows("snapshots") if s.get("budget")]
+    if not snaps:
+        return None
+    bud, ev_peak, mk_peak = {}, {}, {}
+    for s in snaps:
+        try:
+            d = dt.datetime.fromisoformat(s["ts"]).astimezone(CT).date()
+        except Exception:
+            continue
+        bud.setdefault(d, []).append(100 * R.num(s.get("used_cost")) / s["budget"])
+        e = {}
+        for t, p in (s.get("positions") or {}).items():
+            mk_peak[t] = max(mk_peak.get(t, 0.0), abs(p))
+            e[t.rsplit("-", 1)[0]] = e.get(t.rsplit("-", 1)[0], 0.0) + abs(p)
+        for k, v in e.items():
+            ev_peak[k] = max(ev_peak.get(k, 0.0), v)
+    by_day = {}
+    for ev, v in ev_peak.items():
+        d = market_day(ev + "-x")
+        r = by_day.setdefault(d, [0, 0, 0.0, 0])
+        r[0] += 1; r[1] += v > event_cap - size; r[2] = max(r[2], v)
+    for t, v in mk_peak.items():
+        if v > inv_cap - size and market_day(t) in by_day:
+            by_day[market_day(t)][3] += 1
+    last = snaps[-1]
+    cur = {}
+    for t, p in (last.get("positions") or {}).items():
+        if p:
+            cur.setdefault(t.rsplit("-", 1)[0], {})[t] = abs(p)
+    return dict(
+        now=dict(used=R.num(last.get("used_cost")), budget=last["budget"], ts=last.get("ts")),
+        budget_days=[(d, sum(v) / len(v), max(v)) for d, v in sorted(bud.items())],
+        market_days=[(d, *v) for d, v in sorted(by_day.items(), key=lambda kv: kv[0] or dt.date.min)],
+        open_events=sorted(((ev, sum(m.values()), m) for ev, m in cur.items()), key=lambda x: -x[1]))
+
+
 def fills_per_day():
     by = {}
     for f in R.rows("fills"):

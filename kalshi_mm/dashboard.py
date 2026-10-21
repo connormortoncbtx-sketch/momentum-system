@@ -80,6 +80,56 @@ def svg_bars(pts, w=640, h=150, fmt=lambda v: f"{v:+.0f}"):
     return "".join(out)
 
 
+def meter(frac, warn=.8):
+    f = max(0.0, min(frac, 1.0))
+    col = "var(--neg)" if frac >= 1 else ("#e0a030" if frac >= warn else "var(--pos)")
+    return (f"<div style='background:var(--line);border-radius:4px;height:8px;min-width:80px'>"
+            f"<div style='width:{f * 100:.0f}%;height:8px;border-radius:4px;background:{col}'></div></div>")
+
+
+def limits_card():
+    """Budget, per-city-day cap and per-market cap: where the bot stands now and how often each one bound."""
+    try:
+        c = HI.caps(B.EVENT_CAP, B.INV_CAP, B.SIZE)
+    except Exception as e:
+        return f"<div class='card'><h2>Limits</h2><div class='neg'>failed: {html.escape(str(e))}</div></div>"
+    if not c:
+        return ""
+    n = c["now"]
+    blk_ev, blk_mk = B.EVENT_CAP - B.SIZE, B.INV_CAP - B.SIZE
+    out = [f"<div class='card'><h2>Limits — budget, city-day cap ({B.EVENT_CAP:.0f}), market cap ({B.INV_CAP}). "
+           f"A city-day stops adding above {blk_ev:.0f} contracts (one more {B.SIZE}-lot would breach)</h2>"]
+    frac = n["used"] / n["budget"] if n["budget"] else 0
+    wk = c["budget_days"][-7:]
+    out.append(f"<div class='grid'><div><div class='mut'>Budget in use now</div><div class='big' style='font-size:22px'>"
+               f"{money(n['used'])} / {money(n['budget'])}</div>{meter(frac)}</div>"
+               f"<div><div class='mut'>Last 7 days: average / peak</div><div class='big' style='font-size:22px'>"
+               f"{sum(a for _, a, _ in wk) / len(wk):.0f}% / {max(m for _, _, m in wk):.0f}%</div></div></div>")
+    if c["open_events"]:
+        rows_ = []
+        for ev, held, mk in c["open_events"]:
+            top_t, top_v = max(mk.items(), key=lambda kv: kv[1])
+            city = ev.split("-")[0].replace("KXHIGHT", "").replace("KXHIGH", "").replace("KXLOWT", "low ")
+            rows_.append(f"<tr><td>{html.escape(city)}</td><td>{html.escape(ev.split('-')[1])}</td>"
+                         f"<td>{held:.0f} / {B.EVENT_CAP:.0f}{' blocked' if held > blk_ev else ''}</td><td>{meter(held / B.EVENT_CAP)}</td>"
+                         f"<td>{html.escape(top_t.rsplit('-', 1)[1])} {top_v:.0f} / {B.INV_CAP}</td></tr>")
+        out.append("<h2 style='margin-top:12px'>Open city-days now</h2><div class='scroll'><table><tr><th>City</th><th>Day</th>"
+                   "<th>Held / cap</th><th></th><th>Biggest market / cap</th></tr>" + "".join(rows_) + "</table></div>")
+    md = [r for r in c["market_days"] if r[0]][-14:]
+    bd = {d: m for d, _, m in c["budget_days"]}
+    if md:
+        rows_ = "".join(f"<tr><td>{d:%a %b %d}</td><td>{ne}</td><td class='{'neg' if nb else ''}'>{nb} ({100 * nb / ne:.0f}%)</td>"
+                        f"<td>{pk:.0f}</td><td>{nm}</td><td>{bd.get(d, float('nan')):.0f}%</td></tr>" for d, ne, nb, pk, nm in reversed(md))
+        tb = sum(r[2] for r in md); te = sum(r[1] for r in md)
+        out.append(f"<h2 style='margin-top:12px'>History by market day · city-days blocked by the cap: {tb} of {te} ({100 * tb / te:.0f}%)</h2>"
+                   "<div class='scroll'><table><tr><th>Market day</th><th>City-days</th><th>Blocked</th><th>Peak held</th>"
+                   "<th>Markets blocked</th><th>Peak budget</th></tr>" + rows_ + "</table></div>"
+                   "<div class='mut'>Peak budget = highest share of the budget in use on that calendar day. "
+                   "If 'Blocked' stays high once favourite-only is proven, the city-day cap is what's limiting size.</div>")
+    out.append("</div>")
+    return "".join(out)
+
+
 def history_cards():
     out = []
     try:
@@ -192,6 +242,7 @@ pre{{white-space:pre-wrap;font-size:12.5px;margin:0}} .dot{{display:inline-block
                    "and this card disagree with it, these are the numbers to trust.</div></div>")
     except Exception as e:
         h.append(f"<div class='card'><h2>Kalshi's own numbers</h2><div class='neg'>unavailable: {html.escape(str(e))[:200]}</div></div>")
+    h.append(limits_card())
     h.append(history_cards())
     for day in sorted({r["day"] for r in rows}):
         g = [r for r in rows if r["day"] == day]
