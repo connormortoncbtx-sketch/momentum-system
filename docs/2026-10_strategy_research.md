@@ -2461,3 +2461,15 @@ faster precise source appears (e.g. a paid ASOS 1-minute / Synoptic feed).
   that reprice on injury/lineup news within seconds. Taker fee 0.0695 p(1-p) (as Kalshi), no maker rebate < $10M/mo.
 - Priors: Kalshi sports market making paid makers little; ForecastEx (thin, $0 maker fee) lost to informed sweeps.
   Parked; revisit only if the Kalshi bot's live edge is confirmed and capital outgrows weather.
+
+## "Basically decided" favourites (97-99.5c) and chaining them -- Oct 21, 2026: REJECTED
+`research/kalshi/favorites_snapshot.py`: at fixed local times (evening before 21:00; market day 10:00-22:00) buy every
+side whose ASK in the hourly candle is 97-99.5c, hold to settlement, taker fee (100-lot and 5-lot rounding).
+Holdout (Oct 2025 - Oct 2026, ~3,000 city-days per price band):
+  97c won 96.4% -> -0.77c/contract (per city-day -0.37c, t -1.3) | 98c won 97.1% -> -1.03c (-0.08c, t -0.4) |
+  99-99.5c won 98.3% -> -0.76c (-0.04c, t -0.3). Best hours (14:00, 16:00, evening-before) ~0; 18:00-22:00 worse (-2 to -4c).
+  Dev (2021-25) is far worse (-11 to -25c): thin early books posted 97-99c asks on undecided buckets.
+- The earlier trade-weighted table (+0.2 to +0.6c) was an artefact: trades print at 97-99c mostly once a bucket IS
+  decided; a standing 97-99c ASK is not a decided bucket -- 99c asks lose 1.7%, not 1%.
+- Chain at 14:00 local (best-priced 97-99c side each day, whole stake rolled): holdout 367 legs, 7 losses (1.9%),
+  first wipe-out at leg 18, +1.04% per winning leg -> about -0.9% expected per leg. Chaining compounds a negative edge.
