@@ -1,5 +1,5 @@
 {
- "since": "2026-10-20T12:33:28-04:00",
+ "since": "2026-10-20T17:31:11-04:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -1255,6 +1255,116 @@
    "decided": "2026-10-20T13:30:38.574140-04:00",
    "event_type": "contract_win",
    "summary": "Year 4 of $45.1M NIH grant awarded; $7.2M subaward from NYU for ALS therapy program.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "SRZN",
+   "accession": "0001193125-26-426828",
+   "decided": "2026-10-21T02:15:15.001694-04:00",
+   "event_type": "equity_financing",
+   "summary": "Biotech raises $95.1M second tranche post-FDA IND clearance; massive shareholder dilution ahead.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "SVIA",
+   "accession": "0001493152-26-047785",
+   "decided": "2026-10-21T02:15:18.243181-04:00",
+   "event_type": "exec_departure",
+   "summary": "Three senior executives (CFO, COO, CLO) departed simultaneously; interim CFO appointed.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "NPB",
+   "accession": "0001336706-26-000072",
+   "decided": "2026-10-21T02:15:21.692324-04:00",
+   "event_type": "restructuring",
+   "summary": "Company exiting retail mortgage channels via CMG sale; $6-7M restructuring charges anticipated.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "HOST",
+   "accession": "0001493152-26-047777",
+   "decided": "2026-10-21T02:15:29.214785-04:00",
+   "event_type": "buyback_dividend",
+   "summary": "Board authorizes $15M share buyback; confidence in long-term strategy and contracted revenue.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CNXU",
+   "accession": "0001062993-26-005431",
+   "decided": "2026-10-21T02:15:39.250327-04:00",
+   "event_type": "equity_financing",
+   "summary": "Company raised ~$5M via unregistered equity and warrant issuance; significant dilution",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "LOB",
+   "accession": "0001462120-26-000065",
+   "decided": "2026-10-21T02:15:43.557956-04:00",
+   "event_type": "exec_departure",
+   "summary": "Chief Information & Digital Officer Renato Derraik resigns, effective November 6, 2026.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ONIT",
+   "accession": "0001493152-26-047761",
+   "decided": "2026-10-21T02:15:56.109561-04:00",
+   "event_type": "litigation",
+   "summary": "Company filed declaratory judgment action seeking clarity on NY mortgage servicing fee regulation amid regulator inquiries.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "MWYN",
+   "accession": "0001213900-26-111022",
+   "decided": "2026-10-21T02:16:03.396917-04:00",
+   "event_type": "acquisition",
+   "summary": "Acquired software platform core from Hong Kong company for 4M deferred shares; significant dilution, vague valuation.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "TRAX",
+   "accession": "0001193125-26-426666",
+   "decided": "2026-10-21T02:16:05.796704-04:00",
+   "event_type": "equity_financing",
+   "summary": "Company closed private placement of 6.1M shares with registration rights agreement.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_win",
+   "symbol": "FISN",
+   "accession": "0001104659-26-117389",
+   "decided": "2026-10-21T02:16:10.466000-04:00",
+   "event_type": "contract_win",
+   "summary": "25-year Master Energy Purchase Agreement with Great Plains Development Authority for 150 MW initial phase targeting September 2028 commercial operation.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_div",
+   "symbol": "FISN",
+   "accession": "0001104659-26-117389",
+   "decided": "2026-10-21T02:16:10.466000-04:00",
+   "event_type": "contract_win",
+   "summary": "25-year Master Energy Purchase Agreement with Great Plains Development Authority for 150 MW initial phase targeting September 2028 commercial operation.",
    "entry_date": null,
    "entry": null
   }
