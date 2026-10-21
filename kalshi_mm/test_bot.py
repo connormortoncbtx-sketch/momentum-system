@@ -68,7 +68,22 @@ def test_day_baseline_survives_restart():
     assert B.trading_day(t) == "2026-10-20"
 
 
+def test_fallback_mark():
+    class K:
+        calls = 0
+        def req(self, m, path, **q):
+            K.calls += 1
+            tk = path.split("/")[-1]
+            return {"market": {"T-YES": {"result": "yes"}, "T-NO": {"result": "no"},
+                               "T-OPEN": {"result": "", "last_price_dollars": "0.07"}, "T-NONE": {"result": ""}}[tk]}
+    b = B.Bot.__new__(B.Bot); b.k = K(); b.mark_cache = {}
+    assert b.fallback_mark("T-YES") == 1.0 and b.fallback_mark("T-NO") == 0.0
+    assert abs(b.fallback_mark("T-OPEN") - 0.07) < 1e-9 and b.fallback_mark("T-NONE") is None
+    n = K.calls; b.fallback_mark("T-YES"); b.fallback_mark("T-OPEN")
+    assert K.calls == n                                  # decided results cached for good, last trades for 5 min
+
+
 if __name__ == "__main__":
     for f in (test_targets, test_order_side, test_order_price, test_event_cap_helpers, test_sign_roundtrip,
-              test_day_baseline_survives_restart):
+              test_day_baseline_survives_restart, test_fallback_mark):
         f(); print("ok", f.__name__)

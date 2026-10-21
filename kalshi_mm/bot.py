@@ -323,6 +323,7 @@ class Bot:
         self.k = Kalshi(MODE)
         self.stop = False
         self.day, self.day_start_value = None, None
+        self.mark_cache = {}
         self.last_fill_ts = int(time.time())
         self.t_start = time.time()
         self.last_stop_check, self.last_err_alert, self.err_count = 0.0, 0.0, 0
@@ -368,6 +369,25 @@ class Bot:
         if left:
             notify(f"cancel_all ({reason}) left {left} orders resting -- check kalshi.com", prio="high")
 
+    def fallback_mark(self, ticker):
+        """YES value for a position without a live mid: 1/0 once the result is in, else the last trade (cached 5 min)."""
+        c = self.mark_cache.get(ticker)
+        if c and (c[1] == "final" or time.time() - c[2] < 300):
+            return c[0]
+        try:
+            m = self.k.req("GET", f"/markets/{ticker}").get("market", {})
+        except Exception as e:
+            log.warning(f"mark {ticker}: {e}"); return c[0] if c else None
+        res = str(m.get("result", "")).lower()
+        if res in ("yes", "no"):
+            v, kind = (1.0 if res == "yes" else 0.0), "final"
+        else:
+            lp = num(m.get("last_price_dollars")) or num(m.get("last_price")) / 100
+            v, kind = (lp if 0 < lp < 1 else None), "last"
+        if v is not None:
+            self.mark_cache[ticker] = (v, kind, time.time())
+        return v
+
     def markets(self):
         out = []
         for s in SERIES:
@@ -398,9 +418,19 @@ class Bot:
                     log.warning(f"book {tk}: {e}")
                     continue
                 y, n = books[tk]
-                if y and n:
+                if y and n and (1 - n[0][0]) - y[0][0] <= 0.10:
                     marks[tk] = (y[0][0] + 1 - n[0][0]) / 2
                 bids[tk] = (y[0][0] if y else 0.0, n[0][0] if n else 0.0)
+        # positions with no usable mid (market closed awaiting settlement, or a dead book with a 10c+ spread): value
+        # them from the market's result once decided, else its last trade -- never a flat 50c (which made the daily
+        # loss stop fire on a phantom -$62 when yesterday's closed markets settled overnight)
+        for t in pos:
+            if pos[t] and t not in marks:
+                m = self.fallback_mark(t) if live else None
+                if m is not None:
+                    marks[t] = m
+                    if t not in bids:                       # closed market: the decided value is what it pays
+                        bids[t] = (m, 1 - m)
 
         # risk: budget and daily loss
         if live:
@@ -424,8 +454,8 @@ class Bot:
                  budget=round(budget, 2), loss_limit=round(max_loss, 2), used_cost=round(used, 2), used_mark=round(used_mark, 2))
             if pnl_today < -max_loss:
                 self.cancel_all(f"daily loss {pnl_today:.2f}")
-                log.warning("daily loss limit hit; pausing until tomorrow (UTC)")
-                notify(f"Daily loss limit hit ({pnl_today:+.2f}); orders cancelled, paused until tomorrow (UTC)", prio="high")
+                log.warning("daily loss limit hit; pausing until midnight Central")
+                notify(f"Daily loss limit hit ({pnl_today:+.2f}); orders cancelled, paused until midnight Central", prio="high")
                 return "paused"
             self.record_fills()
             if int(time.time()) % 3600 < LOOP_S * 2:
