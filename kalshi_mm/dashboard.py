@@ -109,18 +109,26 @@ Read-only page; it never trades.</div></main></body></html>""")
     return "".join(h)
 
 
+def refresher():
+    """Rebuild the page in the background every CACHE_S seconds; requests always get the latest finished copy
+    instantly (building takes 5-10 s: one Kalshi book lookup per open position)."""
+    while True:
+        try:
+            page = build_page()
+        except Exception as e:
+            page = f"<pre>dashboard error: {html.escape(str(e))}</pre>"
+        with _cache["lock"]:
+            _cache["page"], _cache["t"] = page, time.time()
+        time.sleep(CACHE_S)
+
+
 class H(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path not in ("/", "/index.html"):
             self.send_response(404); self.end_headers(); return
         with _cache["lock"]:
-            if time.time() - _cache["t"] > CACHE_S:
-                try:
-                    _cache["page"] = build_page()
-                except Exception as e:
-                    _cache["page"] = f"<pre>dashboard error: {html.escape(str(e))}</pre>"
-                _cache["t"] = time.time()
-            page = _cache["page"].encode()
+            page = (_cache["page"] or "<meta http-equiv='refresh' content='5'><p style='font-family:sans-serif'>"
+                    "Dashboard starting -- first load takes ~10 seconds...</p>").encode()
         self.send_response(200)
         self.send_header("Content-Type", "text/html; charset=utf-8")
         self.send_header("Cache-Control", "no-store")
@@ -132,4 +140,5 @@ class H(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
+    threading.Thread(target=refresher, daemon=True).start()
     ThreadingHTTPServer(("127.0.0.1", PORT), H).serve_forever()
