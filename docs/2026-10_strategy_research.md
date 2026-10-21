@@ -2473,3 +2473,14 @@ Holdout (Oct 2025 - Oct 2026, ~3,000 city-days per price band):
   decided; a standing 97-99c ASK is not a decided bucket -- 99c asks lose 1.7%, not 1%.
 - Chain at 14:00 local (best-priced 97-99c side each day, whole stake rolled): holdout 367 legs, 7 losses (1.9%),
   first wipe-out at leg 18, +1.04% per winning leg -> about -0.9% expected per leg. Chaining compounds a negative edge.
+
+## Live weather bot diagnosis, first 3 days (Oct 21, 2026) -- favourite-only quoting
+`kalshi_mm/diagnose.py` on 1,325 live fills (5,633 contracts; 3,214 in finished markets). NB: analytics before this date
+read Kalshi's ask fills ('side: no, action: sell', book_side 'ask') as long YES -- half the fills scored backwards in
+report/dashboard/diagnose; fixed (`report.fill_yes`, by book_side). Corrected live results, per contract to settlement:
+overall ~-0.8c; SWEEP fills -0.0c, DRIFT fills (single print / gradual) -3.2c; 5-min markouts -1 to -2c.
+By price paid for the side held: <20c -8.6c, 20-50c -9.2c, 50-80c +7.2c, 80c+ +11.7c.
+Backtest (bot's deep fills 6-48h), per city-day, dev / holdout: <20c +0.1 / -1.2c (t -2.1); 20-50c -1.5 / -5.0c (t -6.8);
+50-80c +6.3 / +7.6c (t 9.6); 80c+ +4.8 / +4.8c (t 10.1). Favourite-side-only fills: +5.4c (t 6.6) / +6.0c (t 11.8).
+The original per-contract average hid that the long-shot side loses. Change: FAV_MIN=0.5 -- the bot only adds inventory on
+the side priced >= 50c; reducing orders always allowed (`bot.favourite_only`). Roughly halves fills.

@@ -30,6 +30,11 @@ SERIES = E("SERIES", "KXHIGHNY,KXHIGHCHI,KXHIGHLAX,KXHIGHMIA,KXHIGHPHIL,KXHIGHDE
 OFFSET = float(E("OFFSET_C", "2")) / 100          # cents behind the best bid
 SIZE = int(E("SIZE", "5"))                        # contracts per quote
 INV_CAP = int(E("INV_CAP", "25"))                 # max |net position| per market, contracts
+# only take on inventory in the FAVOURITE side (priced >= FAV_MIN): live fills (Oct 19-21) and the 2021-26 backtest
+# agree -- fills that leave the bot holding a < 50c side lose (holdout -1.2 / -5.0c per city-day), favourite-side fills
+# win (+7.6 / +4.8c); favourite-only = +6.0c per city-day (t 11.8). Orders that REDUCE a position are always allowed.
+# FAV_MIN=0 turns the filter off.
+FAV_MIN = float(E("FAV_MIN", "0.5"))
 EVENT_CAP = float(E("EVENT_CAP", "30"))           # max total |contracts| across one event (city-day: all its buckets),
                                                   # held + resting orders that would add to it. The buckets of one
                                                   # city-day are one temperature, so they're one bet.
@@ -37,6 +42,11 @@ EVENT_CAP = float(E("EVENT_CAP", "30"))           # max total |contracts| across
 
 def event_of(ticker):
     return ticker.rsplit("-", 1)[0]
+
+
+def favourite_only(want, pos):
+    """Drop quotes that would ADD inventory on a side priced below FAV_MIN (price = what we'd pay for that side)."""
+    return {sd: px for sd, px in want.items() if px >= FAV_MIN or not adds_exposure(sd, pos)}
 
 
 def adds_exposure(side, pos):
@@ -485,6 +495,8 @@ class Bot:
                     log.warning(f"trim cancel: {e}")
         for tk, (y, n) in books.items():
             want = targets(y, n, pos.get(tk, 0.0), hours.get(tk, -1))
+            if FAV_MIN > 0:
+                want = favourite_only(want, pos.get(tk, 0.0))
             ev = event_of(tk)
             if live and ev_held.get(ev, 0.0) + SIZE > EVENT_CAP:     # event full: only quote sides that reduce it
                 want = {sd: px for sd, px in want.items() if not adds_exposure(sd, pos.get(tk, 0.0))}

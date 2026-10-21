@@ -42,6 +42,8 @@ INV_CAP=25
 # max contracts across all buckets of one city-day (they're one temperature = one bet)
 EVENT_CAP=30
 OFFSET_C=2
+# only add inventory on the side priced >= FAV_MIN (long-shot fills lose; 0 = off)
+FAV_MIN=0.5
 # quote only 6-48h before close (the per-fill study found the last 6h earns ~nothing)
 MIN_HOURS=6
 MAX_HOURS=48

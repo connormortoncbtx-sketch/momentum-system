@@ -83,7 +83,16 @@ def test_fallback_mark():
     assert K.calls == n                                  # decided results cached for good, last trades for 5 min
 
 
+def test_favourite_only():
+    want = {"yes": 0.18, "no": 0.78}                     # a 20c bucket: bid YES 18c (long shot), bid NO 78c (favourite)
+    assert B.favourite_only(want, 0.0) == {"no": 0.78}    # flat: only the favourite-side quote
+    assert B.favourite_only(want, -10.0) == {"yes": 0.18, "no": 0.78}  # short YES (holding NO): buying YES reduces -> kept
+    want = {"yes": 0.70, "no": 0.26}
+    assert B.favourite_only(want, 0.0) == {"yes": 0.70}
+    assert B.favourite_only(want, 8.0) == {"yes": 0.70, "no": 0.26}   # long YES: buying NO reduces -> kept
+
+
 if __name__ == "__main__":
     for f in (test_targets, test_order_side, test_order_price, test_event_cap_helpers, test_sign_roundtrip,
-              test_day_baseline_survives_restart, test_fallback_mark):
+              test_day_baseline_survives_restart, test_fallback_mark, test_favourite_only):
         f(); print("ok", f.__name__)
