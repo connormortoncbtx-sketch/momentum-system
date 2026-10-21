@@ -1,5 +1,5 @@
 {
- "since": "2026-10-20T17:31:11-04:00",
+ "since": "2026-10-21T12:41:14-04:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -1195,8 +1195,8 @@
    "decided": "2026-10-20T13:29:54.630465-04:00",
    "event_type": "exec_departure",
    "summary": "CEO Cheryl Beranek to retire March 31, 2027; Board initiating external/internal search.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-21",
+   "entry": 29.72
   },
   {
    "book": "short_bad_news",
@@ -1215,8 +1215,8 @@
    "decided": "2026-10-20T13:30:24.283202-04:00",
    "event_type": "dilution_other",
    "summary": "1-for-20 reverse stock split effective October 20, 2026; company has mounting losses.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-21",
+   "entry": 6.0
   },
   {
    "book": "short_bad_news",
@@ -1225,8 +1225,8 @@
    "decided": "2026-10-20T13:30:30.864792-04:00",
    "event_type": "restructuring",
    "summary": "Post-acquisition restructuring with $1.9M annualized cost synergies; $177K one-time exit costs expected.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-21",
+   "entry": 5.24
   },
   {
    "book": "short_bad_news",
@@ -1235,8 +1235,8 @@
    "decided": "2026-10-20T13:30:36.641888-04:00",
    "event_type": "clinical_positive",
    "summary": "Positive Phase 2 topline results for RAP-219 in bipolar mania, met primary endpoint with statistical significance.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-21",
+   "entry": 29.91
   },
   {
    "book": "long_contract_win",
@@ -1245,8 +1245,8 @@
    "decided": "2026-10-20T13:30:38.574140-04:00",
    "event_type": "contract_win",
    "summary": "Year 4 of $45.1M NIH grant awarded; $7.2M subaward from NYU for ALS therapy program.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-21",
+   "entry": 3.76
   },
   {
    "book": "long_contract_div",
@@ -1255,8 +1255,9 @@
    "decided": "2026-10-20T13:30:38.574140-04:00",
    "event_type": "contract_win",
    "summary": "Year 4 of $45.1M NIH grant awarded; $7.2M subaward from NYU for ALS therapy program.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-21",
+   "entry": 3.76,
+   "vol60": 0.8475136069226435
   },
   {
    "book": "short_bad_news",
@@ -1265,8 +1266,8 @@
    "decided": "2026-10-21T02:15:15.001694-04:00",
    "event_type": "equity_financing",
    "summary": "Biotech raises $95.1M second tranche post-FDA IND clearance; massive shareholder dilution ahead.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-21",
+   "entry": 25.78
   },
   {
    "book": "short_bad_news",
@@ -1275,8 +1276,8 @@
    "decided": "2026-10-21T02:15:18.243181-04:00",
    "event_type": "exec_departure",
    "summary": "Three senior executives (CFO, COO, CLO) departed simultaneously; interim CFO appointed.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-21",
+   "entry": 3.55
   },
   {
    "book": "short_bad_news",
@@ -1285,8 +1286,8 @@
    "decided": "2026-10-21T02:15:21.692324-04:00",
    "event_type": "restructuring",
    "summary": "Company exiting retail mortgage channels via CMG sale; $6-7M restructuring charges anticipated.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-21",
+   "entry": 13.8
   },
   {
    "book": "short_bad_news",
@@ -1295,8 +1296,8 @@
    "decided": "2026-10-21T02:15:29.214785-04:00",
    "event_type": "buyback_dividend",
    "summary": "Board authorizes $15M share buyback; confidence in long-term strategy and contracted revenue.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-21",
+   "entry": 2.67
   },
   {
    "book": "short_bad_news",
@@ -1305,8 +1306,8 @@
    "decided": "2026-10-21T02:15:39.250327-04:00",
    "event_type": "equity_financing",
    "summary": "Company raised ~$5M via unregistered equity and warrant issuance; significant dilution",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-21",
+   "entry": 3.05
   },
   {
    "book": "short_bad_news",
@@ -1315,8 +1316,8 @@
    "decided": "2026-10-21T02:15:43.557956-04:00",
    "event_type": "exec_departure",
    "summary": "Chief Information & Digital Officer Renato Derraik resigns, effective November 6, 2026.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-21",
+   "entry": 35.47
   },
   {
    "book": "short_bad_news",
@@ -1325,8 +1326,8 @@
    "decided": "2026-10-21T02:15:56.109561-04:00",
    "event_type": "litigation",
    "summary": "Company filed declaratory judgment action seeking clarity on NY mortgage servicing fee regulation amid regulator inquiries.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-21",
+   "entry": 25.9
   },
   {
    "book": "short_bad_news",
@@ -1335,8 +1336,8 @@
    "decided": "2026-10-21T02:16:03.396917-04:00",
    "event_type": "acquisition",
    "summary": "Acquired software platform core from Hong Kong company for 4M deferred shares; significant dilution, vague valuation.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-21",
+   "entry": 2.48
   },
   {
    "book": "short_bad_news",
@@ -1345,8 +1346,8 @@
    "decided": "2026-10-21T02:16:05.796704-04:00",
    "event_type": "equity_financing",
    "summary": "Company closed private placement of 6.1M shares with registration rights agreement.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-21",
+   "entry": 41.2
   },
   {
    "book": "long_contract_win",
@@ -1355,8 +1356,8 @@
    "decided": "2026-10-21T02:16:10.466000-04:00",
    "event_type": "contract_win",
    "summary": "25-year Master Energy Purchase Agreement with Great Plains Development Authority for 150 MW initial phase targeting September 2028 commercial operation.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-21",
+   "entry": 2.91
   },
   {
    "book": "long_contract_div",
@@ -1365,19 +1366,101 @@
    "decided": "2026-10-21T02:16:10.466000-04:00",
    "event_type": "contract_win",
    "summary": "25-year Master Energy Purchase Agreement with Great Plains Development Authority for 150 MW initial phase targeting September 2028 commercial operation.",
+   "entry_date": "2026-10-21",
+   "entry": 2.91,
+   "vol60": 1.0206579658168644
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "TRON",
+   "accession": "0001493152-26-047855",
+   "decided": "2026-10-21T13:37:21.747057-04:00",
+   "event_type": "partnership",
+   "summary": "Company achieves #1 Super Representative node ranking on TRX network with 3.71B delegated tokens",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "SWBI",
+   "accession": "0001193125-26-427316",
+   "decided": "2026-10-21T13:37:25.057311-04:00",
+   "event_type": "acquisition",
+   "summary": "Smith & Wesson acquires Savage Arms for ~$165M in stock-cash deal; 20% dilution.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "INMB",
+   "accession": "0001213900-26-111207",
+   "decided": "2026-10-21T13:37:34.633018-04:00",
+   "event_type": "partnership",
+   "summary": "Partnership with Uniphar for Ebstrocel international commercialization; pre-MAA submitted to UK MHRA.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ELMT",
+   "accession": "0001213900-26-111199",
+   "decided": "2026-10-21T13:37:41.879736-04:00",
+   "event_type": "partnership",
+   "summary": "Company invests CAD 35M in Blue Moon Metals for board seat, warrants, and dilution protection rights.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CTBI",
+   "accession": "0000350852-26-000075",
+   "decided": "2026-10-21T13:37:45.043886-04:00",
+   "event_type": "prelim_results_good",
+   "summary": "Q3 2026 earnings beat YoY but missed QoQ; credit quality deteriorating sharply.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "TRAD",
+   "accession": "0001493152-26-047836",
+   "decided": "2026-10-21T13:38:00.573313-04:00",
+   "event_type": "acquisition",
+   "summary": "APEX acquiring Korai Flix for $3.5B in stock; SPAC merger with Delaware redomiciliation",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "PDSB",
+   "accession": "0001140361-26-040283",
+   "decided": "2026-10-21T13:38:05.177810-04:00",
+   "event_type": "routine",
+   "summary": "Company updates corporate presentation deck highlighting oncology drug programs PDS0301 and PDS0101.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "OPAL",
+   "accession": "0001628280-26-066561",
+   "decided": "2026-10-21T13:38:07.740995-04:00",
+   "event_type": "exec_departure",
+   "summary": "Co-CEO Jonathan Maurer retiring March 31, 2027; Adam Comora becomes sole CEO; leadership search underway.",
    "entry_date": null,
    "entry": null
   }
  ],
  "div": {
-  "nav": 98.5486106349334,
+  "nav": 99.03729770946713,
   "closed": [],
-  "last_date": "2026-10-20",
+  "last_date": "2026-10-21",
   "history": {
    "2026-10-15": 100.3592,
    "2026-10-16": 98.6604,
    "2026-10-19": 97.5899,
-   "2026-10-20": 98.5486
+   "2026-10-20": 98.5486,
+   "2026-10-21": 99.0373
   }
  }
 }
