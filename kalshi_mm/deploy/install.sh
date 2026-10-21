@@ -125,17 +125,18 @@ WantedBy=timers.target
 EOF
 cat > /usr/local/bin/kmm <<'KMM'
 #!/usr/bin/env bash
-# kmm status | stop | resume | logs [n] | report | positions | lottery | update      (run with sudo)
+# kmm status | stop | resume | logs [n] | report | positions | diagnose | lottery | update      (run with sudo)
 case "${1:-status}" in
   status) systemctl --no-pager status kmm | head -5; tail -n 1 /home/kmm/data/snapshots.jsonl 2>/dev/null; echo ;;
   stop)   sudo -u kmm touch /home/kmm/data/KILL; echo "kill switch set: the bot cancels all orders within ~30s and stays stopped" ;;
   resume) rm -f /home/kmm/data/KILL; systemctl restart kmm; echo "resumed" ;;
   logs)   journalctl -u kmm -n "${2:-40}" --no-pager ;;
   report) sudo -u kmm bash -c 'set -a; . /etc/kmm/env; /home/kmm/venv/bin/python /home/kmm/app/kalshi_mm/report.py' ;;
+  diagnose) sudo -u kmm bash -c 'set -a; . /etc/kmm/env; /home/kmm/venv/bin/python /home/kmm/app/kalshi_mm/diagnose.py' ;;
   positions) sudo -u kmm bash -c 'set -a; . /etc/kmm/env; /home/kmm/venv/bin/python /home/kmm/app/kalshi_mm/positions.py' ;;
   lottery) cat /home/kmm/data/lottery.json 2>/dev/null || echo "no weekly roll yet"; echo; journalctl -u kmm-lottery -n "${2:-10}" --no-pager | grep -v systemd ;;
   update) exec bash -c "curl -fsSL https://raw.githubusercontent.com/connormortoncbtx-sketch/momentum-system/main/kalshi_mm/deploy/install.sh | bash" ;;  # exec: this script gets rewritten mid-update
-  *) echo "usage: kmm status|stop|resume|logs [n]|report|positions|lottery|update" ;;
+  *) echo "usage: kmm status|stop|resume|logs [n]|report|positions|diagnose|lottery|update" ;;
 esac
 KMM
 chmod 755 /usr/local/bin/kmm
