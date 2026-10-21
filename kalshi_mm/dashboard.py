@@ -22,6 +22,99 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import bot as B          # noqa: E402
 import positions as P    # noqa: E402
 import report as R       # noqa: E402
+import history as HI     # noqa: E402
+
+
+def svg_line(pts, band=None, w=640, h=170, fmt=lambda v: f"{v:+.0f}", zero=True):
+    """pts: [(label, y)]; band: [(lo, hi)] per point (optional). Inline SVG, theme colours via CSS variables."""
+    if len(pts) < 2:
+        return "<div class='mut'>Not enough data yet.</div>"
+    ys = [y for _, y in pts] + ([b for lo_hi in (band or []) for b in lo_hi if b == b] if band else []) + ([0] if zero else [])
+    lo, hi = min(ys), max(ys)
+    if hi - lo < 1e-9:
+        hi, lo = hi + 1, lo - 1
+    pl, pr, pt, pb = 74, 12, 14, 34
+    X = lambda i: pl + i * (w - pl - pr) / (len(pts) - 1)
+    Y = lambda v: pt + (hi - v) * (h - pt - pb) / (hi - lo)
+    out = [f"<svg viewBox='0 0 {w} {h}' width='100%' role='img' style='display:block'>"]
+    if band:
+        up = [f"{X(i):.1f},{Y(b[1]):.1f}" for i, b in enumerate(band) if b[1] == b[1]]
+        dn = [f"{X(i):.1f},{Y(b[0]):.1f}" for i, b in reversed(list(enumerate(band))) if b[0] == b[0]]
+        if up:
+            out.append(f"<polygon points='{' '.join(up + dn)}' fill='var(--mut)' opacity='.18'/>")
+    if zero and lo < 0 < hi:
+        out.append(f"<line x1='{pl}' x2='{w - pr}' y1='{Y(0):.1f}' y2='{Y(0):.1f}' stroke='var(--mut)' stroke-dasharray='4 4' stroke-width='1'/>")
+    last = pts[-1][1]
+    col = "var(--pos)" if last >= 0 else "var(--neg)"
+    out.append(f"<polyline fill='none' stroke='{col}' stroke-width='2.2' points='{' '.join(f'{X(i):.1f},{Y(y):.1f}' for i, (_, y) in enumerate(pts))}'/>")
+    for v in (hi, lo):
+        out.append(f"<text x='{pl - 6}' y='{Y(v) + 4:.1f}' text-anchor='end' font-size='20' fill='var(--mut)'>{fmt(v)}</text>")
+    for i in (0, len(pts) - 1):
+        out.append(f"<text x='{X(i):.1f}' y='{h - 8}' text-anchor='{'start' if i == 0 else 'end'}' font-size='20' fill='var(--mut)'>{html.escape(str(pts[i][0]))}</text>")
+    out.append("</svg>")
+    return "".join(out)
+
+
+def svg_bars(pts, w=640, h=150, fmt=lambda v: f"{v:+.0f}"):
+    if not pts:
+        return "<div class='mut'>No settled days yet.</div>"
+    ys = [y for _, y in pts] + [0]
+    lo, hi = min(ys), max(ys)
+    if hi - lo < 1e-9:
+        hi += 1
+    pl, pr, pt, pb = 74, 12, 14, 34
+    bw = (w - pl - pr) / len(pts)
+    Y = lambda v: pt + (hi - v) * (h - pt - pb) / (hi - lo)
+    out = [f"<svg viewBox='0 0 {w} {h}' width='100%' role='img' style='display:block'>",
+           f"<line x1='{pl}' x2='{w - pr}' y1='{Y(0):.1f}' y2='{Y(0):.1f}' stroke='var(--mut)' stroke-width='1'/>"]
+    for i, (lab, y) in enumerate(pts):
+        x = pl + i * bw + bw * .15
+        top, bot = (Y(y), Y(0)) if y >= 0 else (Y(0), Y(y))
+        out.append(f"<rect x='{x:.1f}' y='{top:.1f}' width='{bw * .7:.1f}' height='{max(bot - top, 1):.1f}' rx='2' "
+                   f"fill='var(--{'pos' if y >= 0 else 'neg'})'><title>{html.escape(str(lab))}: {fmt(y)}</title></rect>")
+    for v in (hi, lo):
+        out.append(f"<text x='{pl - 6}' y='{Y(v) + 4:.1f}' text-anchor='end' font-size='20' fill='var(--mut)'>{fmt(v)}</text>")
+    for i in (0, len(pts) - 1):
+        out.append(f"<text x='{pl + i * bw + bw / 2:.1f}' y='{h - 8}' text-anchor='middle' font-size='20' fill='var(--mut)'>{html.escape(str(pts[i][0]))}</text>")
+    out.append("</svg>")
+    return "".join(out)
+
+
+def history_cards():
+    out = []
+    try:
+        acc = HI.account_series()
+        pts = [(t.strftime("%b %d %-I%p"), v) for t, v in acc[-24 * 21:]]
+        note = "" if os.environ.get("DEPOSIT_HISTORY") else " · set DEPOSIT_HISTORY so early hours aren't shown against later deposits"
+        out.append(f"<div class='card'><h2>Account vs money deposited, hourly{note}</h2>"
+                   f"{svg_line(pts, fmt=lambda v: f'{v:+.0f}')}</div>")
+        days = HI.settled_days()
+        if days:
+            cum, run = [], 0.0
+            for d, usd, cpc, ev in days:
+                run += usd; cum.append((d.strftime("%b %d"), run))
+            rows_ = "".join(f"<tr><td>{d:%a %b %d}</td><td>{ev}</td><td class='{'pos' if usd >= 0 else 'neg'}'>{usd:+.2f}</td>"
+                            f"<td class='{'pos' if cpc >= 0 else 'neg'}'>{cpc:+.1f}c</td></tr>" for d, usd, cpc, ev in reversed(days))
+            out.append(f"<div class='card'><h2>Settled P&amp;L by market day ($) · running total {run:+.2f}</h2>"
+                       f"{svg_bars([(d.strftime('%b %d'), usd) for d, usd, _, _ in days], fmt=lambda v: f'{v:+.0f}')}"
+                       f"{svg_line(cum, h=120, fmt=lambda v: f'{v:+.0f}')}"
+                       f"<div class='scroll'><table><tr><th>Market day</th><th>City-days</th><th>$</th><th>per contract</th></tr>{rows_}</table></div></div>")
+        cv = HI.convergence()
+        if cv:
+            n, m, b = cv[-1]
+            verdict = ("too early to tell" if n < 30 or b != b else
+                       ("edge is positive (band above 0)" if m - b > 0 else ("edge is negative (band below 0)" if m + b < 0 else "band still straddles 0")))
+            out.append(f"<div class='card'><h2>Is it working? Edge per contract, running average over settled city-days "
+                       f"(shaded = ±2 standard errors; research target +2 to +3c; decision at ~50)</h2>"
+                       f"{svg_line([(f'{i} city-days', mm) for i, mm, _ in cv], band=[(mm - bb, mm + bb) for _, mm, bb in cv], fmt=lambda v: f'{v:+.0f}c')}"
+                       f"<div>Now: <b class='{'pos' if m >= 0 else 'neg'}'>{m:+.1f}c</b> ± {b if b == b else float('nan'):.1f}c over {n} city-days — {verdict}</div></div>")
+        fd = HI.fills_per_day()
+        if fd:
+            out.append(f"<div class='card'><h2>Contracts filled per day</h2>"
+                       f"{svg_bars([(d.strftime('%b %d'), v) for d, v in fd[-30:]], h=120, fmt=lambda v: f'{v:.0f}')}</div>")
+    except Exception as e:
+        out.append(f"<div class='card'><h2>History</h2><div class='neg'>history failed: {html.escape(str(e))}</div></div>")
+    return "".join(out)
 
 PORT = int(os.environ.get("DASH_PORT", "8787"))
 CACHE_S = 45
@@ -87,6 +180,7 @@ pre{{white-space:pre-wrap;font-size:12.5px;margin:0}} .dot{{display:inline-block
 <div><div class="mut">If sold now</div><div class="big {cls(sell - dep)}">{money(sell - dep, True)}</div><div class="mut">{money(sell)}</div></div>
 <div><div class="mut">Expected at settlement</div><div class="big {cls(exp - dep)}">{money(exp - dep, True)}</div><div class="mut">{money(exp)}</div></div>
 <div><div class="mut">Cash</div><div class="big">{money(cash)}</div><div class="mut">{len(rows)} open positions</div></div></div></div>""")
+    h.append(history_cards())
     for day in sorted({r["day"] for r in rows}):
         g = [r for r in rows if r["day"] == day]
         tc, te = sum(r["cost"] for r in g), sum(r["ev"] for r in g)
