@@ -72,11 +72,8 @@ def settled_fills():
         tk = x.get("ticker")
         if tk not in result:
             continue
-        c = R.num(x.get("count_fp", x.get("count")))
-        side, act = str(x.get("side", "")).lower(), str(x.get("action", "")).lower()
-        p = R.dollars_field(x, "yes_price" if side == "yes" else "no_price") / 100
-        win = result[tk] if side == "yes" else 1 - result[tk]
-        pnl = (win - p if act == "buy" else p - win) * c * 100 - R.dollars_field(x, "fee_cost")
+        d, yp, c = R.fill_yes(x)
+        pnl = d * (result[tk] - yp) * c * 100 - R.dollars_field(x, "fee_cost")
         out.append(dict(day=market_day(tk), event=tk.rsplit("-", 1)[0], pnl_c=pnl, n=c))
     return out
 

@@ -132,24 +132,19 @@ def main():
     rows, t_start = [], time.time()
     for i, x in enumerate(fills):
         tk = x.get("ticker"); t = ts(x.get("created_time"))
-        side, act = str(x.get("side", "")).lower(), str(x.get("action", "")).lower()
-        # normalise to "we bought S at price p" where S is YES or NO
-        p = R.dollars_field(x, "yes_price" if side == "yes" else "no_price") / 100
-        held = side if act == "buy" else ("no" if side == "yes" else "yes")
-        p_held = p if act == "buy" else 1 - p
-        cnt = B.num(x.get("count_fp", x.get("count")))
+        d, yes_fill, cnt = R.fill_yes(x)                       # +1 long YES (bid fill), -1 short YES (ask fill)
+        held = "yes" if d > 0 else "no"
+        p_held = yes_fill if d > 0 else 1 - yes_fill            # price paid for the side held
         m = meta(k, c, tk)
         hours = (ts(m["close"]) - t).total_seconds() / 3600 if m.get("close") else None
         n_prints, span = tape_at(k, c, tk, t)
         cm = candles(k, c, tk, t - dt.timedelta(minutes=2), t + dt.timedelta(minutes=70))
         m5, m60 = mid_after(cm, t, 5), mid_after(cm, t, 60)
-        sign = 1 if held == "yes" else -1                     # YES mid up is good for a YES holder
+        sign = d                                              # YES mid up is good for a YES holder
         res = str(m.get("result") or "").lower()
         settle = None
         if res in ("yes", "no"):
-            win = (1.0 if res == "yes" else 0.0) if held == "yes" else (1.0 if res == "no" else 0.0)
-            settle = (win - p_held) * 100
-        yes_fill = p if side == "yes" else 1 - p
+            settle = d * ((1.0 if res == "yes" else 0.0) - yes_fill) * 100
         rows.append(dict(c=cnt, kind="SWEEP" if n_prints >= 2 and span >= 2 else "DRIFT", hours=hours,
                          price=p_held, held=held.upper(), city=tk.split("-")[0].replace("KXHIGHT", "").replace("KXHIGH", ""),
                          m5=None if m5 is None else sign * (m5 - yes_fill) * 100,

@@ -50,6 +50,23 @@ def dollars_field(d, key):
     return num(v)
 
 
+def fill_yes(x):
+    """(direction, yes_price $, contracts) for one fill: direction +1 = the bot went long YES (bought YES), -1 = short
+    YES (sold YES = bought NO). Uses book_side ('bid'/'ask' on the YES book), which is unambiguous; Kalshi labels the
+    bot's ask fills 'side: no, action: sell', which the old parsing read as long YES -- half of all fills scored backwards
+    (fixed Oct 21, 2026). Classic side/action only as a fallback for records without book_side."""
+    yp = dollars_field(x, "yes_price") / 100
+    if not yp and (x.get("no_price") is not None or x.get("no_price_dollars") is not None):
+        yp = 1 - dollars_field(x, "no_price") / 100
+    bs = str(x.get("book_side") or "").lower()
+    if bs in ("bid", "ask"):
+        d = 1 if bs == "bid" else -1
+    else:
+        side, act = str(x.get("side", "")).lower(), str(x.get("action", "")).lower()
+        d = (1 if side == "yes" else -1) * (1 if act == "buy" else -1)
+    return d, yp, num(x.get("count_fp", x.get("count")))
+
+
 def market_results(fills=None, st=None):
     """{ticker: 1.0/0.0} for every market the bot ever filled in that has a result. Settlement records only exist
     where a position was still held at settlement; markets fully traded in and out never get one, so their result is
@@ -116,12 +133,9 @@ def build():
         R = result.get(x.get("ticker"))
         if R is None:
             continue
-        c = num(x.get("count_fp", x.get("count")))
-        side, act = str(x.get("side", "")).lower(), str(x.get("action", "")).lower()
-        p = dollars_field(x, "yes_price" if side == "yes" else "no_price") / 100
-        win = R if side == "yes" else 1 - R                     # payout of the side traded
+        d, yp, c = fill_yes(x)
         fee = dollars_field(x, "fee_cost")
-        pl = (win - p if act == "buy" else p - win) * c * 100
+        pl = d * (R - yp) * c * 100
         f_pnl += pl; f_fee += fee
         f_n += 1; f_cnt += c
         tk = str(x.get("ticker", ""))
