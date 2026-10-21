@@ -65,9 +65,7 @@ def market_day(ticker):
 
 
 def settled_fills():
-    st = [s.get("settlement") or s for s in R.rows("settlements")]
-    result = {s.get("ticker"): (1.0 if str(s.get("market_result")).lower() == "yes" else 0.0)
-              for s in st if str(s.get("market_result", "")).lower() in ("yes", "no")}
+    result = R.market_results()
     out = []
     for f in R.rows("fills"):
         x = f.get("fill") or f

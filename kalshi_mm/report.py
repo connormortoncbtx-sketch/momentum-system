@@ -50,6 +50,49 @@ def dollars_field(d, key):
     return num(v)
 
 
+def market_results(fills=None, st=None):
+    """{ticker: 1.0/0.0} for every market the bot ever filled in that has a result. Settlement records only exist
+    where a position was still held at settlement; markets fully traded in and out never get one, so their result is
+    looked up directly (public market endpoint) and cached in LOG_DIR/results_cache.json. Unknown/open -> absent."""
+    fills = rows("fills") if fills is None else fills
+    st = [s.get("settlement") or s for s in rows("settlements")] if st is None else st
+    out = {}
+    for s in st:
+        r = str(s.get("market_result", "")).lower()
+        if r in ("yes", "no"):
+            out[s.get("ticker")] = 1.0 if r == "yes" else 0.0
+    path = os.path.join(LOG, "results_cache.json")
+    try:
+        cache = json.load(open(path))
+    except Exception:
+        cache = {}
+    out.update({k: v for k, v in cache.items() if v is not None})
+    need = {(f.get("fill") or f).get("ticker") for f in fills} - set(out)
+    today = dt.datetime.now(dt.timezone.utc).date()
+    try:
+        import bot as B
+        k = B.Kalshi("dry")                                     # public endpoint, no keys needed
+    except Exception:
+        k = None
+    changed = False
+    for tk in sorted(t for t in need if t):
+        try:                                                    # only markets whose date has passed
+            d = tk.split("-")[1]
+            mday = dt.date(2000 + int(d[:2]), ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT",
+                                               "NOV", "DEC"].index(d[2:5]) + 1, int(d[5:7]))
+            if mday >= today or k is None:
+                continue
+            m = k.req("GET", f"/markets/{tk}").get("market", {})
+        except Exception:
+            continue
+        r = str(m.get("result", "")).lower()
+        if r in ("yes", "no"):
+            out[tk] = cache[tk] = 1.0 if r == "yes" else 0.0; changed = True
+    if changed:
+        json.dump(cache, open(path + ".tmp", "w")); os.replace(path + ".tmp", path)
+    return out
+
+
 def build():
     """The report text -- shared by the daily ntfy report and the dashboard."""
     today = dt.datetime.now(dt.timezone.utc).date().isoformat()
@@ -59,17 +102,13 @@ def build():
     st = [s.get("settlement") or s for s in rows("settlements")]
     pnl_c, n_contracts = 0.0, 0.0
     for s in st:
-        cost = cents(s, "yes_total_cost") + cents(s, "no_total_cost")
-        pnl_c += cents(s, "revenue") - cost
+        cost = dollars_field(s, "yes_total_cost") + dollars_field(s, "no_total_cost")
+        pnl_c += dollars_field(s, "revenue") - cost
         n_contracts += num(s.get("yes_count_fp", s.get("yes_count"))) + num(s.get("no_count_fp", s.get("no_count")))
     # The research's measure: EVERY fill in a settled market, valued at the result. Settlement records alone only
     # show the net position left at settlement; round trips (bought and later sold) net out before that, so the
     # settlement line on its own leans toward the inventory that went against the bot.
-    result = {}
-    for s in st:
-        r = str(s.get("market_result", "")).lower()
-        if r in ("yes", "no"):
-            result[s.get("ticker")] = 1.0 if r == "yes" else 0.0
+    result = market_results(fills, st)
     f_pnl, f_n, f_cnt, f_fee = 0.0, 0, 0.0, 0.0
     city = {}                                                   # series -> city-day -> [pnl cents, contracts]
     for f in fills:
@@ -103,7 +142,7 @@ def build():
             "BOTTOM LINE: set DEPOSITS_USD in /etc/kmm/env to see profit vs money put in\n"
     msg = (score + f"{today} | mode {last.get('mode', '?')} | balance ${last.get('balance', 0):.2f}, value ${last.get('value', 0):.2f}\n"
            f"fills today: {len(f_today)} ({contracts_today:.0f} contracts)\n"
-           f"ALL fills in settled markets: {f_n} fills, {f_cnt:.0f} contracts, P&L ${(f_pnl - f_fee) / 100:+.2f} "
+           f"ALL fills in finished markets: {f_n} fills, {f_cnt:.0f} contracts, P&L ${(f_pnl - f_fee) / 100:+.2f} "
            f"= {(f_pnl - f_fee) / f_cnt if f_cnt else float('nan'):+.2f}c/contract after ${f_fee / 100:.2f} fees "
            f"(target from per-fill study: +2-3c)\n"
            f"  of which still held at settlement: {len(st)} markets, {n_contracts:.0f} contracts, ${pnl_c / 100:+.2f} "

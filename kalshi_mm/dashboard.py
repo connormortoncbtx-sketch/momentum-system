@@ -180,6 +180,18 @@ pre{{white-space:pre-wrap;font-size:12.5px;margin:0}} .dot{{display:inline-block
 <div><div class="mut">If sold now</div><div class="big {cls(sell - dep)}">{money(sell - dep, True)}</div><div class="mut">{money(sell)}</div></div>
 <div><div class="mut">Expected at settlement</div><div class="big {cls(exp - dep)}">{money(exp - dep, True)}</div><div class="mut">{money(exp)}</div></div>
 <div><div class="mut">Cash</div><div class="big">{money(cash)}</div><div class="mut">{len(rows)} open positions</div></div></div></div>""")
+    try:
+        kb, kt = P.kalshi_truth()
+        h.append("<div class='card'><h2>Kalshi's own numbers (to reconcile with the app and with ours)</h2>"
+                 + "<div class='grid'>" + "".join(f"<div><div class='mut'>{html.escape(k)}</div><div class='big' style='font-size:20px'>"
+                                                 f"{money(v)}</div></div>" for k, v in kb.items())
+                 + f"<div><div class='mut'>realized P&amp;L, {kt['markets']} markets</div><div class='big {cls(kt['realized_pnl'])}' "
+                   f"style='font-size:20px'>{money(kt['realized_pnl'], True)}</div></div>"
+                 + f"<div><div class='mut'>fees paid</div><div class='big' style='font-size:20px'>{money(kt['fees_paid'])}</div></div>"
+                 + "</div><div class='mut'>Straight from Kalshi's API. Our bottom line = cash + open positions valued by us; if the app "
+                   "and this card disagree with it, these are the numbers to trust.</div></div>")
+    except Exception as e:
+        h.append(f"<div class='card'><h2>Kalshi's own numbers</h2><div class='neg'>unavailable: {html.escape(str(e))[:200]}</div></div>")
     h.append(history_cards())
     for day in sorted({r["day"] for r in rows}):
         g = [r for r in rows if r["day"] == day]

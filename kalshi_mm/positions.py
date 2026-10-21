@@ -53,6 +53,30 @@ def collect(k=None):
     return rows, bal
 
 
+def kalshi_truth(k=None):
+    """Kalshi's own figures, to reconcile against ours: the raw /portfolio/balance fields (in $) and, over every market
+    the account has touched (settled and unsettled), Kalshi's realized P&L, fees and amount traded."""
+    k = k or B.Kalshi(B.MODE)
+    b = k.req("GET", "/portfolio/balance", auth=True)
+    bal = {key: (B.num(v) if key.endswith("_dollars") or (isinstance(v, str) and "." in v) else B.num(v) / 100)
+           for key, v in b.items() if isinstance(v, (int, float, str)) and "ts" not in key and B.num(v, None) is not None}
+    tot = {"markets": 0, "realized_pnl": 0.0, "fees_paid": 0.0, "total_traded": 0.0}
+    cur = None
+    for _ in range(20):
+        q = dict(limit=1000, settlement_status="all")
+        if cur:
+            q["cursor"] = cur
+        d = k.req("GET", "/portfolio/positions", auth=True, **q)
+        for p in d.get("market_positions", []):
+            tot["markets"] += 1
+            for f in ("realized_pnl", "fees_paid", "total_traded"):
+                tot[f] += B.num(p[f + "_dollars"]) if p.get(f + "_dollars") is not None else B.num(p.get(f)) / 100
+        cur = d.get("cursor")
+        if not cur or not d.get("market_positions"):
+            break
+    return bal, tot
+
+
 def main():
     rows, bal = collect()
     print(f"{'day':8} {'city':5} {'bucket':7} {'side':4} {'n':>6} {'cost':>7} {'chance':>7} {'sell now':>9} {'exp. value':>10}")
@@ -71,6 +95,13 @@ def main():
     print(f"\nALL: cost ${tc:.2f} | sell now ${ts:.2f} | expected at settlement ${te:.2f} ({te - tc:+.2f} vs cost)")
     print(f"cash ${bal:.2f} -> account: sell-now ${bal + ts:.2f}, expected ${bal + te:.2f}"
           + (f" | vs ${dep:.2f} deposited: sell-now {bal + ts - dep:+.2f}, expected {bal + te - dep:+.2f}" if dep else ""))
+    try:
+        kb, kt = kalshi_truth()
+        print("\nKALSHI'S OWN NUMBERS: balance endpoint " + ", ".join(f"{k} ${v:,.2f}" for k, v in kb.items())
+              + f" | across {kt['markets']} markets: realized P&L ${kt['realized_pnl']:+,.2f}, fees ${kt['fees_paid']:,.2f}, "
+              f"traded ${kt['total_traded']:,.2f}")
+    except Exception as e:
+        print(f"(Kalshi's own numbers unavailable: {e})")
     print("('expected' uses current market odds -- for today's decided buckets that is ~the settlement value;"
           " * = book too thin, chance taken from the last trade)")
 
