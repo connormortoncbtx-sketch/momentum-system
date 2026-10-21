@@ -2449,3 +2449,15 @@ observations did arrive (59 in 40 min across 8 stations, 5-minute spacing), but:
 - **KNYC (Kalshi's NYC station) reports hourly only**, newest obs ~53 min old at the start.
 A decided-bucket snipe needs < ~10 min latency and F-level precision; the free feed gives neither. Parked unless a
 faster precise source appears (e.g. a paid ASOS 1-minute / Synoptic feed).
+
+## Market making on Polymarket US (sports) -- Oct 20, 2026: NOT TESTABLE FROM PUBLIC DATA, not pursued
+- Trade history (with aggressor side) is only in the institutional Report API (`/v1/report/trades/search|stats|csv`,
+  participant credentials); the docs say "there is no public/retail substitute". Public data is book-derived price
+  history only (`/v1/price-history`: 1-minute points for the last hours, 3-hour points beyond) -- no fills, so the
+  Kalshi-style deep-fill test can't be run. A real test would need a Polymarket US account + market-data API key and
+  ~2 weeks of recorded live trades.
+- Incentives (Oct 19 snapshot, 200 programs): all NBA player props, pools $5-300 per period, target size 1,000-2,000
+  contracts per side -- i.e. $500+ resting per side per prop to earn a full share, split with other makers, in markets
+  that reprice on injury/lineup news within seconds. Taker fee 0.0695 p(1-p) (as Kalshi), no maker rebate < $10M/mo.
+- Priors: Kalshi sports market making paid makers little; ForecastEx (thin, $0 maker fee) lost to informed sweeps.
+  Parked; revisit only if the Kalshi bot's live edge is confirmed and capital outgrows weather.
