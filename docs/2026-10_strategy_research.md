@@ -2484,3 +2484,12 @@ Backtest (bot's deep fills 6-48h), per city-day, dev / holdout: <20c +0.1 / -1.2
 50-80c +6.3 / +7.6c (t 9.6); 80c+ +4.8 / +4.8c (t 10.1). Favourite-side-only fills: +5.4c (t 6.6) / +6.0c (t 11.8).
 The original per-contract average hid that the long-shot side loses. Change: FAV_MIN=0.5 -- the bot only adds inventory on
 the side priced >= 50c; reducing orders always allowed (`bot.favourite_only`). Roughly halves fills.
+
+## Observation-window quote pulling (:45-:59 past the hour) -- Oct 22, 2026: REJECTED
+Live hint (`kmm diagnose`, pre-favourite-only fills, 777 settled contracts): fills at :45-:59 settled -7 to -8c vs +3 to
++6c at :15-:44 -- hourly station readings land ~:51-:56. `research/kalshi/minute_window.py` on the public archive,
+6-48h before close, within-city-day difference (window minus rest), t clustered by city-day:
+simulated deep fills, favourite side: dev -1.0c (t -0.9), holdout +0.4c (t 0.8); all deep fills holdout -0.1c (t -0.3);
+maker edge at the touch, favourite side, holdout -0.1c (t -0.3). No observation-window effect; the live pattern was noise
+in a small, long-shot-heavy sample. Quotes stay up all hour. Also: `diagnose` gained a closing-line ("vs close") column
+(mid at close - 6h vs fill), now with a 3h lookback and a count column.
