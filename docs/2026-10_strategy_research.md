@@ -2538,3 +2538,17 @@ the 4x-daily text products carry almost no news the price doesn't already have (
 NBM / HRRR). Trading into the "lag" as a taker: held to settlement, dev-best (GFS, entry run+4h, >= 10 pts) dev +5.4c
 (t 2.6) -> holdout +0.4c (t 0.4); exiting 2h later loses ~-3 to -4c everywhere (spread + fees). Rejected. Untested:
 the hourly gridded NBM / HRRR runs themselves (GRIB archives on AWS; heavy) -- the market's actual inputs.
+
+## What a real-time station feed must deliver -- Oct 22, 2026 (`research/kalshi/obs_value.py`): PROMISING
+Decided-bucket snipe (buy the certain side as a taker at traded prices <= 97c, after fee, margin 1F) on the trade
+sample, by reading delay x precision. Holdout 2025-26 / dev Jun-Dec 2024, cents per contract (city-days):
+| reading | 2 min | 10 min | 20 min | 30 min |
+| exact 5-min avg (F) | +12.1 (115) / +12.0 | +13.9 (41) / +11.7 | +14.2 (29) / +11.6 | +14.7 (22) / +10.0 |
+| whole C (free 5-min feeds) | +17.6 (193) / +17.3 | +20.0 (75) / +17.6 | +20.5 (54) / +16.5 | +21.1 (47) / +13.9 |
+| hourly only | +15.0 (8) | +9.2 (6) | +8.7 (5) | +5.5 (4) |
+Wrong calls 0.7-1.3% holdout (whole C), 0% dev. Whole-C readings flag MORE decided buckets and are wrong LESS often
+than the exact F averages -- the official high evidently sits closer to the C-rounded value. This REVERSES the Oct 20
+parking of the free NWS feed ("needs < 10 min and F precision" was an assumption, not a test): at the measured ~20 min
+delay and whole C it is +16 to +21c/contract in both periods. Caveats: trade-print prices are not guaranteed fills;
+the sample covers ~11% of markets and ~25-190 city-days; KNYC reports hourly only. Next: a paper shadow on the droplet
+that reads the NWS feed live, flags decided buckets and records the actual Kalshi ask and depth (no orders).
