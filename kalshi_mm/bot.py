@@ -526,7 +526,8 @@ class Bot:
                 got[tk] = got[tk][1]; from_ws += 1; ws_tk.append(tk)
         if ws_tk and time.time() - self.last_ws_check > WS_CHECK_S:
             self.last_ws_check = time.time()
-            self.ws_check(ws_tk[:: max(1, len(ws_tk) // 3)][:3], got)
+            import random                              # a different random 3 each time, so live markets get checked too
+            self.ws_check(random.sample(ws_tk, min(3, len(ws_tk))), got)
         for tk in need:
             if got.get(tk) is not None:
                 books[tk] = got[tk]
