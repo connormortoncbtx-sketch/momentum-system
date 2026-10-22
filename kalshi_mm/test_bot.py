@@ -106,7 +106,27 @@ def test_netted():
     assert abs(k.netted - 4.0) < 1e-6
 
 
+
+def test_quiet():
+    old = B.QUIET
+    try:
+        B.QUIET = None
+        assert not B.quiet_now(50)
+        B.QUIET = (45, 59)
+        assert B.quiet_now(45) and B.quiet_now(59) and not B.quiet_now(44) and not B.quiet_now(0)
+    finally:
+        B.QUIET = old
+
+
+def test_rate_limit():
+    import time as T
+    rl = B.RateLimit(50); t = T.monotonic()
+    for _ in range(11):
+        rl.wait()
+    assert T.monotonic() - t >= 0.19                     # 11 requests at 50/s span >= 0.2s
+
+
 if __name__ == "__main__":
     for f in (test_targets, test_order_side, test_order_price, test_event_cap_helpers, test_sign_roundtrip,
-              test_day_baseline_survives_restart, test_fallback_mark, test_favourite_only, test_netted):
+              test_day_baseline_survives_restart, test_fallback_mark, test_favourite_only, test_netted, test_quiet, test_rate_limit):
         f(); print("ok", f.__name__)

@@ -16,8 +16,9 @@ Safety: post_only orders only; per-market inventory cap; total capital budget; d
 limit; a KILL file or KILL=1 env cancels everything and exits; all orders cancelled on exit.
 Every quote/fill/snapshot is appended to LOG_DIR/*.jsonl for the edge measurement.
 """
-import base64, datetime as dt, json, logging, os, signal, sys, time, uuid
+import base64, datetime as dt, http.client, json, logging, os, signal, sys, threading, time, uuid
 import urllib.error, urllib.parse, urllib.request
+from concurrent.futures import ThreadPoolExecutor
 
 HOSTS = {"dry": "https://api.elections.kalshi.com", "prod": "https://external-api.kalshi.com",
          "demo": "https://external-api.demo.kalshi.co"}
@@ -78,7 +79,7 @@ def loss_limit(day_start_value):
     return DAILY_LOSS_PCT * day_start_value if DAILY_LOSS_PCT > 0 and day_start_value else DAILY_LOSS
 MIN_H, MAX_H = float(E("MIN_HOURS", "1")), float(E("MAX_HOURS", "48"))
 P_LO, P_HI = 0.03, 0.97                           # don't quote markets priced outside this
-LOOP_S = float(E("LOOP_SECONDS", "20"))
+LOOP_S = float(E("LOOP_SECONDS", "5"))             # pause between cycles (a cycle itself takes a few seconds)
 RUN_MIN = float(E("RUN_MINUTES", "0"))            # 0 = run until stopped
 LOG_DIR = E("LOG_DIR", "kalshi_mm_logs")
 KILL_FILE = E("KILL_FILE", "KILL")
@@ -133,10 +134,39 @@ def num(x, default=0.0):
 LOTTERY_PREFIX = "lot-"                            # client_order_id prefix of kalshi_mm/lottery.py orders
 
 
+class RateLimit:
+    """Spaces requests to at most `per_s` per second across threads (Kalshi's basic tier allows ~20 reads, ~10 writes/s)."""
+    def __init__(self, per_s):
+        self.gap, self.next, self.lock = 1.0 / per_s, 0.0, threading.Lock()
+
+    def wait(self):
+        with self.lock:
+            t = time.monotonic()
+            slot = max(t, self.next)
+            self.next = slot + self.gap
+        if slot > t:
+            time.sleep(slot - t)
+
+
+READ_LIMIT = RateLimit(float(E("READ_PER_S", "15")))
+WRITE_LIMIT = RateLimit(float(E("WRITE_PER_S", "8")))
+BOOK_WORKERS = int(E("BOOK_WORKERS", "6"))         # order books fetched in parallel each cycle
+MARKETS_TTL = 300                                  # the list of open markets changes slowly: refresh every 5 min
+# QUIET_MINUTES="45-59": during those minutes past each hour, only quote sides that REDUCE a position (default off).
+# Candidate fix for fills picked off around the hourly station readings -- see docs (Oct 22); turn on only if the
+# favourite-only live data still shows it.
+QUIET = tuple(int(x) for x in E("QUIET_MINUTES", "").split("-")) if E("QUIET_MINUTES", "").strip() else None
+
+
+def quiet_now(minute):
+    return QUIET is not None and QUIET[0] <= minute <= QUIET[1]
+
+
 # --- API client -----------------------------------------------------------------------------
 class Kalshi:
     def __init__(self, mode):
         self.base = HOSTS[mode]
+        self._tl = threading.local()
         self.key_id, self.key = None, None
         if mode != "dry":
             from cryptography.hazmat.primitives import serialization
@@ -161,27 +191,43 @@ class Kalshi:
         return {"KALSHI-ACCESS-KEY": self.key_id, "KALSHI-ACCESS-TIMESTAMP": ts,
                 "KALSHI-ACCESS-SIGNATURE": base64.b64encode(sig).decode()}
 
+    def _conn(self, fresh=False):
+        """One kept-alive HTTPS connection per thread: skips a TLS handshake (~3 round trips) on every request."""
+        c = getattr(self._tl, "c", None)
+        if fresh or c is None:
+            if c is not None:
+                try:
+                    c.close()
+                except Exception:
+                    pass
+            scheme, host = self.base.split("://", 1)
+            cls = http.client.HTTPSConnection if scheme == "https" else http.client.HTTPConnection   # http: local tests
+            c = self._tl.c = cls(host, timeout=20)
+        return c
+
     def req(self, method, path, body=None, auth=False, **q):
         path = PREFIX + path + (("?" + urllib.parse.urlencode(q)) if q else "")
         for i in range(4):
-            h = {"Accept": "application/json", "Content-Type": "application/json"}
+            (READ_LIMIT if method == "GET" else WRITE_LIMIT).wait()
+            h = {"Accept": "application/json", "Content-Type": "application/json", "Connection": "keep-alive"}
             if auth:
                 h.update(self._sign(method, path))
-            r = urllib.request.Request(self.base + path, method=method, headers=h,
-                                       data=json.dumps(body).encode() if body is not None else None)
             try:
-                with urllib.request.urlopen(r, timeout=20) as resp:
-                    txt = resp.read()
-                    return json.loads(txt) if txt else {}
-            except urllib.error.HTTPError as e:
-                msg = e.read().decode("utf-8", "replace")[:300]
-                if e.code in (429, 500, 502, 503, 504) and i < 3:
-                    time.sleep(1.5 * (i + 1)); continue
-                raise RuntimeError(f"{method} {path} -> {e.code}: {msg}")
-            except (urllib.error.URLError, TimeoutError) as e:
+                c = self._conn()
+                c.request(method, path, body=json.dumps(body).encode() if body is not None else None, headers=h)
+                resp = c.getresponse()
+                txt = resp.read()
+            except (http.client.HTTPException, OSError) as e:      # dropped keep-alive, timeout, reset: reconnect
+                self._conn(fresh=True)
                 if i < 3:
-                    time.sleep(1.5 * (i + 1)); continue
+                    time.sleep(0.5 * (i + 1)); continue
                 raise RuntimeError(f"{method} {path} -> {e}")
+            if resp.status >= 400:
+                msg = txt.decode("utf-8", "replace")[:300]
+                if resp.status in (429, 500, 502, 503, 504) and i < 3:
+                    time.sleep(1.5 * (i + 1)); continue
+                raise RuntimeError(f"{method} {path} -> {resp.status}: {msg}")
+            return json.loads(txt) if txt else {}
 
     # public
     def open_markets(self, series):
@@ -412,16 +458,21 @@ class Bot:
         return v
 
     def markets(self):
-        out = []
-        for s in SERIES:
-            try:
-                for m in self.k.open_markets(s):
-                    ct = dt.datetime.fromisoformat(m["close_time"].replace("Z", "+00:00"))
-                    out.append((m["ticker"], (ct - now()).total_seconds() / 3600))
-            except Exception as e:
-                log.warning(f"{s}: {e}")
-                jlog("errors", where="markets", series=s, error=str(e)[:300])
-        return out
+        """[(ticker, hours to close)]; the market list itself is cached MARKETS_TTL seconds (hours are recomputed)."""
+        if time.time() - getattr(self, "_mk_t", 0) > MARKETS_TTL:
+            got = []
+            for s in SERIES:
+                try:
+                    for m in self.k.open_markets(s):
+                        got.append((m["ticker"], dt.datetime.fromisoformat(m["close_time"].replace("Z", "+00:00"))))
+                except Exception as e:
+                    log.warning(f"{s}: {e}")
+                    jlog("errors", where="markets", series=s, error=str(e)[:300])
+            if got:
+                self._mk, self._mk_t = got, time.time()
+        n = now()
+        return [(tk, (ct - n).total_seconds() / 3600) for tk, ct in getattr(self, "_mk", [])
+                if ct > n]
 
     def cycle(self):
         mkts = self.markets()
@@ -432,14 +483,22 @@ class Bot:
         for o in rest:
             mine.setdefault((o["ticker"], order_side(o)), []).append(o)
 
+        t0 = time.time()
         books, marks, bids = {}, {}, {}
-        for tk, h in mkts:
-            if MIN_H - 0.5 <= h <= MAX_H or tk in pos:
-                try:
-                    books[tk] = self.k.book(tk)
-                except Exception as e:
-                    log.warning(f"book {tk}: {e}")
-                    continue
+        need = [tk for tk, h in mkts if MIN_H - 0.5 <= h <= MAX_H or tk in pos]
+
+        def fetch(tk):
+            try:
+                return tk, self.k.book(tk)
+            except Exception as e:
+                log.warning(f"book {tk}: {e}")
+                return tk, None
+        if getattr(self, "_pool", None) is None:             # long-lived workers keep their connections alive
+            self._pool = ThreadPoolExecutor(BOOK_WORKERS)
+        got = dict(self._pool.map(fetch, need))
+        for tk in need:
+            if got.get(tk) is not None:
+                books[tk] = got[tk]
                 y, n = books[tk]
                 if y and n and (1 - n[0][0]) - y[0][0] <= 0.10:
                     marks[tk] = (y[0][0] + 1 - n[0][0]) / 2
@@ -485,7 +544,8 @@ class Bot:
                 notify(f"Daily loss limit hit ({pnl_today:+.2f}); orders cancelled, paused until midnight Central", prio="high")
                 return "paused"
             self.record_fills()
-            if int(time.time()) % 3600 < LOOP_S * 2:
+            if time.time() - getattr(self, "_last_settle", 0) > 3600:
+                self._last_settle = time.time()
                 self.record_settlements()
         else:
             used, budget, bal = 0.0, BUDGET, 0.0
@@ -510,10 +570,13 @@ class Bot:
                     mine.get((o["ticker"], order_side(o)), []).remove(o) if o in mine.get((o["ticker"], order_side(o)), []) else None
                 except Exception as e:
                     log.warning(f"trim cancel: {e}")
+        quiet = quiet_now(now().minute)
         for tk, (y, n) in books.items():
             want = targets(y, n, pos.get(tk, 0.0), hours.get(tk, -1))
             if FAV_MIN > 0:
                 want = favourite_only(want, pos.get(tk, 0.0))
+            if quiet:                                          # observation window: only position-reducing quotes
+                want = {sd: px for sd, px in want.items() if not adds_exposure(sd, pos.get(tk, 0.0))}
             ev = event_of(tk)
             if live and ev_held.get(ev, 0.0) + SIZE > EVENT_CAP:     # event full: only quote sides that reduce it
                 want = {sd: px for sd, px in want.items() if not adds_exposure(sd, pos.get(tk, 0.0))}
@@ -562,10 +625,11 @@ class Bot:
                         continue
                     log.warning(f"place {tk} {side} {tgt}: {e}")
                     jlog("errors", where="place", ticker=tk, side=side, price=tgt, error=str(e)[:300])
+        secs = round(time.time() - t0, 1)
         jlog("cycles", open_markets=len(mkts), books=len(books), placed=placed, cancelled=cancelled,
-             resting_usd=round(resting_cost, 2), positions_usd=round(used, 2))
+             resting_usd=round(resting_cost, 2), positions_usd=round(used, 2), secs=secs, quiet=quiet)
         log.info(f"{len(mkts)} open mkts, {len(books)} books, placed {placed}, cancelled {cancelled}, "
-                 f"resting ${resting_cost:,.2f}, in positions ${used:,.2f}")
+                 f"resting ${resting_cost:,.2f}, in positions ${used:,.2f}, cycle {secs}s{' (quiet window)' if quiet else ''}")
         return "ok"
 
     def record_fills(self):
@@ -573,14 +637,17 @@ class Bot:
             fs = self.k.fills(self.last_fill_ts - 5)
         except Exception as e:
             log.warning(f"fills: {e}"); return
-        seen = set()
         path = f"{LOG_DIR}/fills.jsonl"
-        if os.path.exists(path):
-            seen = {json.loads(l).get("trade_id") or (json.loads(l).get("fill") or {}).get("trade_id")
-                    for l in open(path) if l.strip()}
+        if getattr(self, "_seen", None) is None:           # read the log once, then keep the set in memory
+            self._seen = set()
+            if os.path.exists(path):
+                self._seen = {json.loads(l).get("trade_id") or (json.loads(l).get("fill") or {}).get("trade_id")
+                              for l in open(path) if l.strip()}
+        seen = self._seen
         for f in fs:
             if f.get("trade_id") in seen:
                 continue
+            seen.add(f.get("trade_id"))
             jlog("fills", trade_id=f.get("trade_id"), fill=f)
             ts = f.get("created_time")
             if ts:

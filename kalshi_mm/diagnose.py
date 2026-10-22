@@ -139,6 +139,10 @@ def main():
     k = B.Kalshi("dry")                                        # public endpoints only
     c = load_cache()
     fills = [f.get("fill") or f for f in R.rows("fills")]
+    if len(sys.argv) > 1:                                   # kmm diagnose 2026-10-21T19:11  -> only fills after that (UTC)
+        since = dt.datetime.fromisoformat(sys.argv[1]).replace(tzinfo=dt.timezone.utc)
+        fills = [x for x in fills if ts(x.get("created_time")) >= since]
+        print(f"only fills since {since:%Y-%m-%d %H:%M} UTC")
     rows, t_start = [], time.time()
     for i, x in enumerate(fills):
         tk = x.get("ticker"); t = ts(x.get("created_time"))
@@ -180,6 +184,9 @@ def main():
     # cluster in particular hours / minutes, quotes should be pulled around those times.
     table([r for r in rows if r["kind"] == "DRIFT"], lambda r: f"{r['utc_h']:02d}h UTC", "DRIFT FILLS BY HOUR OF DAY (UTC; CT = UTC-5)")
     table(rows, lambda r: f"{r['utc_h']:02d}h UTC", "ALL FILLS BY HOUR OF DAY (UTC)")
+    mb = lambda r: (":00-:44" if r["minute"] < 45 else ":45-:59")
+    table(rows, lambda r: f"{mb(r)} {r['kind']}", "OBSERVATION WINDOW x FILL KIND (does :45-:59 hurt through slow DRIFT fills?)")
+    table(rows, lambda r: f"{mb(r)} {'fav' if r['price'] >= .5 else 'long'}", "OBSERVATION WINDOW x SIDE HELD (fav = 50c+, what the bot now buys)")
     table(rows, lambda r: (":00-:14" if r["minute"] < 15 else ":15-:29" if r["minute"] < 30 else ":30-:44" if r["minute"] < 45
                            else ":45-:50" if r["minute"] < 51 else ":51-:59"), "BY MINUTE OF THE HOUR (:51-:59 = hourly observations land)")
 

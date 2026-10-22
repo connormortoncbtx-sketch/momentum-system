@@ -2493,3 +2493,13 @@ simulated deep fills, favourite side: dev -1.0c (t -0.9), holdout +0.4c (t 0.8);
 maker edge at the touch, favourite side, holdout -0.1c (t -0.3). No observation-window effect; the live pattern was noise
 in a small, long-shot-heavy sample. Quotes stay up all hour. Also: `diagnose` gained a closing-line ("vs close") column
 (mid at close - 6h vs fill), now with a 3h lookback and a count column.
+
+## Bot speed-up + observation-window switch (Oct 22, 2026)
+Old cycle: market list for every series, then one order book per market, sequentially, each over a NEW HTTPS connection,
+then a 20s sleep -- every quote was re-checked only about once a minute (stale quotes = the DRIFT fills that lose).
+Now: kept-alive connections (no TLS handshake per request), books fetched by 6 parallel workers under a shared
+15 reads/s and 8 writes/s limiter, market list cached 5 min, fills log de-duplicated in memory, 5s between cycles. Local
+mock with 70ms latency: ~96 books in ~6.5s (rate-limit bound). Each cycle logs its duration (`secs` in cycles.jsonl).
+QUIET_MINUTES (env, e.g. 45-59; blank = off) makes the bot quote only position-reducing sides in those minutes -- ready
+if the favourite-only live data confirms the :45-:59 pattern. `kmm diagnose <since>` limits the diagnosis to fills after
+a time (e.g. the favourite-only switch) and adds observation-window x fill-kind and x side-held tables.

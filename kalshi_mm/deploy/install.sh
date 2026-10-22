@@ -44,6 +44,9 @@ EVENT_CAP=30
 OFFSET_C=2
 # only add inventory on the side priced >= FAV_MIN (long-shot fills lose; 0 = off)
 FAV_MIN=0.5
+# seconds between cycles; QUIET_MINUTES=45-59 would quote only position-reducing sides in those minutes (off when blank)
+LOOP_SECONDS=5
+QUIET_MINUTES=
 # quote only 6-48h before close (the per-fill study found the last 6h earns ~nothing)
 MIN_HOURS=6
 MAX_HOURS=48
@@ -134,7 +137,7 @@ case "${1:-status}" in
   resume) rm -f /home/kmm/data/KILL; systemctl restart kmm; echo "resumed" ;;
   logs)   journalctl -u kmm -n "${2:-40}" --no-pager ;;
   report) sudo -u kmm bash -c 'set -a; . /etc/kmm/env; /home/kmm/venv/bin/python /home/kmm/app/kalshi_mm/report.py' ;;
-  diagnose) sudo -u kmm bash -c 'set -a; . /etc/kmm/env; /home/kmm/venv/bin/python /home/kmm/app/kalshi_mm/diagnose.py' ;;
+  diagnose) sudo -u kmm bash -c 'set -a; . /etc/kmm/env; /home/kmm/venv/bin/python /home/kmm/app/kalshi_mm/diagnose.py "$@"' _ ${2:+"$2"} ;;
   positions) sudo -u kmm bash -c 'set -a; . /etc/kmm/env; /home/kmm/venv/bin/python /home/kmm/app/kalshi_mm/positions.py' ;;
   lottery) cat /home/kmm/data/lottery.json 2>/dev/null || echo "no weekly roll yet"; echo; journalctl -u kmm-lottery -n "${2:-10}" --no-pager | grep -v systemd ;;
   update) exec bash -c "curl -fsSL https://raw.githubusercontent.com/connormortoncbtx-sketch/momentum-system/main/kalshi_mm/deploy/install.sh | bash" ;;  # exec: this script gets rewritten mid-update
