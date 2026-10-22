@@ -152,7 +152,10 @@ class RateLimit:
             time.sleep(slot - t)
 
 
-READ_LIMIT = RateLimit(float(E("READ_PER_S", "15")))
+READ_LIMIT = RateLimit(float(E("READ_PER_S", "10")))   # leaves headroom for the dashboard and weekly roll
+ACCT_S = float(E("ACCOUNT_REFRESH_S", "4"))        # positions / orders / balance re-read at most this often (sooner
+                                                   # right after we placed or cancelled); keeps the account under
+                                                   # Kalshi's rate limit now that the stream makes cycles ~1s
 WRITE_LIMIT = RateLimit(float(E("WRITE_PER_S", "8")))
 BOOK_WORKERS = int(E("BOOK_WORKERS", "6"))         # order books fetched in parallel each cycle
 MARKETS_TTL = 300                                  # the list of open markets changes slowly: refresh every 5 min
@@ -487,8 +490,12 @@ class Bot:
     def cycle(self):
         mkts = self.markets()
         live = MODE != "dry"
-        pos = self.k.positions() if live else {}
-        rest = self.k.resting() if live else []
+        acct = getattr(self, "_acct", None)
+        if live and (acct is None or getattr(self, "_acct_dirty", True) or time.time() - acct[3] > ACCT_S):
+            acct = self._acct = (self.k.positions(), self.k.resting(), self.k.balance(), time.time())
+            self._acct_dirty = False
+        pos = acct[0] if live else {}
+        rest = acct[1] if live else []
         mine = {}
         for o in rest:
             mine.setdefault((o["ticker"], order_side(o)), []).append(o)
@@ -548,7 +555,7 @@ class Bot:
 
         # risk: budget and daily loss
         if live:
-            bal = self.k.balance()
+            bal = acct[2]
             pos_val = sum(p * marks.get(t, 0.5) if p > 0 else -p * (1 - marks.get(t, 0.5)) for t, p in pos.items())
             net = getattr(self.k, "netted", 0.0) or 0.0           # sure payouts Kalshi already returned to cash
             pos_val -= net
@@ -575,7 +582,9 @@ class Bot:
                 log.warning("daily loss limit hit; pausing until midnight Central")
                 notify(f"Daily loss limit hit ({pnl_today:+.2f}); orders cancelled, paused until midnight Central", prio="high")
                 return "paused"
-            self.record_fills()
+            if time.time() - getattr(self, "_last_fills", 0) > 10:
+                self._last_fills = time.time()
+                self.record_fills()
             if time.time() - getattr(self, "_last_settle", 0) > 3600:
                 self._last_settle = time.time()
                 self.record_settlements()
@@ -660,6 +669,8 @@ class Bot:
                         continue
                     log.warning(f"place {tk} {side} {tgt}: {e}")
                     jlog("errors", where="place", ticker=tk, side=side, price=tgt, error=str(e)[:300])
+        if placed or cancelled:
+            self._acct_dirty = True                        # our own orders changed: re-read the account next cycle
         secs = round(time.time() - t0, 1)
         jlog("cycles", open_markets=len(mkts), books=len(books), placed=placed, cancelled=cancelled,
              resting_usd=round(resting_cost, 2), positions_usd=round(used, 2), secs=secs, quiet=quiet,

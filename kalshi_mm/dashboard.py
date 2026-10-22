@@ -167,9 +167,10 @@ def history_cards():
     return "".join(out)
 
 PORT = int(os.environ.get("DASH_PORT", "8787"))
-CACHE_S = 45
+CACHE_S = 60
 CT = ZoneInfo("America/Chicago")
 _cache = {"t": 0.0, "page": "", "lock": threading.Lock()}
+_last_good = {}
 
 
 def svc(name):
@@ -189,8 +190,13 @@ def build_page():
     err = ""
     try:
         rows, cash = P.collect()
+        _last_good.update(rows=rows, cash=cash, t=now)
     except Exception as e:
-        rows, cash, err = [], 0.0, f"Kalshi fetch failed: {html.escape(str(e))[:200]}"
+        if _last_good.get("rows") is not None:          # e.g. a rate-limit blip: show the last good copy, flagged
+            rows, cash = _last_good["rows"], _last_good["cash"]
+            err = f"Kalshi busy ({html.escape(str(e))[:80]}) -- positions as of {_last_good['t']:%-I:%M %p}"
+        else:
+            rows, cash, err = [], 0.0, f"Kalshi fetch failed: {html.escape(str(e))[:200]}"
     net = P.collect.netted                      # sure payouts on mutually exclusive buckets, already in cash
     sell = cash - net + sum(r["sell"] for r in rows)
     exp = cash - net + sum(r["ev"] for r in rows)
