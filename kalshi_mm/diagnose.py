@@ -112,7 +112,7 @@ def mid_after(cm, t, minutes):
 def closing_mid(k, c, tk, close):
     """YES mid when the bot stops quoting the market (close - MIN_HOURS): the 'closing line' a fill is judged against."""
     T = close - dt.timedelta(hours=B.MIN_H)
-    cm = candles(k, c, tk, T - dt.timedelta(minutes=30), T + dt.timedelta(minutes=5))
+    cm = candles(k, c, tk, T - dt.timedelta(hours=3), T + dt.timedelta(minutes=5))   # last usable mid in the 3h before
     ks = sorted(int(x) for x in cm if int(x) <= T.timestamp() + 60)
     return cm[str(ks[-1])] if ks else None
 
@@ -122,7 +122,7 @@ def table(rows, key, title):
     for r in rows:
         g.setdefault(key(r), []).append(r)
     print(f"\n{title}")
-    print(f"  {'group':14} {'fills':>6} {'contracts':>9} {'markout 5m':>10} {'markout 60m':>11} {'vs close':>9} {'to settle':>9} {'settled n':>9}")
+    print(f"  {'group':14} {'fills':>6} {'contracts':>9} {'markout 5m':>10} {'markout 60m':>11} {'vs close':>9} {'close n':>8} {'to settle':>9} {'settled n':>9}")
     for name in sorted(g, key=str):
         rs = g[name]
         n = sum(r["c"] for r in rs)
@@ -131,8 +131,8 @@ def table(rows, key, title):
             xs = [(r[f], r["c"]) for r in rs if r.get(f) is not None]
             tot = sum(cc for _, cc in xs)
             return (sum(v * cc for v, cc in xs) / tot, tot) if tot else (float("nan"), 0)
-        m5, _ = w("m5"); m60, _ = w("m60"); st, sn = w("settle"); cl, _ = w("clv")
-        print(f"  {str(name):14} {len(rs):6d} {n:9.0f} {m5:+9.2f}c {m60:+10.2f}c {cl:+8.2f}c {st:+8.2f}c {sn:9.0f}")
+        m5, _ = w("m5"); m60, _ = w("m60"); st, sn = w("settle"); cl, cn = w("clv")
+        print(f"  {str(name):14} {len(rs):6d} {n:9.0f} {m5:+9.2f}c {m60:+10.2f}c {cl:+8.2f}c {cn:8.0f} {st:+8.2f}c {sn:9.0f}")
 
 
 def main():
