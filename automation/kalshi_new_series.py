@@ -102,7 +102,8 @@ def keyword_check(S, seen):
     done = set(json.loads(ALERTED.read_text())) if ALERTED.exists() else set()
     new = S[~S.ticker.isin(seen) & ~S.ticker.isin(done)]
     t = new.title.fillna("")
-    hits = new[t.str.contains(KEYWORDS) & ~t.str.contains(NOT_KEYWORDS)]
+    meta = new.category.fillna("") + " " + new.ticker.fillna("")          # "Mentions" category / ...MENTION... tickers
+    hits = new[t.str.contains(KEYWORDS) & ~t.str.contains(NOT_KEYWORDS) & ~meta.str.contains(r"mention", case=False)]
     for r in hits.itertuples():
         try:
             mk = M.paged("/markets", "markets", max_pages=2, series_ticker=r.ticker, status="open")
