@@ -2505,3 +2505,17 @@ mock with 70ms latency: ~96 books in ~6.5s (rate-limit bound). Each cycle logs i
 QUIET_MINUTES (env, e.g. 45-59; blank = off) makes the bot quote only position-reducing sides in those minutes -- ready
 if the favourite-only live data confirms the :45-:59 pattern. `kmm diagnose <since>` limits the diagnosis to fills after
 a time (e.g. the favourite-only switch) and adds observation-window x fill-kind and x side-held tables.
+
+## Favourite cut-off curve and edge-sized quoting -- Oct 22, 2026 (`research/kalshi/fav_curve.py`)
+Simulated deep (sweep) fills, 6-48h, held to settlement; dev 2017-25/09, holdout 2025/10-2026/10; per-contract edge.
+- Curve at 2c resolution: positive almost everywhere in BOTH periods (holdout ~+1 to +4c for 10-48c held prices,
+  +1 to +5c for 50c+), per-bin noise ~+/-2c. No sharp threshold -- tuning FAV_MIN to the cent is noise.
+- Cut-off sweep (quote only sides >= cut): dev-best 22c; holdout P&L $3,297 (t 7.1) vs 50c $2,318 (t 3.3); 20c $3,434.
+- Price x hours to close: no consistent interaction.
+- Edge-scaled sizing (size by dev edge of the 10c band): holdout per-city-day mean/sd 0.167 vs flat 50c 0.074 and flat
+  22c 0.157 -- most of the gain is from quoting more bands, not from the scaling.
+CONFLICT: this contradicts the Oct 21 band table quoted above (20-50c -5.0c holdout), whose script was not saved and
+cannot be re-run -- treat that table as unverified. The LIVE evidence still says long-shot fills lost (-9c, 1,682
+settled contracts) while the sim says they earn +1-2c; live SWEEP fills overall ran ~2-3c below the sim (-0.0c vs
++2-3c), so the sim is optimistic everywhere. Decision: keep FAV_MIN=0.5 until the live price x fill-kind table
+(added to diagnose) shows whether live long-shot losses are DRIFT fills (which faster re-quoting targets) or SWEEPs too.

@@ -177,6 +177,8 @@ def main():
                            else "12-24h" if r["hours"] < 24 else "24-48h" if r["hours"] < 48 else "48h+"), "BY HOURS TO CLOSE")
     table(rows, lambda r: "<20c" if r["price"] < .2 else "20-50c" if r["price"] < .5 else "50-80c" if r["price"] < .8 else "80c+",
           "BY PRICE PAID (for the side held)")
+    table(rows, lambda r: f"{'fav 50c+' if r['price'] >= .5 else 'long <50c'} {r['kind']}",
+          "PRICE x FILL KIND (do long shots lose through slow DRIFT fills, or on SWEEPs too?)")
     table(rows, lambda r: r["held"], "BY SIDE HELD")
     table(rows, lambda r: r["city"], "BY CITY")
     # news windows: forecast models publish on a schedule (GFS ~03:30/09:30/15:30/21:30 UTC, ECMWF ~06-07/18-19 UTC,
