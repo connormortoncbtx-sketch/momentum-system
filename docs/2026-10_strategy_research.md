@@ -2519,3 +2519,13 @@ cannot be re-run -- treat that table as unverified. The LIVE evidence still says
 settled contracts) while the sim says they earn +1-2c; live SWEEP fills overall ran ~2-3c below the sim (-0.0c vs
 +2-3c), so the sim is optimistic everywhere. Decision: keep FAV_MIN=0.5 until the live price x fill-kind table
 (added to diagnose) shows whether live long-shot losses are DRIFT fills (which faster re-quoting targets) or SWEEPs too.
+
+## Live order-book stream (WebSocket) -- Oct 22, 2026, built, off by default
+`kalshi_mm/ws.py` + bot: USE_WS=yes keeps every quoted market's book from Kalshi's orderbook_delta channel and wakes the
+bot the moment a book changes (min 1s between cycles) -- re-quote latency ~1-2s vs ~14s polling. Safeguards: a book is
+served only after a snapshot and with no sequence gap (gap/disconnect -> drop all copies, reconnect, those markets fall
+back to normal requests); unknown message shapes are never turned into empty books; every 60s three stream books are
+compared with normal requests (ws_check.jsonl) -- 2+ mismatches -> resync, 3 such checks running -> stream switched off
+with a phone alert. First 40 raw messages saved to ws_sample.jsonl to verify Kalshi's field format. Tested only against
+a local mock (Kalshi unreachable from the research sandbox): snapshot, delta, sequence gap -> reconnect, stale-copy
+detection -> resync -> switch-off all behaved.

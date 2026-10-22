@@ -159,6 +159,11 @@ MARKETS_TTL = 300                                  # the list of open markets ch
 # QUIET_MINUTES="45-59": during those minutes past each hour, only quote sides that REDUCE a position (default off).
 # Candidate fix for fills picked off around the hourly station readings -- see docs (Oct 22); turn on only if the
 # favourite-only live data still shows it.
+# USE_WS=yes: keep live order books from Kalshi's WebSocket and re-quote the moment a book changes (kalshi_mm/ws.py);
+# any market without a trustworthy stream copy falls back to a normal request. MIN_GAP_S = shortest time between cycles.
+USE_WS = E("USE_WS", "no").lower() == "yes"
+MIN_GAP_S = float(E("MIN_GAP_S", "1"))
+WS_CHECK_S = 60                                    # cross-check a few stream books against normal requests this often
 QUIET = tuple(int(x) for x in E("QUIET_MINUTES", "").split("-")) if E("QUIET_MINUTES", "").strip() else None
 
 
@@ -400,6 +405,7 @@ class Bot:
         self.last_fill_ts = int(time.time())
         self.t_start = time.time()
         self.last_stop_check, self.last_err_alert, self.err_count = 0.0, 0.0, 0
+        self.stream, self.last_ws_check = None, 0.0
         signal.signal(signal.SIGTERM, lambda *_: setattr(self, "stop", True))
         signal.signal(signal.SIGINT, lambda *_: setattr(self, "stop", True))
 
@@ -490,8 +496,22 @@ class Bot:
         t0 = time.time()
         books, marks, bids = {}, {}, {}
         need = [tk for tk, h in mkts if MIN_H - 0.5 <= h <= MAX_H or tk in pos]
+        if USE_WS and not getattr(self, "ws_disabled", False):
+            if self.stream is None:
+                import ws as WS
+                if WS.websocket is None:
+                    log.warning("USE_WS=yes but websocket-client is not installed; using normal requests")
+                else:
+                    self.stream = WS.BookStream(self.k, MODE, LOG_DIR, log)
+                    self.stream.start(need)
+            else:
+                self.stream.set_tickers(need)
+        from_ws = 0
 
         def fetch(tk):
+            b = self.stream.book(tk) if self.stream is not None else None
+            if b is not None:
+                return tk, ("ws", b)
             try:
                 return tk, self.k.book(tk)
             except Exception as e:
@@ -500,6 +520,13 @@ class Bot:
         if getattr(self, "_pool", None) is None:             # long-lived workers keep their connections alive
             self._pool = ThreadPoolExecutor(BOOK_WORKERS)
         got = dict(self._pool.map(fetch, need))
+        ws_tk = []
+        for tk in list(got):
+            if got[tk] is not None and got[tk][0] == "ws":
+                got[tk] = got[tk][1]; from_ws += 1; ws_tk.append(tk)
+        if ws_tk and time.time() - self.last_ws_check > WS_CHECK_S:
+            self.last_ws_check = time.time()
+            self.ws_check(ws_tk[:: max(1, len(ws_tk) // 3)][:3], got)
         for tk in need:
             if got.get(tk) is not None:
                 books[tk] = got[tk]
@@ -634,10 +661,43 @@ class Bot:
                     jlog("errors", where="place", ticker=tk, side=side, price=tgt, error=str(e)[:300])
         secs = round(time.time() - t0, 1)
         jlog("cycles", open_markets=len(mkts), books=len(books), placed=placed, cancelled=cancelled,
-             resting_usd=round(resting_cost, 2), positions_usd=round(used, 2), secs=secs, quiet=quiet)
+             resting_usd=round(resting_cost, 2), positions_usd=round(used, 2), secs=secs, quiet=quiet,
+             from_ws=from_ws, ws=None if self.stream is None else dict(self.stream.stats))
         log.info(f"{len(mkts)} open mkts, {len(books)} books, placed {placed}, cancelled {cancelled}, "
-                 f"resting ${resting_cost:,.2f}, in positions ${used:,.2f}, cycle {secs}s{' (quiet window)' if quiet else ''}")
+                 f"resting ${resting_cost:,.2f}, in positions ${used:,.2f}, cycle {secs}s{' (quiet window)' if quiet else ''}"
+                 + (f", {from_ws} books from stream" if self.stream is not None else ""))
         return "ok"
+
+    def ws_check(self, tickers, got):
+        """Compare the stream's copy of a few books with a normal request; log and drop any that disagree at the top."""
+        bad = 0
+        for tk in tickers:
+            try:
+                y, n = self.k.book(tk)
+            except Exception:
+                continue
+            sy, sn = got[tk]
+            top = lambda lv: lv[0][0] if lv else None
+            ok = top(y) == top(sy) and top(n) == top(sn)
+            jlog("ws_check", ticker=tk, ok=ok, rest=[top(y), top(n)], stream=[top(sy), top(sn)])
+            if not ok:
+                log.warning(f"ws_check {tk}: stream top {top(sy)}/{top(sn)} vs request {top(y)}/{top(n)} -- refreshing")
+                with self.stream.lock:
+                    self.stream.books.pop(tk, None)
+                self.stream.stats["check_mismatch"] = self.stream.stats.get("check_mismatch", 0) + 1
+                bad += 1
+        if bad >= 2:                                   # not a one-off timing difference: rebuild every book from snapshots
+            self.ws_bad = getattr(self, "ws_bad", 0) + 1
+            if self.ws_bad >= 3:                       # keeps disagreeing after fresh snapshots: the stream can't be trusted
+                log.error("ws_check: stream books keep disagreeing -- stream OFF, back to normal requests until restart")
+                notify("Live order-book stream disagreed with Kalshi 3 checks running; switched off, bot continues on "
+                       "normal requests. Run: kmm logs 50", prio="high")
+                self.stream.stop(); self.stream = None; self.ws_disabled = True
+                return
+            log.warning("ws_check: several stream books disagree -- reconnecting the stream")
+            self.stream.resync()
+        else:
+            self.ws_bad = 0
 
     def record_fills(self):
         try:
@@ -705,8 +765,15 @@ class Bot:
                     if self.err_count >= 5 and time.time() - self.last_err_alert > 3600:
                         self.last_err_alert = time.time()
                         notify(f"{self.err_count} cycle errors in a row; last: {str(e)[:300]}", prio="high")
-                time.sleep(LOOP_S)
+                if self.stream is not None and self.stream.connected:
+                    time.sleep(MIN_GAP_S)                      # then wait for the next book change (or LOOP_S at most)
+                    self.stream.changed.wait(max(0.0, LOOP_S - MIN_GAP_S))
+                    self.stream.changed.clear()
+                else:
+                    time.sleep(LOOP_S)
         finally:
+            if self.stream is not None:
+                self.stream.stop()
             self.cancel_all("exit")
             jlog("events", event="stop", killed=killed)
             notify("Stopped by kill switch; all orders cancelled" if killed else "Stopped; all orders cancelled",

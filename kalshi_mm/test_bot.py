@@ -127,7 +127,19 @@ def test_rate_limit():
     assert T.monotonic() - t >= 0.19                     # 11 requests at 50/s span >= 0.2s
 
 
+
+def test_ws_parsing():
+    import ws as W
+    assert W._levels({"yes_dollars_fp": [["0.40", "10.00"]]}, "yes") == [(0.40, 10.0)]
+    assert W._levels({"yes": [[40, 10]]}, "yes") == [(0.40, 10.0)]          # cent integers
+    assert W._levels({"no_dollars": []}, "no") == []                       # present but empty = no orders
+    assert W._levels({}, "yes") is None                                    # absent = unknown, never a made-up book
+    assert W._delta_fields({"side": "yes", "price_dollars": "0.41", "delta_fp": "-5.00"}) == ("yes", 0.41, -5.0)
+    assert W._delta_fields({"side": "no", "price": 57, "delta": 3}) == ("no", 0.57, 3.0)
+    assert W._delta_fields({"side": "bid", "price_dollars": "0.41", "delta_fp": "1"}) is None
+
+
 if __name__ == "__main__":
     for f in (test_targets, test_order_side, test_order_price, test_event_cap_helpers, test_sign_roundtrip,
-              test_day_baseline_survives_restart, test_fallback_mark, test_favourite_only, test_netted, test_quiet, test_rate_limit):
+              test_day_baseline_survives_restart, test_fallback_mark, test_favourite_only, test_netted, test_quiet, test_rate_limit, test_ws_parsing):
         f(); print("ok", f.__name__)

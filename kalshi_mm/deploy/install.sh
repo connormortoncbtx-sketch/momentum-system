@@ -14,7 +14,7 @@ timedatectl set-timezone America/Chicago || true
 echo "==> code"
 if [ -d "$APP/.git" ]; then sudo -u kmm git -C "$APP" pull -q; else sudo -u kmm git clone -q --depth 1 "$REPO" "$APP"; fi
 sudo -u kmm python3 -m venv /home/kmm/venv
-sudo -u kmm /home/kmm/venv/bin/pip install -q --upgrade pip cryptography
+sudo -u kmm /home/kmm/venv/bin/pip install -q --upgrade pip cryptography websocket-client
 sudo -u kmm /home/kmm/venv/bin/python "$APP/kalshi_mm/test_bot.py"
 sudo -u kmm env LOG_DIR="$(sudo -u kmm mktemp -d)" KILL_FILE=/tmp/kmm-lottery-test-kill \
   /home/kmm/venv/bin/python "$APP/kalshi_mm/test_lottery.py" | grep -v INFO
@@ -47,6 +47,8 @@ FAV_MIN=0.5
 # seconds between cycles; QUIET_MINUTES=45-59 would quote only position-reducing sides in those minutes (off when blank)
 LOOP_SECONDS=5
 QUIET_MINUTES=
+# USE_WS=yes: live order books pushed by Kalshi (re-quote within ~1s of a change); off = request every book each cycle
+USE_WS=no
 # quote only 6-48h before close (the per-fill study found the last 6h earns ~nothing)
 MIN_HOURS=6
 MAX_HOURS=48
