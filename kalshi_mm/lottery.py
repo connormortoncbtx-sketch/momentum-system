@@ -169,6 +169,10 @@ def step(k, st, now):
                     st.update(ticker=tk, order_id=o.get("order_id"), price=px, order_filled=0.0,
                               placed_at=now.isoformat())
                     B.jlog("lottery", event="order", ticker=tk, price=px, count=n, leg=st["leg"])
+                    if st.get("announced") != [st["week"], st["leg"], tk]:   # once per leg/market, not every reprice
+                        st["announced"] = [st["week"], st["leg"], tk]
+                        say(f"Leg {st['leg']}/{LEGS}: bidding {px * 100:.0f}c for {n} x {tk} (${st['cash']:.2f} riding; "
+                            f"closes in {h:.0f}h)")
                     if B.num(o.get("fill_count_fp", o.get("fill_count"))) > 0:
                         pass                            # picked up on the next pass via the order status
                 elif st["held"] > 0:

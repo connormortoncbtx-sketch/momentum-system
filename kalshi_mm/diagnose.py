@@ -7,9 +7,11 @@ For every live fill (fills.jsonl): what kind of fill it was and how the price mo
             gradually / one print -- typically a stale quote picked off when news moves the market; the backtest did NOT
             count these)
   markout   our side's mid move 5 and 60 minutes after the fill, in cents (+ = moved our way), from 1-minute candles
+  vs close  our side's mid when the bot stops quoting (close - MIN_HOURS) minus our price, in cents: "closing line value",
+            the professional bettor's skill metric -- consistently > 0 means we buy below where the market ends up
   to_settle P&L per contract to the market's result (finished markets only)
   hours     hours to close at the fill
-Tables: by kind, by hours-to-close, by price, by side, by city; contract-weighted. Public endpoints only (plus your own
+Tables: by kind, by hours-to-close, by price, by side, by city, by hour of day / minute (news windows); contract-weighted. Public endpoints only (plus your own
 fill log); results cached in LOG_DIR/diag_cache.json so re-runs are quick. Read-only.
 """
 import datetime as dt
@@ -107,12 +109,20 @@ def mid_after(cm, t, minutes):
     return None
 
 
+def closing_mid(k, c, tk, close):
+    """YES mid when the bot stops quoting the market (close - MIN_HOURS): the 'closing line' a fill is judged against."""
+    T = close - dt.timedelta(hours=B.MIN_H)
+    cm = candles(k, c, tk, T - dt.timedelta(minutes=30), T + dt.timedelta(minutes=5))
+    ks = sorted(int(x) for x in cm if int(x) <= T.timestamp() + 60)
+    return cm[str(ks[-1])] if ks else None
+
+
 def table(rows, key, title):
     g = {}
     for r in rows:
         g.setdefault(key(r), []).append(r)
     print(f"\n{title}")
-    print(f"  {'group':14} {'fills':>6} {'contracts':>9} {'markout 5m':>10} {'markout 60m':>11} {'to settle':>9} {'settled n':>9}")
+    print(f"  {'group':14} {'fills':>6} {'contracts':>9} {'markout 5m':>10} {'markout 60m':>11} {'vs close':>9} {'to settle':>9} {'settled n':>9}")
     for name in sorted(g, key=str):
         rs = g[name]
         n = sum(r["c"] for r in rs)
@@ -121,8 +131,8 @@ def table(rows, key, title):
             xs = [(r[f], r["c"]) for r in rs if r.get(f) is not None]
             tot = sum(cc for _, cc in xs)
             return (sum(v * cc for v, cc in xs) / tot, tot) if tot else (float("nan"), 0)
-        m5, _ = w("m5"); m60, _ = w("m60"); st, sn = w("settle")
-        print(f"  {str(name):14} {len(rs):6d} {n:9.0f} {m5:+9.2f}c {m60:+10.2f}c {st:+8.2f}c {sn:9.0f}")
+        m5, _ = w("m5"); m60, _ = w("m60"); st, sn = w("settle"); cl, _ = w("clv")
+        print(f"  {str(name):14} {len(rs):6d} {n:9.0f} {m5:+9.2f}c {m60:+10.2f}c {cl:+8.2f}c {st:+8.2f}c {sn:9.0f}")
 
 
 def main():
@@ -141,6 +151,7 @@ def main():
         cm = candles(k, c, tk, t - dt.timedelta(minutes=2), t + dt.timedelta(minutes=70))
         m5, m60 = mid_after(cm, t, 5), mid_after(cm, t, 60)
         sign = d                                              # YES mid up is good for a YES holder
+        cmid = closing_mid(k, c, tk, ts(m["close"])) if m.get("close") and hours and hours > B.MIN_H else None
         res = str(m.get("result") or "").lower()
         settle = None
         if res in ("yes", "no"):
@@ -148,7 +159,9 @@ def main():
         rows.append(dict(c=cnt, kind="SWEEP" if n_prints >= 2 and span >= 2 else "DRIFT", hours=hours,
                          price=p_held, held=held.upper(), city=tk.split("-")[0].replace("KXHIGHT", "").replace("KXHIGH", ""),
                          m5=None if m5 is None else sign * (m5 - yes_fill) * 100,
-                         m60=None if m60 is None else sign * (m60 - yes_fill) * 100, settle=settle))
+                         m60=None if m60 is None else sign * (m60 - yes_fill) * 100, settle=settle,
+                         clv=None if cmid is None else sign * (cmid - yes_fill) * 100,
+                         utc_h=t.astimezone(dt.timezone.utc).hour, minute=t.minute))
         if i % 100 == 0:
             save_cache(c)
             print(f"  ...{i}/{len(fills)} fills ({time.time() - t_start:.0f}s)", flush=True)
@@ -162,6 +175,13 @@ def main():
           "BY PRICE PAID (for the side held)")
     table(rows, lambda r: r["held"], "BY SIDE HELD")
     table(rows, lambda r: r["city"], "BY CITY")
+    # news windows: forecast models publish on a schedule (GFS ~03:30/09:30/15:30/21:30 UTC, ECMWF ~06-07/18-19 UTC,
+    # NWS forecast packages ~09-10/21-22 UTC, hourly observations ~:51-:56 past each hour). If losing DRIFT fills
+    # cluster in particular hours / minutes, quotes should be pulled around those times.
+    table([r for r in rows if r["kind"] == "DRIFT"], lambda r: f"{r['utc_h']:02d}h UTC", "DRIFT FILLS BY HOUR OF DAY (UTC; CT = UTC-5)")
+    table(rows, lambda r: f"{r['utc_h']:02d}h UTC", "ALL FILLS BY HOUR OF DAY (UTC)")
+    table(rows, lambda r: (":00-:14" if r["minute"] < 15 else ":15-:29" if r["minute"] < 30 else ":30-:44" if r["minute"] < 45
+                           else ":45-:50" if r["minute"] < 51 else ":51-:59"), "BY MINUTE OF THE HOUR (:51-:59 = hourly observations land)")
 
 
 if __name__ == "__main__":
