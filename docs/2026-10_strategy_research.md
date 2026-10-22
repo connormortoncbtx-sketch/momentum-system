@@ -2484,6 +2484,8 @@ Backtest (bot's deep fills 6-48h), per city-day, dev / holdout: <20c +0.1 / -1.2
 50-80c +6.3 / +7.6c (t 9.6); 80c+ +4.8 / +4.8c (t 10.1). Favourite-side-only fills: +5.4c (t 6.6) / +6.0c (t 11.8).
 The original per-contract average hid that the long-shot side loses. Change: FAV_MIN=0.5 -- the bot only adds inventory on
 the side priced >= 50c; reducing orders always allowed (`bot.favourite_only`). Roughly halves fills.
+AMENDED Oct 22: reducing quotes below 50c are dropped too -- 46% of post-switch contracts were long-shot buys unwinding
+favourite positions, which net to the same losing long-shot bet. Exits from old long-shot positions (favourite-side buys) stay.
 
 ## Observation-window quote pulling (:45-:59 past the hour) -- Oct 22, 2026: REJECTED
 Live hint (`kmm diagnose`, pre-favourite-only fills, 777 settled contracts): fills at :45-:59 settled -7 to -8c vs +3 to

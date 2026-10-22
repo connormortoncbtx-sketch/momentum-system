@@ -86,10 +86,11 @@ def test_fallback_mark():
 def test_favourite_only():
     want = {"yes": 0.18, "no": 0.78}                     # a 20c bucket: bid YES 18c (long shot), bid NO 78c (favourite)
     assert B.favourite_only(want, 0.0) == {"no": 0.78}    # flat: only the favourite-side quote
-    assert B.favourite_only(want, -10.0) == {"yes": 0.18, "no": 0.78}  # short YES (holding NO): buying YES reduces -> kept
+    assert B.favourite_only(want, -10.0) == {"no": 0.78}  # holding the NO favourite: no long-shot YES bid to unwind it
     want = {"yes": 0.70, "no": 0.26}
     assert B.favourite_only(want, 0.0) == {"yes": 0.70}
-    assert B.favourite_only(want, 8.0) == {"yes": 0.70, "no": 0.26}   # long YES: buying NO reduces -> kept
+    assert B.favourite_only(want, 8.0) == {"yes": 0.70}   # long the YES favourite: keep it, no 26c NO bid
+    assert B.favourite_only({"yes": 0.15, "no": 0.82}, 10.0) == {"no": 0.82}  # long a long shot: the exit (NO 82c) stays
 
 
 

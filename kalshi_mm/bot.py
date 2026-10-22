@@ -46,8 +46,12 @@ def event_of(ticker):
 
 
 def favourite_only(want, pos):
-    """Drop quotes that would ADD inventory on a side priced below FAV_MIN (price = what we'd pay for that side)."""
-    return {sd: px for sd, px in want.items() if px >= FAV_MIN or not adds_exposure(sd, pos)}
+    """Quote only sides priced >= FAV_MIN (price = what we'd pay for that side). This also drops a long-shot quote that
+    would REDUCE a favourite position: netted, buying the long shot is the same bet as any long-shot fill (-1 to -5c
+    per contract in the backtest), and it sells a favourite that is +EV to hold. Live check Oct 22: 46% of contracts
+    filled after the switch were such reducing long-shot fills. Exits from old long-shot positions are favourite-side
+    buys, so they are still quoted."""
+    return {sd: px for sd, px in want.items() if px >= FAV_MIN}
 
 
 def adds_exposure(side, pos):
@@ -598,7 +602,10 @@ class Bot:
                             self.k.cancel(o["order_id"], tk); cancelled += 1
                             resting_cost -= order_price(o, side) * remaining(o)
                         except Exception as e:
-                            log.warning(f"cancel {o.get('order_id')}: {e}")
+                            if "404" in str(e):                    # already filled or gone: nothing to cancel
+                                log.info(f"cancel {o.get('order_id')}: already gone")
+                            else:
+                                log.warning(f"cancel {o.get('order_id')}: {e}")
                 if tgt is None or keep is not None:
                     continue
                 if used + resting_cost + tgt * SIZE > budget:
