@@ -167,7 +167,11 @@ def history_cards():
     return "".join(out)
 
 PORT = int(os.environ.get("DASH_PORT", "8787"))
-CACHE_S = 60
+CACHE_S = 300                                      # rebuild every 5 min: analysis is days/weeks, not seconds
+# The dashboard shares the account's Kalshi rate limit with the bot. It always yields: this process makes at most 2
+# requests/s (the bot's own limiter is separate), so a refresh is slow but can never crowd out execution.
+B.READ_LIMIT = B.RateLimit(2)
+B.WRITE_LIMIT = B.RateLimit(1)
 CT = ZoneInfo("America/Chicago")
 _cache = {"t": 0.0, "page": "", "lock": threading.Lock()}
 _last_good = {}
@@ -217,7 +221,7 @@ def build_page():
         return "pos" if v >= 0 else "neg"
 
     h = [f"""<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="refresh" content="60"><title>Kalshi bot</title><style>
+<meta http-equiv="refresh" content="120"><title>Kalshi bot</title><style>
 :root{{--bg:#0f1115;--card:#171a21;--ink:#e8eaed;--mut:#9aa0a6;--pos:#3ecf8e;--neg:#ff6b6b;--line:#262a33}}
 @media (prefers-color-scheme: light){{:root{{--bg:#f6f7f9;--card:#fff;--ink:#14171c;--mut:#5f6368;--pos:#0a8a57;--neg:#c62828;--line:#e3e5e8}}}}
 body{{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 -apple-system,system-ui,Segoe UI,Roboto,sans-serif}}
@@ -231,7 +235,7 @@ tr.win td{{background:color-mix(in srgb,var(--pos) 10%,transparent)}} tr.lose td
 pre{{white-space:pre-wrap;font-size:12.5px;margin:0}} .dot{{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;background:var(--{'pos' if ok else 'neg'})}}
 </style></head><body><main>
 <h1><span class="dot"></span>Kalshi bot — {'running' if ok else ('KILL SWITCH ON' if killed else 'service ' + html.escape(status))}</h1>
-<div class="mut">{now:%a %b %d, %-I:%M %p} CT · refreshes every minute{(' · <span class=neg>' + err + '</span>') if err else ''}</div>"""]
+<div class="mut">{now:%a %b %d, %-I:%M %p} CT · data refreshes every 5 min{(' · <span class=neg>' + err + '</span>') if err else ''}</div>"""]
     if dep:
         h.append(f"""<div class="card"><h2>Bottom line vs ${dep:,.2f} deposited</h2><div class="grid">
 <div><div class="mut">If sold now</div><div class="big {cls(sell - dep)}">{money(sell - dep, True)}</div><div class="mut">{money(sell)}</div></div>

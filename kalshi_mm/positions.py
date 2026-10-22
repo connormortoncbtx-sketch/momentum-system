@@ -13,6 +13,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import bot as B  # noqa: E402
+B.READ_LIMIT, B.WRITE_LIMIT = B.RateLimit(3), B.RateLimit(1)   # yield to the live bot on the shared rate limit
 
 
 def collect(k=None):

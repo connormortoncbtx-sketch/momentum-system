@@ -35,6 +35,7 @@ LOT_SERIES = [s for s in E("LOT_SERIES", "KXHIGHTHOU,KXHIGHTDC,KXHIGHTPHX,KXHIGH
                                          "KXHIGHTOKC,KXHIGHTNOLA,KXHIGHTSFO,KXHIGHTEWR").split(",")
               if s and s not in B.SERIES]
 STATE = os.path.join(B.LOG_DIR, "lottery.json")
+B.READ_LIMIT, B.WRITE_LIMIT = B.RateLimit(3), B.RateLimit(2)   # yield to the market maker on the shared rate limit
 
 
 def load():

@@ -22,6 +22,7 @@ import time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import bot as B      # noqa: E402
+B.READ_LIMIT, B.WRITE_LIMIT = B.RateLimit(3), B.RateLimit(1)   # yield to the live bot on the shared rate limit
 import report as R   # noqa: E402
 
 CACHE = os.path.join(R.LOG, "diag_cache.json")
