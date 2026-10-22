@@ -2552,3 +2552,9 @@ parking of the free NWS feed ("needs < 10 min and F precision" was an assumption
 delay and whole C it is +16 to +21c/contract in both periods. Caveats: trade-print prices are not guaranteed fills;
 the sample covers ~11% of markets and ~25-190 city-days; KNYC reports hourly only. Next: a paper shadow on the droplet
 that reads the NWS feed live, flags decided buckets and records the actual Kalshi ask and depth (no orders).
+- **Paper orders (Oct 22, Connor):** `automation/paper_condor.py` places the shadow's SPY + QQQ condors as real 4-leg
+  limit orders in a second Alpaca paper account (secrets ALPACA_PAPER2_KEY/SECRET), 1% risk each, starting at mid
+  and stepping 5c/min toward natural. Not a cost test (paper fills are optimistic) -- a mechanics test: order
+  acceptance, fill behaviour, and what happens at expiry to physically settled SPY/QQQ options (assignment leaves
+  shares overnight; the backtest assumed cash settlement). Next morning: equity P&L, option events, leftover shares
+  closed at market, all in data/paper_condor_ledger.jsonl.

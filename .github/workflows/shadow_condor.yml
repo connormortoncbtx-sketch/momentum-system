@@ -19,7 +19,7 @@ concurrency:
 jobs:
   condor:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
         with:
@@ -36,11 +36,18 @@ jobs:
           ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
           NTFY_CHANNEL: ${{ secrets.NTFY_CHANNEL }}
         run: python automation/shadow_condor.py
+      - name: Paper condor orders (separate paper account; skipped without its keys)
+        continue-on-error: true
+        env:
+          ALPACA_PAPER2_KEY: ${{ secrets.ALPACA_PAPER2_KEY }}
+          ALPACA_PAPER2_SECRET: ${{ secrets.ALPACA_PAPER2_SECRET }}
+          NTFY_CHANNEL: ${{ secrets.NTFY_CHANNEL }}
+        run: python automation/paper_condor.py
       - name: Commit ledger
         run: |
           git config user.name  "momentum-bot"
           git config user.email "momentum-bot@users.noreply.github.com"
-          for f in data/shadow_condor_state.json data/shadow_condor_ledger.jsonl data/system_log.jsonl; do if [ -e "$f" ]; then git add "$f"; fi; done
+          for f in data/shadow_condor_state.json data/shadow_condor_ledger.jsonl data/paper_condor_state.json data/paper_condor_ledger.jsonl data/system_log.jsonl; do if [ -e "$f" ]; then git add "$f"; fi; done
           git diff --cached --quiet && exit 0
           git commit -q -m "shadow condor: $(date +%Y-%m-%d) update"
           for attempt in 1 2 3 4 5; do
