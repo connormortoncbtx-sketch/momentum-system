@@ -1,5 +1,5 @@
 {
- "since": "2026-10-21T12:41:14-04:00",
+ "since": "2026-10-21T17:28:07-04:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -1447,6 +1447,176 @@
    "decided": "2026-10-21T13:38:07.740995-04:00",
    "event_type": "exec_departure",
    "summary": "Co-CEO Jonathan Maurer retiring March 31, 2027; Adam Comora becomes sole CEO; leadership search underway.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CAPS",
+   "accession": "0001437749-26-033134",
+   "decided": "2026-10-22T02:19:00.209402-04:00",
+   "event_type": "restructuring",
+   "summary": "1-for-30 reverse stock split effective Oct 19, 2026; shareholder-approved; going concern risks disclosed.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "TE",
+   "accession": "0001213900-26-111378",
+   "decided": "2026-10-22T02:19:19.391191-04:00",
+   "event_type": "equity_financing",
+   "summary": "Company issues 9.96M shares ($30M tranche) for IP purchase; issuance deferred by ownership cap.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "TKNO",
+   "accession": "0001193125-26-427930",
+   "decided": "2026-10-22T02:19:22.443117-04:00",
+   "event_type": "equity_financing",
+   "summary": "Company raises $40M via equity offering at $5/share; Q3 revenue $12.5-12.7M, negative EBITDA.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "FSBW",
+   "accession": "0001437749-26-033128",
+   "decided": "2026-10-22T02:19:25.319988-04:00",
+   "event_type": "acquisition",
+   "summary": "Completed Pacific West Bancorp acquisition for $35.3M; Q3 earnings miss with declining profitability.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "FEIM",
+   "accession": "0001185185-26-004889",
+   "decided": "2026-10-22T02:19:36.502174-04:00",
+   "event_type": "exec_appointment",
+   "summary": "CFO transition: Bernstein retiring after 16 years; Kaplan appointed from Leidos effective Nov 1, 2026.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "TCBX",
+   "accession": "0001193125-26-427892",
+   "decided": "2026-10-22T02:19:41.765340-04:00",
+   "event_type": "acquisition",
+   "summary": "Q3 2026 earnings solid but declining; announced $239.6M acquisition of Great Plains Bancshares.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "BRSP",
+   "accession": "0001717547-26-000068",
+   "decided": "2026-10-22T02:19:53.479380-04:00",
+   "event_type": "debt_financing",
+   "summary": "Company completed $960M CLO securitization backed by real estate collateral via subsidiary.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ARR",
+   "accession": "0001428205-26-000124",
+   "decided": "2026-10-22T02:19:58.698958-04:00",
+   "event_type": "routine",
+   "summary": "Q3 2026 earnings disclosure shows deteriorating book value and negative returns despite maintained dividend.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "WEST",
+   "accession": "0001104659-26-117845",
+   "decided": "2026-10-22T02:20:01.719907-04:00",
+   "event_type": "debt_financing",
+   "summary": "$600M credit facility refinance with convertible note restructuring and conversion price reduction.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "IPDN",
+   "accession": "0001437749-26-033122",
+   "decided": "2026-10-22T02:20:04.234943-04:00",
+   "event_type": "equity_financing",
+   "summary": "Company raises $250K via private placement at 40% discount to recent close; closing delayed.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "NVEC",
+   "accession": "0001376474-26-000663",
+   "decided": "2026-10-22T02:20:06.966139-04:00",
+   "event_type": "prelim_results_bad",
+   "summary": "Q2 FY2027 revenue and earnings missed expectations; H1 strength masks Q2 deceleration.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "BTCO",
+   "accession": "0001193125-26-427852",
+   "decided": "2026-10-22T02:20:12.127934-04:00",
+   "event_type": "exec_departure",
+   "summary": "Principal Financial Officer of sponsor took leave; replacement appointed effective immediately.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "DBC",
+   "accession": "0001193125-26-427833",
+   "decided": "2026-10-22T02:20:14.538370-04:00",
+   "event_type": "exec_departure",
+   "summary": "Principal Financial Officer of managing owner began leave of absence; successor appointed.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "DFDV",
+   "accession": "0001805526-26-000140",
+   "decided": "2026-10-22T02:20:16.641921-04:00",
+   "event_type": "exec_departure",
+   "summary": "Two directors resigned from board effective immediately; no disputes cited.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "IRD",
+   "accession": "0001140361-26-040377",
+   "decided": "2026-10-22T02:20:21.495858-04:00",
+   "event_type": "exec_departure",
+   "summary": "Chief Scientific Officer Ashwath Jayagopal transitions to 6-month consulting role, effective October 19, 2026.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "NEWT",
+   "accession": "0001628280-26-066702",
+   "decided": "2026-10-22T02:20:25.321048-04:00",
+   "event_type": "debt_financing",
+   "summary": "Company exchanges $24M of 2027 notes for new 2029 notes at same 8.125% coupon rate.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "FXE",
+   "accession": "0001193125-26-427819",
+   "decided": "2026-10-22T02:20:39.257006-04:00",
+   "event_type": "exec_departure",
+   "summary": "Principal Financial Officer took leave of absence; replacement appointed from internal Invesco operations.",
    "entry_date": null,
    "entry": null
   }
