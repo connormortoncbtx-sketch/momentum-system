@@ -79,11 +79,18 @@ def main():
     H["w_flat50"] = np.where(H.hp >= 0.5, H.c, 0.0)
     H["w_dev50"] = np.where(H.hp >= 0.5, H.c, 0.0) * 0 + np.where(H.hp >= best / 100, H.c, 0.0)
     H["w_scaled"] = H.c * H.b10.map(scale).fillna(0) * 2          # x2 so peak bands trade up to 10 (a 2x bigger max)
+    sz = []
     print("\n   HOLDOUT, per city-day:            P&L $    mean $   sd $   mean/sd   $ per contract   contracts")
     for name in ("w_flat50", "w_dev50", "w_scaled"):
         tot, tt, s = cityday_t(H, H[name])
         cap = (H[name] * H.hp).sum()
+        sz.append(dict(rule=name, pnl=tot, mean=s.mean(), sd=s.std(), contracts=H[name].sum()))
         print(f"   {name:30} {tot:9,.0f} {s.mean():8.3f} {s.std():7.3f} {s.mean() / s.std():8.3f} {tot / H[name].sum() * 100:+12.2f}c {H[name].sum():11,.0f}")
+    out = os.path.join(os.environ.get("RESEARCH_DATA", "research_data"), "results")
+    os.makedirs(out, exist_ok=True)
+    pd.DataFrame(sz).to_csv(f"{out}/kalshi_fav_sizing_holdout.csv", index=False)
+    cur.to_csv(f"{out}/kalshi_fav_curve.csv"); S.to_csv(f"{out}/kalshi_fav_cutoffs.csv", index=False)
+    X.to_csv(f"{out}/kalshi_fav_price_hours.csv"); pd.concat([dev_edge * 100, scale], axis=1).to_csv(f"{out}/kalshi_fav_sizing.csv")
     tot50, t50, s50 = cityday_t(H, H.w_flat50); totS, tS, sS = cityday_t(H, H.w_scaled); totB, tB, _ = cityday_t(H, H.w_dev50)
     print(f"::notice::fav cut-off: dev-best {best:.0f}c -> holdout ${totB:,.0f} (t {tB:.1f}) vs 50c ${tot50:,.0f} (t {t50:.1f}); "
           f"edge-scaled sizing holdout mean/sd {sS.mean() / sS.std():.3f} vs flat {s50.mean() / s50.std():.3f}")
