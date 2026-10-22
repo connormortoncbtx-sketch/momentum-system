@@ -2529,3 +2529,12 @@ compared with normal requests (ws_check.jsonl) -- 2+ mismatches -> resync, 3 suc
 with a phone alert. First 40 raw messages saved to ws_sample.jsonl to verify Kalshi's field format. Tested only against
 a local mock (Kalshi unreachable from the research sandbox): snapshot, delta, sequence gap -> reconnect, stale-copy
 detection -> resync -> switch-off all behaved.
+
+## Does the market lag new forecast-model runs? -- Oct 22, 2026: NO (`research/kalshi/model_lag.py`)
+43,844 bucket x run pairs (GFS MOS and NBM text runs revising the forecast high, implied probability change >= 3 pts,
+markets in the trade sample, May 2024 - Oct 2026). The market barely responds to these runs at all: price change
+regressed on the implied change is ~0.0-0.1 at every horizon to +6h (holdout NBS 0.02 at +30 min -> 0.10 at +6h), i.e.
+the 4x-daily text products carry almost no news the price doesn't already have (traders use faster hourly gridded
+NBM / HRRR). Trading into the "lag" as a taker: held to settlement, dev-best (GFS, entry run+4h, >= 10 pts) dev +5.4c
+(t 2.6) -> holdout +0.4c (t 0.4); exiting 2h later loses ~-3 to -4c everywhere (spread + fees). Rejected. Untested:
+the hourly gridded NBM / HRRR runs themselves (GRIB archives on AWS; heavy) -- the market's actual inputs.
