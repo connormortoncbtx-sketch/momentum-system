@@ -92,7 +92,21 @@ def test_favourite_only():
     assert B.favourite_only(want, 8.0) == {"yes": 0.70, "no": 0.26}   # long YES: buying NO reduces -> kept
 
 
+
+def test_netted():
+    """NO on 10/3/1 contracts of three buckets of one city-day: at most one loses, so >= $4 pays out for sure and
+    Kalshi returns it to cash early (event exposure = market exposures - 4). Position values must exclude it."""
+    k = B.Kalshi.__new__(B.Kalshi)
+    k.req = lambda *a, **kw: {"market_positions": [
+        {"ticker": "E-B1", "position_fp": "-10.00", "market_exposure_dollars": "8.55"},
+        {"ticker": "E-B2", "position_fp": "-3.00", "market_exposure_dollars": "1.795384"},
+        {"ticker": "E-B3", "position_fp": "-1.00", "market_exposure_dollars": "0.87"}],
+        "event_positions": [{"event_ticker": "E", "event_exposure_dollars": "7.215384"}]}
+    assert k.positions() == {"E-B1": -10.0, "E-B2": -3.0, "E-B3": -1.0}
+    assert abs(k.netted - 4.0) < 1e-6
+
+
 if __name__ == "__main__":
     for f in (test_targets, test_order_side, test_order_price, test_event_cap_helpers, test_sign_roundtrip,
-              test_day_baseline_survives_restart, test_fallback_mark, test_favourite_only):
+              test_day_baseline_survives_restart, test_fallback_mark, test_favourite_only, test_netted):
         f(); print("ok", f.__name__)

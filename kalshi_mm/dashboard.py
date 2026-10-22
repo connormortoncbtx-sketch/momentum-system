@@ -191,8 +191,9 @@ def build_page():
         rows, cash = P.collect()
     except Exception as e:
         rows, cash, err = [], 0.0, f"Kalshi fetch failed: {html.escape(str(e))[:200]}"
-    sell = cash + sum(r["sell"] for r in rows)
-    exp = cash + sum(r["ev"] for r in rows)
+    net = P.collect.netted                      # sure payouts on mutually exclusive buckets, already in cash
+    sell = cash - net + sum(r["sell"] for r in rows)
+    exp = cash - net + sum(r["ev"] for r in rows)
     try:
         rep = R.build()
     except Exception as e:
@@ -229,7 +230,8 @@ pre{{white-space:pre-wrap;font-size:12.5px;margin:0}} .dot{{display:inline-block
         h.append(f"""<div class="card"><h2>Bottom line vs ${dep:,.2f} deposited</h2><div class="grid">
 <div><div class="mut">If sold now</div><div class="big {cls(sell - dep)}">{money(sell - dep, True)}</div><div class="mut">{money(sell)}</div></div>
 <div><div class="mut">Expected at settlement</div><div class="big {cls(exp - dep)}">{money(exp - dep, True)}</div><div class="mut">{money(exp)}</div></div>
-<div><div class="mut">Cash</div><div class="big">{money(cash)}</div><div class="mut">{len(rows)} open positions</div></div></div></div>""")
+<div><div class="mut">Cash</div><div class="big">{money(cash)}</div><div class="mut">{len(rows)} open positions</div></div></div>
+<div class="mut">Positions are net of {money(net)} of sure payouts Kalshi already returned to cash (NO on several buckets of one city-day: at most one can lose). Per-day tables below show them gross.</div></div>""")
     try:
         kb, kt = P.kalshi_truth()
         h.append("<div class='card'><h2>Kalshi's own numbers (to reconcile with the app and with ours)</h2>"

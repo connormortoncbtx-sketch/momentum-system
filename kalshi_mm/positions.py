@@ -50,7 +50,11 @@ def collect(k=None):
         rows.append(dict(city=city, day=day, bucket=bucket, side=side, n=c, cost=cost.get(tk, 0.0), sell=sell,
                          ev=c * p_win, p=p_win, spread=yask - ybid, src=src))
     rows.sort(key=lambda r: (r["day"], r["city"], r["bucket"]))
+    collect.netted = getattr(k, "netted", 0.0) or 0.0     # sure payouts Kalshi already moved into cash (see bot.positions)
     return rows, bal
+
+
+collect.netted = 0.0
 
 
 def kalshi_truth(k=None):
@@ -90,7 +94,9 @@ def main():
         tc, ts, te = sum(r["cost"] for r in g), sum(r["sell"] for r in g), sum(r["ev"] for r in g)
         print(f"{day}: {len(g)} positions | cost ${tc:.2f} | sell now ${ts:.2f} | expected at settlement ${te:.2f} "
               f"({te - tc:+.2f} vs cost) | decided winners {sum(r['p'] > .97 for r in g)}, losers {sum(r['p'] < .03 for r in g)}")
-    tc, ts, te = sum(r["cost"] for r in rows), sum(r["sell"] for r in rows), sum(r["ev"] for r in rows)
+    net = collect.netted
+    tc, ts, te = sum(r["cost"] for r in rows) - net, sum(r["sell"] for r in rows) - net, sum(r["ev"] for r in rows) - net
+    print(f"(less ${net:.2f} of sure payouts on mutually exclusive buckets that Kalshi already paid into cash)")
     dep = B.num(os.environ.get("DEPOSITS_USD"))
     print(f"\nALL: cost ${tc:.2f} | sell now ${ts:.2f} | expected at settlement ${te:.2f} ({te - tc:+.2f} vs cost)")
     print(f"cash ${bal:.2f} -> account: sell-now ${bal + ts:.2f}, expected ${bal + te:.2f}"

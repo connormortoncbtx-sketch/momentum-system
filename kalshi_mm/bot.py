@@ -212,6 +212,8 @@ class Kalshi:
     # private
     def balance(self):
         d = self.req("GET", "/portfolio/balance", auth=True)
+        pv = d.get("portfolio_value_dollars", None)
+        self.portfolio_value = num(pv) if pv is not None else (num(d.get("portfolio_value")) / 100 if d.get("portfolio_value") is not None else None)
         return num(d.get("balance")) / 100
 
     def positions(self):
@@ -219,6 +221,14 @@ class Kalshi:
         (what the position cost; used for the budget so paper gains don't crowd out new quotes)."""
         d = self.req("GET", "/portfolio/positions", auth=True, limit=1000, count_filter="position")
         mp = d.get("market_positions", [])
+        # Kalshi nets mutually exclusive buckets: NO on several buckets of one city-day is partly a sure thing (at most
+        # one bucket wins), and Kalshi pays that sure part back into cash early. Cash already includes it, so position
+        # values must exclude it or it's counted twice (~$40 overstatement seen Oct 22). netted = sum of market
+        # exposures - sum of event exposures.
+        ev = d.get("event_positions", [])
+        mx = sum(num(p.get("market_exposure_dollars")) for p in mp)
+        ex = sum(num(e.get("event_exposure_dollars")) for e in ev)
+        self.netted = max(0.0, mx - ex) if ev else 0.0
         self.cost = {}
         for p in mp:
             if p.get("market_exposure_dollars") is not None:
@@ -305,19 +315,22 @@ def trading_day(t=None):
     return (t or now()).astimezone(ZoneInfo("America/Chicago")).date().isoformat()
 
 
+BASELINE_BASIS = "netted-v1"   # bump when the value definition changes, so a stale baseline isn't compared to a new value
+
+
 def day_baseline(day, value, path=None):
     """Start-of-day account value for the daily loss stop, saved to disk so a restart (kmm update, crash) on the same
     day keeps the original baseline instead of quietly resetting the stop to the value at the restart."""
     path = path or os.path.join(LOG_DIR, "day_start.json")
     try:
         d = json.load(open(path))
-        if d.get("day") == day and isinstance(d.get("value"), (int, float)):
+        if d.get("day") == day and d.get("basis") == BASELINE_BASIS and isinstance(d.get("value"), (int, float)):
             return float(d["value"])
     except Exception:
         pass
     os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
     with open(path + ".tmp", "w") as f:
-        json.dump({"day": day, "value": round(value, 2)}, f)
+        json.dump({"day": day, "value": round(value, 2), "basis": BASELINE_BASIS}, f)
     os.replace(path + ".tmp", path)
     return value
 
@@ -446,13 +459,16 @@ class Bot:
         if live:
             bal = self.k.balance()
             pos_val = sum(p * marks.get(t, 0.5) if p > 0 else -p * (1 - marks.get(t, 0.5)) for t, p in pos.items())
+            net = getattr(self.k, "netted", 0.0) or 0.0           # sure payouts Kalshi already returned to cash
+            pos_val -= net
             value = bal + pos_val
             used_mark = sum(collateral(p, marks.get(t, 0.5)) for t, p in pos.items())
             cost = getattr(self.k, "cost", {}) or {}
             # budget counts what positions COST (money actually tied up); mark value only if the cost field is missing
-            used = sum(cost[t] if t in cost else collateral(p, marks.get(t, 0.5)) for t, p in pos.items() if p)
+            used = max(0.0, sum(cost[t] if t in cost else collateral(p, marks.get(t, 0.5)) for t, p in pos.items() if p) - net)
             # size off a CONSERVATIVE value: positions at what they'd sell for now (the bid), not the mid
-            liq = bal + sum(p * bids.get(t, (0, 0))[0] if p > 0 else -p * bids.get(t, (0, 0))[1] for t, p in pos.items())
+            liq = bal - net + sum(p * bids.get(t, (0, 0))[0] if p > 0 else -p * bids.get(t, (0, 0))[1] for t, p in pos.items())
+            kv = getattr(self.k, "portfolio_value", None)
             today = trading_day()
             if self.day != today:
                 self.day, self.day_start_value = today, day_baseline(today, value)
@@ -461,7 +477,8 @@ class Bot:
             jlog("snapshots", balance=round(bal, 2), position_value=round(pos_val, 2), value=round(value, 2),
                  value_at_bid=round(liq, 2),
                  pnl_today=round(pnl_today, 2), positions={t: p for t, p in pos.items() if p}, n_resting=len(rest),
-                 budget=round(budget, 2), loss_limit=round(max_loss, 2), used_cost=round(used, 2), used_mark=round(used_mark, 2))
+                 budget=round(budget, 2), loss_limit=round(max_loss, 2), used_cost=round(used, 2), used_mark=round(used_mark, 2),
+                 netted=round(net, 2), kalshi_value=None if kv is None else round(bal + kv, 2))
             if pnl_today < -max_loss:
                 self.cancel_all(f"daily loss {pnl_today:.2f}")
                 log.warning("daily loss limit hit; pausing until midnight Central")
