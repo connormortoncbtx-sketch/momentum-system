@@ -158,7 +158,7 @@ def enter_one(e, eq, risk_frac):
 
 def main():
     if not os.environ.get("ALPACA_PAPER2_KEY"):
-        log.info("no ALPACA_PAPER2_KEY -- paper condor not configured"); return
+        print("::notice::paper condor: no ALPACA_PAPER2_KEY secret -- skipped"); return
     now = dt.datetime.now(ET)
     state = json.loads(STATE.read_text()) if STATE.exists() else {"days": {}}
     rows = reconcile(state, now.date())
@@ -167,6 +167,8 @@ def main():
             for r in rows:
                 fh.write(json.dumps(r) + "\n")
     acct = api("GET", "/v2/account")
+    print(f"::notice::paper condor account: equity {acct.get('equity')}, options level {acct.get('options_trading_level')}, "
+          f"approved {acct.get('options_approved_level')}, status {acct.get('status')}")
     log.info(f"paper account: equity {acct.get('equity')}, options level {acct.get('options_trading_level')} "
              f"(approved {acct.get('options_approved_level')}), status {acct.get('status')}")
     if not (dt.time(9, 58) <= now.time() <= dt.time(11, 30)):           # same entry window as the shadow
