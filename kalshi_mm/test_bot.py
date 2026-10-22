@@ -139,7 +139,18 @@ def test_ws_parsing():
     assert W._delta_fields({"side": "bid", "price_dollars": "0.41", "delta_fp": "1"}) is None
 
 
+
+def test_sniper_helpers():
+    import datetime as dt, sniper as S
+    d, mid = S.std_day("America/Chicago", dt.datetime(2026, 10, 22, 5, 30, tzinfo=dt.timezone.utc))
+    assert d == dt.date(2026, 10, 21) and mid == dt.datetime(2026, 10, 21, 6, 0, tzinfo=dt.timezone.utc)   # CST all year
+    assert S.interval({"strike_type": "between", "floor_strike": 83, "cap_strike": 84}) == (83.0, 84.0)
+    assert S.interval({"strike_type": "greater", "floor_strike": 86}) == (87.0, float("inf"))
+    assert S.interval({"strike_type": "less", "cap_strike": 79}) == (float("-inf"), 78.0)
+    assert S.market_date("KXHIGHTDAL-26OCT22-B83.5") == dt.date(2026, 10, 22)
+
+
 if __name__ == "__main__":
     for f in (test_targets, test_order_side, test_order_price, test_event_cap_helpers, test_sign_roundtrip,
-              test_day_baseline_survives_restart, test_fallback_mark, test_favourite_only, test_netted, test_quiet, test_rate_limit, test_ws_parsing):
+              test_day_baseline_survives_restart, test_fallback_mark, test_favourite_only, test_netted, test_quiet, test_rate_limit, test_ws_parsing, test_sniper_helpers):
         f(); print("ok", f.__name__)

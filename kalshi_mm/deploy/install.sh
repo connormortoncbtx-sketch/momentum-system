@@ -12,7 +12,8 @@ id kmm >/dev/null 2>&1 || useradd -m -s /bin/bash kmm
 timedatectl set-timezone America/Chicago || true
 
 echo "==> code"
-if [ -d "$APP/.git" ]; then sudo -u kmm git -C "$APP" pull -q; else sudo -u kmm git clone -q --depth 1 "$REPO" "$APP"; fi
+OLD_REV=""
+if [ -d "$APP/.git" ]; then OLD_REV=$(sudo -u kmm git -C "$APP" rev-parse HEAD 2>/dev/null || true); sudo -u kmm git -C "$APP" pull -q; else sudo -u kmm git clone -q --depth 1 "$REPO" "$APP"; fi
 sudo -u kmm python3 -m venv /home/kmm/venv
 sudo -u kmm /home/kmm/venv/bin/pip install -q --upgrade pip cryptography websocket-client
 sudo -u kmm /home/kmm/venv/bin/python "$APP/kalshi_mm/test_bot.py"
@@ -102,6 +103,20 @@ RestartSec=10
 [Install]
 WantedBy=multi-user.target
 EOF
+cat > /etc/systemd/system/kmm-sniper.service <<EOF
+[Unit]
+Description=Kalshi decided-bucket PAPER shadow (reads NWS + order books, places no orders)
+After=network-online.target
+[Service]
+User=kmm
+WorkingDirectory=$DATA
+EnvironmentFile=$ETC/env
+ExecStart=/home/kmm/venv/bin/python $APP/kalshi_mm/sniper.py
+Restart=always
+RestartSec=60
+[Install]
+WantedBy=multi-user.target
+EOF
 cat > /etc/systemd/system/kmm-lottery.service <<EOF
 [Unit]
 Description=Kalshi weekly roll (lottery ticket)
@@ -141,9 +156,10 @@ case "${1:-status}" in
   report) sudo -u kmm bash -c 'set -a; . /etc/kmm/env; /home/kmm/venv/bin/python /home/kmm/app/kalshi_mm/report.py' ;;
   diagnose) sudo -u kmm bash -c 'set -a; . /etc/kmm/env; /home/kmm/venv/bin/python /home/kmm/app/kalshi_mm/diagnose.py "$@"' _ ${2:+"$2"} ;;
   positions) sudo -u kmm bash -c 'set -a; . /etc/kmm/env; /home/kmm/venv/bin/python /home/kmm/app/kalshi_mm/positions.py' ;;
+  sniper) sudo -u kmm bash -c 'set -a; . /etc/kmm/env; /home/kmm/venv/bin/python /home/kmm/app/kalshi_mm/sniper.py report'; journalctl -u kmm-sniper -n 3 --no-pager | grep -v systemd ;;
   lottery) cat /home/kmm/data/lottery.json 2>/dev/null || echo "no weekly roll yet"; echo; journalctl -u kmm-lottery -n "${2:-10}" --no-pager | grep -v systemd ;;
   update) exec bash -c "curl -fsSL https://raw.githubusercontent.com/connormortoncbtx-sketch/momentum-system/main/kalshi_mm/deploy/install.sh | bash" ;;  # exec: this script gets rewritten mid-update
-  *) echo "usage: kmm status|stop|resume|logs [n]|report|positions|diagnose|lottery|update" ;;
+  *) echo "usage: kmm status|stop|resume|logs [n]|report|positions|diagnose|lottery|sniper|update" ;;
 esac
 KMM
 chmod 755 /usr/local/bin/kmm
@@ -151,6 +167,7 @@ systemctl daemon-reload
 systemctl enable -q kmm-report.timer && systemctl start kmm-report.timer
 systemctl enable -q kmm-lottery.timer && systemctl start kmm-lottery.timer
 systemctl enable -q kmm-dash && systemctl restart kmm-dash
+systemctl enable -q kmm-sniper && systemctl restart kmm-sniper
 systemctl enable -q kmm
 
 if grep -q "paste-your-key-id-here" "$ETC/env" || [ ! -s "$ETC/kalshi.pem" ]; then
@@ -159,9 +176,13 @@ if grep -q "paste-your-key-id-here" "$ETC/env" || [ ! -s "$ETC/kalshi.pem" ]; th
   echo "  1. sudo nano /etc/kmm/env         -> set KALSHI_KEY_ID (and NTFY_CHANNEL if you want alerts)"
   echo "  2. sudo nano /etc/kmm/kalshi.pem  -> paste the private key, including the BEGIN/END lines"
   echo "Then:  sudo systemctl restart kmm   and check with:  sudo kmm logs"
+elif [ -n "$OLD_REV" ] && systemctl is-active -q kmm && \
+     sudo -u kmm git -C "$APP" diff --quiet "$OLD_REV" HEAD -- kalshi_mm/bot.py kalshi_mm/ws.py; then
+  # the trading code didn't change: leave the bot running (a restart cancels and re-places every order)
+  echo "Installed. Trading bot code unchanged -- bot NOT restarted (orders untouched)."
 else
   systemctl restart kmm
-  echo "Installed and (re)started."
+  echo "Installed and (re)started the trading bot."
 fi
 echo "Commands (with sudo): kmm status | kmm logs | kmm report | kmm positions | kmm lottery | kmm stop | kmm resume | kmm update"
 echo "Dashboard: http://127.0.0.1:8787 on the server; to open it from your phone, once: install Tailscale here"
