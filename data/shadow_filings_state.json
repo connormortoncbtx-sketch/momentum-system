@@ -1,5 +1,5 @@
 {
- "since": "2026-10-21T17:28:07-04:00",
+ "since": "2026-10-22T13:23:53-04:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -1377,8 +1377,8 @@
    "decided": "2026-10-21T13:37:21.747057-04:00",
    "event_type": "partnership",
    "summary": "Company achieves #1 Super Representative node ranking on TRX network with 3.71B delegated tokens",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-22",
+   "entry": 1.2
   },
   {
    "book": "short_bad_news",
@@ -1387,8 +1387,8 @@
    "decided": "2026-10-21T13:37:25.057311-04:00",
    "event_type": "acquisition",
    "summary": "Smith & Wesson acquires Savage Arms for ~$165M in stock-cash deal; 20% dilution.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-22",
+   "entry": 15.09
   },
   {
    "book": "short_bad_news",
@@ -1397,8 +1397,8 @@
    "decided": "2026-10-21T13:37:34.633018-04:00",
    "event_type": "partnership",
    "summary": "Partnership with Uniphar for Ebstrocel international commercialization; pre-MAA submitted to UK MHRA.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-22",
+   "entry": 1.58
   },
   {
    "book": "short_bad_news",
@@ -1407,8 +1407,8 @@
    "decided": "2026-10-21T13:37:41.879736-04:00",
    "event_type": "partnership",
    "summary": "Company invests CAD 35M in Blue Moon Metals for board seat, warrants, and dilution protection rights.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-22",
+   "entry": 20.56
   },
   {
    "book": "short_bad_news",
@@ -1417,8 +1417,8 @@
    "decided": "2026-10-21T13:37:45.043886-04:00",
    "event_type": "prelim_results_good",
    "summary": "Q3 2026 earnings beat YoY but missed QoQ; credit quality deteriorating sharply.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-22",
+   "entry": 68.3
   },
   {
    "book": "short_bad_news",
@@ -1427,8 +1427,8 @@
    "decided": "2026-10-21T13:38:00.573313-04:00",
    "event_type": "acquisition",
    "summary": "APEX acquiring Korai Flix for $3.5B in stock; SPAC merger with Delaware redomiciliation",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-22",
+   "entry": 10.07
   },
   {
    "book": "short_bad_news",
@@ -1437,8 +1437,8 @@
    "decided": "2026-10-21T13:38:05.177810-04:00",
    "event_type": "routine",
    "summary": "Company updates corporate presentation deck highlighting oncology drug programs PDS0301 and PDS0101.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-22",
+   "entry": 1.16
   },
   {
    "book": "short_bad_news",
@@ -1447,8 +1447,8 @@
    "decided": "2026-10-21T13:38:07.740995-04:00",
    "event_type": "exec_departure",
    "summary": "Co-CEO Jonathan Maurer retiring March 31, 2027; Adam Comora becomes sole CEO; leadership search underway.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-22",
+   "entry": 1.54
   },
   {
    "book": "short_bad_news",
@@ -1457,8 +1457,8 @@
    "decided": "2026-10-22T02:19:00.209402-04:00",
    "event_type": "restructuring",
    "summary": "1-for-30 reverse stock split effective Oct 19, 2026; shareholder-approved; going concern risks disclosed.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-22",
+   "entry": 2.695
   },
   {
    "book": "short_bad_news",
@@ -1467,8 +1467,8 @@
    "decided": "2026-10-22T02:19:19.391191-04:00",
    "event_type": "equity_financing",
    "summary": "Company issues 9.96M shares ($30M tranche) for IP purchase; issuance deferred by ownership cap.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-22",
+   "entry": 2.28
   },
   {
    "book": "short_bad_news",
@@ -1477,8 +1477,8 @@
    "decided": "2026-10-22T02:19:22.443117-04:00",
    "event_type": "equity_financing",
    "summary": "Company raises $40M via equity offering at $5/share; Q3 revenue $12.5-12.7M, negative EBITDA.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-22",
+   "entry": 5.6
   },
   {
    "book": "short_bad_news",
@@ -1487,8 +1487,8 @@
    "decided": "2026-10-22T02:19:25.319988-04:00",
    "event_type": "acquisition",
    "summary": "Completed Pacific West Bancorp acquisition for $35.3M; Q3 earnings miss with declining profitability.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-22",
+   "entry": 42.13
   },
   {
    "book": "short_bad_news",
@@ -1497,8 +1497,8 @@
    "decided": "2026-10-22T02:19:36.502174-04:00",
    "event_type": "exec_appointment",
    "summary": "CFO transition: Bernstein retiring after 16 years; Kaplan appointed from Leidos effective Nov 1, 2026.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-22",
+   "entry": 65.06
   },
   {
    "book": "short_bad_news",
@@ -1507,8 +1507,8 @@
    "decided": "2026-10-22T02:19:41.765340-04:00",
    "event_type": "acquisition",
    "summary": "Q3 2026 earnings solid but declining; announced $239.6M acquisition of Great Plains Bancshares.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-22",
+   "entry": 39.32
   },
   {
    "book": "short_bad_news",
@@ -1517,8 +1517,8 @@
    "decided": "2026-10-22T02:19:53.479380-04:00",
    "event_type": "debt_financing",
    "summary": "Company completed $960M CLO securitization backed by real estate collateral via subsidiary.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-22",
+   "entry": 3.64
   },
   {
    "book": "short_bad_news",
@@ -1527,8 +1527,8 @@
    "decided": "2026-10-22T02:19:58.698958-04:00",
    "event_type": "routine",
    "summary": "Q3 2026 earnings disclosure shows deteriorating book value and negative returns despite maintained dividend.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-22",
+   "entry": 12.6
   },
   {
    "book": "short_bad_news",
@@ -1537,8 +1537,8 @@
    "decided": "2026-10-22T02:20:01.719907-04:00",
    "event_type": "debt_financing",
    "summary": "$600M credit facility refinance with convertible note restructuring and conversion price reduction.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-22",
+   "entry": 9.14
   },
   {
    "book": "short_bad_news",
@@ -1547,8 +1547,8 @@
    "decided": "2026-10-22T02:20:04.234943-04:00",
    "event_type": "equity_financing",
    "summary": "Company raises $250K via private placement at 40% discount to recent close; closing delayed.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-22",
+   "entry": 2.65
   },
   {
    "book": "short_bad_news",
@@ -1557,8 +1557,8 @@
    "decided": "2026-10-22T02:20:06.966139-04:00",
    "event_type": "prelim_results_bad",
    "summary": "Q2 FY2027 revenue and earnings missed expectations; H1 strength masks Q2 deceleration.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-22",
+   "entry": 73.15
   },
   {
    "book": "short_bad_news",
@@ -1567,8 +1567,8 @@
    "decided": "2026-10-22T02:20:12.127934-04:00",
    "event_type": "exec_departure",
    "summary": "Principal Financial Officer of sponsor took leave; replacement appointed effective immediately.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-22",
+   "entry": 81.33
   },
   {
    "book": "short_bad_news",
@@ -1577,8 +1577,8 @@
    "decided": "2026-10-22T02:20:14.538370-04:00",
    "event_type": "exec_departure",
    "summary": "Principal Financial Officer of managing owner began leave of absence; successor appointed.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-22",
+   "entry": 33.71
   },
   {
    "book": "short_bad_news",
@@ -1587,8 +1587,8 @@
    "decided": "2026-10-22T02:20:16.641921-04:00",
    "event_type": "exec_departure",
    "summary": "Two directors resigned from board effective immediately; no disputes cited.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-22",
+   "entry": 4.07
   },
   {
    "book": "short_bad_news",
@@ -1597,8 +1597,8 @@
    "decided": "2026-10-22T02:20:21.495858-04:00",
    "event_type": "exec_departure",
    "summary": "Chief Scientific Officer Ashwath Jayagopal transitions to 6-month consulting role, effective October 19, 2026.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-22",
+   "entry": 4.04
   },
   {
    "book": "short_bad_news",
@@ -1607,8 +1607,8 @@
    "decided": "2026-10-22T02:20:25.321048-04:00",
    "event_type": "debt_financing",
    "summary": "Company exchanges $24M of 2027 notes for new 2029 notes at same 8.125% coupon rate.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-22",
+   "entry": 11.11
   },
   {
    "book": "short_bad_news",
@@ -1617,20 +1617,141 @@
    "decided": "2026-10-22T02:20:39.257006-04:00",
    "event_type": "exec_departure",
    "summary": "Principal Financial Officer took leave of absence; replacement appointed from internal Invesco operations.",
+   "entry_date": "2026-10-22",
+   "entry": 103.38
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "POWW",
+   "accession": "0001493152-26-048030",
+   "decided": "2026-10-22T13:35:22.347290-04:00",
+   "event_type": "buyback_dividend",
+   "summary": "Board approves $35M share repurchase program expansion, extending through July 2027.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CYCU",
+   "accession": "0001868419-26-000058",
+   "decided": "2026-10-22T13:35:31.613016-04:00",
+   "event_type": "strategic_review",
+   "summary": "CEO outlines predictive intelligence strategy, Nasdaq compliance regained, pivoting to products and federal expansion.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_win",
+   "symbol": "UMAC",
+   "accession": "0001683168-26-008013",
+   "decided": "2026-10-22T13:35:39.209800-04:00",
+   "event_type": "contract_win",
+   "summary": "Received $16.9M purchase order from Powerus for drone components; strategically significant.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_div",
+   "symbol": "UMAC",
+   "accession": "0001683168-26-008013",
+   "decided": "2026-10-22T13:35:39.209800-04:00",
+   "event_type": "contract_win",
+   "summary": "Received $16.9M purchase order from Powerus for drone components; strategically significant.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "AESI",
+   "accession": "0001104659-26-117979",
+   "decided": "2026-10-22T13:35:48.566412-04:00",
+   "event_type": "debt_financing",
+   "summary": "Company closes $424M bridge facility for power generation equipment financing with refinancing risk.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "GUTS",
+   "accession": "0001193125-26-428302",
+   "decided": "2026-10-22T13:36:16.024923-04:00",
+   "event_type": "restructuring",
+   "summary": "45% workforce reduction, President retiring, discontinuing Rejuva program; focusing on Revita post-GLP-1 therapy.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "GRNQ",
+   "accession": "0001493152-26-048014",
+   "decided": "2026-10-22T13:36:18.047759-04:00",
+   "event_type": "exec_departure",
+   "summary": "Board director resignation effective October 31, 2026; stated as non-contentious.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "LNN",
+   "accession": "0001193125-26-428293",
+   "decided": "2026-10-22T13:36:21.147989-04:00",
+   "event_type": "prelim_results_good",
+   "summary": "FY2026 Q4 results: strong Q4 growth with 39% operating income increase, but full-year headwinds persist.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "AMAL",
+   "accession": "0001823608-26-000212",
+   "decided": "2026-10-22T13:36:23.822432-04:00",
+   "event_type": "routine",
+   "summary": "Q3 2026 earnings announcement with typical regulatory disclosures and earnings call notice.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "VREX",
+   "accession": "0001104659-26-117962",
+   "decided": "2026-10-22T13:36:26.864743-04:00",
+   "event_type": "litigation",
+   "summary": "Stockholder litigation filed challenging merger proxy disclosures; company making supplemental disclosures to avoid delay.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "GLND",
+   "accession": "0001829126-26-011412",
+   "decided": "2026-10-22T13:36:29.323033-04:00",
+   "event_type": "exec_departure",
+   "summary": "Board member Roderick McIllree resigned effective immediately; stated non-disagreement.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "THRM",
+   "accession": "0001193125-26-428275",
+   "decided": "2026-10-22T13:36:32.116877-04:00",
+   "event_type": "acquisition",
+   "summary": "Modine Performance Technologies acquisition closed Oct 1; Q3 results mixed with margin compression and profitability decline.",
    "entry_date": null,
    "entry": null
   }
  ],
  "div": {
-  "nav": 99.03729770946713,
+  "nav": 98.76741374457067,
   "closed": [],
-  "last_date": "2026-10-21",
+  "last_date": "2026-10-22",
   "history": {
    "2026-10-15": 100.3592,
    "2026-10-16": 98.6604,
    "2026-10-19": 97.5899,
    "2026-10-20": 98.5486,
-   "2026-10-21": 99.0373
+   "2026-10-21": 99.0373,
+   "2026-10-22": 98.7674
   }
  }
 }
