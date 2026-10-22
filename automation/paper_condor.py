@@ -166,6 +166,11 @@ def main():
         with LEDGER.open("a") as fh:
             for r in rows:
                 fh.write(json.dumps(r) + "\n")
+    acct = api("GET", "/v2/account")
+    log.info(f"paper account: equity {acct.get('equity')}, options level {acct.get('options_trading_level')} "
+             f"(approved {acct.get('options_approved_level')}), status {acct.get('status')}")
+    if not (dt.time(9, 58) <= now.time() <= dt.time(11, 30)):           # same entry window as the shadow
+        STATE.write_text(json.dumps(state, indent=1)); return
     key = now.date().isoformat()
     shadow = json.loads(SHADOW.read_text()).get("open", {}).get(key, {}) if SHADOW.exists() else {}
     day = state["days"].setdefault(key, {"orders": [], "equity_before": None})
