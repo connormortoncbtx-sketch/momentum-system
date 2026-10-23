@@ -48,18 +48,20 @@ jobs:
           mkdir -p theta && cd theta
           for u in https://download-stable.thetadata.us/ThetaTerminalv3.jar https://download-unstable.thetadata.us/ThetaTerminalv3.jar \
                    https://download.thetadata.net/ThetaTerminalv3.jar https://thetadata.net/ThetaTerminalv3.jar; do
-            if curl -fsSL -o ThetaTerminalv3.jar "$u" && unzip -tq ThetaTerminalv3.jar >/dev/null 2>&1; then echo "jar from $u"; break; fi
+            if curl -fsSL -o ThetaTerminalv3.jar "$u" && unzip -tq ThetaTerminalv3.jar >/dev/null 2>&1; then echo "::notice::jar from $u ($(stat -c%s ThetaTerminalv3.jar) bytes)"; break; fi
             rm -f ThetaTerminalv3.jar
           done
           [ -f ThetaTerminalv3.jar ] || { echo "::error::could not download ThetaTerminalv3.jar from any known URL"; exit 1; }
           printf '%s\n%s\n' "$THETA_USER" "$THETA_PASS" > creds.txt && chmod 600 creds.txt
           nohup java -Xmx2g -jar ThetaTerminalv3.jar --creds-file creds.txt > terminal.log 2>&1 &
-          for i in $(seq 1 90); do
-            if curl -s -o /dev/null "http://127.0.0.1:25503/v3/option/list/expirations?symbol=SPY&format=json"; then echo "terminal up after ${i}x2s"; break; fi
+          up=0
+          for i in $(seq 1 150); do
+            if curl -s -o /dev/null "http://127.0.0.1:25503/v3/option/list/expirations?symbol=SPY&format=json"; then up=1; echo "::notice::terminal up after $((i*2))s"; break; fi
+            if ! kill -0 $! 2>/dev/null; then echo "::warning::terminal process exited"; break; fi
             sleep 2
           done
-          tail -n 20 terminal.log | sed 's/^/terminal: /'
-          grep -iE "error|denied|invalid|subscription|tier" terminal.log | head -5 | sed 's/^/::warning::terminal: /' || true
+          echo "::notice::terminal log: $(tail -n 25 terminal.log | sed 's/[[:cntrl:]]//g' | grep -v -i password | tr '\n' '|' | cut -c1-1800)"
+          [ $up = 1 ] || { echo "::error::Theta Terminal did not come up on 25503"; exit 1; }
       - name: Load research-data branch
         run: git clone -q --depth 1 -b research-data "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" research_data
       - name: Run
