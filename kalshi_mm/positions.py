@@ -33,19 +33,25 @@ def collect(k=None):
         ybid = y[0][0] if y else 0.0
         yask = 1 - n[0][0] if n else 1.0
         mid = (ybid + yask) / 2
-        src = "mid"
+        src, settles = "mid", None
         if yask - ybid > 0.10:                                 # dead/thin book: the mid is meaningless, use last trade
             try:
                 mk = k.req("GET", f"/markets/{tk}").get("market", {})
+                res = str(mk.get("result") or "").lower()
                 lp = B.num(mk.get("last_price_dollars")) or B.num(mk.get("last_price")) / 100
-                if 0 < lp < 1:
+                if res in ("yes", "no"):                       # decided, waiting for payout: worth exactly 1 or 0
+                    mid, src, settles = (1.0 if res == "yes" else 0.0), "result", True
+                elif str(mk.get("status", "")).lower() in ("closed", "determined", "settled", "finalized") and 0 < lp < 1:
+                    mid, src, settles = lp, "last", True       # closed, result not out yet: no book to sell into
+                elif 0 < lp < 1:
                     mid, src = lp, "last"
             except Exception:
                 pass
         side = "YES" if q > 0 else "NO"
         c = abs(q)
         p_win = mid if q > 0 else 1 - mid                      # implied chance the held side pays $1
-        sell = c * (ybid if q > 0 else (n[0][0] if n else 0.0))  # what selling now would bring
+        # what selling now would bring; a closed market can't be sold -- it pays at settlement, so value it there
+        sell = c * p_win if settles else c * (ybid if q > 0 else (n[0][0] if n else 0.0))
         m = re.match(r"(KXHIGHT?|KXLOWT?)([A-Z]+)-(\d{2}[A-Z]{3}\d{2})-(.*)", tk)
         city, day, bucket = (m.group(2), m.group(3), m.group(4)) if m else (tk, "?", "")
         rows.append(dict(city=city, day=day, bucket=bucket, side=side, n=c, cost=cost.get(tk, 0.0), sell=sell,
