@@ -18,23 +18,6 @@
       "hard_stop_price": 51.68,
       "entry_price_actual": 55.57
     },
-    "AMPL": {
-      "shares": 396,
-      "entry_price_est": 15.2,
-      "hard_stop_pct": 10.0,
-      "activation_pct": 6.3,
-      "trail_pct": 5.1,
-      "alpha_score": 1.0,
-      "weekly_vol": 10.22,
-      "composite_rank": 2,
-      "is_fallback": false,
-      "phase": 1,
-      "high_water_mark": 15.2,
-      "order_id": "3594dbf0-548e-4ef0-9974-60f797e0b595",
-      "hard_stop_order_id": "d4917025-99e2-4390-8b1b-bda6c0a47512",
-      "hard_stop_price": 13.68,
-      "entry_price_actual": 15.2
-    },
     "ILMN": {
       "shares": 23,
       "entry_price_est": 261.75,
@@ -51,40 +34,6 @@
       "hard_stop_order_id": "8f6be6ad-33f2-48a8-bf5b-e1d8453dbc9c",
       "hard_stop_price": 243.53,
       "entry_price_actual": 261.86
-    },
-    "NEO": {
-      "shares": 364,
-      "entry_price_est": 16.53,
-      "hard_stop_pct": 7.0,
-      "activation_pct": 5.5,
-      "trail_pct": 3.6,
-      "alpha_score": 1.0,
-      "weekly_vol": 7.28,
-      "composite_rank": 4,
-      "is_fallback": false,
-      "phase": 1,
-      "high_water_mark": 16.53,
-      "order_id": "444787e7-f862-4c3e-8f1d-31428afc5601",
-      "hard_stop_order_id": "e99f4ea1-f0f9-44e6-baad-e86fff5100a6",
-      "hard_stop_price": 15.38,
-      "entry_price_actual": 16.54
-    },
-    "FSLY": {
-      "shares": 261,
-      "entry_price_est": 23.03,
-      "hard_stop_pct": 10.0,
-      "activation_pct": 7.1,
-      "trail_pct": 6.6,
-      "alpha_score": 1.0,
-      "weekly_vol": 13.27,
-      "composite_rank": 5,
-      "is_fallback": false,
-      "phase": 1,
-      "high_water_mark": 23.03,
-      "order_id": "d302381c-d5d6-46db-bb1a-53619e3ac9ee",
-      "hard_stop_order_id": "7a07d16f-dee7-4064-9a5c-96cc11149ff1",
-      "hard_stop_price": 20.7,
-      "entry_price_actual": 23.0
     },
     "MXL": {
       "shares": 84,
@@ -136,23 +85,6 @@
       "hard_stop_order_id": "276a79d0-a69d-4d76-a14f-2d91eabb4e70",
       "hard_stop_price": 18.8,
       "entry_price_actual": 20.21
-    },
-    "TEAM": {
-      "shares": 28,
-      "entry_price_est": 214.84,
-      "hard_stop_pct": 10.0,
-      "activation_pct": 8.0,
-      "trail_pct": 6.5,
-      "alpha_score": 0.979202,
-      "weekly_vol": 12.92,
-      "composite_rank": 9,
-      "is_fallback": false,
-      "phase": 1,
-      "high_water_mark": 214.84,
-      "order_id": "9c9e738a-1a74-470c-a6fa-a1e4cb9c41d1",
-      "hard_stop_order_id": "ead24750-976b-460d-ab89-988cfe8d5f52",
-      "hard_stop_price": 193.47,
-      "entry_price_actual": 214.97
     },
     "FTRE": {
       "shares": 267,
