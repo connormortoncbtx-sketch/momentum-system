@@ -30,7 +30,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install
-        run: pip install "pandas>=2.0" pyarrow alpaca-py anthropic
+        run: pip install "pandas>=2.0" pyarrow alpaca-py anthropic scipy
       - name: Load research-data branch
         run: git clone -q --depth 1 -b research-data "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" research_data
       - name: Run
