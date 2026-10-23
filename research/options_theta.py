@@ -19,6 +19,7 @@ import requests
 
 RD = os.environ.get("RESEARCH_DATA", "research_data")
 BASE = os.environ.get("THETA_URL", "http://127.0.0.1:25503/v3")
+API = os.environ.get("THETA_API", "v3")                         # the "v3" jar served today runs the v2 REST API
 CACHE_DIR = f"{RD}/theta"; OUT = f"{RD}/results"
 os.makedirs(CACHE_DIR, exist_ok=True); os.makedirs(OUT, exist_ok=True)
 START, END = dt.date(2016, 1, 1), dt.date(2024, 3, 31)        # overlaps Alpaca's Feb-Mar 2024 for validation
@@ -46,6 +47,45 @@ def get(path, **q):
     raise RuntimeError(f"{path} {q} -> {last}")
 
 
+def get_v2(path, **q):
+    """v2 REST: {"header": {"format": [...]} , "response": [...]}; bulk responses are [{"ticks": [...], "contract": {...}}]."""
+    url, out = f"{BASE}{path}", []
+    while url:
+        for i in range(5):
+            try:
+                r = requests.get(url, params=q, timeout=180, headers={"Connection": "close"})
+            except requests.RequestException as e:
+                time.sleep(3 * (i + 1)); last = str(e); continue
+            if r.status_code == 472:
+                return out
+            if r.status_code >= 500 or r.status_code == 429:
+                time.sleep(3 * (i + 1)); last = f"{r.status_code} {r.text[:200]}"; continue
+            if r.status_code >= 400:
+                raise RuntimeError(f"{path} {q} -> {r.status_code}: {r.text[:300]}")
+            break
+        else:
+            raise RuntimeError(f"{path} {q} -> {last}")
+        j = r.json()
+        h = j.get("header", {})
+        if h.get("error_type") and h.get("error_type") not in ("null", None, "NO_DATA"):
+            if "NO_DATA" in str(h.get("error_type")) or "no data" in str(h.get("error_msg", "")).lower():
+                return out
+            raise RuntimeError(f"{path} {q} -> {h.get('error_type')}: {h.get('error_msg')}")
+        fmt = h.get("format")
+        for item in j.get("response", []):
+            if isinstance(item, dict) and "ticks" in item:
+                c = item.get("contract", {})
+                f = item.get("format") or fmt
+                out += [{**c, **dict(zip(f, t))} for t in item["ticks"]]
+            elif fmt and isinstance(item, list):
+                out.append(dict(zip(fmt, item)))
+            else:
+                out.append(item)
+        nxt = h.get("next_page")
+        url, q = (nxt, {}) if nxt and nxt not in ("null", "None") else (None, q)
+    return out
+
+
 def flatten(j):
     """Theta v3 JSON comes as a list, {"response": [...]}, or response rows of {"contract": {...}, "data": [...]}."""
     rows = j.get("response", j) if isinstance(j, dict) else j
@@ -62,6 +102,9 @@ def flatten(j):
 def chain_bars(und, d):
     """1-minute bars 10:00-10:15 for every contract expiring today (strike='*', right='both')."""
     ds = d.strftime("%Y%m%d")
+    if API == "v2":
+        return get_v2("/v2/bulk_hist/option/ohlc", root=und, exp=ds, start_date=ds, end_date=ds, ivl=60000,
+                      start_time=36000000, end_time=36900000, use_csv="false")
     return get("/option/history/ohlc", symbol=und, expiration=ds, strike="*", right="both", date=ds,
                interval="1m", start_time="10:00:00", end_time="10:15:00")
 
@@ -73,6 +116,8 @@ def norm_rows(rows):
     low = {c.lower(): c for c in df.columns}
     pick = lambda *names: next((low[n] for n in names if n in low), None)
     k, r_, cl, vol, vw = pick("strike"), pick("right"), pick("close"), pick("volume"), pick("vwap")
+    if k is None or cl is None:
+        raise RuntimeError(f"unexpected columns {list(df.columns)[:15]}")
     out = pd.DataFrame({"strike": pd.to_numeric(df[k], errors="coerce"), "right": df[r_].astype(str).str.upper().str[0],
                         "close": pd.to_numeric(df[cl], errors="coerce"), "volume": pd.to_numeric(df[vol], errors="coerce").fillna(0)})
     if out.strike.median() > 5000:                                 # v2-style 1/1000-dollar strikes
@@ -91,8 +136,8 @@ def agg(b):
 
 
 def probe():
-    e = get("/option/list/expirations", symbol="SPY")
-    note(f"probe: expirations rows {len(e)}, first {e[:2]}")
+    e = sorted(expirations("SPY"))
+    note(f"probe ({API}): SPY expirations {len(e)}, first {e[:2]}, 2018 count {sum(1 for x in e if x.year == 2018)}")
     d = dt.date(2018, 2, 9)
     rows = chain_bars("SPY", d)
     note(f"probe: chain {d} rows {len(rows)}, sample {json.dumps(rows[:2], default=str)[:600]}")
@@ -102,6 +147,10 @@ def probe():
 
 
 def expirations(und):
+    if API == "v2":
+        r = get_v2("/v2/list/expirations", root=und)
+        vals = [x if not isinstance(x, dict) else next(iter(x.values())) for x in r]
+        return set(pd.to_datetime(pd.Series(vals).astype(str), format="%Y%m%d", errors="coerce").dropna().dt.date)
     e = pd.DataFrame(get("/option/list/expirations", symbol=und))
     col = next(c for c in e.columns if "exp" in c.lower())
     if "symbol" in e.columns:

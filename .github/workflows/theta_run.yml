@@ -58,8 +58,11 @@ jobs:
           for i in $(seq 1 150); do
             for port in 25503 25510 25520 25511; do
               code=$(curl -s -o /tmp/theta_probe -w '%{http_code}' "http://127.0.0.1:$port/v3/option/list/expirations?symbol=SPY&format=json" || true)
-              if [ "$code" = "200" ] || [ "$code" = "472" ]; then up=1; echo "THETA_URL=http://127.0.0.1:$port/v3" >> "$GITHUB_ENV"
-                echo "::notice::terminal REST up on port $port after $((i*2))s (http $code)"; break 2; fi
+              if [ "$code" = "200" ] || [ "$code" = "472" ]; then up=1; echo "THETA_URL=http://127.0.0.1:$port/v3" >> "$GITHUB_ENV"; echo "THETA_API=v3" >> "$GITHUB_ENV"
+                echo "::notice::terminal REST (v3) up on port $port after $((i*2))s"; break 2; fi
+              code=$(curl -s -o /tmp/theta_probe -w '%{http_code}' "http://127.0.0.1:$port/v2/list/expirations?root=SPY" || true)
+              if [ "$code" = "200" ]; then up=1; echo "THETA_URL=http://127.0.0.1:$port" >> "$GITHUB_ENV"; echo "THETA_API=v2" >> "$GITHUB_ENV"
+                echo "::notice::terminal REST (v2) up on port $port after $((i*2))s: $(head -c 300 /tmp/theta_probe)"; break 2; fi
             done
             if ! kill -0 $! 2>/dev/null; then echo "::warning::terminal process exited"; break; fi
             sleep 2
