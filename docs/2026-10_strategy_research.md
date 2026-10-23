@@ -2558,3 +2558,16 @@ that reads the NWS feed live, flags decided buckets and records the actual Kalsh
   acceptance, fill behaviour, and what happens at expiry to physically settled SPY/QQQ options (assignment leaves
   shares overnight; the backtest assumed cash settlement). Next morning: equity P&L, option events, leftover shares
   closed at market, all in data/paper_condor_ledger.jsonl.
+
+## Condor overlay on the momentum book -- Oct 23, 2026 (`research/mix_condor_momentum.py`)
+Momentum = LIVE-proxy top 10, weekly, fully invested, 15 bp/side, absolute returns; condors = COMBO (SPY $5 / QQQ 0.8%,
+0DTE, 1x implied move) risking f of equity per day on the spare margin. Overlap Feb 2024 - Oct 2026 (139 weeks).
+- Weekly correlation +0.15; in momentum's worst 10% of weeks (avg -10.1%) the condors were ~flat (-0.2 / -0.4% at 2%/day
+  vs +0.5 / +0.3% otherwise); condors correlate -0.27 with |SPY| (big weeks hurt them), +0.17 with SPY.
+- Momentum proxy alone over this window: CAGR -4%, vol 35%, max DD -56%, beta 1.25 -- the drawdown is momentum's.
+- Overlay adds roughly the condor return with little extra drawdown: at $0.01/leg, 2%/day -> CAGR +19% (DD -49%),
+  5% -> +60% (-43%); at $0.03/leg, 2% -> +7% (-55%), 5% -> +23% (-56%). Condors alone at 2%: +24% / -6% ($0.01),
+  +12% / -8% ($0.03).
+Reading: the two are close to independent, so the overlay is nearly free diversification -- size it by the condors'
+own drawdown tolerance (Kelly ~20%/day if the backtest is exact). The binding problem in this window is the momentum
+book itself, not the mix. Caveats: 2.7 years; the LIVE proxy is not the live multi-signal system.
