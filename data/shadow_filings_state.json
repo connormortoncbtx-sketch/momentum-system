@@ -1,5 +1,5 @@
 {
- "since": "2026-10-22T13:23:53-04:00",
+ "since": "2026-10-22T17:29:40-04:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -1737,6 +1737,96 @@
    "decided": "2026-10-22T13:36:32.116877-04:00",
    "event_type": "acquisition",
    "summary": "Modine Performance Technologies acquisition closed Oct 1; Q3 results mixed with margin compression and profitability decline.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "NTHI",
+   "accession": "0001829126-26-011446",
+   "decided": "2026-10-23T02:12:43.076950-04:00",
+   "event_type": "clinical_positive",
+   "summary": "First pediatric NEO100 patient shows early clinical improvement breathing independently post-treatment.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "AAME",
+   "accession": "0001140361-26-040528",
+   "decided": "2026-10-23T02:12:49.342015-04:00",
+   "event_type": "listing_deficiency",
+   "summary": "Nasdaq initiates delisting process; company failed timely periodic report filings.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "EFSI",
+   "accession": "0000880641-26-000026",
+   "decided": "2026-10-23T02:13:05.454442-04:00",
+   "event_type": "acquisition",
+   "summary": "Q3 2026 earnings with pending John Marshall Bancorp merger and $0.31 dividend declared",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "GBFH",
+   "accession": "0001193125-26-428970",
+   "decided": "2026-10-23T02:13:07.790643-04:00",
+   "event_type": "exec_departure",
+   "summary": "CEO Edward Nigro resigned; Jeffrey Newgard promoted from Bank President to Company CEO.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ENVX",
+   "accession": "0001828318-26-000061",
+   "decided": "2026-10-23T02:13:10.420303-04:00",
+   "event_type": "routine",
+   "summary": "Company clarifies unauthorized officer guidance; delays formal 2027 guidance to Q3 earnings.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "AARD",
+   "accession": "0001193125-26-428943",
+   "decided": "2026-10-23T02:13:13.023257-04:00",
+   "event_type": "regulatory_approval",
+   "summary": "FDA lifts clinical hold on ARD-101; development can resume for Prader-Willi Syndrome hyperphagia treatment.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CWBC",
+   "accession": "0001628280-26-066885",
+   "decided": "2026-10-23T02:13:32.012933-04:00",
+   "event_type": "prelim_results_bad",
+   "summary": "Q3 2026 earnings miss: net income $8.1M vs $10.9M prior year; EPS $0.30 vs $0.57.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "USCB",
+   "accession": "0001562762-26-000122",
+   "decided": "2026-10-23T02:13:41.644426-04:00",
+   "event_type": "prelim_results_good",
+   "summary": "Q3 2026 EPS $0.51 beats prior year; NII +14.2%, loans +9.0%, but credit quality concerns emerge.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "NRIM",
+   "accession": "0001163370-26-000034",
+   "decided": "2026-10-23T02:13:44.183285-04:00",
+   "event_type": "acquisition",
+   "summary": "Northrim shareholders approved merger with PBCO via stock issuance; 98% vote approval confirms deal path.",
    "entry_date": null,
    "entry": null
   }
