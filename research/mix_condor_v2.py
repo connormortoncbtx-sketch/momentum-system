@@ -90,4 +90,11 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception:
+        import traceback
+        tb = traceback.format_exc()
+        print(tb)
+        print("::error::" + tb[-900:].replace("\n", " | "))
+        raise
