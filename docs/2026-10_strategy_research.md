@@ -2571,3 +2571,10 @@ Momentum = LIVE-proxy top 10, weekly, fully invested, 15 bp/side, absolute retur
 Reading: the two are close to independent, so the overlay is nearly free diversification -- size it by the condors'
 own drawdown tolerance (Kelly ~20%/day if the backtest is exact). The binding problem in this window is the momentum
 book itself, not the mix. Caveats: 2.7 years; the LIVE proxy is not the live multi-signal system.
+- **Six momentum books (Oct 23, `research/mix_condor_v2.py`)**, Feb 2024 - Oct 2026, alone -> + condors at 2%/day
+  (CAGR / max DD; $0.01 | $0.03 per leg): LIVE10 -4%/-56% -> +19%/-49% | +7%/-55%; LIVE50 -3%/-32% -> +20%/-29% |
+  +8%/-33%; LIVE10 IWM-hedged -14%/-56% -> +6% | -5%; SLOW (12-1, hold while top-100) +35%/-42% -> +66%/-36% |
+  +49%/-38%; SLOW_h +21%/-47% -> +49% | +34%; **STACK_v2 +31%/-11% (Sharpe 1.69) -> +62%/-10% (Sharpe 2.48) |
+  +46%/-13% (1.97)**; STACK_v2 at 5%/day: +118%/-17% ($0.01), +68%/-20% ($0.03). Correlation with condors 0.11-0.16
+  for every book. Caveat: STACK_v2 already runs ~1-3x leverage, so the condor collateral competes for its margin
+  (Reg-T); the pairing needs portfolio margin or a smaller stack leverage cap.
