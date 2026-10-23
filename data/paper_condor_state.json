@@ -1,3 +1,52 @@
 {
- "days": {}
+ "days": {
+  "2026-10-23": {
+   "orders": [
+    {
+     "und": "SPY",
+     "mid": 1.05,
+     "natural": 0.99,
+     "width": 5,
+     "qty": 2,
+     "limit_sign": -1,
+     "status": "filled",
+     "steps": 1,
+     "limit": 1.0,
+     "filled_avg_price": "-1",
+     "filled_credit": 1.0,
+     "legs": {
+      "SPY261023P00752000": [
+       "buy",
+       "0.19"
+      ],
+      "SPY261023P00757000": [
+       "sell",
+       "0.78"
+      ],
+      "SPY261023C00765000": [
+       "sell",
+       "0.53"
+      ],
+      "SPY261023C00770000": [
+       "buy",
+       "0.12"
+      ]
+     },
+     "filled_at": "2026-10-23T14:02:20.930092707Z"
+    },
+    {
+     "und": "QQQ",
+     "mid": 1.36,
+     "natural": 1.3,
+     "width": 6,
+     "qty": 2,
+     "limit_sign": -1,
+     "status": "no fill at natural",
+     "steps": 3,
+     "limit": 1.3
+    }
+   ],
+   "equity_before": 100000.0
+  }
+ }
 }
