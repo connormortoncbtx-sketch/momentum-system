@@ -88,17 +88,26 @@ def settled_days():
     return [(day, v["pnl_c"] / 100, v["pnl_c"] / v["n"] if v["n"] else 0.0, len(v["events"])) for day, v in sorted(by.items())]
 
 
-def convergence():
-    """[(city_days, running mean c/contract, 2 s.e.)] in settlement order, per-city-day edges equally weighted."""
+def convergence(since=None, weight="cityday"):
+    """[(city_days, running mean c/contract, 2 s.e.)] in settlement order. weight 'cityday': each city-day's edge per
+    contract counts once; 'contract': city-days weighted by contracts (what the account feels). since: market days >= it."""
     ev = {}
     for r in settled_fills():
+        if since and (r["day"] is None or r["day"] < since):
+            continue
         e = ev.setdefault(r["event"], [r["day"], 0.0, 0.0])
         e[1] += r["pnl_c"]; e[2] += r["n"]
-    vals = [v[1] / v[2] for v in sorted(ev.values(), key=lambda v: (v[0] or dt.date.min)) if v[2] > 0]
+    evs = [v for v in sorted(ev.values(), key=lambda v: (v[0] or dt.date.min)) if v[2] > 0]
     out = []
-    for i in range(1, len(vals) + 1):
-        xs = vals[:i]; m = sum(xs) / i
-        se = (sum((x - m) ** 2 for x in xs) / (i - 1)) ** 0.5 / i ** 0.5 if i > 2 else float("nan")
+    for i in range(1, len(evs) + 1):
+        xs = [v[1] / v[2] for v in evs[:i]]
+        w = [v[2] if weight == "contract" else 1.0 for v in evs[:i]]
+        W = sum(w); m = sum(a * b for a, b in zip(xs, w)) / W
+        if i > 2:
+            var = sum(b * (a - m) ** 2 for a, b in zip(xs, w)) / W * i / (i - 1)
+            se = (var * sum(b * b for b in w) / W ** 2) ** 0.5
+        else:
+            se = float("nan")
         out.append((i, m, 2 * se))
     return out
 

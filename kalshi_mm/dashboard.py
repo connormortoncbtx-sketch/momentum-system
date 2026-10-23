@@ -149,12 +149,17 @@ def history_cards():
                        f"{svg_bars([(d.strftime('%b %d'), usd) for d, usd, _, _ in days], fmt=lambda v: f'{v:+.0f}')}"
                        f"{svg_line(cum, h=120, fmt=lambda v: f'{v:+.0f}')}"
                        f"<div class='scroll'><table><tr><th>Market day</th><th>City-days</th><th>$</th><th>per contract</th></tr>{rows_}</table></div></div>")
-        cv = HI.convergence()
-        if cv:
+        since = dt.date.fromisoformat(os.environ.get("EVAL_FROM", "2026-10-24"))
+        for lab, cv in ((f"CLEAN TEST: market days from {since:%b %d} (favourite-only + fast quoting)", HI.convergence(since)),
+                        (f"same, weighted by contracts (what the account feels)", HI.convergence(since, "contract")),
+                        ("all market days since launch (includes the old logic)", HI.convergence())):
+            if not cv:
+                out.append(f"<div class='card'><h2>Is it working? {lab}</h2><div class='mut'>No settled city-days yet.</div></div>")
+                continue
             n, m, b = cv[-1]
             verdict = ("too early to tell" if n < 30 or b != b else
                        ("edge is positive (band above 0)" if m - b > 0 else ("edge is negative (band below 0)" if m + b < 0 else "band still straddles 0")))
-            out.append(f"<div class='card'><h2>Is it working? Edge per contract, running average over settled city-days "
+            out.append(f"<div class='card'><h2>Is it working? {lab} -- edge per contract, running average over settled city-days "
                        f"(shaded = ±2 standard errors; research target +2 to +3c; decision at ~50)</h2>"
                        f"{svg_line([(f'{i} city-days', mm) for i, mm, _ in cv], band=[(mm - bb, mm + bb) for _, mm, bb in cv], fmt=lambda v: f'{v:+.0f}c')}"
                        f"<div>Now: <b class='{'pos' if m >= 0 else 'neg'}'>{m:+.1f}c</b> ± {b if b == b else float('nan'):.1f}c over {n} city-days — {verdict}</div></div>")
