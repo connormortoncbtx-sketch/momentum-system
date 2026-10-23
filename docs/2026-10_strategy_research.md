@@ -2578,3 +2578,14 @@ book itself, not the mix. Caveats: 2.7 years; the LIVE proxy is not the live mul
   +46%/-13% (1.97)**; STACK_v2 at 5%/day: +118%/-17% ($0.01), +68%/-20% ($0.03). Correlation with condors 0.11-0.16
   for every book. Caveat: STACK_v2 already runs ~1-3x leverage, so the condor collateral competes for its margin
   (Reg-T); the pairing needs portfolio margin or a smaller stack leverage cap.
+
+## Can the big losing condor days be skipped? -- Oct 23, 2026 (`research/condor_skip.py`): NO (one lead to watch)
+SPY + QQQ same-day condors, dev Feb 2024 - Jun 2025 / holdout Jul 2025 - Oct 2026, warnings known before 10:00 ET:
+VIX level, VIX 1-day change, VIX vs 20-day mean, event premium (today's implied move / VIX-implied daily move),
+yesterday's realised/implied ratio and its 5-day mean, Fed days, weekday. Max-loss days (~3% SPY, ~5-6% QQQ) are
+spread across every bucket; the "dangerous-looking" days (VIX spike, high event premium, Fed day) are among the BEST
+days -- the option market charges for the danger and the condor collects it. Skipping high-VIX days (tested before)
+or any top-quintile warning loses money. The only rule that survived the holdout: skip days whose VIX barely moved
+(middle quintile of VIX change) -- worst bucket in dev and holdout for both ETFs (SPY -1.4/-3.0%, QQQ -2.3/-2.6% RoR),
+skipping it lifts holdout RoR ~+1.2-1.4 pts and total P&L 110-167%. No clear mechanism (cheap premium on quiet days?)
+and it was picked among ~8 features x 5 buckets: a lead for the shadow to log, not a rule.
