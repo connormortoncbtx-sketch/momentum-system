@@ -2602,3 +2602,19 @@ years are those where intraday realised moves ran above VIX-implied ones (2018, 
 options may have been priced richer than today's VIX relationship implies -- only real old prices can settle it.
 Implication: the 2024-26 edge may be regime-specific. Before any real money: buy one month of historical option
 quotes (e.g. ThetaData, SPY back to ~2016 Mon/Wed/Fri expiries) and rerun options_premium.py on real 2016-23 prices.
+
+## Same-day condor on REAL 2016-24 option prices (ThetaData) -- Oct 23, 2026 (`research/options_theta.py`): EDGE IS THIN
+ThetaData Standard (one month): every same-day SPY expiry Jan 2016 - Mar 2024 (1,208 days with data; Mon/Wed/Fri until
+2022) and QQQ (809), whole chain's 10:00-10:15 one-minute bars; identical rules to options_premium.py. Validation on the
+37 overlapping days (Feb-Mar 2024) vs the Alpaca-price backtest: RoR correlation 1.00, implied-move correlation 0.999,
+same means -- the two sources agree. Mean return on risk per trade, 2016-23 ($0.01 | $0.03 per leg):
+- SPY (1,133 trades): **+0.8% (t 1.1) | -1.0% (t -1.5)**; by year at $0.01: 2016 -0.3, 2017 +0.9, 2018 -5.6, 2019 +2.3,
+  2020 +3.5, 2021 +1.2, 2022 +4.4, 2023 +0.3. 2%/day book over 8 years +17% (~2%/yr), max DD -16%; at $0.03 -21%.
+- QQQ (712): **0.0% | -4.9% (t -3.2)**; 2018 -16.8% with 19% max-loss days.
+- vs the 2024-26 backtest: SPY +3.1% | +1.2%, QQQ +5.3% | +2.9%. The modelled test (condor_synth) was too pessimistic
+  for 2022-23 (real premiums were richer than the VIX fit) but right about the sign of the problem.
+Verdict: over 8 more years the premium is roughly cost-sized: at a realistic $0.03/leg the condor loses on both ETFs;
+only near-mid fills ($0.01) leave a small SPY edge (+0.8%/trade, not significant). The 2024-26 result was a favourable
+stretch. Not a real-money strategy; the condor overlay is dropped from the plan. Shadow #9 / the paper account keep
+running at no cost (fill-cost data), but the bar to revive it is live fills at ~mid AND a reason to expect 2024-26 to
+persist. Data stays in research-data/theta/ (chains) and results/options_theta_* -- the ThetaData subscription can go.
