@@ -1,0 +1,98 @@
+name: Theta run (ThetaData terminal + research/<script>.py -> research-data branch)
+
+# Manual only. Runs a research script with data-API secrets and pushes anything it
+# writes under research_data/ to the research-data branch. Never places orders.
+on:
+  workflow_dispatch:
+    inputs:
+      script:
+        description: 'Script name in research/ (without .py)'
+        required: true
+      limit:
+        description: 'Optional LIMIT env for a smoke test'
+        required: false
+        default: ''
+      mode:
+        description: 'Optional MODE env (probe = API format check only)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+concurrency:
+  group: theta-run
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install
+        run: pip install "pandas>=2.0" pyarrow alpaca-py anthropic scipy requests
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Start Theta Terminal (v3)
+        env:
+          THETA_USER: ${{ secrets.THETADATA_USERNAME }}
+          THETA_PASS: ${{ secrets.THETADATA_PASSWORD }}
+        run: |
+          if [ -z "$THETA_USER" ]; then echo "::error::THETADATA_USERNAME secret missing"; exit 1; fi
+          mkdir -p theta && cd theta
+          for u in https://download-stable.thetadata.us/ThetaTerminalv3.jar https://download-unstable.thetadata.us/ThetaTerminalv3.jar \
+                   https://download.thetadata.net/ThetaTerminalv3.jar https://thetadata.net/ThetaTerminalv3.jar; do
+            if curl -fsSL -o ThetaTerminalv3.jar "$u" && unzip -tq ThetaTerminalv3.jar >/dev/null 2>&1; then echo "jar from $u"; break; fi
+            rm -f ThetaTerminalv3.jar
+          done
+          [ -f ThetaTerminalv3.jar ] || { echo "::error::could not download ThetaTerminalv3.jar from any known URL"; exit 1; }
+          printf '%s\n%s\n' "$THETA_USER" "$THETA_PASS" > creds.txt && chmod 600 creds.txt
+          nohup java -Xmx2g -jar ThetaTerminalv3.jar --creds-file creds.txt > terminal.log 2>&1 &
+          for i in $(seq 1 90); do
+            if curl -s -o /dev/null "http://127.0.0.1:25503/v3/option/list/expirations?symbol=SPY&format=json"; then echo "terminal up after ${i}x2s"; break; fi
+            sleep 2
+          done
+          tail -n 20 terminal.log | sed 's/^/terminal: /'
+          grep -iE "error|denied|invalid|subscription|tier" terminal.log | head -5 | sed 's/^/::warning::terminal: /' || true
+      - name: Load research-data branch
+        run: git clone -q --depth 1 -b research-data "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" research_data
+      - name: Run
+        env:
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+          RESEARCH_DATA: research_data
+          LIMIT: ${{ inputs.limit }}
+          THETA_URL: http://127.0.0.1:25503/v3
+          MODE: ${{ inputs.mode }}
+        run: python "research/${{ inputs.script }}.py"
+      - name: Push to research-data branch
+        if: always()
+        run: |
+          cd research_data
+          git config user.name  "momentum-bot"
+          git config user.email "momentum-bot@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && exit 0
+          git commit -q -m "research ${{ inputs.script }} $(date -u +%Y-%m-%dT%H:%MZ)"
+          URL="https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"
+          # several research runs may push to the branch at once: on rejection, re-clone
+          # the latest branch, lay our changed files over it and retry
+          for attempt in 1 2 3 4 5; do
+            git push -q "$URL" HEAD:research-data && exit 0
+            CHANGED=$(git diff --name-only HEAD~1 HEAD)
+            cd .. && rm -rf rd_new && git clone -q --depth 1 -b research-data "$URL" rd_new
+            for f in $CHANGED; do mkdir -p "rd_new/$(dirname "$f")"; cp "research_data/$f" "rd_new/$f"; done
+            rm -rf research_data && mv rd_new research_data && cd research_data
+            git config user.name "momentum-bot"; git config user.email "momentum-bot@users.noreply.github.com"
+            git add -A; git commit -q -m "research ${{ inputs.script }} $(date -u +%Y-%m-%dT%H:%MZ) (retry $attempt)"
+            sleep $((RANDOM % 20 + 5))
+          done
+          exit 1
