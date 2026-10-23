@@ -117,6 +117,22 @@ def filled(o_rec, st, steps, price):
     return o_rec
 
 
+def live_natural(legs):
+    """Natural credit (sell at bid, buy at ask) from live quotes now; None if unavailable."""
+    syms = ",".join(legs.values())
+    for feed in ("opra", "indicative"):
+        try:
+            url = f"https://data.alpaca.markets/v1beta1/options/quotes/latest?symbols={syms}&feed={feed}"
+            h = {"APCA-API-KEY-ID": os.environ["ALPACA_PAPER2_KEY"], "APCA-API-SECRET-KEY": os.environ["ALPACA_PAPER2_SECRET"]}
+            with urllib.request.urlopen(urllib.request.Request(url, headers=h), timeout=20) as r:
+                q = json.loads(r.read()).get("quotes", {})
+            b = lambda k: float(q[legs[k]]["bp"]); a = lambda k: float(q[legs[k]]["ap"])
+            return round(b("short_put") + b("short_call") - a("long_put") - a("long_call"), 2)
+        except Exception:
+            continue
+    return None
+
+
 def enter_one(e, eq, risk_frac):
     W, mid, nat = e["width"], e["credit"]["mid"], e["credit"]["natural"]
     o_rec = {"und": e["und"], "mid": mid, "natural": nat, "width": W}
@@ -150,8 +166,12 @@ def enter_one(e, eq, risk_frac):
         if st.get("status") == "filled":                                          # filled while cancelling
             return filled(o_rec, st, steps, price)
         steps += 1
+        ln = live_natural(e["legs"])                   # the market moves after 10:00: chase the LIVE natural, not the
+        if ln is not None:                             # shadow's snapshot (Oct 23: QQQ never filled at a stale natural)
+            nat = ln
+            o_rec.setdefault("live_naturals", []).append(ln)
         nxt = round(max(nat, price - STEP), 2)
-        if steps > MAX_STEPS or (nxt == price and price <= nat):
+        if steps > MAX_STEPS or nat <= 0 or (nxt == price and price <= nat):
             o_rec.update(status="no fill at natural", steps=steps, limit=price); return o_rec
         price = nxt
 
