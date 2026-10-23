@@ -7,18 +7,27 @@ REPO=https://github.com/connormortoncbtx-sketch/momentum-system.git
 APP=/home/kmm/app; DATA=/home/kmm/data; ETC=/etc/kmm
 
 echo "==> packages"
-apt-get update -qq && apt-get install -y -qq python3-venv git curl >/dev/null
+# only touch apt when something is missing: apt waits on Ubuntu's background updates and is the slowest step
+if ! dpkg -s python3-venv git curl >/dev/null 2>&1; then apt-get update -qq && apt-get install -y -qq python3-venv git curl >/dev/null; fi
+# swap: a 1 GB droplet with no swap stalls (SSH timeouts, bot frozen) when memory fills; with swap it just slows down
+if ! swapon --show | grep -q .; then
+  echo "==> adding a 2 GB swap file"
+  fallocate -l 2G /swapfile && chmod 600 /swapfile && mkswap -q /swapfile && swapon /swapfile
+  grep -q '^/swapfile' /etc/fstab || echo '/swapfile none swap sw 0 0' >> /etc/fstab
+fi
 id kmm >/dev/null 2>&1 || useradd -m -s /bin/bash kmm
 timedatectl set-timezone America/Chicago || true
 
 echo "==> code"
 OLD_REV=""
 if [ -d "$APP/.git" ]; then OLD_REV=$(sudo -u kmm git -C "$APP" rev-parse HEAD 2>/dev/null || true); sudo -u kmm git -C "$APP" pull -q; else sudo -u kmm git clone -q --depth 1 "$REPO" "$APP"; fi
-sudo -u kmm python3 -m venv /home/kmm/venv
-sudo -u kmm /home/kmm/venv/bin/pip install -q --upgrade pip cryptography websocket-client
-sudo -u kmm /home/kmm/venv/bin/python "$APP/kalshi_mm/test_bot.py"
+[ -x /home/kmm/venv/bin/python ] || sudo -u kmm python3 -m venv /home/kmm/venv
+# packages only when missing (re-downloading them on every update was slow on this small server)
+sudo -u kmm /home/kmm/venv/bin/python -c "import cryptography, websocket" 2>/dev/null || \
+  sudo -u kmm nice -n 10 /home/kmm/venv/bin/pip install -q cryptography websocket-client
+sudo -u kmm nice -n 10 /home/kmm/venv/bin/python "$APP/kalshi_mm/test_bot.py"
 sudo -u kmm env LOG_DIR="$(sudo -u kmm mktemp -d)" KILL_FILE=/tmp/kmm-lottery-test-kill \
-  /home/kmm/venv/bin/python "$APP/kalshi_mm/test_lottery.py" | grep -v INFO
+  nice -n 10 /home/kmm/venv/bin/python "$APP/kalshi_mm/test_lottery.py" | grep -v INFO
 sudo -u kmm mkdir -p "$DATA"
 
 echo "==> settings ($ETC, readable by the bot user only)"
@@ -75,6 +84,13 @@ EnvironmentFile=$ETC/env
 ExecStart=/home/kmm/venv/bin/python $APP/kalshi_mm/bot.py
 Restart=always
 RestartSec=30
+# the trading bot comes first: last to be killed if memory runs out, first in line for CPU
+OOMScoreAdjust=-800
+CPUWeight=1000
+# watchdog: the bot pings systemd every loop; if it hangs for 5 min, systemd restarts it and the fresh process takes
+# over the resting orders (re-prices or cancels them on its first cycle), so stale quotes can't sit for long
+WatchdogSec=300
+NotifyAccess=main
 # exit code 3 = kill switch: stay stopped
 RestartPreventExitStatus=3
 [Install]
@@ -100,6 +116,11 @@ EnvironmentFile=$ETC/env
 ExecStart=/home/kmm/venv/bin/python $APP/kalshi_mm/dashboard.py
 Restart=always
 RestartSec=10
+# secondary: capped memory, low CPU priority, first to go if memory runs out
+MemoryMax=200M
+CPUWeight=20
+Nice=10
+OOMScoreAdjust=500
 [Install]
 WantedBy=multi-user.target
 EOF
@@ -114,6 +135,10 @@ EnvironmentFile=$ETC/env
 ExecStart=/home/kmm/venv/bin/python $APP/kalshi_mm/sniper.py
 Restart=always
 RestartSec=60
+MemoryMax=200M
+CPUWeight=20
+Nice=10
+OOMScoreAdjust=500
 [Install]
 WantedBy=multi-user.target
 EOF
@@ -126,6 +151,9 @@ User=kmm
 WorkingDirectory=$DATA
 EnvironmentFile=$ETC/env
 ExecStart=/home/kmm/venv/bin/python $APP/kalshi_mm/lottery.py
+MemoryMax=200M
+CPUWeight=50
+Nice=5
 EOF
 cat > /etc/systemd/system/kmm-lottery.timer <<EOF
 [Unit]

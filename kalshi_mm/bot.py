@@ -170,6 +170,20 @@ WS_CHECK_S = 60                                    # cross-check a few stream bo
 QUIET = tuple(int(x) for x in E("QUIET_MINUTES", "").split("-")) if E("QUIET_MINUTES", "").strip() else None
 
 
+def watchdog_ping():
+    """Tell systemd the bot is alive (WatchdogSec in kmm.service restarts it if these stop). No-op outside systemd."""
+    path = os.environ.get("NOTIFY_SOCKET")
+    if not path:
+        return
+    import socket
+    try:
+        with socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM) as s_:
+            s_.connect("\0" + path[1:] if path.startswith("@") else path)
+            s_.sendall(b"WATCHDOG=1")
+    except OSError:
+        pass
+
+
 def quiet_now(minute):
     return QUIET is not None and QUIET[0] <= minute <= QUIET[1]
 
@@ -762,6 +776,7 @@ class Bot:
         notify(f"Started: budget {sizing_desc()}, offset {OFFSET * 100:.0f}c, size {SIZE}")
         try:
             while not self.stop and time.time() < t_end:
+                watchdog_ping()
                 if self.killed():
                     log.warning("KILL set"); killed = True; break
                 if paused_day == now().date():
