@@ -39,7 +39,7 @@ ET = ZoneInfo("America/New_York")
 DATA = ROOT / "data"
 STATE, LEDGER, SHADOW = DATA / "paper_condor_state.json", DATA / "paper_condor_ledger.jsonl", DATA / "shadow_condor_state.json"
 BASE = "https://paper-api.alpaca.markets"
-RISK_FRAC, STEP, WAIT_S, MAX_STEPS = 0.02, 0.05, 60, 8
+RISK_FRAC, STEP, WAIT_S, MAX_STEPS = 0.10, 0.05, 60, 8   # paper: 10%/day (5% per ETF) to stress buying power & assignment (Connor, Oct 23)
 
 
 def api(method, path, body=None, **q):
@@ -203,7 +203,7 @@ def main():
             day["equity_before"] = round(equity(), 2)
         for u in todo:
             try:
-                rec = enter_one(shadow[u], day["equity_before"], RISK_FRAC / len(shadow))   # 2% total, split like COMBO
+                rec = enter_one(shadow[u], day["equity_before"], RISK_FRAC / len(shadow))   # split across the ETFs entered
             except Exception as ex:
                 rec = {"und": u, "status": f"error: {str(ex)[:200]}", "mid": None, "natural": None}
                 notify_alert("Paper condor", f"{u} order error: {ex}")
