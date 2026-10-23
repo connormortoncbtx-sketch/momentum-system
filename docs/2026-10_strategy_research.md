@@ -2589,3 +2589,16 @@ or any top-quintile warning loses money. The only rule that survived the holdout
 (middle quintile of VIX change) -- worst bucket in dev and holdout for both ETFs (SPY -1.4/-3.0%, QQQ -2.3/-2.6% RoR),
 skipping it lifts holdout RoR ~+1.2-1.4 pts and total P&L 110-167%. No clear mechanism (cheap premium on quiet days?)
 and it was picked among ~8 features x 5 buckets: a lead for the shadow to log, not a rule.
+
+## Same-day condor on modelled prices, 2016-2026 -- Oct 23, 2026 (`research/condor_synth.py`): WARNING
+Implied move from the prior VIX/VXN close (log-fit on the real 2024-26 implied moves), credit from Black-Scholes at that
+move scaled to the real 2024-26 credits, settled on actual SPY/QQQ 10:00 -> close moves. Validation 2024-26: day-by-day
+correlation with the real backtest 0.88, but the model's mean RoR is LOWER (SPY +2.2 vs +3.1%, QQQ +2.9 vs +5.3% at
+$0.01) -- it misses the event premium the real prices carry. Mean RoR per trade, $0.01/leg, all weekdays:
+SPY 2016 -1.2, 2017 -0.1, 2018 -8.6, 2019 0.0, 2020 +3.9, 2021 +5.0, 2022 -9.3, 2023 -5.9, 2024 -2.3, 2025 +2.3, 2026 +7.1;
+2016-23 -2.0% (t -3.5), 2%/day book -57%. QQQ 2016-23 -4.4% (t -4.5); 2018 and 2022 had 21-22% max-loss days.
+Even adding back the model's 1-2.4 pt underestimate, 2016-23 is about -1% (SPY) / -2% (QQQ) per trade. The losing
+years are those where intraday realised moves ran above VIX-implied ones (2018, 2022, 2023). Caveat: pre-2022 same-day
+options may have been priced richer than today's VIX relationship implies -- only real old prices can settle it.
+Implication: the 2024-26 edge may be regime-specific. Before any real money: buy one month of historical option
+quotes (e.g. ThetaData, SPY back to ~2016 Mon/Wed/Fri expiries) and rerun options_premium.py on real 2016-23 prices.
