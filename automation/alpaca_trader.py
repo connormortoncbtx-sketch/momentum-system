@@ -908,6 +908,10 @@ def run_place_stops():
 
     log.info(f"Stop placement complete: {len(placed)} placed, {len(adopted)} adopted, "
              f"{len(skipped)} skipped, {len(failed)} failed")
+    # record the outcome in the system log too, so the health check can see that stops are in place (Oct 23, 2026)
+    log_event("alpaca_trader", LogStatus.ERROR if failed else LogStatus.SUCCESS,
+              f"place_stops: {len(placed)} placed, {len(adopted)} adopted, {len(skipped)} skipped, {len(failed)} failed",
+              metrics={"placed": len(placed), "adopted": len(adopted), "skipped": len(skipped), "failed": len(failed)})
 
     if failed:
         notify_error("alpaca_trader",
