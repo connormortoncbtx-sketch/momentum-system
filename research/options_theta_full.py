@@ -1,7 +1,7 @@
 """
 research/options_theta_full.py -- same-day option premium, thorough version (Oct 23, 2026)
 
-Data (ThetaData Standard, personal licence): bid/ask QUOTES every 5 minutes 09:45-16:00 for every same-day SPY / QQQ
+Data (ThetaData Standard, personal licence): bid/ask QUOTES every 15 minutes 09:45-16:00 (part of the history was pulled at 5 minutes; all analysed on the 15-minute grid) for every same-day SPY / QQQ
 expiry Jan 2016 - Oct 2026, strikes within 6% of the 10:00 price. RAW DATA NEVER LEAVES THE RUNNER: it lives in
 RAW_DIR (outside research_data, persisted only in the repo's private Actions cache); only aggregate statistics are
 written to research_data/results (and so to the public branch).
@@ -13,7 +13,7 @@ Pre-registered grid (7,560 variants), each scored per trade as return on risk (P
   wings      SPY $2 / $5 / $10; QQQ 0.4% / 0.8% / 1.6% of the price (min $1)
   fill       mid / near-mid (mid -/+ 1c per leg) / natural (sell at bid, buy at ask) -- entry AND any early exit
   exit       hold to the close / take profit at 50% of the credit / stop when the loss reaches 2x the credit /
-             both -- checked on every 5-minute mid mark after entry, executed at the same fill model
+             both -- checked on every 15-minute mid mark after entry, executed at the same fill model
 Dev = 2016-2023 (pre-2022 and 2022-23 shown separately), holdout = 2024 - Oct 2026, scored once. Selection: rank by
 dev t-stat among variants positive in BOTH dev eras; report the dev top 20 with their holdout, the holdout median of
 the dev top 20, and how the holdout ranks the dev winner. All variants are written out (no hidden search).
@@ -29,6 +29,7 @@ RD = os.environ.get("RESEARCH_DATA", "research_data")
 OUT = f"{RD}/results"
 RAW = os.environ.get("RAW_DIR", "/tmp/theta_raw")
 T_START = time.time()
+QIVL = int(os.environ.get("QIVL", "900000"))   # 15-minute quotes (the first pass used 5-minute; the backtest uses the 15-minute grid)
 BUDGET_S = float(os.environ.get("TIME_BUDGET_MIN", "300")) * 60   # stop pulling in time for the cache to be saved
 os.makedirs(RAW, exist_ok=True); os.makedirs(OUT, exist_ok=True)
 START, END = dt.date(2016, 1, 1), dt.date(2026, 10, 22)
@@ -49,7 +50,7 @@ def widths(und, S):
 # ------------------------------------------------------------------ pull (quotes, 5-minute)
 def quotes_day(und, d, s0):
     ds = d.strftime("%Y%m%d")
-    rows = OT.get_v2("/v2/bulk_hist/option/quote", root=und, exp=ds, start_date=ds, end_date=ds, ivl=300000,
+    rows = OT.get_v2("/v2/bulk_hist/option/quote", root=und, exp=ds, start_date=ds, end_date=ds, ivl=QIVL,
                      start_time=35100000, end_time=57600000, use_csv="false")
     if not rows:
         return None
@@ -113,7 +114,7 @@ def ms_of(hhmm):
 def day_trades(und, day, q, s_at, close):
     """All variants for one day (vectorised over the 5-minute marks). Rows: (entry, struct, k, wing, fill, exit, ror)."""
     out = []
-    q = q[(q.ask > 0) & (q.ask >= q.bid) & (q.bid >= 0)]
+    q = q[(q.ask > 0) & (q.ask >= q.bid) & (q.bid >= 0) & (q.ms % 900000 == 0)]   # one consistent 15-minute grid
     if q.empty:
         return out
     times = np.array(sorted(q.ms.unique()))

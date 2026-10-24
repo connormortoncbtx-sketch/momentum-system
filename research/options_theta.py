@@ -53,7 +53,7 @@ def get_v2(path, **q):
     while url:
         for i in range(5):
             try:
-                r = requests.get(url, params=q, timeout=180, headers={"Connection": "close"})
+                r = requests.get(url, params=q, timeout=300, headers={"Connection": "close"})
             except requests.RequestException as e:
                 time.sleep(3 * (i + 1)); last = str(e); continue
             if r.status_code == 472:
