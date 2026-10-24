@@ -2626,3 +2626,10 @@ persist. Data stays in research-data/theta/ (chains) and results/options_theta_*
   same long-shot overpricing as on Kalshi), not merely calm markets. Revised verdict: a plausible structural premium
   since 2022, still cost-sensitive (at $0.03/leg it is not significant). Condors move from "dropped" to "conditional":
   small real allocation only if live fills land near mid, with a stop rule on the rolling realised premium.
+- **Where the premium lives (Oct 23, ThetaData chains 2016-24, seller's view, 10:00 price vs payoff at the close):**
+  OTM puts are overpriced in both eras on both ETFs -- sellers keep 13-48% of the premium from 0 to 2 implied moves
+  out (t ~2-3 per bucket); near-money calls are about fair (-6 to +8%); options 3+ moves out almost never pay but cost
+  2-5c with 1-2c spreads (tick-bound, untradeable). Defined-risk forms dilute it, because the insurance leg is
+  overpriced too: 0DTE put credit spreads 2022-26 at $0.01/leg SPY +1.2-1.5%/trade, QQQ +2.3-2.9% (t 1.6-2.6); at $0.03
+  not significant; 2016-21 about zero. Call spreads ~0. No structure beats the condor's regime/cost profile; harvesting
+  the put premium in full needs naked short puts (crash risk, Level 4 margin) -- not pursued.
