@@ -218,6 +218,117 @@ def score(T):
     return W_.reset_index()
 
 
+def ohlc_day(und, d, s0):
+    """Fallback for days the quote history lacks: 15-minute TRADE bars. Mid = last trade (carried forward), bid/ask =
+    mid -/+ an assumed half-spread of max(0.5c, 1.5%) -- an approximation, calibrated against real quotes below."""
+    ds = d.strftime("%Y%m%d")
+    rows = OT.get_v2("/v2/bulk_hist/option/ohlc", root=und, exp=ds, start_date=ds, end_date=ds, ivl=QIVL,
+                     start_time=35100000, end_time=57600000, use_csv="false")
+    if not rows:
+        return None
+    df = pd.DataFrame(rows)
+    low = {c.lower(): c for c in df.columns}
+    q = pd.DataFrame({"strike": pd.to_numeric(df[low["strike"]], errors="coerce"),
+                      "right": df[low["right"]].astype(str).str[0].str.upper(),
+                      "ms": pd.to_numeric(df[low["ms_of_day"]], errors="coerce") + QIVL,      # bar start -> bar end
+                      "px": pd.to_numeric(df[low["close"]], errors="coerce"),
+                      "vol": pd.to_numeric(df[low["volume"]], errors="coerce").fillna(0)})
+    if q.strike.median() > 5000:
+        q["strike"] /= 1000
+    q = q[(q.strike >= s0 * 0.94) & (q.strike <= s0 * 1.06)].sort_values("ms")
+    q.loc[(q.vol <= 0) | (q.px <= 0), "px"] = np.nan
+    q["px"] = q.groupby(["strike", "right"]).px.ffill()
+    q = q.dropna(subset=["px"])
+    h = np.maximum(0.005, 0.015 * q.px)
+    q["bid"], q["ask"] = (q.px - h).clip(lower=0), q.px + h
+    return q[["strike", "right", "ms", "bid", "ask"]].assign(d=pd.Timestamp(d)).astype(
+        {"strike": "float32", "bid": "float32", "ask": "float32", "ms": "int32"})
+
+
+CANDS = dict(struct="condor", wing=1, exit=("hold", "sl2x"), entry=("10:00", "12:00", "13:00", "14:00"),
+             k=(0.5, 0.75, 1.0), fill=("natural", "mid"))
+
+
+def cands(T):
+    T = T.astype({c: str for c in ("entry", "struct", "fill", "exit")})
+    return T[(T.struct == CANDS["struct"]) & (T.wing == CANDS["wing"]) & T.exit.isin(CANDS["exit"]) &
+             T.entry.isin(CANDS["entry"]) & T.k.round(2).isin(CANDS["k"]) & T.fill.isin(CANDS["fill"])]
+
+
+def gaps():
+    """Stress test the periods the quote history lacks (most of 2022 H1, Mar-Oct 2025 incl. the April crash) with
+    trade-bar prices, after calibrating that proxy against real quotes on days that have both."""
+    import random
+    out = []
+    for und in ("SPY", "QQQ"):
+        qp = f"{RAW}/{und.lower()}_q5.parquet"
+        qq = pd.read_parquet(qp)
+        qd = set(pd.to_datetime(qq.d).dt.date)
+        exps = [d for d in OT.expirations(und) if dt.date(2018, 1, 1) <= d <= END]
+        s0, _ = OT.spot(und)
+        miss = [d for d in exps if d not in qd and d in s0.index]
+        cal = sorted(random.Random(1).sample(sorted(d for d in qd if d.year >= 2023 and d in s0.index), 60))
+        path, ep = f"{RAW}/{und.lower()}_ohlc.parquet", f"{RAW}/{und.lower()}_ohlc_empty.json"
+        have = pd.read_parquet(path) if os.path.exists(path) else pd.DataFrame(columns=["d"])
+        empty = set(dt.date.fromisoformat(x) for x in json.load(open(ep))) if os.path.exists(ep) else set()
+        done = set(pd.to_datetime(have.d).dt.date) | empty if len(have) else set(empty)
+        todo = [d for d in sorted(set(miss) | set(cal)) if d not in done]
+        note(f"{und} gaps: {len(miss)} days without quotes since 2018, {len(cal)} calibration days, {len(todo)} to pull")
+        with ThreadPoolExecutor(2) as ex:
+            for c0 in range(0, len(todo), 50):
+                if time.time() - T_START > BUDGET_S:
+                    warn(f"{und} gaps: time budget reached after {c0} of {len(todo)} -- cached; re-run to resume")
+                    raise SystemExit(0)
+                chunk = todo[c0:c0 + 50]
+                parts = []
+                def one(d):
+                    try:
+                        return ohlc_day(und, d, float(s0[d]))
+                    except Exception as e_:
+                        return e_
+                for d, r in zip(chunk, ex.map(one, chunk)):
+                    if isinstance(r, Exception):
+                        warn(f"{und} {d} ohlc: {str(r)[:120]}")
+                    elif r is not None and len(r):
+                        parts.append(r)
+                    else:
+                        empty.add(d)
+                if parts:
+                    have = pd.concat([have] + parts, ignore_index=True)
+                    have.to_parquet(path, index=False)
+                json.dump(sorted(x.isoformat() for x in empty), open(ep, "w"))
+        Tq = cands(backtest(und, qq[pd.to_datetime(qq.d).dt.date.isin(set(cal) | {d for d in qd if d >= dt.date(2018, 1, 1)})]))
+        To = cands(backtest(und, have))
+        out.append(Tq.assign(src="quotes")); out.append(To.assign(src="trades"))
+        keys = ["entry", "k", "fill", "exit"]
+        # calibration: same days, quotes vs trade-bar proxy
+        cd_ = pd.Timestamp
+        a = Tq[Tq.d.isin([cd_(x) for x in cal])].groupby(keys + ["d"]).ror.mean()
+        b = To[To.d.isin([cd_(x) for x in cal])].groupby(keys + ["d"]).ror.mean()
+        j = pd.concat([a.rename("q"), b.rename("t")], axis=1).dropna()
+        cm = j.groupby(level=keys).agg(n=("q", "size"), q=("q", "mean"), t=("t", "mean")) * [1, 100, 100]
+        note(f"{und} calibration (RoR % per trade on the same {len(cal)} days, real quotes vs trade-bar proxy), natural hold: "
+             + "; ".join(f"{e} k{k_}: {r.q:+.1f} vs {r.t:+.1f} (n{r.n:.0f})" for (e, k_, f, x), r in cm.iterrows()
+                         if f == "natural" and x == "hold")
+             + f" | day-level corr {j.q.corr(j.t):.2f}")
+        To = To[~To.d.isin([cd_(x) for x in cal])]
+        win = np.select([To.d < "2022-01-01", To.d < "2023-01-01", (To.d >= "2025-03-01") & (To.d < "2025-11-01")],
+                        ["gap_pre22", "gap_2022", "gap_2025"], "gap_other")
+        g = To.assign(win=win).groupby(keys + ["win"]).ror.agg(["size", "mean", "min"]).reset_index()
+        g["mean"] *= 100; g["min"] *= 100
+        sel = g[(g.fill == "natural") & (g.exit == "hold")]
+        for w in ("gap_2022", "gap_2025"):
+            x = sel[sel.win == w]
+            note(f"{und} {w} (trade-bar proxy), natural hold, RoR % per trade mean / worst: "
+                 + "; ".join(f"{r.entry} k{r.k}: {r['mean']:+.1f} / {r['min']:.0f} (n{r['size']})" for _, r in x.iterrows()))
+        apr = To[(To.d >= "2025-04-01") & (To.d <= "2025-04-30") & (To.fill == "natural") & (To.exit == "hold")]
+        note(f"{und} April 2025 natural hold, sum of RoR per variant (%): " + "; ".join(
+            f"{e} k{k_}: {v * 100:+.0f}" for (e, k_), v in apr.groupby(["entry", "k"]).ror.sum().items()))
+    D = pd.concat(out, ignore_index=True)
+    D["d"] = pd.to_datetime(D.d).dt.date
+    D.astype({"ror": "float32"}).to_csv(f"{OUT}/options_candidates_daily.csv", index=False)   # strategy returns only
+
+
 def coverage():
     """Which expiry days have no quotes, and are they different days (bias check: big-move days missing?)."""
     for und in ("SPY", "QQQ"):
@@ -271,6 +382,8 @@ def main():
         return
     if os.environ.get("MODE") == "coverage":
         coverage(); return
+    if os.environ.get("MODE") == "gaps":
+        gaps(); return
     Ts = []
     for und in ("SPY", "QQQ"):
         q = pull(und)
