@@ -82,25 +82,23 @@ def pull(und):
             return quotes_day(und, d, float(s0[d]))
         except Exception as ex:
             return ex
-    chunk = []
     with ThreadPoolExecutor(2) as ex:
-        for i, (d, r) in enumerate(zip(days, ex.map(one, days))):
+        for c0 in range(0, len(days), 50):                       # chunks, so the time budget can stop cleanly
             if time.time() - T_START > BUDGET_S:
-                if parts:
-                    have = pd.concat([have] + parts, ignore_index=True); have.to_parquet(path, index=False)
-                warn(f"{und}: time budget reached after {i} days -- partial pull saved to the cache; re-run to resume")
+                warn(f"{und}: time budget reached after {c0} of {len(days)} days -- partial pull cached; re-run to resume")
                 raise SystemExit(0)
-            if isinstance(r, Exception):
-                bad += 1
-                if bad <= 5:
-                    warn(f"{und} {d}: {str(r)[:150]}")
-            elif r is not None and len(r):
-                parts.append(r)
-            if (i + 1) % 150 == 0 or i == len(days) - 1:
-                if parts:
-                    have = pd.concat([have] + parts, ignore_index=True); parts = []
-                    have.to_parquet(path, index=False)
-                print(f"  {und} {i + 1}/{len(days)} days ({time.time() - t0:.0f}s)", flush=True)
+            chunk = days[c0:c0 + 50]
+            for d, r in zip(chunk, ex.map(one, chunk)):
+                if isinstance(r, Exception):
+                    bad += 1
+                    if bad <= 5:
+                        warn(f"{und} {d}: {str(r)[:150]}")
+                elif r is not None and len(r):
+                    parts.append(r)
+            if parts:
+                have = pd.concat([have] + parts, ignore_index=True); parts = []
+                have.to_parquet(path, index=False)
+            print(f"  {und} {c0 + len(chunk)}/{len(days)} days ({time.time() - t0:.0f}s)", flush=True)
     if bad:
         warn(f"{und}: {bad} days failed")
     return have
