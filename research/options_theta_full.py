@@ -28,6 +28,8 @@ import options_theta as OT
 RD = os.environ.get("RESEARCH_DATA", "research_data")
 OUT = f"{RD}/results"
 RAW = os.environ.get("RAW_DIR", "/tmp/theta_raw")
+T_START = time.time()
+BUDGET_S = float(os.environ.get("TIME_BUDGET_MIN", "300")) * 60   # stop pulling in time for the cache to be saved
 os.makedirs(RAW, exist_ok=True); os.makedirs(OUT, exist_ok=True)
 START, END = dt.date(2016, 1, 1), dt.date(2026, 10, 22)
 ENTRIES = ["09:45", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00"]
@@ -80,8 +82,14 @@ def pull(und):
             return quotes_day(und, d, float(s0[d]))
         except Exception as ex:
             return ex
+    chunk = []
     with ThreadPoolExecutor(2) as ex:
         for i, (d, r) in enumerate(zip(days, ex.map(one, days))):
+            if time.time() - T_START > BUDGET_S:
+                if parts:
+                    have = pd.concat([have] + parts, ignore_index=True); have.to_parquet(path, index=False)
+                warn(f"{und}: time budget reached after {i} days -- partial pull saved to the cache; re-run to resume")
+                raise SystemExit(0)
             if isinstance(r, Exception):
                 bad += 1
                 if bad <= 5:
