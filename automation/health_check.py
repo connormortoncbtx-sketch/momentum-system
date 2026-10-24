@@ -57,8 +57,10 @@ How the system runs now (updated Oct 2026) -- do NOT flag these as problems:
 
 Normal ranges:
 - Universe size: 2,200-2,800 tickers since the Oct 16, 2026 universe fix (ticker-suffix bug, Alpaca asset list, dollar-volume gate; 1,811 -> ~2,440). The Oct 17 run is EXPECTED to jump ~35% -- do not flag that one. Flag below 2,000, or a >15% change vs last week after Oct 17.
-- Alpaca entry: 8-10 filled, 0-2 failed. Exit closes every open position on Thu/Fri.
-- Stops: every entry week should log a successful place_stops run.
+- Alpaca entry: 8-10 filled, 0-2 failed. Exit closes every position STILL open on Thu/Fri; positions already sold during
+  the week by their hard stop or Phase-2 trailing exit are not open at exit time, so closed < entered is normal.
+- Stops: place_stops logs only a "Starting ... mode=place_stops" line (its success goes to the phone, not this log),
+  so a start line with no error is normal; flag only an ERROR line or a stop-placement failure message.
 
 Resolution rule: if a failure was followed later in the window by a successful run of
 the same workflow (and mode), report it as a single INFO line marked "resolved", not as

@@ -159,8 +159,6 @@ def build():
            f"ALL fills in finished markets: {f_n} fills, {f_cnt:.0f} contracts, P&L ${(f_pnl - f_fee) / 100:+.2f} "
            f"= {(f_pnl - f_fee) / f_cnt if f_cnt else float('nan'):+.2f}c/contract after ${f_fee / 100:.2f} fees "
            f"(target from per-fill study: +2-3c)\n"
-           f"  of which still held at settlement: {len(st)} markets, {n_contracts:.0f} contracts, ${pnl_c / 100:+.2f} "
-           f"= {per:+.2f}c/contract (the leftover inventory, biased toward losers)\n"
            f"budget now: ${last.get('budget', 0):.2f} | open positions: {len(last.get('positions', {}))} | resting orders: {last.get('n_resting', 0)} | errors today: {len(errs)}"
            f" | post-only refusals (book moved, not errors): {pocs}")
     # per city: edge per contract and its uncertainty from city-day to city-day. Watch only -- a city is a CUT
