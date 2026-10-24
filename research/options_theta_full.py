@@ -70,6 +70,9 @@ def pull(und):
     path = f"{RAW}/{und.lower()}_q5.parquet"
     have = pd.read_parquet(path) if os.path.exists(path) else pd.DataFrame(columns=["d"])
     done = set(pd.to_datetime(have.d).dt.date) if len(have) else set()
+    ep = f"{RAW}/{und.lower()}_empty.json"                       # days the API returned nothing for: don't re-pull
+    empty = set(dt.date.fromisoformat(x) for x in json.load(open(ep))) if os.path.exists(ep) else set()
+    done |= empty
     exps = OT.expirations(und)
     s0, _ = OT.spot(und)
     days = sorted(d for d in exps if START <= d <= END and d in s0.index and d not in done)
@@ -96,12 +99,16 @@ def pull(und):
                         warn(f"{und} {d}: {str(r)[:150]}")
                 elif r is not None and len(r):
                     parts.append(r)
+                else:
+                    empty.add(d)
             if parts:
                 have = pd.concat([have] + parts, ignore_index=True); parts = []
                 have.to_parquet(path, index=False)
+            json.dump(sorted(x.isoformat() for x in empty), open(ep, "w"))
             print(f"  {und} {c0 + len(chunk)}/{len(days)} days ({time.time() - t0:.0f}s)", flush=True)
     if bad:
         warn(f"{und}: {bad} days failed")
+    note(f"{und}: {len(empty)} expiry days returned no quotes from the API")
     return have
 
 
@@ -225,6 +232,13 @@ def main():
             continue
         T = backtest(und, q)
         note(f"{und}: {len(T):,} variant-trades over {T.d.nunique() if len(T) else 0} days")
+        exps = [d for d in OT.expirations(und) if START <= d <= END]
+        qd = set(pd.to_datetime(q.d).dt.date) if len(q) else set()
+        td = set(pd.to_datetime(T.d).dt.date) if len(T) else set()
+        cov = {y: (sum(d.year == y for d in exps), sum(d.year == y for d in qd), sum(d.year == y for d in td))
+               for y in sorted({d.year for d in exps})}
+        note(f"{und} coverage by year (expiries / days with quotes / days with trades): "
+             + ", ".join(f"{y} {a}/{b}/{c}" for y, (a, b, c) in cov.items()))
         Ts.append(T)
     if not Ts:
         return
