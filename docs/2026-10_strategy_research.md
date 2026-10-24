@@ -2618,3 +2618,11 @@ only near-mid fills ($0.01) leave a small SPY edge (+0.8%/trade, not significant
 stretch. Not a real-money strategy; the condor overlay is dropped from the plan. Shadow #9 / the paper account keep
 running at no cost (fill-cost data), but the bar to revive it is live fills at ~mid AND a reason to expect 2024-26 to
 persist. Data stays in research-data/theta/ (chains) and results/options_theta_* -- the ThetaData subscription can go.
+- **Regime check (Oct 23, Connor: "is 2024-26 the new normal?")** -- split at 2022, when SPY/QQQ got same-day expiries
+  every weekday and 0DTE volume exploded (ThetaData to Jan 2024 + Alpaca from Feb 2024, $0.01 | $0.03 per leg):
+  SPY 2016-21 +0.4% (t 0.6) | -1.3% vs **2022-26 +2.5% (t 2.8) | +0.6%** (difference t 1.8); QQQ 2016-21 -1.7% |
+  -7.6% vs **2022-26 +4.1% (t 3.4) | +1.2%** (difference t 2.4-3.6). The edge is concentrated in the daily-expiry era,
+  including the 2022 bear market (SPY +4.4%) -- consistent with retail lottery-ticket demand for 0DTE options (the
+  same long-shot overpricing as on Kalshi), not merely calm markets. Revised verdict: a plausible structural premium
+  since 2022, still cost-sensitive (at $0.03/leg it is not significant). Condors move from "dropped" to "conditional":
+  small real allocation only if live fills land near mid, with a stop rule on the rolling realised premium.
