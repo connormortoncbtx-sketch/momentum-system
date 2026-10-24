@@ -71,6 +71,12 @@ jobs:
           echo "::notice::config: $(grep -iE 'port|http|rest' $HOME/ThetaData/ThetaTerminal/config_0.properties 2>/dev/null | tr '\n' '|' | cut -c1-800)"
           echo "::notice::listening: $(ss -ltnp 2>/dev/null | grep java | awk '{print $4}' | tr '\n' ' ')"
           [ $up = 1 ] || { echo "::error::Theta Terminal REST not reachable"; exit 1; }
+      - name: Restore raw ThetaData cache (private Actions cache; never pushed)
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ runner.temp }}/theta_raw
+          key: theta-raw-v1-${{ github.run_id }}
+          restore-keys: theta-raw-v1-
       - name: Load research-data branch
         run: git clone -q --depth 1 -b research-data "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" research_data
       - name: Run
@@ -82,7 +88,14 @@ jobs:
           RESEARCH_DATA: research_data
           LIMIT: ${{ inputs.limit }}
           MODE: ${{ inputs.mode }}
+          RAW_DIR: ${{ runner.temp }}/theta_raw
         run: python "research/${{ inputs.script }}.py"
+      - name: Save raw ThetaData cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ runner.temp }}/theta_raw
+          key: theta-raw-v1-${{ github.run_id }}
       - name: Push to research-data branch
         if: always()
         run: |

@@ -20,7 +20,7 @@ import requests
 RD = os.environ.get("RESEARCH_DATA", "research_data")
 BASE = os.environ.get("THETA_URL", "http://127.0.0.1:25503/v3")
 API = os.environ.get("THETA_API", "v3")                         # the "v3" jar served today runs the v2 REST API
-CACHE_DIR = f"{RD}/theta"; OUT = f"{RD}/results"
+CACHE_DIR = os.environ.get("RAW_DIR", "/tmp/theta_raw"); OUT = f"{RD}/results"   # licensed data: never under research_data
 os.makedirs(CACHE_DIR, exist_ok=True); os.makedirs(OUT, exist_ok=True)
 START, END = dt.date(2016, 1, 1), dt.date(2024, 3, 31)        # overlaps Alpaca's Feb-Mar 2024 for validation
 note = lambda m: print(f"::notice::{m}", flush=True)
