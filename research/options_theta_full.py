@@ -239,7 +239,20 @@ def coverage():
              + ", ".join(f"{y} {b_}/{a_}" for y, (a_, b_) in sorted(by.items()))
              + f"; missing by weekday {wd}; |open-close| % present {mv[pm].mean():.2f} vs missing {mv[mm].mean() if mm else float('nan'):.2f}; "
              f"range % present {rg[pm].mean():.2f} vs missing {rg[mm].mean() if mm else float('nan'):.2f}; first missing {[str(x) for x in miss[:12]]}")
-        for d in miss[:3] + miss[len(miss) // 2:len(miss) // 2 + 2]:
+        mo = pd.Series([f"{d:%Y-%m}" for d in miss if d.year in (2021, 2022, 2025)]).value_counts().sort_index()
+        tot = pd.Series([f"{d:%Y-%m}" for d in exps if d.year in (2021, 2022, 2025)]).value_counts().sort_index()
+        note(f"{und} missing by month (missing/expiries): " + ", ".join(f"{m} {mo.get(m, 0)}/{t}" for m, t in tot.items()))
+        apr = [d for d in exps if dt.date(2025, 4, 1) <= d <= dt.date(2025, 4, 15)]
+        note(f"{und} April 1-15 2025 expiries with quotes: {[str(d) for d in apr if d in qd]} / missing {[str(d) for d in apr if d not in qd]}")
+        for d in [x for x in miss if x.year == 2025][:2]:
+            ds = d.strftime("%Y%m%d")
+            for ep_ in ("/v2/bulk_hist/option/ohlc", "/v2/bulk_hist/option/eod"):
+                try:
+                    rows = OT.get_v2(ep_, root=und, exp=ds, start_date=ds, end_date=ds, ivl=QIVL, use_csv="false")
+                    note(f"{und} {d} {ep_}: {len(rows) if rows else 0} rows")
+                except Exception as e:
+                    note(f"{und} {d} {ep_} error: {str(e)[:200]}")
+        for d in miss[:0]:
             ds = d.strftime("%Y%m%d")
             try:
                 rows = OT.get_v2("/v2/bulk_hist/option/quote", root=und, exp=ds, start_date=ds, end_date=ds, ivl=QIVL,
