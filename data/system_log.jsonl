@@ -3140,3 +3140,4 @@
 {"timestamp": "2026-10-24T03:42:58.170565+00:00", "workflow": "shadow_strategies", "status": "success", "message": "Evaluated 1 shadows across 24 (shadow, week) pairs", "metrics": {"active_shadows": 1, "rows_written": 24}, "errors": []}
 {"timestamp": "2026-10-24T03:42:58.712107+00:00", "workflow": "collect_intraday", "status": "info", "message": "Starting intraday collection", "metrics": {}, "errors": []}
 {"timestamp": "2026-10-24T03:42:58.714030+00:00", "workflow": "collect_intraday", "status": "info", "message": "Skipped: 2026-10-16.csv already exists", "metrics": {}, "errors": []}
+{"timestamp": "2026-10-24T06:09:09.712777+00:00", "workflow": "shadow_filings", "status": "success", "message": "Shadow filings: 27 judged-eligible, new long 1, new short 15, open trades 204, diversified-book NAV 98.66", "metrics": {}, "errors": []}

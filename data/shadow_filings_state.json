@@ -1,5 +1,5 @@
 {
- "since": "2026-10-23T13:11:26-04:00",
+ "since": "2026-10-23T17:30:15-04:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -1878,6 +1878,176 @@
    "decided": "2026-10-23T13:25:31.292580-04:00",
    "event_type": "acquisition",
    "summary": "Jefferson subsidiary financing $270M debt to fund $255M DRUbit acquisition, targeting $138M pro forma EBITDA.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "MDCX",
+   "accession": "0001062993-26-005528",
+   "decided": "2026-10-24T02:07:57.778489-04:00",
+   "event_type": "listing_deficiency",
+   "summary": "Company regained Nasdaq compliance after near-delisting; stock price recovered above $1.00.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "SBMT",
+   "accession": "0001539497-26-002744",
+   "decided": "2026-10-24T02:08:00.544351-04:00",
+   "event_type": "strategic_review",
+   "summary": "First Amendment to Asset Purchase Agreement extends timeline for audited financials to October 31, 2026.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "GRDX",
+   "accession": "0001104659-26-118506",
+   "decided": "2026-10-24T02:08:07.157874-04:00",
+   "event_type": "exec_departure",
+   "summary": "Board director Manpreet Uppal resigned effective immediately; stated no disagreement with company.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "PHAT",
+   "accession": "0001193125-26-430621",
+   "decided": "2026-10-24T02:08:09.976521-04:00",
+   "event_type": "litigation",
+   "summary": "BDR Pharmaceuticals sued FDA challenging VOQUEZNA's 10-year NCE exclusivity extension through 2032.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_win",
+   "symbol": "ALGT",
+   "accession": "0001362468-26-000056",
+   "decided": "2026-10-24T02:08:12.093557-04:00",
+   "event_type": "contract_win",
+   "summary": "Allegiant exercises 6 Boeing 737-8 aircraft options; $720M list price, delivery 2028.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_div",
+   "symbol": "ALGT",
+   "accession": "0001362468-26-000056",
+   "decided": "2026-10-24T02:08:12.093557-04:00",
+   "event_type": "contract_win",
+   "summary": "Allegiant exercises 6 Boeing 737-8 aircraft options; $720M list price, delivery 2028.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ESOA",
+   "accession": "0001104659-26-118502",
+   "decided": "2026-10-24T02:08:14.886072-04:00",
+   "event_type": "acquisition",
+   "summary": "Completed $6.95M acquisition of FAMCO utility contractor assets; strategic tuck-in complementing existing operations.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ARDT",
+   "accession": "0001104659-26-118499",
+   "decided": "2026-10-24T02:08:17.816209-04:00",
+   "event_type": "exec_departure",
+   "summary": "CEO termination recharacterized for cause; $4.5M severance clawed back; undisclosed third-party compensation.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "OZ",
+   "accession": "0001493152-26-048251",
+   "decided": "2026-10-24T02:08:20.377025-04:00",
+   "event_type": "contract_loss",
+   "summary": "Company's $5M convertible loan prepaid by related party; CEO family gains 71% ownership of counterparty.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "MEI",
+   "accession": "0000065270-26-000058",
+   "decided": "2026-10-24T02:08:22.839942-04:00",
+   "event_type": "exec_departure",
+   "summary": "Chief Accounting Officer Stacie Schulz resigns effective October 30; CFO assumes accounting role.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "BNED",
+   "accession": "0001634117-26-000118",
+   "decided": "2026-10-24T02:08:27.397083-04:00",
+   "event_type": "exec_departure",
+   "summary": "Director Kate Eberle Walker resigns effective December 1, 2026 for role at Pearson.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "UMAC",
+   "accession": "0001683168-26-008046",
+   "decided": "2026-10-24T02:08:37.380089-04:00",
+   "event_type": "acquisition",
+   "summary": "Completed $52M acquisition of DroneNX/Upgrade Energy; $25M stock + $27M contingent earn-out.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "SUNS",
+   "accession": "0001628280-26-067043",
+   "decided": "2026-10-24T02:08:40.943615-04:00",
+   "event_type": "acquisition",
+   "summary": "Shareholder approval obtained for merger with SRT; ~8.5M shares issuance; closing expected November 5.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ROLR",
+   "accession": "0001753926-26-001993",
+   "decided": "2026-10-24T02:08:48.368150-04:00",
+   "event_type": "strategic_review",
+   "summary": "Commercial launch of TICKER prediction markets platform with Q4 2026 revenue expected.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "RCAT",
+   "accession": "0001493152-26-048228",
+   "decided": "2026-10-24T02:08:53.250674-04:00",
+   "event_type": "acquisition",
+   "summary": "Red Cat acquiring Austrian motor company Steyr Motors for EUR 205M via tender offer.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CNDT",
+   "accession": "0001677703-26-000142",
+   "decided": "2026-10-24T02:08:59.057180-04:00",
+   "event_type": "debt_financing",
+   "summary": "Refinancing adds $90M commitments, extends maturity to May 2029; securitization requirement by year-end.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "OVLY",
+   "accession": "0001437749-26-033387",
+   "decided": "2026-10-24T02:09:05.283809-04:00",
+   "event_type": "routine",
+   "summary": "Q3 2026 earnings: $0.77 EPS, up QoQ but down YoY. Mixed performance with margin expansion offset by asset declines.",
    "entry_date": null,
    "entry": null
   }
