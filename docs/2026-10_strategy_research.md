@@ -2633,3 +2633,47 @@ persist. Data stays in research-data/theta/ (chains) and results/options_theta_*
   overpriced too: 0DTE put credit spreads 2022-26 at $0.01/leg SPY +1.2-1.5%/trade, QQQ +2.3-2.9% (t 1.6-2.6); at $0.03
   not significant; 2016-21 about zero. Call spreads ~0. No structure beats the condor's regime/cost profile; harvesting
   the put premium in full needs naked short puts (crash risk, Level 4 margin) -- not pursued.
+
+## Full 0DTE options grid on real QUOTES, 2016-2026 -- Oct 24, 2026 (`research/options_theta_full.py`): AFTERNOON CONDORS
+ThetaData Standard bid/ask quotes (15-minute marks, 09:45-16:00) for every same-day SPY/QQQ expiry, 7,560 variants:
+entry 09:45-15:00 x condor / put spread / call spread x shorts 0.5-2 implied moves out x 3 wing widths x fill at
+mid / mid-1c-per-leg / natural (sell bid, buy ask) x exit hold / take 50% / stop at 2x credit / both. Return on risk per
+trade. Dev = 2016-23 (pre-2022 and 2022-23 separately), holdout = 2024-Oct 2026. Raw quotes stay in the private
+Actions cache only (licence); only aggregates are in research-data (results/options_full_*.csv,
+options_candidates_daily.csv = daily strategy returns of 48 candidate variants).
+- **Data holes.** ThetaData has no quotes for 2016-17, most of Jan-Aug 2022, Mar-Oct 2025 (incl. the April tariff
+  crash) and pre-2022 QQQ. The missing days are not calmer on average (SPY |open-close| 0.55% vs 0.57% present), but
+  the holes include the stress periods, so they were rebuilt from 15-minute TRADE bars (mid = last trade, bid/ask =
+  mid -/+ max(0.5c, 1.5%)). Calibration on 60 days with both: per-trade means within 0.3 pt, day-level corr 1.00.
+- **Ranking by dev t-stat is a trap:** it picks far-OTM, k = 2 variants with ~0.3-1.6% per trade that fade to ~0-0.6%
+  in the holdout (QQQ dev winner holdout rank 2879/3780). What holds is the broad SHAPE (dev vs holdout correlation of
+  variant means 0.74 SPY, 0.47 QQQ): later entries > morning; shorts 0.5-1 move out > 1.5-2; hold to the close > take
+  profit at 50% (tp50 negative in dev); a 2x stop is roughly neutral on the mean and trims tails; natural fills still
+  positive (bid/ask on these is often 1c, so "mid - 1c per leg" is WORSE than natural).
+- **Candidate family = iron condor, middle wing (SPY $5, QQQ 0.8%), natural fill**, 2018-Oct 2026 incl. the rebuilt
+  gaps, book risking 2% of capital per trade (Sharpe on business days, zeros on non-trade days):
+
+  | | per trade | Sharpe | CAGR | max DD | worst year | full-loss days |
+  |---|---|---|---|---|---|---|
+  | SPY 10:00 k1 hold (= current paper/shadow) | +1.5% | 0.7 | 5.6% | -16% | 2018 -5.9% | 1.9% |
+  | SPY 13:00 k1 hold | +2.4% | 1.6 | 9.6% | -7.3% | 2018 -0.6% | 1.2% |
+  | SPY 14:00 k1 stop 2x | +2.6% | 2.3 | 10.3% | -5.4% | 2018 -0.2% | 0.0% |
+  | SPY 14:00 k0.75 stop 2x | +3.0% | 2.0 | 12.1% | -7.0% | 2018 -0.5% | 0.4% |
+  | QQQ 10:00 k1 hold | +2.1% | 0.6 | 6.2% | -21% | 2018 -17.4% | 7.5% |
+  | QQQ 13:00 k1 stop 2x | +4.4% | 2.0 | 14.1% | -8.5% | 2022 +1.8% | 1.0% |
+  | QQQ 14:00 k1 stop 2x | +3.9% | 2.0 | 12.5% | -6.2% | 2026 +2.1% | 0.8% |
+
+  Stress windows (trade-bar proxy, natural, hold): April 2025, summed RoR over the month -- SPY 10:00 k0.5 -277%,
+  10:00 k1 +101%, 13:00 k1 +145%, 14:00 k1 +144%; QQQ 14:00 k1 +104%. 2022 H1 gap days -- SPY 14:00 k1 +3.3%/trade,
+  13:00 k1 -0.4%; QQQ 10:00 k0.5 -12.7%, afternoon +2 to +7%. The morning entry carries the tail; the afternoon
+  entry has had no losing year since 2018 on either ETF.
+- Why it makes sense: a 13-14:00 condor sells the last 2-3 hours of a 0DTE option, where retail lottery demand is
+  heaviest relative to the remaining move, and the short time left caps the size of the move it can lose to.
+- Caveats: the afternoon family was chosen after seeing the holdout too (but the dev rows point the same way: SPY dev
+  mid-hold 12-15:00 ~+2% vs morning ~+1%; QQQ dev best at 14-15:00); 15-minute marks mean real stops fill worse in a
+  fast tape; 2018-21 are Mon/Wed/Fri SPY and Friday-only QQQ, mostly from the trade-bar proxy for QQQ; afternoon
+  credits are small in dollars, so live fill quality decides it -- exactly what the paper account measures.
+- Verdict: condors move from "conditional" to **the strongest candidate we have**, but only in the afternoon form.
+  Proposed (needs Connor's OK): move the paper condor from 10:00 to 14:00 ET, k = 1, stop at 2x credit, SPY + QQQ,
+  and log the natural vs actual fill. Real-money decision after ~2 months of paper fills (Jan review). ThetaData can be
+  cancelled: the study is complete.
