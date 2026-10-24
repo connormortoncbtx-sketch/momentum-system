@@ -165,6 +165,7 @@ MARKETS_TTL = 300                                  # the list of open markets ch
 # USE_WS=yes: keep live order books from Kalshi's WebSocket and re-quote the moment a book changes (kalshi_mm/ws.py);
 # any market without a trustworthy stream copy falls back to a normal request. MIN_GAP_S = shortest time between cycles.
 USE_WS = E("USE_WS", "no").lower() == "yes"
+LOG_EVERY_S = 60                                   # snapshots / quiet-cycle lines at most once a minute
 MIN_GAP_S = float(E("MIN_GAP_S", "1"))
 WS_CHECK_S = 60                                    # cross-check a few stream books against normal requests this often
 QUIET = tuple(int(x) for x in E("QUIET_MINUTES", "").split("-")) if E("QUIET_MINUTES", "").strip() else None
@@ -586,7 +587,9 @@ class Bot:
                 self.day, self.day_start_value = today, day_baseline(today, value)
             pnl_today = value - self.day_start_value
             budget, max_loss = budget_for(liq), loss_limit(self.day_start_value)
-            jlog("snapshots", balance=round(bal, 2), position_value=round(pos_val, 2), value=round(value, 2),
+            if time.time() - getattr(self, "_last_snap", 0) >= LOG_EVERY_S or pnl_today < -max_loss:
+              self._last_snap = time.time()                # the stream makes cycles ~1s: log the account once a minute
+              jlog("snapshots", balance=round(bal, 2), position_value=round(pos_val, 2), value=round(value, 2),
                  value_at_bid=round(liq, 2),
                  pnl_today=round(pnl_today, 2), positions={t: p for t, p in pos.items() if p}, n_resting=len(rest),
                  budget=round(budget, 2), loss_limit=round(max_loss, 2), used_cost=round(used, 2), used_mark=round(used_mark, 2),
@@ -686,6 +689,9 @@ class Bot:
         if placed or cancelled:
             self._acct_dirty = True                        # our own orders changed: re-read the account next cycle
         secs = round(time.time() - t0, 1)
+        if not (placed or cancelled or time.time() - getattr(self, "_last_cyc", 0) >= LOG_EVERY_S):
+            return "ok"                                    # quiet cycle: nothing to record (logs stay small)
+        self._last_cyc = time.time()
         jlog("cycles", open_markets=len(mkts), books=len(books), placed=placed, cancelled=cancelled,
              resting_usd=round(resting_cost, 2), positions_usd=round(used, 2), secs=secs, quiet=quiet,
              from_ws=from_ws, ws=None if self.stream is None else dict(self.stream.stats))

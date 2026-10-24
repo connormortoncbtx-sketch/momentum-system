@@ -29,6 +29,7 @@ sudo -u kmm nice -n 10 /home/kmm/venv/bin/python "$APP/kalshi_mm/test_bot.py"
 sudo -u kmm env LOG_DIR="$(sudo -u kmm mktemp -d)" KILL_FILE=/tmp/kmm-lottery-test-kill \
   nice -n 10 /home/kmm/venv/bin/python "$APP/kalshi_mm/test_lottery.py" | grep -v INFO
 sudo -u kmm mkdir -p "$DATA"
+sudo -u kmm env LOG_DIR="$DATA" nice -n 10 /home/kmm/venv/bin/python "$APP/kalshi_mm/compact_logs.py" || true
 
 echo "==> settings ($ETC, readable by the bot user only)"
 mkdir -p "$ETC"
@@ -117,7 +118,7 @@ ExecStart=/home/kmm/venv/bin/python $APP/kalshi_mm/dashboard.py
 Restart=always
 RestartSec=10
 # secondary: capped memory, low CPU priority, first to go if memory runs out
-MemoryMax=200M
+MemoryMax=400M
 CPUWeight=20
 Nice=10
 OOMScoreAdjust=500
