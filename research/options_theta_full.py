@@ -218,6 +218,37 @@ def score(T):
     return W_.reset_index()
 
 
+def coverage():
+    """Which expiry days have no quotes, and are they different days (bias check: big-move days missing?)."""
+    for und in ("SPY", "QQQ"):
+        path = f"{RAW}/{und.lower()}_q5.parquet"
+        q = pd.read_parquet(path, columns=["d"]) if os.path.exists(path) else pd.DataFrame(columns=["d"])
+        qd = set(pd.to_datetime(q.d).dt.date)
+        exps = [d for d in OT.expirations(und) if START <= d <= END]
+        miss = sorted(d for d in exps if d not in qd)
+        b = pd.read_parquet(f"{OUT}/{und.lower()}_15m_raw_2016.parquet")
+        b["d"] = b.ts.dt.date
+        g = b.groupby("d").agg(o=("open", "first"), c=("close", "last"), h=("close", "max"), l=("close", "min"))
+        mv = ((g.c / g.o - 1).abs() * 100).rename("absret"); rg = ((g.h - g.l) / g.o * 100).rename("range")
+        by = {}
+        for d in exps:
+            r = by.setdefault(d.year, [0, 0]); r[0] += 1; r[1] += d in qd
+        wd = pd.Series([d.weekday() for d in miss]).value_counts().sort_index().to_dict() if miss else {}
+        pm = [d for d in exps if d in qd and d in mv.index]; mm = [d for d in miss if d in mv.index]
+        note(f"{und} coverage: {len(qd & set(exps))}/{len(exps)} expiry days have quotes; by year "
+             + ", ".join(f"{y} {b_}/{a_}" for y, (a_, b_) in sorted(by.items()))
+             + f"; missing by weekday {wd}; |open-close| % present {mv[pm].mean():.2f} vs missing {mv[mm].mean() if mm else float('nan'):.2f}; "
+             f"range % present {rg[pm].mean():.2f} vs missing {rg[mm].mean() if mm else float('nan'):.2f}; first missing {[str(x) for x in miss[:12]]}")
+        for d in miss[:3] + miss[len(miss) // 2:len(miss) // 2 + 2]:
+            ds = d.strftime("%Y%m%d")
+            try:
+                rows = OT.get_v2("/v2/bulk_hist/option/quote", root=und, exp=ds, start_date=ds, end_date=ds, ivl=QIVL,
+                                 start_time=35100000, end_time=57600000, use_csv="false")
+                note(f"{und} {d} re-pull: {len(rows) if rows else 0} rows; sample {str(rows[:1])[:200] if rows else None}")
+            except Exception as e:
+                note(f"{und} {d} re-pull error: {str(e)[:200]}")
+
+
 def main():
     if os.environ.get("MODE") == "probe":
         d = dt.date(2018, 2, 9); s0, _ = OT.spot("SPY")
@@ -225,6 +256,8 @@ def main():
         note(f"probe quotes {d}: rows {0 if q is None else len(q)}, contracts {0 if q is None else q.groupby(['strike','right']).ngroups}, "
              f"times {0 if q is None else q.ms.nunique()}, sample {None if q is None else q.head(3).to_dict('records')}")
         return
+    if os.environ.get("MODE") == "coverage":
+        coverage(); return
     Ts = []
     for und in ("SPY", "QQQ"):
         q = pull(und)
