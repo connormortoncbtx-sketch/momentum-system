@@ -19,6 +19,8 @@ Every quote/fill/snapshot is appended to LOG_DIR/*.jsonl for the edge measuremen
 import base64, datetime as dt, http.client, json, logging, os, signal, sys, threading, time, uuid
 import urllib.error, urllib.parse, urllib.request
 from concurrent.futures import ThreadPoolExecutor
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import lotfiles as LF  # noqa: E402  (the weekly roll's tickers and cash, so the bot leaves them out)
 
 HOSTS = {"dry": "https://api.elections.kalshi.com", "prod": "https://external-api.kalshi.com",
          "demo": "https://external-api.demo.kalshi.co"}
@@ -388,7 +390,7 @@ def trading_day(t=None):
     return (t or now()).astimezone(ZoneInfo("America/Chicago")).date().isoformat()
 
 
-BASELINE_BASIS = "netted-v1"   # bump when the value definition changes, so a stale baseline isn't compared to a new value
+BASELINE_BASIS = "netted-lot-v1"   # bump when the value definition changes, so a stale baseline isn't compared to a new value
 
 
 def day_baseline(day, value, path=None):
@@ -511,6 +513,12 @@ class Bot:
             self._acct_dirty = False
         pos = acct[0] if live else {}
         rest = acct[1] if live else []
+        # the weekly roll (lottery.py) shares the account but is not the bot's: its positions and its cash are left out
+        # of everything below -- caps, budget, the loss stop, quoting (see lotfiles.py)
+        lot_t = LF.tickers(LOG_DIR)
+        lot_pos = {t: p for t, p in pos.items() if t in lot_t}
+        if lot_pos:
+            pos = {t: p for t, p in pos.items() if t not in lot_t}
         mine = {}
         for o in rest:
             mine.setdefault((o["ticker"], order_side(o)), []).append(o)
@@ -570,7 +578,14 @@ class Bot:
 
         # risk: budget and daily loss
         if live:
-            bal = acct[2]
+            bal_all = acct[2]
+            lst = LF.state(LOG_DIR)
+            ltk = lst.get("ticker")
+            lres = self.fallback_mark(ltk) if ltk and LF.num(lst.get("held")) > 0 and not lot_pos.get(ltk) else None
+            lot_cash = LF.cash_in_bal(lst, lot_pos, lres)
+            bal = bal_all - lot_cash                               # the bot's share of the cash
+            lot_value = lot_cash + sum(p * (self.fallback_mark(t) or LF.num(lst.get("price")) or 0.5)
+                                       for t, p in lot_pos.items() if p > 0)   # logged only, for the whole-account line
             pos_val = sum(p * marks.get(t, 0.5) if p > 0 else -p * (1 - marks.get(t, 0.5)) for t, p in pos.items())
             net = getattr(self.k, "netted", 0.0) or 0.0           # sure payouts Kalshi already returned to cash
             pos_val -= net
@@ -593,7 +608,8 @@ class Bot:
                  value_at_bid=round(liq, 2),
                  pnl_today=round(pnl_today, 2), positions={t: p for t, p in pos.items() if p}, n_resting=len(rest),
                  budget=round(budget, 2), loss_limit=round(max_loss, 2), used_cost=round(used, 2), used_mark=round(used_mark, 2),
-                 netted=round(net, 2), kalshi_value=None if kv is None else round(bal + kv, 2))
+                 netted=round(net, 2), kalshi_value=None if kv is None else round(bal_all + kv, 2),
+                 lottery_cash=round(lot_cash, 2), lottery_value=round(lot_value, 2), lottery_positions=lot_pos or None)
             if pnl_today < -max_loss:
                 self.cancel_all(f"daily loss {pnl_today:.2f}")
                 log.warning("daily loss limit hit; pausing until midnight Central")

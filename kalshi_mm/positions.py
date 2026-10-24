@@ -23,6 +23,7 @@ def collect(k=None):
     cost = getattr(k, "cost", {}) or {}
     bal = k.balance()
     rows = []
+    lot = B.LF.tickers(B.LOG_DIR)                          # the weekly roll's markets (shown apart from the bot's)
     for tk, q in pos.items():
         if not q:
             continue
@@ -55,7 +56,7 @@ def collect(k=None):
         m = re.match(r"(KXHIGHT?|KXLOWT?)([A-Z]+)-(\d{2}[A-Z]{3}\d{2})-(.*)", tk)
         city, day, bucket = (m.group(2), m.group(3), m.group(4)) if m else (tk, "?", "")
         rows.append(dict(city=city, day=day, bucket=bucket, side=side, n=c, cost=cost.get(tk, 0.0), sell=sell,
-                         ev=c * p_win, p=p_win, spread=yask - ybid, src=src))
+                         ev=c * p_win, p=p_win, spread=yask - ybid, src=src, lottery=tk in lot, ticker=tk))
     rows.sort(key=lambda r: (r["day"], r["city"], r["bucket"]))
     collect.netted = getattr(k, "netted", 0.0) or 0.0     # sure payouts Kalshi already moved into cash (see bot.positions)
     return rows, bal

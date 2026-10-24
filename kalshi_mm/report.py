@@ -6,12 +6,16 @@ revenue minus the cost of the yes/no contracts held), compared with the backtest
 deep fills. Also: fills today, balance, open positions, errors. Logs stay on the server (the code
 repo is public, so account data is not pushed there).
 """
-import datetime as dt, json, os, urllib.request
+import datetime as dt, json, os, sys, urllib.request
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import lotfiles as LF  # noqa: E402
 
 LOG = os.environ.get("LOG_DIR", "/home/kmm/data")
 
 
-def rows(name):
+def rows(name, include_lottery=False):
+    """Records of LOG/name.jsonl. Fills and settlements of the weekly roll (lottery.py) are left out unless asked for:
+    it shares the account but is wholly separate from the market maker, so it must not count in any bot statistic."""
     p = f"{LOG}/{name}.jsonl"
     if not os.path.exists(p):
         return []
@@ -21,6 +25,10 @@ def rows(name):
             out.append(json.loads(l))
         except Exception:
             pass
+    if name in ("fills", "settlements") and not include_lottery:
+        lot = LF.tickers(LOG)
+        if lot:
+            out = [r for r in out if (r.get("fill") or r.get("settlement") or r).get("ticker") not in lot]
     return out
 
 
@@ -151,6 +159,7 @@ def build():
     # conservative: open positions at what they'd sell for NOW (the bid); the mid flatters dying buckets late in the day
     v, how = (last["value_at_bid"], "open positions at the bid, i.e. sold now") if "value_at_bid" in last else \
              (last.get("value", 0), "open positions at mid -- optimistic until the bot logs value_at_bid")
+    v += num(last.get("lottery_value"))                        # whole account: the bot's value + the weekly roll's
     score = (f"BOTTOM LINE: {'+' if v >= dep else '-'}${abs(v - dep):.2f} overall "
              f"(${v:.2f} vs ${dep:.2f} deposited; {how})\n") if dep else \
             "BOTTOM LINE: set DEPOSITS_USD in /etc/kmm/env to see profit vs money put in\n"

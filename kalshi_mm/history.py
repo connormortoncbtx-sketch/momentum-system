@@ -47,6 +47,7 @@ def account_series():
         v = s.get("value_at_bid", s.get("value"))
         if v is None:
             continue
+        v += R.num(s.get("lottery_value"))                # whole account vs deposits: the bot's value + the roll's
         if hr != last_hour:
             out.append([hr, v - dep(ts)])
             last_hour = hr
@@ -120,6 +121,7 @@ def caps(event_cap, inv_cap, size):
     snaps = [s for s in R.rows("snapshots") if s.get("budget")]
     if not snaps:
         return None
+    lot = R.LF.tickers(R.LOG)                       # the weekly roll is not the bot's (older snapshots included it)
     bud, ev_peak, mk_peak = {}, {}, {}
     for s in snaps:
         try:
@@ -129,6 +131,8 @@ def caps(event_cap, inv_cap, size):
         bud.setdefault(d, []).append(100 * R.num(s.get("used_cost")) / s["budget"])
         e = {}
         for t, p in (s.get("positions") or {}).items():
+            if t in lot:
+                continue
             mk_peak[t] = max(mk_peak.get(t, 0.0), abs(p))
             e[t.rsplit("-", 1)[0]] = e.get(t.rsplit("-", 1)[0], 0.0) + abs(p)
         for k, v in e.items():
@@ -144,7 +148,7 @@ def caps(event_cap, inv_cap, size):
     last = snaps[-1]
     cur = {}
     for t, p in (last.get("positions") or {}).items():
-        if p:
+        if p and t not in lot:
             cur.setdefault(t.rsplit("-", 1)[0], {})[t] = abs(p)
     return dict(
         now=dict(used=R.num(last.get("used_cost")), budget=last["budget"], ts=last.get("ts")),

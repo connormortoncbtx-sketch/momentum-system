@@ -206,7 +206,7 @@ if grep -q "paste-your-key-id-here" "$ETC/env" || [ ! -s "$ETC/kalshi.pem" ]; th
   echo "  2. sudo nano /etc/kmm/kalshi.pem  -> paste the private key, including the BEGIN/END lines"
   echo "Then:  sudo systemctl restart kmm   and check with:  sudo kmm logs"
 elif [ -n "$OLD_REV" ] && systemctl is-active -q kmm && \
-     sudo -u kmm git -C "$APP" diff --quiet "$OLD_REV" HEAD -- kalshi_mm/bot.py kalshi_mm/ws.py; then
+     sudo -u kmm git -C "$APP" diff --quiet "$OLD_REV" HEAD -- kalshi_mm/bot.py kalshi_mm/ws.py kalshi_mm/lotfiles.py; then
   # the trading code didn't change: leave the bot running (a restart cancels and re-places every order)
   echo "Installed. Trading bot code unchanged -- bot NOT restarted (orders untouched)."
 else

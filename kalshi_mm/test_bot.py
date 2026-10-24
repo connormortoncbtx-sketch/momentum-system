@@ -150,7 +150,26 @@ def test_sniper_helpers():
     assert S.market_date("KXHIGHTDAL-26OCT22-B83.5") == dt.date(2026, 10, 22)
 
 
+def test_lottery_separation():
+    import json, tempfile, lotfiles as LF
+    d = tempfile.mkdtemp()
+    st = {"status": "holding", "ticker": "KXHIGHTSATX-26OCT24-B80.5", "held": 41.0, "price": 0.55, "cash": 0.30,
+          "history": [{"ticker": "KXHIGHTHOU-26OCT23-B70.5"}]}
+    json.dump(st, open(f"{d}/lottery.json", "w"))
+    open(f"{d}/lottery.jsonl", "w").write(json.dumps({"event": "order", "ticker": "KXHIGHTSEA-26OCT21-B60.5"}) + "\n"
+                                         + json.dumps({"msg": "Leg 1 hit"}) + "\n")
+    assert LF.tickers(d) == {"KXHIGHTSATX-26OCT24-B80.5", "KXHIGHTHOU-26OCT23-B70.5", "KXHIGHTSEA-26OCT21-B60.5"}
+    tk = st["ticker"]
+    assert abs(LF.cash_in_bal(st, {tk: 41}) - 0.30) < 1e-9            # synced: only the leftover cash is the roll's
+    assert abs(LF.cash_in_bal(dict(st, status="buying", held=30.0, cash=6.35), {tk: 41}) - 0.30) < 1e-9   # 11 filled since
+    assert abs(LF.cash_in_bal(st, {}, 1.0) - 41.30) < 1e-9             # won and paid out, not yet booked by the roll
+    assert abs(LF.cash_in_bal(st, {}, 0.0) - 0.30) < 1e-9              # lost
+    assert LF.cash_in_bal(dict(st, status="done"), {tk: 41}) == 0.0     # finished week: back to the common pool
+    assert LF.cash_in_bal(dict(st, status="buying", ticker=None, cash=22.55), {}) == 22.55   # between legs
+
+
 if __name__ == "__main__":
     for f in (test_targets, test_order_side, test_order_price, test_event_cap_helpers, test_sign_roundtrip,
-              test_day_baseline_survives_restart, test_fallback_mark, test_favourite_only, test_netted, test_quiet, test_rate_limit, test_ws_parsing, test_sniper_helpers):
+              test_day_baseline_survives_restart, test_fallback_mark, test_favourite_only, test_netted, test_quiet, test_rate_limit, test_ws_parsing, test_sniper_helpers,
+              test_lottery_separation):
         f(); print("ok", f.__name__)

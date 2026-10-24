@@ -206,9 +206,11 @@ def build_page():
             err = f"Kalshi busy ({html.escape(str(e))[:80]}) -- positions as of {_last_good['t']:%-I:%M %p}"
         else:
             rows, cash, err = [], 0.0, f"Kalshi fetch failed: {html.escape(str(e))[:200]}"
+    lrows = [r for r in rows if r.get("lottery")]     # the weekly roll: wholly separate, shown in its own card
+    rows = [r for r in rows if not r.get("lottery")]
     net = P.collect.netted                      # sure payouts on mutually exclusive buckets, already in cash
-    sell = cash - net + sum(r["sell"] for r in rows)
-    exp = cash - net + sum(r["ev"] for r in rows)
+    sell = cash - net + sum(r["sell"] for r in rows + lrows)          # whole account (deposits are the whole account)
+    exp = cash - net + sum(r["ev"] for r in rows + lrows)
     try:
         rep = R.build()
     except Exception as e:
@@ -218,6 +220,9 @@ def build_page():
         lot = json.load(open(os.path.join(B.LOG_DIR, "lottery.json")))
     except Exception:
         pass
+    lot_cash = B.LF.cash_in_bal(lot, {r["ticker"]: r["n"] for r in lrows}) if lot else 0.0
+    lot_sell = lot_cash + sum(r["sell"] for r in lrows)
+    lot_exp = lot_cash + sum(r["ev"] for r in lrows)
     killed = os.path.exists(B.KILL_FILE)
     status = svc("kmm")
     ok = status == "active" and not killed
@@ -246,6 +251,7 @@ pre{{white-space:pre-wrap;font-size:12.5px;margin:0}} .dot{{display:inline-block
 <div><div class="mut">If sold now</div><div class="big {cls(sell - dep)}">{money(sell - dep, True)}</div><div class="mut">{money(sell)}</div></div>
 <div><div class="mut">Expected at settlement</div><div class="big {cls(exp - dep)}">{money(exp - dep, True)}</div><div class="mut">{money(exp)}</div></div>
 <div><div class="mut">Cash</div><div class="big">{money(cash)}</div><div class="mut">{len(rows)} open positions</div></div></div>
+<div class="mut">Of that: market-making bot {money(sell - lot_sell)} sold now / {money(exp - lot_exp)} at settlement · weekly roll {money(lot_sell)} / {money(lot_exp)}</div>
 <div class="mut">Positions are net of {money(net)} of sure payouts Kalshi already returned to cash (NO on several buckets of one city-day: at most one can lose). Per-day tables below show them gross.</div></div>""")
     try:
         kb, kt = P.kalshi_truth()
@@ -275,8 +281,9 @@ pre{{white-space:pre-wrap;font-size:12.5px;margin:0}} .dot{{display:inline-block
 {body}</table></div></div>""")
     if lot:
         h.append(f"""<div class="card"><h2>Weekly roll</h2>{html.escape(str(lot.get('status')))} · week {html.escape(str(lot.get('week')))}
-· leg {lot.get('leg')} / {os.environ.get('LOT_LEGS', '7')} · bankroll {money(B.num(lot.get('cash')) + B.num(lot.get('held')) * B.num(lot.get('price')))}
-{('· holding ' + html.escape(str(lot.get('ticker')))) if lot.get('ticker') else ''}</div>""")
+· leg {lot.get('leg')} / {os.environ.get('LOT_LEGS', '7')} · worth {money(lot_sell)} sold now, {money(lot_exp)} expected
+{('· ' + ', '.join(f"{html.escape(r['city'])} {html.escape(r['bucket'])} {r['side']} {r['n']:.0f} @ {r['p'] * 100:.0f}%" for r in lrows)) if lrows else ''}
+<div class="mut">Wholly separate from the bot: not in its caps, budget, loss stop or any of the "is it working" numbers above.</div></div>""")
     h.append(f"""<div class="card"><h2>Scorecard (settled) and per city</h2><pre>{html.escape(rep)}</pre></div>
 <div class="mut">Chance = market odds that the side held pays $1 (* = thin book, last trade). Expected = qty × chance.
 Read-only page; it never trades.</div></main></body></html>""")
