@@ -1,13 +1,13 @@
 {
-  "regime": "risk_off_severe",
-  "description": "Market stress. Capital preservation mode. Cash is a position.",
-  "composite": -0.5934,
+  "regime": "risk_off_mild",
+  "description": "Defensive rotation underway. Favor quality/defensives. Reduce exposure.",
+  "composite": -0.3557,
   "scores": {
-    "trend": -0.4094,
-    "breadth": -0.8594,
-    "sentiment": -0.3915,
+    "trend": -0.275,
+    "breadth": -0.1387,
+    "sentiment": -0.309,
     "rotation": -1.0,
-    "safety": -0.2829
+    "safety": -0.2498
   },
   "weights": {
     "trend": 0.25,
@@ -18,57 +18,57 @@
   },
   "details": {
     "trend": {
-      "spy_ret_5d": -0.0191,
-      "spy_ret_20d": -0.0133,
-      "spy_ret_50d": -0.0102,
+      "spy_ret_5d": -0.0085,
+      "spy_ret_20d": -0.0074,
+      "spy_ret_50d": -0.014,
       "spy_above_sma50": false,
       "spy_above_sma200": true,
-      "spy_drawdown": -0.0203
+      "spy_drawdown": -0.0245
     },
     "breadth": {
-      "qqq_ret_5d": -0.0486,
-      "qqq_ret_20d": -0.0427,
-      "iwm_ret_5d": -0.0268,
-      "iwm_ret_20d": -0.053,
-      "iwm_vs_spy_5d": -0.0078,
-      "iwm_vs_spy_20d": -0.0398,
+      "qqq_ret_5d": -0.0194,
+      "qqq_ret_20d": -0.0436,
+      "iwm_ret_5d": 0.0165,
+      "iwm_ret_20d": -0.0152,
+      "iwm_vs_spy_5d": 0.025,
+      "iwm_vs_spy_20d": -0.0079,
       "iwm_above_sma50": false
     },
     "sentiment": {
-      "vix": 19.99,
-      "vix_ma20": 15.73,
-      "vix_trend": 4.26,
-      "hyg_vs_spy_5d": 0.0135,
-      "hyg_vs_spy_20d": -0.0055
+      "vix": 19.45,
+      "vix_ma20": 16.54,
+      "vix_trend": 2.91,
+      "hyg_vs_spy_5d": 0.0114,
+      "hyg_vs_spy_20d": 0.0055
     },
     "rotation": {
-      "offensive_ret_5d": -0.0571,
-      "defensive_ret_5d": 0.0265,
-      "offensive_ret_20d": -0.0506,
-      "defensive_ret_20d": 0.0511,
-      "rotation_spread_5d": -0.0836,
-      "rotation_spread_20d": -0.1016,
-      "xlk_slope": -0.001171,
-      "xlu_slope": 0.003136
+      "offensive_ret_5d": -0.0171,
+      "defensive_ret_5d": 0.0206,
+      "offensive_ret_20d": -0.0509,
+      "defensive_ret_20d": 0.0679,
+      "rotation_spread_5d": -0.0376,
+      "rotation_spread_20d": -0.1188,
+      "xlk_slope": -0.004724,
+      "xlu_slope": 0.004054
     },
     "safety": {
-      "tlt_vs_spy_5d": 0.0447,
-      "tlt_vs_spy_20d": -0.0042,
-      "gld_vs_spy_5d": 0.0187,
-      "gld_vs_spy_20d": -0.0278
+      "tlt_vs_spy_5d": 0.0322,
+      "tlt_vs_spy_20d": 0.0461,
+      "gld_vs_spy_5d": -0.026,
+      "gld_vs_spy_20d": -0.0225
     }
   },
   "transition": {
     "transitioning": true,
-    "direction": "weakening",
-    "composite_delta": -0.7105,
-    "prev_composite": 0.1171,
-    "prev_regime": "trending_mixed"
+    "direction": "strengthening",
+    "composite_delta": 0.2377,
+    "prev_composite": -0.5934,
+    "prev_regime": "risk_off_severe"
   },
   "context": {
-    "spy_realized_vol_20d": 0.1047,
-    "vix": 19.99,
-    "as_of": "2026-10-17"
+    "spy_realized_vol_20d": 0.0975,
+    "vix": 19.45,
+    "as_of": "2026-10-24"
   },
   "playbook": {
     "momentum": 1.0,
