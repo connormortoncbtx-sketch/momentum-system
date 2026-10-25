@@ -36,13 +36,6 @@ jobs:
           ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
           NTFY_CHANNEL: ${{ secrets.NTFY_CHANNEL }}
         run: python automation/shadow_condor.py
-      - name: Paper condor orders (separate paper account; skipped without its keys)
-        continue-on-error: true
-        env:
-          ALPACA_PAPER2_KEY: ${{ secrets.ALPACA_PAPER2_KEY }}
-          ALPACA_PAPER2_SECRET: ${{ secrets.ALPACA_PAPER2_SECRET }}
-          NTFY_CHANNEL: ${{ secrets.NTFY_CHANNEL }}
-        run: python automation/paper_condor.py
       - name: Commit ledger
         run: |
           git config user.name  "momentum-bot"

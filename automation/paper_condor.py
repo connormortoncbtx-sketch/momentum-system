@@ -1,7 +1,13 @@
 """
 automation/paper_condor.py
 ==========================
-Paper ORDERS for shadow #9's iron condors, in a separate Alpaca paper account (Connor, Oct 22, 2026).
+Paper ORDERS for same-day iron condors, in a separate Alpaca paper account (Connor, Oct 22, 2026).
+
+From Oct 26, 2026 (Connor, Oct 25): the AFTERNOON version from the ThetaData study (docs/2026-10_strategy_research.md,
+"Full 0DTE options grid"): enter at 14:00 ET, shorts 1 implied move out, SPY $5 / QQQ 0.8% wings, stop when the cost to
+close at mid reaches 3x the credit (= a loss of 2x the credit), checked on the 15-minute marks like the backtest, else
+hold to the close. Its own workflow (paper_condor.yml, dispatched 13:00 CT); legs priced live here with shadow #9's
+helpers -- shadow #9 itself stays the 10:00 reference. Before Oct 26 the account copied shadow #9's 10:00 legs.
 
 The shadow (automation/shadow_condor.py) prices each day's condor from quotes but places nothing. Paper fills are
 optimistic, so this does NOT settle the cost question -- it tests the mechanics a real account would face:
@@ -40,6 +46,8 @@ DATA = ROOT / "data"
 STATE, LEDGER, SHADOW = DATA / "paper_condor_state.json", DATA / "paper_condor_ledger.jsonl", DATA / "shadow_condor_state.json"
 BASE = "https://paper-api.alpaca.markets"
 RISK_FRAC, STEP, WAIT_S, MAX_STEPS = 0.10, 0.05, 60, 8   # paper: 10%/day (5% per ETF) to stress buying power & assignment (Connor, Oct 23)
+ENTRY_FROM, ENTRY_TO = dt.time(13, 58), dt.time(14, 30)  # the 14:00 ET entry (afternoon condor, from Oct 26)
+STOP_MULT, LAST_CHECK = 3.0, dt.time(15, 45)              # stop: cost to close >= 3x credit; last 15-minute mark checked
 
 
 def api(method, path, body=None, **q):
@@ -86,7 +94,8 @@ def reconcile(state, today):
         ev = sorted({a.get("activity_type") for a in opt})
         msg = (f"paper condor {key}: P&L {row['pnl']:+,.2f} ({row['pnl_pct']:+.2f}%), fills: "
                + "; ".join(f"{o['und']} {o.get('status')} credit {o.get('filled_credit')} (mid {o['mid']}, natural {o['natural']}, "
-                           f"{o.get('steps', 0)} steps)" for o in d["orders"])
+                           f"{o.get('steps', 0)} steps)" + (f" STOPPED {o['stopped_at'][11:16]} for {o.get('stop_debit')}" if o.get("stopped_at") else "")
+                           for o in d["orders"])
                + (f"; option events {ev}" if ev else "") + (f"; ASSIGNED SHARES closed: {closed}" if closed else ""))
         log.info(msg)
         (notify_alert if closed else notify_success)("Paper condor", msg)
@@ -191,27 +200,107 @@ def main():
           f"approved {acct.get('options_approved_level')}, status {acct.get('status')}")
     log.info(f"paper account: equity {acct.get('equity')}, options level {acct.get('options_trading_level')} "
              f"(approved {acct.get('options_approved_level')}), status {acct.get('status')}")
-    if not (dt.time(9, 58) <= now.time() <= dt.time(11, 30)):           # same entry window as the shadow
+    if not (ENTRY_FROM <= now.time() <= ENTRY_TO):
         STATE.write_text(json.dumps(state, indent=1)); return
+    import automation.shadow_condor as SC
+    oc, sc, tc = SC.clients()
+    if not tc.get_clock().is_open:
+        log.info("market closed today -- no entry"); STATE.write_text(json.dumps(state, indent=1)); return
     key = now.date().isoformat()
-    shadow = json.loads(SHADOW.read_text()).get("open", {}).get(key, {}) if SHADOW.exists() else {}
-    day = state["days"].setdefault(key, {"orders": [], "equity_before": None})
+    day = state["days"].setdefault(key, {"orders": [], "equity_before": None, "version": "14:00 k1 stop3x"})
     done = {o["und"] for o in day["orders"]}
-    todo = [u for u in shadow if u not in done]
+    todo = [u for u in SC.UNDS if u not in done]
     if todo:
         if day["equity_before"] is None:
             day["equity_before"] = round(equity(), 2)
         for u in todo:
             try:
-                rec = enter_one(shadow[u], day["equity_before"], RISK_FRAC / len(shadow))   # split across the ETFs entered
+                e = SC.enter_one(oc, sc, u, now.date(), dt.datetime.now(ET))       # live legs at 14:00
+                rec = enter_one(e, day["equity_before"], RISK_FRAC / len(SC.UNDS))
+                rec.update(legs_sym=e["legs"], spot=e["spot"], implied_move=e["implied_move"],
+                           entered_at=dt.datetime.now(ET).isoformat(timespec="seconds"))
             except Exception as ex:
                 rec = {"und": u, "status": f"error: {str(ex)[:200]}", "mid": None, "natural": None}
                 notify_alert("Paper condor", f"{u} order error: {ex}")
             day["orders"].append(rec)
             log.info(f"paper {u}: {rec}")
+            STATE.write_text(json.dumps(state, indent=1))
     if not day["orders"]:
         state["days"].pop(key, None)
     STATE.write_text(json.dumps(state, indent=1))
+    monitor(state, day, oc, SC)
+
+
+def leg_mid_cost(oc, SC, legs):
+    """(cost to close at mid, at natural) for an open condor, from live quotes."""
+    q, _ = SC.quotes(oc, list(legs.values()))
+    Q = {k: q[v] for k, v in legs.items()}
+    mid = lambda x: (x["bid"] + x["ask"]) / 2
+    cmid = sum((1 if k.startswith("short") else -1) * mid(Q[k]) for k in Q)
+    cnat = Q["short_put"]["ask"] + Q["short_call"]["ask"] - Q["long_put"]["bid"] - Q["long_call"]["bid"]
+    return round(cmid, 4), round(cnat, 4)
+
+
+def close_one(rec, oc, SC):
+    """Buy the condor back: mleg limit at the mid cost, stepping 5c toward (and finally 10c past) the natural cost."""
+    legs, qty, sign = rec["legs_sym"], rec["qty"], -rec.get("limit_sign", -1)       # debit = opposite sign of credit
+    body_legs = [{"symbol": legs["long_put"], "ratio_qty": "1", "side": "sell", "position_intent": "sell_to_close"},
+                 {"symbol": legs["short_put"], "ratio_qty": "1", "side": "buy", "position_intent": "buy_to_close"},
+                 {"symbol": legs["short_call"], "ratio_qty": "1", "side": "buy", "position_intent": "buy_to_close"},
+                 {"symbol": legs["long_call"], "ratio_qty": "1", "side": "sell", "position_intent": "sell_to_close"}]
+    cmid, cnat = leg_mid_cost(oc, SC, legs)
+    price = round(cmid, 2)
+    for step in range(8):
+        o = api("POST", "/v2/orders", {"order_class": "mleg", "qty": str(qty), "type": "limit", "time_in_force": "day",
+                                       "limit_price": f"{sign * price:.2f}", "legs": body_legs})
+        t0 = time.time()
+        while time.time() - t0 < 30:
+            time.sleep(5)
+            st = api("GET", f"/v2/orders/{o['id']}", nested="true")
+            if st.get("status") == "filled":
+                lg = st.get("legs") or []
+                debit = sum((1 if l.get("side") == "buy" else -1) * float(l.get("filled_avg_price") or 0) for l in lg)
+                rec.update(stopped_at=dt.datetime.now(ET).isoformat(timespec="seconds"), stop_debit=round(debit, 4),
+                           stop_steps=step, stop_mid=cmid, stop_natural=cnat)
+                return True
+        try:
+            api("DELETE", f"/v2/orders/{o['id']}")
+        except RuntimeError:
+            pass
+        time.sleep(2)
+        if api("GET", f"/v2/orders/{o['id']}", nested="true").get("status") == "filled":
+            rec.update(stopped_at=dt.datetime.now(ET).isoformat(timespec="seconds"), stop_steps=step, stop_mid=cmid,
+                       stop_natural=cnat)
+            return True
+        _, cnat = leg_mid_cost(oc, SC, legs)
+        price = round(min(price + STEP, cnat + 0.10), 2) if price < cnat + 0.10 else round(cnat + 0.10, 2)
+    rec["stop_status"] = "stop triggered but not filled"
+    return False
+
+
+def monitor(state, day, oc, SC):
+    """Check each open condor on the 15-minute marks (14:15 ... 15:45 ET, as the backtest did); stop at 3x credit."""
+    open_ = [r for r in day["orders"] if r.get("status") == "filled" and r.get("legs_sym") and not r.get("stopped_at")]
+    while open_:
+        now = dt.datetime.now(ET)
+        nxt = (now + dt.timedelta(minutes=15 - now.minute % 15)).replace(second=20, microsecond=0)
+        if nxt.time() > dt.time(LAST_CHECK.hour, LAST_CHECK.minute, 59):
+            break
+        time.sleep(max(0, (nxt - now).total_seconds()))
+        for r in list(open_):
+            try:
+                cmid, cnat = leg_mid_cost(oc, SC, r["legs_sym"])
+            except Exception as ex:
+                log.warning(f"{r['und']} marks: {ex}"); continue
+            c0 = float(r.get("filled_credit") or 0)
+            r.setdefault("marks", []).append([f"{nxt:%H:%M}", cmid, cnat])
+            if c0 > 0 and cmid >= STOP_MULT * c0:
+                log.info(f"{r['und']} STOP: cost to close {cmid:.2f} >= {STOP_MULT:.0f}x credit {c0:.2f}")
+                ok = close_one(r, oc, SC)
+                notify_alert("Paper condor", f"{r['und']} stop at {nxt:%H:%M}: cost {cmid:.2f} vs credit {c0:.2f}; "
+                             + (f"closed for {r.get('stop_debit')}" if ok else "NOT filled -- check the account"))
+                open_.remove(r)
+        STATE.write_text(json.dumps(state, indent=1))
 
 
 if __name__ == "__main__":

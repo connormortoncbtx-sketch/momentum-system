@@ -1,0 +1,56 @@
+name: Paper Condor (14:00 ET afternoon condor, separate paper account)
+
+# Afternoon same-day iron condor in the ALPACA_PAPER2 paper account (Connor, Oct 25, 2026): enter 14:00 ET, shorts 1
+# implied move out, SPY $5 / QQQ 0.8% wings, stop at 3x the credit checked on the 15-minute marks, else hold to the
+# close. Fired by the exact-time dispatcher (netlify-dispatcher, 13:00 CT); the cron is a backup (the script only
+# enters inside 13:58-14:30 ET and is idempotent). Each run first reconciles earlier days. Paper money only.
+on:
+  schedule:
+    - cron: '10 18 * * 1-5'   # 14:10 EDT backup (EST: 13:10, outside the window -> reconcile only)
+    - cron: '10 19 * * 1-5'   # 14:10 EST backup
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: paper-condor
+  cancel-in-progress: false
+
+jobs:
+  paper:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Paper condor (enter 14:00 ET, watch the stop until 15:45)
+        env:
+          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+          ALPACA_PAPER2_KEY: ${{ secrets.ALPACA_PAPER2_KEY }}
+          ALPACA_PAPER2_SECRET: ${{ secrets.ALPACA_PAPER2_SECRET }}
+          NTFY_CHANNEL: ${{ secrets.NTFY_CHANNEL }}
+        run: python automation/paper_condor.py
+      - name: Commit ledger
+        if: always()
+        run: |
+          git config user.name  "momentum-bot"
+          git config user.email "momentum-bot@users.noreply.github.com"
+          for f in data/paper_condor_state.json data/paper_condor_ledger.jsonl data/system_log.jsonl; do if [ -e "$f" ]; then git add "$f"; fi; done
+          git diff --cached --quiet && exit 0
+          git commit -q -m "paper condor: $(date +%Y-%m-%d) update"
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push; then break; fi
+            git rebase --abort 2>/dev/null || true
+            git pull origin main --no-rebase --strategy=recursive -X theirs --no-edit 2>/dev/null || true
+            [ $attempt -eq 5 ] && exit 1
+            sleep $((RANDOM % 5 + 2))
+          done
