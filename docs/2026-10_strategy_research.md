@@ -2677,3 +2677,30 @@ options_candidates_daily.csv = daily strategy returns of 48 candidate variants).
   Proposed (needs Connor's OK): move the paper condor from 10:00 to 14:00 ET, k = 1, stop at 2x credit, SPY + QQQ,
   and log the natural vs actual fill. Real-money decision after ~2 months of paper fills (Jan review). ThetaData can be
   cancelled: the study is complete.
+- **Options sleeve x momentum v2 book, 2018-2026 (Oct 25, `research/mix_options_v2.py`).** Daily natural-fill series for
+  same-day condors, put spreads and call spreads (real quotes + calibrated trade bars on the gap days), SPY and QQQ half
+  each, sleeve risking f of equity per day, added to STACK_v2 (weekly). Each structure's variant chosen by DEV
+  (2018-23) Sharpe of the book WITH the sleeve at 2%/day (choosing by the sleeve's own Sharpe picked far, wide, low-
+  return spreads that added ~nothing -- first run discarded for that reason, before looking at the holdout). Sharpe /
+  CAGR / max DD, dev | HOLDOUT 2024-26:
+
+  | | dev 2018-23 | holdout 2024-26 |
+  |---|---|---|
+  | STACK_v2 alone | 1.19 / +23% / -17% | 1.60 / +29% / -11% |
+  | + condor 14:00 k1 w1 stop 2x, 2%/day (robust centre) | 1.49 / +32% / -20% | 2.47 / +55% / -9% |
+  | + condor 14:00 k1 w1 stop 2x, 4%/day | 1.67 / +41% / -24% | 3.01 / +86% / -12% |
+  | + condor 15:00 k0.5 narrowest wing, 2%/day (dev pick) | 2.02 / +54% / -25% | 3.11 / +99% / -12% |
+  | + call spread 15:00 k0.5 narrowest, 2%/day | 1.73 / +38% / -21% | 2.55 / +59% / -10% |
+  | + put spread 14:00 k0.75 narrowest stop 2x, 2%/day | 1.53 / +35% / -21% | 1.88 / +41% / -14% |
+  | dev split of 4%: condor 2 + call 1 + put 1 | 2.26 / +70% / -27% | 3.36 / +130% / -11% |
+
+  Correlation with the book (dev / holdout): condor -0.00 / +0.09; call -0.11 / -0.02 (a mild hedge: +0.24%/wk in the
+  book's worst 10% of weeks); put +0.23 / +0.11 (piles on: -0.23%/wk in the book's worst weeks). Reading: the options
+  sleeve is close to independent of the book, so it mostly ADDS its own return and its own volatility -- Sharpe up a
+  lot, max DD up a little (it widens the dev drawdown from -17% to -20/-25%). Condors are the sleeve; a little call
+  spread is the only piece with any hedge value; put spreads are momentum's risk twice. Caveats: the dev picks sit at
+  the grid's edge (15:00 = latest entry, closest strikes, narrowest wings) -- the model is least trustworthy there
+  (one hour of gamma, fills in the last hour, 15-minute marks), so the 14:00 / k1 / middle-wing version is the one to
+  plan with; the book is itself a backtest (shadow #7); intraday spreads need max-loss collateral alongside a book
+  that runs 0.5-3x leverage (Reg-T margin binds). What this data can't test: covered calls / collars on the book's
+  own stocks, longer-dated index puts as a hedge (ThetaData pull was same-day SPY/QQQ only).
