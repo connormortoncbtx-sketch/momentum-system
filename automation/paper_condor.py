@@ -279,20 +279,26 @@ def close_one(rec, oc, SC):
 
 
 def monitor(state, day, oc, SC):
-    """Check each open condor on the 15-minute marks (14:15 ... 15:45 ET, as the backtest did); stop at 3x credit."""
+    """Every minute until 15:45 ET: record the cost to close (observation only -- a finer stop is untested), and act on
+    the stop ONLY on the 15-minute marks, as the backtest did (3x credit). The minute marks (r["marks_1m"]) are the data
+    for testing a faster or emergency stop later."""
     open_ = [r for r in day["orders"] if r.get("status") == "filled" and r.get("legs_sym") and not r.get("stopped_at")]
     while open_:
         now = dt.datetime.now(ET)
-        nxt = (now + dt.timedelta(minutes=15 - now.minute % 15)).replace(second=20, microsecond=0)
+        nxt = (now + dt.timedelta(minutes=1)).replace(second=20, microsecond=0)
         if nxt.time() > dt.time(LAST_CHECK.hour, LAST_CHECK.minute, 59):
             break
         time.sleep(max(0, (nxt - now).total_seconds()))
+        on_mark = nxt.minute % 15 == 0
         for r in list(open_):
             try:
                 cmid, cnat = leg_mid_cost(oc, SC, r["legs_sym"])
             except Exception as ex:
                 log.warning(f"{r['und']} marks: {ex}"); continue
             c0 = float(r.get("filled_credit") or 0)
+            r.setdefault("marks_1m", []).append([f"{nxt:%H:%M}", cmid, cnat])
+            if not on_mark:
+                continue
             r.setdefault("marks", []).append([f"{nxt:%H:%M}", cmid, cnat])
             if c0 > 0 and cmid >= STOP_MULT * c0:
                 log.info(f"{r['und']} STOP: cost to close {cmid:.2f} >= {STOP_MULT:.0f}x credit {c0:.2f}")
@@ -300,7 +306,9 @@ def monitor(state, day, oc, SC):
                 notify_alert("Paper condor", f"{r['und']} stop at {nxt:%H:%M}: cost {cmid:.2f} vs credit {c0:.2f}; "
                              + (f"closed for {r.get('stop_debit')}" if ok else "NOT filled -- check the account"))
                 open_.remove(r)
-        STATE.write_text(json.dumps(state, indent=1))
+        if on_mark:
+            STATE.write_text(json.dumps(state, indent=1))
+    STATE.write_text(json.dumps(state, indent=1))
 
 
 if __name__ == "__main__":
