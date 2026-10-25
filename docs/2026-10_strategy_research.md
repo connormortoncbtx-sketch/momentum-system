@@ -2552,6 +2552,14 @@ parking of the free NWS feed ("needs < 10 min and F precision" was an assumption
 delay and whole C it is +16 to +21c/contract in both periods. Caveats: trade-print prices are not guaranteed fills;
 the sample covers ~11% of markets and ~25-190 city-days; KNYC reports hourly only. Next: a paper shadow on the droplet
 that reads the NWS feed live, flags decided buckets and records the actual Kalshi ask and depth (no orders).
+- **Live sniper shadow result (Oct 25, `kmm sniper`, Oct 22-25):** 75 markets flagged (72 settled), **0 wrong calls**,
+  but **0 buyable at <= 97c** when first flagged; reading age at flag median 19 min. The free feed is accurate but too
+  slow: by the time it shows a decided bucket, Kalshi already prices it at 98-99c. The trade-print backtest above was
+  too optimistic (prints at <= 97c were not available asks at flag time). Verdict: no snipe -- and no "flip" of the
+  :45-:59 window -- with the free NWS feed. The informed traders who pick off quotes at :45-:59 (see the Oct 25
+  minute-of-hour diagnosis: favourites +10.3c at :00-:44 vs -5.8c at :45-:59, 1,741 / 512 settled contracts) are
+  faster than this feed. Defence (QUIET_MINUTES=45-59, on from Oct 25/26) instead of offence, unless a faster feed
+  (< ~5 min) is found and costs less than it earns.
 - **Paper orders (Oct 22, Connor):** `automation/paper_condor.py` places the shadow's SPY + QQQ condors as real 4-leg
   limit orders in a second Alpaca paper account (secrets ALPACA_PAPER2_KEY/SECRET), 5% risk each from Oct 26 (1% on Oct 23), starting at mid
   and stepping 5c/min toward natural. Not a cost test (paper fills are optimistic) -- a mechanics test: order
