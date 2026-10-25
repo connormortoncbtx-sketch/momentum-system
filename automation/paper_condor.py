@@ -43,16 +43,27 @@ log = logging.getLogger("paper_condor")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)-7s %(message)s", datefmt="%H:%M:%S")
 ET = ZoneInfo("America/New_York")
 DATA = ROOT / "data"
-STATE, LEDGER, SHADOW = DATA / "paper_condor_state.json", DATA / "paper_condor_ledger.jsonl", DATA / "shadow_condor_state.json"
+# Variants (CONDOR_VARIANT env), each in its own paper account (Connor, Oct 25):
+#   p14  14:00 ET, shorts 1 implied move, SPY $5 / QQQ 0.8% wings, stop at 3x credit  (ALPACA_PAPER2_*)
+#   p15  15:00 ET, shorts 0.5 implied move, narrowest wings SPY $2 / QQQ 0.4%, hold to the close -- the dev-chosen
+#        variant of research/mix_options_v2.py and the realistic small-account form (ALPACA_PAPER3_*); stop not
+#        acted on, but the 15-minute and 1-minute marks are recorded so a stop can be evaluated later
+VARIANTS = {"p14": dict(key="ALPACA_PAPER2", entry=dt.time(14, 0), k=1.0, spy_w=5, qqq_f=0.008, stop=3.0, files="paper_condor"),
+            "p15": dict(key="ALPACA_PAPER3", entry=dt.time(15, 0), k=0.5, spy_w=2, qqq_f=0.004, stop=0.0, files="paper_condor_1500")}
+VARIANT = os.environ.get("CONDOR_VARIANT", "p14")
+V = VARIANTS[VARIANT]
+KEY_ENV, SECRET_ENV = V["key"] + "_KEY", V["key"] + "_SECRET"
+STATE, LEDGER, SHADOW = DATA / f"{V['files']}_state.json", DATA / f"{V['files']}_ledger.jsonl", DATA / "shadow_condor_state.json"
 BASE = "https://paper-api.alpaca.markets"
 RISK_FRAC, STEP, WAIT_S, MAX_STEPS = 0.10, 0.05, 60, 8   # paper: 10%/day (5% per ETF) to stress buying power & assignment (Connor, Oct 23)
-ENTRY_FROM, ENTRY_TO = dt.time(13, 58), dt.time(14, 30)  # the 14:00 ET entry (afternoon condor, from Oct 26)
-STOP_MULT, LAST_CHECK = 3.0, dt.time(15, 45)              # stop: cost to close >= 3x credit; last 15-minute mark checked
+_e = dt.datetime.combine(dt.date.today(), V["entry"])
+ENTRY_FROM, ENTRY_TO = (_e - dt.timedelta(minutes=2)).time(), (_e + dt.timedelta(minutes=30)).time()
+STOP_MULT, LAST_CHECK = V["stop"], dt.time(15, 45)        # stop: cost to close >= STOP_MULT x credit (0 = never); last mark
 
 
 def api(method, path, body=None, **q):
     url = BASE + path + ("?" + urllib.parse.urlencode(q) if q else "")
-    h = {"APCA-API-KEY-ID": os.environ["ALPACA_PAPER2_KEY"], "APCA-API-SECRET-KEY": os.environ["ALPACA_PAPER2_SECRET"],
+    h = {"APCA-API-KEY-ID": os.environ[KEY_ENV], "APCA-API-SECRET-KEY": os.environ[SECRET_ENV],
          "Content-Type": "application/json", "Accept": "application/json"}
     req = urllib.request.Request(url, method=method, headers=h, data=json.dumps(body).encode() if body is not None else None)
     try:
@@ -98,7 +109,7 @@ def reconcile(state, today):
                            for o in d["orders"])
                + (f"; option events {ev}" if ev else "") + (f"; ASSIGNED SHARES closed: {closed}" if closed else ""))
         log.info(msg)
-        (notify_alert if closed else notify_success)("Paper condor", msg)
+        (notify_alert if closed else notify_success)(f"Paper condor {VARIANT}", msg)
     return rows
 
 
@@ -122,7 +133,7 @@ def filled(o_rec, st, steps, price):
                  filled_credit=round(net, 4) if legs else abs(float(st.get("filled_avg_price") or 0)),
                  legs={l["symbol"]: [l.get("side"), l.get("filled_avg_price")] for l in legs}, filled_at=st.get("filled_at"))
     if legs and net <= 0:
-        notify_alert("Paper condor", f"{o_rec['und']} filled at a DEBIT ({net:.2f}) -- limit price sign is wrong; check the code")
+        notify_alert(f"Paper condor {VARIANT}", f"{o_rec['und']} filled at a DEBIT ({net:.2f}) -- limit price sign is wrong; check the code")
     return o_rec
 
 
@@ -132,7 +143,7 @@ def live_natural(legs):
     for feed in ("opra", "indicative"):
         try:
             url = f"https://data.alpaca.markets/v1beta1/options/quotes/latest?symbols={syms}&feed={feed}"
-            h = {"APCA-API-KEY-ID": os.environ["ALPACA_PAPER2_KEY"], "APCA-API-SECRET-KEY": os.environ["ALPACA_PAPER2_SECRET"]}
+            h = {"APCA-API-KEY-ID": os.environ[KEY_ENV], "APCA-API-SECRET-KEY": os.environ[SECRET_ENV]}
             with urllib.request.urlopen(urllib.request.Request(url, headers=h), timeout=20) as r:
                 q = json.loads(r.read()).get("quotes", {})
             b = lambda k: float(q[legs[k]]["bp"]); a = lambda k: float(q[legs[k]]["ap"])
@@ -186,8 +197,8 @@ def enter_one(e, eq, risk_frac):
 
 
 def main():
-    if not os.environ.get("ALPACA_PAPER2_KEY"):
-        print("::notice::paper condor: no ALPACA_PAPER2_KEY secret -- skipped"); return
+    if not os.environ.get(KEY_ENV):
+        print(f"::notice::paper condor {VARIANT}: no {KEY_ENV} secret -- skipped"); return
     now = dt.datetime.now(ET)
     state = json.loads(STATE.read_text()) if STATE.exists() else {"days": {}}
     rows = reconcile(state, now.date())
@@ -207,7 +218,8 @@ def main():
     if not tc.get_clock().is_open:
         log.info("market closed today -- no entry"); STATE.write_text(json.dumps(state, indent=1)); return
     key = now.date().isoformat()
-    day = state["days"].setdefault(key, {"orders": [], "equity_before": None, "version": "14:00 k1 stop3x"})
+    day = state["days"].setdefault(key, {"orders": [], "equity_before": None, "version": f"{VARIANT}: {V['entry']:%H:%M} k{V['k']:g} "
+                                                f"SPY ${V['spy_w']} / QQQ {V['qqq_f'] * 100:g}% {'stop ' + format(STOP_MULT, 'g') + 'x' if STOP_MULT else 'hold'}"})
     done = {o["und"] for o in day["orders"]}
     todo = [u for u in SC.UNDS if u not in done]
     if todo:
@@ -215,13 +227,13 @@ def main():
             day["equity_before"] = round(equity(), 2)
         for u in todo:
             try:
-                e = SC.enter_one(oc, sc, u, now.date(), dt.datetime.now(ET))       # live legs at 14:00
+                e = price_condor(oc, sc, SC, u, now.date(), dt.datetime.now(ET))     # live legs at the entry time
                 rec = enter_one(e, day["equity_before"], RISK_FRAC / len(SC.UNDS))
                 rec.update(legs_sym=e["legs"], spot=e["spot"], implied_move=e["implied_move"],
                            entered_at=dt.datetime.now(ET).isoformat(timespec="seconds"))
             except Exception as ex:
                 rec = {"und": u, "status": f"error: {str(ex)[:200]}", "mid": None, "natural": None}
-                notify_alert("Paper condor", f"{u} order error: {ex}")
+                notify_alert(f"Paper condor {VARIANT}", f"{u} order error: {ex}")
             day["orders"].append(rec)
             log.info(f"paper {u}: {rec}")
             STATE.write_text(json.dumps(state, indent=1))
@@ -229,6 +241,28 @@ def main():
         state["days"].pop(key, None)
     STATE.write_text(json.dumps(state, indent=1))
     monitor(state, day, oc, SC)
+
+
+def price_condor(oc, sc, SC, und, day, now):
+    """Strikes and credits from live quotes for this variant (k, wing widths); same method as shadow #9's enter_one."""
+    s0, sfeed = SC.spot_now(sc, und)
+    atm = round(s0)
+    W = V["spy_w"] if und == "SPY" else max(1, round(V["qqq_f"] * s0))
+    q1, _ = SC.quotes(oc, [SC.occ(und, day, "C", atm), SC.occ(und, day, "P", atm)])
+    mid = lambda q: (q["bid"] + q["ask"]) / 2
+    M = mid(q1[SC.occ(und, day, "C", atm)]) + mid(q1[SC.occ(und, day, "P", atm)])
+    ps, cs = round(s0 - V["k"] * M), round(s0 + V["k"] * M)
+    if cs <= ps:
+        ps, cs = atm - 1, atm + 1
+    legs = {"short_put": SC.occ(und, day, "P", ps), "long_put": SC.occ(und, day, "P", ps - W),
+            "short_call": SC.occ(und, day, "C", cs), "long_call": SC.occ(und, day, "C", cs + W)}
+    q, feed = SC.quotes(oc, list(legs.values()))
+    Q = {k_: q[v] for k_, v in legs.items()}
+    natural = Q["short_put"]["bid"] + Q["short_call"]["bid"] - Q["long_put"]["ask"] - Q["long_call"]["ask"]
+    midc = sum((1 if k_.startswith("short") else -1) * mid(Q[k_]) for k_ in Q)
+    log.info(f"{VARIANT} {und}: {s0:.2f}, move {M:.2f}, puts {ps}/{ps - W}, calls {cs}/{cs + W}, natural {natural:.2f} / mid {midc:.2f}")
+    return {"und": und, "spot": s0, "implied_move": round(M, 4), "width": W, "legs": legs,
+            "credit": {"natural": round(natural, 4), "mid": round(midc, 4)}}
 
 
 def leg_mid_cost(oc, SC, legs):
@@ -300,10 +334,10 @@ def monitor(state, day, oc, SC):
             if not on_mark:
                 continue
             r.setdefault("marks", []).append([f"{nxt:%H:%M}", cmid, cnat])
-            if c0 > 0 and cmid >= STOP_MULT * c0:
+            if STOP_MULT and c0 > 0 and cmid >= STOP_MULT * c0:
                 log.info(f"{r['und']} STOP: cost to close {cmid:.2f} >= {STOP_MULT:.0f}x credit {c0:.2f}")
                 ok = close_one(r, oc, SC)
-                notify_alert("Paper condor", f"{r['und']} stop at {nxt:%H:%M}: cost {cmid:.2f} vs credit {c0:.2f}; "
+                notify_alert(f"Paper condor {VARIANT}", f"{r['und']} stop at {nxt:%H:%M}: cost {cmid:.2f} vs credit {c0:.2f}; "
                              + (f"closed for {r.get('stop_debit')}" if ok else "NOT filled -- check the account"))
                 open_.remove(r)
         if on_mark:

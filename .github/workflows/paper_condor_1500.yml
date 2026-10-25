@@ -1,0 +1,56 @@
+name: Paper Condor 15:00 (k0.5, narrow wings, third paper account)
+
+# Third paper account (ALPACA_PAPER3_*), CONDOR_VARIANT=p15 (Connor, Oct 25, 2026): enter 15:00 ET, shorts 0.5 implied
+# move, SPY $2 / QQQ 0.4% wings, hold to the close (marks recorded, no stop). Fired by the dispatcher at 14:00 CT; the
+# crons are backups (the script only enters inside 14:58-15:30 ET and is idempotent). Paper money only.
+on:
+  schedule:
+    - cron: '8 19 * * 1-5'    # 15:08 EDT backup (EST: 14:08 -> reconcile only)
+    - cron: '8 20 * * 1-5'    # 15:08 EST backup
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: paper-condor-1500
+  cancel-in-progress: false
+
+jobs:
+  paper:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Paper condor 15:00 (enter 15:00 ET, record marks until 15:45)
+        env:
+          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+          ALPACA_PAPER3_KEY: ${{ secrets.ALPACA_PAPER3_KEY }}
+          ALPACA_PAPER3_SECRET: ${{ secrets.ALPACA_PAPER3_SECRET }}
+          CONDOR_VARIANT: p15
+          NTFY_CHANNEL: ${{ secrets.NTFY_CHANNEL }}
+        run: python automation/paper_condor.py
+      - name: Commit ledger
+        if: always()
+        run: |
+          git config user.name  "momentum-bot"
+          git config user.email "momentum-bot@users.noreply.github.com"
+          for f in data/paper_condor_1500_state.json data/paper_condor_1500_ledger.jsonl data/system_log.jsonl; do if [ -e "$f" ]; then git add "$f"; fi; done
+          git diff --cached --quiet && exit 0
+          git commit -q -m "paper condor 15:00: $(date +%Y-%m-%d) update"
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push; then break; fi
+            git rebase --abort 2>/dev/null || true
+            git pull origin main --no-rebase --strategy=recursive -X theirs --no-edit 2>/dev/null || true
+            [ $attempt -eq 5 ] && exit 1
+            sleep $((RANDOM % 5 + 2))
+          done
