@@ -66,15 +66,19 @@ def main():
         w = weekly(r, 0.02, idx)
         s_dev = w[dev].mean() / w[dev].std() * np.sqrt(52)
         s_hold = w[hold].mean() / w[hold].std() * np.sqrt(52)
-        cand.append(dict(zip(key, v), trades=len(r), dev_sharpe=s_dev, holdout_sharpe=s_hold,
+        mb = B["STACK_v2"].reindex(idx).fillna(0) + w                 # the objective: the book WITH the sleeve
+        mix_dev = mb[dev].mean() / mb[dev].std() * np.sqrt(52)
+        cand.append(dict(zip(key, v), trades=len(r), mix_dev_sharpe=mix_dev, dev_sharpe=s_dev, holdout_sharpe=s_hold,
                          dev_ror_pct=r[r.index < SPLIT].mean() * 100, holdout_ror_pct=r[r.index >= SPLIT].mean() * 100))
     C = pd.DataFrame(cand)
     for st_, g in C.groupby("struct"):
-        best = g.sort_values("dev_sharpe", ascending=False).iloc[0]
+        # pick by DEV Sharpe of STACK_v2 + this sleeve at 2%/day: with a fixed max-loss budget, a sleeve's own Sharpe
+        # favours far, wide, low-return spreads that add little to the book (first run picked k1.5 / widest wings)
+        best = g.sort_values("mix_dev_sharpe", ascending=False).iloc[0]
         pick[st_] = next(v for v in ser if v[0] == st_ and all(
             (abs(float(v[i]) - float(best[k])) < 1e-6) if k in ("k", "wing") else str(v[i]) == str(best[k]) for i, k in enumerate(key)))
-        print(f"\n{st_}: top 8 variants by DEV sleeve Sharpe (2%/day)\n"
-              + g.sort_values("dev_sharpe", ascending=False).head(8).round(2).to_string(index=False))
+        print(f"\n{st_}: top 8 variants by DEV Sharpe of STACK_v2 + sleeve (2%/day)\n"
+              + g.sort_values("mix_dev_sharpe", ascending=False).head(8).round(2).to_string(index=False))
     C.to_csv(f"{A.RD}/results/mix_options_v2_sleeves.csv", index=False)
     S = {st_: ser[v] for st_, v in pick.items()}
     print(f"weeks in window {len(idx)} (dev {dev.sum()}, holdout {hold.sum()}); weeks with a sleeve trade: "
