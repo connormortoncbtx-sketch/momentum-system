@@ -1,0 +1,58 @@
+name: Live Stack (REAL MONEY momentum v2, tiered)
+
+# Connor's live Alpaca account (ALPACA_LIVE_KEY / ALPACA_LIVE_SECRET). Places orders ONLY when the repo variable
+# LIVE_STACK_MODE is "live"; otherwise a dry run that sends the plan to the phone. The repo is public: the script never
+# prints dollar amounts or positions to this log -- those go to ntfy only. Weekdays fired by the exact-time dispatcher
+# at 09:15 CT (10:15 ET) with a backup cron; weekends crypto only (stock orders are skipped while the market is closed).
+on:
+  schedule:
+    - cron: '25 15 * * 1-5'   # 11:25 EDT / 10:25 EST backup (idempotent: a second run only trades remaining gaps)
+    - cron: '20 15 * * 0,6'   # weekends: crypto sleeve
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: live-stack
+  cancel-in-progress: false
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Live stack
+        env:
+          ALPACA_LIVE_KEY: ${{ secrets.ALPACA_LIVE_KEY }}
+          ALPACA_LIVE_SECRET: ${{ secrets.ALPACA_LIVE_SECRET }}
+          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+          NTFY_CHANNEL: ${{ secrets.NTFY_CHANNEL }}
+          LIVE_STACK_MODE: ${{ vars.LIVE_STACK_MODE }}
+          CONDOR_LIVE: ${{ vars.CONDOR_LIVE }}
+          LEV_CAP: ${{ vars.LEV_CAP || '2.0' }}
+        run: python automation/live_stack.py
+      - name: Commit tier state (no dollar amounts)
+        run: |
+          git config user.name  "momentum-bot"
+          git config user.email "momentum-bot@users.noreply.github.com"
+          [ -e data/live_stack_state.json ] && git add data/live_stack_state.json
+          git diff --cached --quiet && exit 0
+          git commit -q -m "live stack: $(date +%Y-%m-%d) tier state"
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push; then break; fi
+            git rebase --abort 2>/dev/null || true
+            git pull origin main --no-rebase --strategy=recursive -X theirs --no-edit 2>/dev/null || true
+            [ $attempt -eq 5 ] && exit 1
+            sleep $((RANDOM % 5 + 2))
+          done

@@ -22,6 +22,7 @@ export const SCHEDULE = [
   [["Mon", "Tue"], "06:00", "premarket_monitor.yml"],
   [["Mon", "Tue", "Wed", "Thu", "Fri"], "08:30", "alpaca_monitor.yml"],
   [["Mon", "Tue", "Wed", "Thu", "Fri"], "09:00", "shadow_condor.yml"],
+  [["Mon", "Tue", "Wed", "Thu", "Fri"], "09:15", "live_stack.yml"],
   [["Mon", "Tue", "Wed", "Thu", "Fri"], "11:15", "alpaca_monitor.yml"],
   [["Mon", "Tue", "Wed", "Thu", "Fri"], "13:00", "paper_condor.yml"],
   [["Mon", "Tue", "Wed", "Thu", "Fri"], "14:00", "alpaca_monitor.yml"],
