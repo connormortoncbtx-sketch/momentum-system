@@ -85,6 +85,11 @@ def main():
           + ", ".join(f"{k} {(weekly(r, 0.02, idx) != 0).sum()}" for k, r in S.items()))
     W = {st_: {f: weekly(r, f, idx) for f in FS} for st_, r in S.items()}
 
+    rv = next((v for v in ser if v[0] == "condor" and v[1] == "14:00" and abs(float(v[2]) - 1.0) < 1e-6
+               and int(v[3]) == 1 and v[4] == "sl2x"), None)
+    ROB = ser[rv] if rv is not None else None
+    if ROB is not None:
+        W["condor_14k1"] = {f: weekly(ROB, f, idx) for f in (0.0, 0.02, 0.04)}
     res, corr = [], []
     for name in ("STACK_v2", "SLOW_h", "LIVE50"):
         m = B[name].reindex(idx)
@@ -119,7 +124,10 @@ def main():
                 if best is None or sh > best[0]:
                     best = (sh, fs)
             mixes[f"dev split of {T_ * 100:.0f}%: " + " ".join(f"{s_}{f * 100:.0f}" for s_, f in zip(S, best[1]))] = dict(zip(S, best[1]))
-        W = {st_: {**W[st_], **Wf[st_]} for st_ in S}
+        W.update({st_: {**W[st_], **Wf[st_]} for st_ in S})
+        if ROB is not None:                     # the robust centre of the grid (held in every era), not the dev optimum
+            for f in (0.02, 0.04):
+                mixes[f"+condor 14:00 k1 w1 sl2x {f * 100:.0f}%"] = {"condor_14k1": f}
         for lab, fs in mixes.items():
             tot = mo + sum(W[st_][f] for st_, f in fs.items())
             for era, msk in (("dev 2018-23", ok & dev), ("HOLDOUT 2024-26", ok & hold), ("all", ok)):
