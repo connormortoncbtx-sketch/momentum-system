@@ -329,6 +329,30 @@ def gaps():
     D.astype({"ror": "float32"}).to_csv(f"{OUT}/options_candidates_daily.csv", index=False)   # strategy returns only
 
 
+def series():
+    """Daily return-on-risk series for a broad option-sleeve set (all three structures), real quotes where they exist and
+    the calibrated trade-bar proxy on the gap days, 2018 - Oct 2026 -> results/options_series_daily.parquet (strategy
+    returns only; no quotes). Feeds research/mix_options_v2.py (options sleeve x momentum v2 book)."""
+    keep = dict(entry=("10:00", "12:00", "13:00", "14:00", "15:00"), k=(0.5, 0.75, 1.0, 1.5), exit=("hold", "sl2x"))
+    out = []
+    for und in ("SPY", "QQQ"):
+        qq = pd.read_parquet(f"{RAW}/{und.lower()}_q5.parquet")
+        qq = qq[pd.to_datetime(qq.d) >= "2018-01-01"]
+        qd = set(pd.to_datetime(qq.d).dt.date)
+        oh = pd.read_parquet(f"{RAW}/{und.lower()}_ohlc.parquet")
+        oh = oh[~pd.to_datetime(oh.d).dt.date.isin(qd)]
+        for src, q in (("quotes", qq), ("trades", oh)):
+            T = backtest(und, q)
+            T = T.astype({c: str for c in ("entry", "struct", "fill", "exit")})
+            T = T[(T.fill == "natural") & T.entry.isin(keep["entry"]) & T.k.round(2).isin(keep["k"]) & T.exit.isin(keep["exit"])]
+            out.append(T.drop(columns=["fill"]).assign(src=src))
+            note(f"{und} series {src}: {len(T):,} rows over {T.d.nunique()} days")
+    D = pd.concat(out, ignore_index=True)
+    D = D.astype({"entry": "category", "struct": "category", "exit": "category", "src": "category", "und": "category",
+                  "ror": "float32", "k": "float32", "wing": "int8"})
+    D.to_parquet(f"{OUT}/options_series_daily.parquet", index=False)
+
+
 def coverage():
     """Which expiry days have no quotes, and are they different days (bias check: big-move days missing?)."""
     for und in ("SPY", "QQQ"):
@@ -384,6 +408,8 @@ def main():
         coverage(); return
     if os.environ.get("MODE") == "gaps":
         gaps(); return
+    if os.environ.get("MODE") == "series":
+        series(); return
     Ts = []
     for und in ("SPY", "QQQ"):
         q = pull(und)
