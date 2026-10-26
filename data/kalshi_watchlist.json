@@ -5,8 +5,35 @@
   "frequency": "monthly",
   "fee_type": "",
   "first_seen": "2026-09-30",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 7,
+    "vol24h": 5610.1,
+    "med_spread_c": 9.0,
+    "settled": 48,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 44.0,
+     "fills": 11.0
+    },
+    "6h+": {
+     "markets": 44.0,
+     "fills": 40.0,
+     "fills_per_mkt": 0.909,
+     "edge_c": 1.63,
+     "per_market_c": 4.116,
+     "t": NaN,
+     "recent_c": 1.63
+    }
+   },
+   "passes": false
+  }
  },
  "KX2YRDIRLM": {
   "title": "2Y how low monthly",
@@ -14,8 +41,30 @@
   "frequency": "monthly",
   "fee_type": "",
   "first_seen": "2026-10-01",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 13,
+    "vol24h": 400.85,
+    "med_spread_c": 32.5,
+    "settled": 27,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 27.0,
+     "fills": 0.0
+    },
+    "6h+": {
+     "markets": 27.0,
+     "fills": 10.0
+    }
+   },
+   "passes": false
+  }
  },
  "KX30YMORTW": {
   "title": "30-year mortgage rate this week",
@@ -23,8 +72,40 @@
   "frequency": "weekly",
   "fee_type": "",
   "first_seen": "2026-08-27",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 20,
+    "vol24h": 17558.23,
+    "med_spread_c": 1.0,
+    "settled": 170,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 45.0,
+     "fills": 23.0,
+     "fills_per_mkt": 0.511,
+     "edge_c": 9.06,
+     "per_market_c": 9.732,
+     "t": 0.912,
+     "recent_c": 9.06
+    },
+    "6h+": {
+     "markets": 45.0,
+     "fills": 33.0,
+     "fills_per_mkt": 0.733,
+     "edge_c": -0.279,
+     "per_market_c": 5.622,
+     "t": 0.486,
+     "recent_c": -0.279
+    }
+   },
+   "passes": false
+  }
  },
  "KX30YRDIRLM": {
   "title": "30Y how low monthly",
@@ -32,8 +113,35 @@
   "frequency": "monthly",
   "fee_type": "",
   "first_seen": "2026-09-30",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 5,
+    "vol24h": 763.66,
+    "med_spread_c": 10.0,
+    "settled": 55,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 49.0,
+     "fills": 5.0
+    },
+    "6h+": {
+     "markets": 49.0,
+     "fills": 25.0,
+     "fills_per_mkt": 0.51,
+     "edge_c": 0.632,
+     "per_market_c": -0.336,
+     "t": NaN,
+     "recent_c": 0.632
+    }
+   },
+   "passes": false
+  }
  },
  "KX5YRDIRLM": {
   "title": "5Y how low monthly",
@@ -41,8 +149,30 @@
   "frequency": "monthly",
   "fee_type": "",
   "first_seen": "2026-10-01",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 22,
+    "vol24h": 0.0,
+    "med_spread_c": 35.0,
+    "settled": 28,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 26.0,
+     "fills": 6.0
+    },
+    "6h+": {
+     "markets": 26.0,
+     "fills": 8.0
+    }
+   },
+   "passes": false
+  }
  },
  "KX7YRDIRLM": {
   "title": "7Y how low monthly",
@@ -50,8 +180,30 @@
   "frequency": "monthly",
   "fee_type": "",
   "first_seen": "2026-10-01",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 11,
+    "vol24h": 0.0,
+    "med_spread_c": 28.0,
+    "settled": 29,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 29.0,
+     "fills": 3.0
+    },
+    "6h+": {
+     "markets": 29.0,
+     "fills": 5.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDAK": {
   "title": "Alaska gas price",
@@ -59,8 +211,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-10-01",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 11.0,
+    "med_spread_c": 50.0,
+    "settled": 462,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 38.0,
+     "fills": 2.0
+    },
+    "6h+": {
+     "markets": 38.0,
+     "fills": 2.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDAL": {
   "title": "Alabama gas price",
@@ -68,8 +242,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-10-08",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 15652.03,
+    "med_spread_c": 3.5,
+    "settled": 333,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 49.0,
+     "fills": 1.0
+    },
+    "6h+": {
+     "markets": 49.0,
+     "fills": 1.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDAR": {
   "title": "Arkansas gas price",
@@ -77,8 +273,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-10-09",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 12367.1,
+    "med_spread_c": 4.0,
+    "settled": 326,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 52.0,
+     "fills": 5.0
+    },
+    "6h+": {
+     "markets": 52.0,
+     "fills": 5.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDAZ": {
   "title": "Arizona gas price",
@@ -86,8 +304,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-09-10",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 10135.01,
+    "med_spread_c": 5.0,
+    "settled": 819,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 53.0,
+     "fills": 0.0
+    },
+    "6h+": {
+     "markets": 53.0,
+     "fills": 0.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDCA": {
   "title": "California gas price",
@@ -95,8 +335,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-08-26",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 11469.88,
+    "med_spread_c": 2.0,
+    "settled": 1124,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 60.0,
+     "fills": 6.0
+    },
+    "6h+": {
+     "markets": 60.0,
+     "fills": 6.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDCO": {
   "title": "Colorado gas price",
@@ -104,8 +366,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-09-17",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 4172.63,
+    "med_spread_c": 51.0,
+    "settled": 830,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 50.0,
+     "fills": 6.0
+    },
+    "6h+": {
+     "markets": 50.0,
+     "fills": 6.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDCT": {
   "title": "Connecticut gas price",
@@ -113,8 +397,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-09-24",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 26131.15,
+    "med_spread_c": 2.0,
+    "settled": 561,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 45.0,
+     "fills": 0.0
+    },
+    "6h+": {
+     "markets": 45.0,
+     "fills": 0.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDDE": {
   "title": "Delaware gas price",
@@ -122,8 +428,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-10-09",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 18288.010000000002,
+    "med_spread_c": 10.0,
+    "settled": 356,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 48.0,
+     "fills": 2.0
+    },
+    "6h+": {
+     "markets": 48.0,
+     "fills": 2.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDFL": {
   "title": "Florida gas price",
@@ -131,8 +459,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-08-26",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 13047.15,
+    "med_spread_c": 11.0,
+    "settled": 1431,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 58.0,
+     "fills": 15.0
+    },
+    "6h+": {
+     "markets": 58.0,
+     "fills": 15.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDGA": {
   "title": "Georgia gas price",
@@ -140,8 +490,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-09-02",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 9296.0,
+    "med_spread_c": 2.0,
+    "settled": 1057,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 53.0,
+     "fills": 5.0
+    },
+    "6h+": {
+     "markets": 53.0,
+     "fills": 5.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDHI": {
   "title": "Hawaii gas price",
@@ -149,8 +521,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-10-09",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 6469.0,
+    "med_spread_c": 35.0,
+    "settled": 316,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 45.0,
+     "fills": 0.0
+    },
+    "6h+": {
+     "markets": 45.0,
+     "fills": 0.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDIA": {
   "title": "Iowa gas price",
@@ -158,8 +552,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-10-08",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 15739.48,
+    "med_spread_c": 4.0,
+    "settled": 363,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 39.0,
+     "fills": 0.0
+    },
+    "6h+": {
+     "markets": 39.0,
+     "fills": 0.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDID": {
   "title": "Idaho gas price",
@@ -167,8 +583,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-10-09",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 4558.01,
+    "med_spread_c": 2.0,
+    "settled": 316,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 50.0,
+     "fills": 0.0
+    },
+    "6h+": {
+     "markets": 50.0,
+     "fills": 0.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDIL": {
   "title": "Illinois gas price",
@@ -176,8 +614,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-08-26",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 16514.21,
+    "med_spread_c": 7.5,
+    "settled": 1224,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 54.0,
+     "fills": 5.0
+    },
+    "6h+": {
+     "markets": 54.0,
+     "fills": 5.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDIN": {
   "title": "Indiana gas price",
@@ -185,8 +645,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-09-24",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 45220.7,
+    "med_spread_c": 11.0,
+    "settled": 681,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 44.0,
+     "fills": 1.0
+    },
+    "6h+": {
+     "markets": 44.0,
+     "fills": 1.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDKS": {
   "title": "Kansas gas price",
@@ -194,8 +676,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-10-01",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 1809.0,
+    "med_spread_c": 1.0,
+    "settled": 482,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 42.0,
+     "fills": 0.0
+    },
+    "6h+": {
+     "markets": 42.0,
+     "fills": 0.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDKY": {
   "title": "Kentucky gas price",
@@ -203,8 +707,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-10-09",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 7122.33,
+    "med_spread_c": 4.0,
+    "settled": 326,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 43.0,
+     "fills": 0.0
+    },
+    "6h+": {
+     "markets": 43.0,
+     "fills": 0.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDLA": {
   "title": "Louisiana gas price",
@@ -212,8 +738,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-10-09",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 20463.25,
+    "med_spread_c": 5.0,
+    "settled": 316,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 51.0,
+     "fills": 0.0
+    },
+    "6h+": {
+     "markets": 51.0,
+     "fills": 0.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDMA": {
   "title": "Massachusetts gas price",
@@ -221,8 +769,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-09-10",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 14006.6,
+    "med_spread_c": 1.0,
+    "settled": 819,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 51.0,
+     "fills": 0.0
+    },
+    "6h+": {
+     "markets": 51.0,
+     "fills": 0.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDMD": {
   "title": "Maryland gas price",
@@ -230,8 +800,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-09-17",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 41775.35,
+    "med_spread_c": 11.0,
+    "settled": 750,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 56.0,
+     "fills": 1.0
+    },
+    "6h+": {
+     "markets": 56.0,
+     "fills": 1.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDME": {
   "title": "Maine gas price",
@@ -239,8 +831,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-10-01",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 12711.07,
+    "med_spread_c": 1.0,
+    "settled": 442,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 46.0,
+     "fills": 2.0
+    },
+    "6h+": {
+     "markets": 46.0,
+     "fills": 2.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDMI": {
   "title": "Michigan gas price",
@@ -248,8 +862,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-09-10",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 27,
+    "vol24h": 29718.36,
+    "med_spread_c": 1.0,
+    "settled": 1099,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 53.0,
+     "fills": 1.0
+    },
+    "6h+": {
+     "markets": 53.0,
+     "fills": 1.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDMN": {
   "title": "Minnesota gas price",
@@ -257,8 +893,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-09-17",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 10323.0,
+    "med_spread_c": 1.0,
+    "settled": 720,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 55.0,
+     "fills": 6.0
+    },
+    "6h+": {
+     "markets": 55.0,
+     "fills": 6.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDMO": {
   "title": "Missouri gas price",
@@ -266,8 +924,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-09-24",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 5638.01,
+    "med_spread_c": 1.0,
+    "settled": 581,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 46.0,
+     "fills": 5.0
+    },
+    "6h+": {
+     "markets": 46.0,
+     "fills": 5.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDMS": {
   "title": "Mississippi gas price",
@@ -275,8 +955,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-10-09",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 16178.94,
+    "med_spread_c": 5.0,
+    "settled": 306,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 45.0,
+     "fills": 0.0
+    },
+    "6h+": {
+     "markets": 45.0,
+     "fills": 0.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDMT": {
   "title": "Montana gas price",
@@ -284,8 +986,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-10-08",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 8566.54,
+    "med_spread_c": 1.5,
+    "settled": 323,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 50.0,
+     "fills": 0.0
+    },
+    "6h+": {
+     "markets": 50.0,
+     "fills": 0.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDNC": {
   "title": "North Carolina gas price",
@@ -293,8 +1017,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-09-02",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 26847.899999999998,
+    "med_spread_c": 2.0,
+    "settled": 1095,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 56.0,
+     "fills": 3.0
+    },
+    "6h+": {
+     "markets": 56.0,
+     "fills": 3.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDND": {
   "title": "North Dakota gas price",
@@ -302,8 +1048,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-10-09",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 7715.09,
+    "med_spread_c": 3.5,
+    "settled": 289,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 44.0,
+     "fills": 2.0
+    },
+    "6h+": {
+     "markets": 44.0,
+     "fills": 2.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDNE": {
   "title": "Nebraska gas price",
@@ -311,8 +1079,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-10-09",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 4613.820000000001,
+    "med_spread_c": 10.0,
+    "settled": 309,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 45.0,
+     "fills": 1.0
+    },
+    "6h+": {
+     "markets": 45.0,
+     "fills": 1.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDNH": {
   "title": "New Hampshire gas price",
@@ -320,8 +1110,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-10-08",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 16371.16,
+    "med_spread_c": 4.0,
+    "settled": 323,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 45.0,
+     "fills": 0.0
+    },
+    "6h+": {
+     "markets": 45.0,
+     "fills": 0.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDNJ": {
   "title": "New Jersey gas prices",
@@ -329,8 +1141,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-08-26",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 15824.619999999999,
+    "med_spread_c": 1.0,
+    "settled": 1101,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 58.0,
+     "fills": 9.0
+    },
+    "6h+": {
+     "markets": 58.0,
+     "fills": 9.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDNM": {
   "title": "New Mexico gas price",
@@ -338,8 +1172,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-10-01",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 5894.01,
+    "med_spread_c": 2.0,
+    "settled": 492,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 46.0,
+     "fills": 8.0
+    },
+    "6h+": {
+     "markets": 46.0,
+     "fills": 8.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDNV": {
   "title": "Nevada gas price",
@@ -347,8 +1203,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-09-24",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 13938.01,
+    "med_spread_c": 1.0,
+    "settled": 581,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 41.0,
+     "fills": 3.0
+    },
+    "6h+": {
+     "markets": 41.0,
+     "fills": 3.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDNY": {
   "title": "New York gas price",
@@ -356,8 +1234,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-08-26",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 21710.010000000002,
+    "med_spread_c": 1.5,
+    "settled": 1054,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 58.0,
+     "fills": 4.0
+    },
+    "6h+": {
+     "markets": 58.0,
+     "fills": 4.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDOH": {
   "title": "Ohio gas price",
@@ -365,8 +1265,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-09-02",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 11259.94,
+    "med_spread_c": 4.0,
+    "settled": 1445,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 59.0,
+     "fills": 6.0
+    },
+    "6h+": {
+     "markets": 59.0,
+     "fills": 6.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDOK": {
   "title": "Oklahoma gas price",
@@ -374,8 +1296,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-10-09",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 17685.12,
+    "med_spread_c": 54.0,
+    "settled": 289,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 47.0,
+     "fills": 0.0
+    },
+    "6h+": {
+     "markets": 47.0,
+     "fills": 0.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDOR": {
   "title": "Oregon gas price",
@@ -383,8 +1327,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-09-17",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 7626.2,
+    "med_spread_c": 12.5,
+    "settled": 680,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 48.0,
+     "fills": 1.0
+    },
+    "6h+": {
+     "markets": 48.0,
+     "fills": 1.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDPA": {
   "title": "Pennsylvania gas price",
@@ -392,8 +1358,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-09-02",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 15203.34,
+    "med_spread_c": 2.0,
+    "settled": 995,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 59.0,
+     "fills": 0.0
+    },
+    "6h+": {
+     "markets": 59.0,
+     "fills": 0.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDSC": {
   "title": "South Carolina gas price",
@@ -401,8 +1389,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-09-17",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 9723.869999999999,
+    "med_spread_c": 6.0,
+    "settled": 740,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 55.0,
+     "fills": 6.0
+    },
+    "6h+": {
+     "markets": 55.0,
+     "fills": 6.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDSD": {
   "title": "South Dakota gas price",
@@ -410,8 +1420,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-10-09",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 1771.8200000000002,
+    "med_spread_c": 7.0,
+    "settled": 299,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 50.0,
+     "fills": 0.0
+    },
+    "6h+": {
+     "markets": 50.0,
+     "fills": 0.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDTN": {
   "title": "Tennessee gas price",
@@ -419,8 +1451,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-09-10",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 16953.559999999998,
+    "med_spread_c": 4.5,
+    "settled": 849,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 53.0,
+     "fills": 1.0
+    },
+    "6h+": {
+     "markets": 53.0,
+     "fills": 1.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDTX": {
   "title": "TX gas price",
@@ -428,8 +1482,40 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-08-24",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 4486.0,
+    "med_spread_c": 9.5,
+    "settled": 1178,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 56.0,
+     "fills": 26.0,
+     "fills_per_mkt": 0.464,
+     "edge_c": -11.308,
+     "per_market_c": -0.468,
+     "t": -0.038,
+     "recent_c": -11.308
+    },
+    "6h+": {
+     "markets": 56.0,
+     "fills": 26.0,
+     "fills_per_mkt": 0.464,
+     "edge_c": -11.308,
+     "per_market_c": -0.468,
+     "t": -0.038,
+     "recent_c": -11.308
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDUT": {
   "title": "Utah gas price",
@@ -437,8 +1523,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-10-01",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 2756.96,
+    "med_spread_c": 9.0,
+    "settled": 452,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 29.0,
+     "fills": 3.0
+    },
+    "6h+": {
+     "markets": 29.0,
+     "fills": 3.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDVA": {
   "title": "Virginia gas price",
@@ -446,8 +1554,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-09-10",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 23918.8,
+    "med_spread_c": 5.0,
+    "settled": 819,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 56.0,
+     "fills": 4.0
+    },
+    "6h+": {
+     "markets": 56.0,
+     "fills": 4.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDVT": {
   "title": "Vermont gas price",
@@ -455,8 +1585,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-10-09",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 16975.17,
+    "med_spread_c": 2.0,
+    "settled": 289,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 46.0,
+     "fills": 1.0
+    },
+    "6h+": {
+     "markets": 46.0,
+     "fills": 1.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDWA": {
   "title": "Washington gas price",
@@ -464,8 +1616,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-09-02",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 17935.68,
+    "med_spread_c": 1.0,
+    "settled": 939,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 58.0,
+     "fills": 1.0
+    },
+    "6h+": {
+     "markets": 58.0,
+     "fills": 1.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDWI": {
   "title": "Wisconsin gas price",
@@ -473,8 +1647,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-09-24",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 27,
+    "vol24h": 31237.01,
+    "med_spread_c": 5.0,
+    "settled": 681,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 47.0,
+     "fills": 1.0
+    },
+    "6h+": {
+     "markets": 47.0,
+     "fills": 1.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDWV": {
   "title": "West Virginia gas price",
@@ -482,8 +1678,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-10-09",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 17835.12,
+    "med_spread_c": 10.5,
+    "settled": 289,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 49.0,
+     "fills": 1.0
+    },
+    "6h+": {
+     "markets": 49.0,
+     "fills": 1.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASDWY": {
   "title": "Wyoming gas price",
@@ -491,8 +1709,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-10-08",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 17,
+    "vol24h": 4589.33,
+    "med_spread_c": 9.0,
+    "settled": 333,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 45.0,
+     "fills": 0.0
+    },
+    "6h+": {
+     "markets": 45.0,
+     "fills": 0.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAAAGASMINM": {
   "title": "US lowest gas price monthly",
@@ -500,7 +1740,15 @@
   "frequency": "monthly",
   "fee_type": "",
   "first_seen": "2026-09-30",
-  "checks": [],
+  "checks": [
+   {
+    "open_markets": 11,
+    "vol24h": 4061.85,
+    "med_spread_c": 1.0,
+    "settled": 12,
+    "date": "2026-10-26"
+   }
+  ],
   "seeded": "launched since mid-Aug 2026 (cross-market scan)"
  },
  "KXANTHVREQ": {
@@ -509,8 +1757,30 @@
   "frequency": "custom",
   "fee_type": "",
   "first_seen": "2026-09-23",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 29,
+    "vol24h": 9969.230000000001,
+    "med_spread_c": 71.5,
+    "settled": 148,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 51.0,
+     "fills": 11.0
+    },
+    "6h+": {
+     "markets": 51.0,
+     "fills": 11.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXANTHVSPEND": {
   "title": "Anthropic Vercel spend share",
@@ -518,8 +1788,30 @@
   "frequency": "custom",
   "fee_type": "",
   "first_seen": "2026-09-23",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 27,
+    "vol24h": 16298.179999999998,
+    "med_spread_c": 53.0,
+    "settled": 149,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 50.0,
+     "fills": 13.0
+    },
+    "6h+": {
+     "markets": 50.0,
+     "fills": 14.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAUDUSDAD": {
   "title": "AUDUSD Daily",
@@ -527,8 +1819,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-08-26",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 20,
+    "vol24h": 0.0,
+    "med_spread_c": 1.0,
+    "settled": 640,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 10.0,
+     "fills": 0.0
+    },
+    "6h+": {
+     "markets": 10.0,
+     "fills": 0.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAVGTKAUS": {
   "title": "Average Weekly Temp in Austin ",
@@ -536,8 +1850,35 @@
   "frequency": "weekly",
   "fee_type": "",
   "first_seen": "2026-08-24",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 0,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "settled": 40,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 26.0,
+     "fills": 8.0
+    },
+    "6h+": {
+     "markets": 26.0,
+     "fills": 30.0,
+     "fills_per_mkt": 1.154,
+     "edge_c": 0.924,
+     "per_market_c": 4.906,
+     "t": 1.85,
+     "recent_c": 0.924
+    }
+   },
+   "passes": false
+  }
  },
  "KXAVGTKDFW": {
   "title": "Average Weekly Temp in Dallas ",
@@ -545,8 +1886,30 @@
   "frequency": "weekly",
   "fee_type": "",
   "first_seen": "2026-08-24",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 0,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "settled": 40,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 25.0,
+     "fills": 2.0
+    },
+    "6h+": {
+     "markets": 25.0,
+     "fills": 10.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAVGTKIAH": {
   "title": "Average Weekly Temp in Houston (Bush) ",
@@ -554,8 +1917,35 @@
   "frequency": "weekly",
   "fee_type": "",
   "first_seen": "2026-08-24",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 0,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "settled": 40,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 22.0,
+     "fills": 7.0
+    },
+    "6h+": {
+     "markets": 22.0,
+     "fills": 21.0,
+     "fills_per_mkt": 0.955,
+     "edge_c": 21.594,
+     "per_market_c": 18.137,
+     "t": NaN,
+     "recent_c": 21.594
+    }
+   },
+   "passes": false
+  }
  },
  "KXAVGTKLAS": {
   "title": "Average Weekly Temp in Las Vegas ",
@@ -563,8 +1953,30 @@
   "frequency": "weekly",
   "fee_type": "",
   "first_seen": "2026-08-24",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 0,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "settled": 40,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 31.0,
+     "fills": 2.0
+    },
+    "6h+": {
+     "markets": 31.0,
+     "fills": 4.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAVGTKPHX": {
   "title": "Average Weekly Temp in Phoenix ",
@@ -572,8 +1984,30 @@
   "frequency": "weekly",
   "fee_type": "",
   "first_seen": "2026-08-24",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 0,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "settled": 40,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 37.0,
+     "fills": 5.0
+    },
+    "6h+": {
+     "markets": 37.0,
+     "fills": 8.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAVGTKSAN": {
   "title": "Average Weekly Temp in San Diego ",
@@ -581,8 +2015,30 @@
   "frequency": "weekly",
   "fee_type": "",
   "first_seen": "2026-08-24",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 0,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "settled": 45,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 36.0,
+     "fills": 0.0
+    },
+    "6h+": {
+     "markets": 36.0,
+     "fills": 9.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXAVGTKSAT": {
   "title": "Average Weekly Temp in San Antonio ",
@@ -590,8 +2046,30 @@
   "frequency": "weekly",
   "fee_type": "",
   "first_seen": "2026-08-24",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 0,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "settled": 40,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 25.0,
+     "fills": 3.0
+    },
+    "6h+": {
+     "markets": 25.0,
+     "fills": 8.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXBIGGESTQUAKE": {
   "title": "Biggest earthquake",
@@ -599,8 +2077,40 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-09-02",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 18,
+    "vol24h": 7806.16,
+    "med_spread_c": 9.5,
+    "settled": 505,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 58.0,
+     "fills": 33.0,
+     "fills_per_mkt": 0.569,
+     "edge_c": 3.035,
+     "per_market_c": 2.013,
+     "t": 0.155,
+     "recent_c": 3.035
+    },
+    "6h+": {
+     "markets": 58.0,
+     "fills": 33.0,
+     "fills_per_mkt": 0.569,
+     "edge_c": 3.035,
+     "per_market_c": 2.013,
+     "t": 0.155,
+     "recent_c": 3.035
+    }
+   },
+   "passes": false
+  }
  },
  "KXCBDPOLAND": {
   "title": "Poland interest rate decision",
@@ -608,7 +2118,15 @@
   "frequency": "custom",
   "fee_type": "",
   "first_seen": "2026-09-09",
-  "checks": [],
+  "checks": [
+   {
+    "open_markets": 5,
+    "vol24h": 0.0,
+    "med_spread_c": 5.5,
+    "settled": 12,
+    "date": "2026-10-26"
+   }
+  ],
   "seeded": "launched since mid-Aug 2026 (cross-market scan)"
  },
  "KXDEEPVREQ": {
@@ -617,8 +2135,30 @@
   "frequency": "custom",
   "fee_type": "",
   "first_seen": "2026-09-23",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 27,
+    "vol24h": 5302.97,
+    "med_spread_c": 59.5,
+    "settled": 150,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 58.0,
+     "fills": 9.0
+    },
+    "6h+": {
+     "markets": 58.0,
+     "fills": 9.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXEIACRUDEW": {
   "title": "U.S. crude oil inventories",
@@ -626,8 +2166,30 @@
   "frequency": "weekly",
   "fee_type": "",
   "first_seen": "2026-09-02",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 13,
+    "vol24h": 23.0,
+    "med_spread_c": 4.0,
+    "settled": 104,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 30.0,
+     "fills": 15.0
+    },
+    "6h+": {
+     "markets": 30.0,
+     "fills": 15.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXGBPUSDAD": {
   "title": "GBPUSD Daily",
@@ -635,8 +2197,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-08-26",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 20,
+    "vol24h": 0.0,
+    "med_spread_c": 11.0,
+    "settled": 650,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 14.0,
+     "fills": 0.0
+    },
+    "6h+": {
+     "markets": 14.0,
+     "fills": 0.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXGOOGVREQ": {
   "title": "Google Vercel requests share",
@@ -644,8 +2228,30 @@
   "frequency": "custom",
   "fee_type": "",
   "first_seen": "2026-09-23",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 27,
+    "vol24h": 5543.530000000001,
+    "med_spread_c": 62.5,
+    "settled": 151,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 59.0,
+     "fills": 3.0
+    },
+    "6h+": {
+     "markets": 59.0,
+     "fills": 3.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXHIGHTEWR": {
   "title": "Newark, NJ (EWR) Daily Max Temp",
@@ -653,8 +2259,40 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-08-27",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 12,
+    "vol24h": 1994.02,
+    "med_spread_c": 7.0,
+    "settled": 366,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 53.0,
+     "fills": 41.0,
+     "fills_per_mkt": 0.774,
+     "edge_c": 1.495,
+     "per_market_c": -1.104,
+     "t": -0.156,
+     "recent_c": 1.495
+    },
+    "6h+": {
+     "markets": 53.0,
+     "fills": 41.0,
+     "fills_per_mkt": 0.774,
+     "edge_c": 1.495,
+     "per_market_c": -1.104,
+     "t": -0.156,
+     "recent_c": 1.495
+    }
+   },
+   "passes": false
+  }
  },
  "KXHIGHTSAN": {
   "title": "High Temperature San Diego",
@@ -662,8 +2300,40 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-08-20",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 12,
+    "vol24h": 2050.46,
+    "med_spread_c": 8.0,
+    "settled": 408,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 59.0,
+     "fills": 87.0,
+     "fills_per_mkt": 1.475,
+     "edge_c": 1.679,
+     "per_market_c": 3.465,
+     "t": 0.801,
+     "recent_c": 1.679
+    },
+    "6h+": {
+     "markets": 59.0,
+     "fills": 87.0,
+     "fills_per_mkt": 1.475,
+     "edge_c": 1.679,
+     "per_market_c": 3.465,
+     "t": 0.801,
+     "recent_c": 1.679
+    }
+   },
+   "passes": false
+  }
  },
  "KXHIGHTSDF": {
   "title": "HIGHEST Temperature SATX",
@@ -671,8 +2341,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-08-29",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 12,
+    "vol24h": 3651.1800000000003,
+    "med_spread_c": 2.0,
+    "settled": 354,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 43.0,
+     "fills": 15.0
+    },
+    "6h+": {
+     "markets": 43.0,
+     "fills": 15.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXHIGHTTTN": {
   "title": "Trenton, NJ Daily Max Temp",
@@ -680,8 +2372,40 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-08-27",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 12,
+    "vol24h": 1731.26,
+    "med_spread_c": 3.0,
+    "settled": 366,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 54.0,
+     "fills": 24.0,
+     "fills_per_mkt": 0.444,
+     "edge_c": 6.358,
+     "per_market_c": 8.45,
+     "t": 1.201,
+     "recent_c": 6.358
+    },
+    "6h+": {
+     "markets": 54.0,
+     "fills": 24.0,
+     "fills_per_mkt": 0.444,
+     "edge_c": 6.358,
+     "per_market_c": 8.45,
+     "t": 1.201,
+     "recent_c": 6.358
+    }
+   },
+   "passes": false
+  }
  },
  "KXLOWTEWR": {
   "title": "Newark, NJ (EWR) Daily Low Temp",
@@ -689,8 +2413,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-08-27",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 12,
+    "vol24h": 7018.490000000001,
+    "med_spread_c": 15.0,
+    "settled": 366,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 51.0,
+     "fills": 9.0
+    },
+    "6h+": {
+     "markets": 51.0,
+     "fills": 9.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXLOWTSAN": {
   "title": "Low Temperature San Diego",
@@ -698,8 +2444,40 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-08-20",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 12,
+    "vol24h": 2541.74,
+    "med_spread_c": 12.0,
+    "settled": 408,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 44.0,
+     "fills": 22.0,
+     "fills_per_mkt": 0.5,
+     "edge_c": -5.899,
+     "per_market_c": -9.346,
+     "t": -1.343,
+     "recent_c": -5.899
+    },
+    "6h+": {
+     "markets": 44.0,
+     "fills": 22.0,
+     "fills_per_mkt": 0.5,
+     "edge_c": -5.899,
+     "per_market_c": -9.346,
+     "t": -1.343,
+     "recent_c": -5.899
+    }
+   },
+   "passes": false
+  }
  },
  "KXLOWTSDF": {
   "title": "Lowest Temperature SDX",
@@ -707,8 +2485,40 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-08-29",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 12,
+    "vol24h": 3469.62,
+    "med_spread_c": 10.0,
+    "settled": 354,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 33.0,
+     "fills": 41.0,
+     "fills_per_mkt": 1.242,
+     "edge_c": -26.31,
+     "per_market_c": -27.434,
+     "t": -2.782,
+     "recent_c": -26.31
+    },
+    "6h+": {
+     "markets": 33.0,
+     "fills": 41.0,
+     "fills_per_mkt": 1.242,
+     "edge_c": -26.31,
+     "per_market_c": -27.434,
+     "t": -2.782,
+     "recent_c": -26.31
+    }
+   },
+   "passes": false
+  }
  },
  "KXLOWTTTN": {
   "title": "Trenton Daily low temp ",
@@ -716,8 +2526,40 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-08-27",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 12,
+    "vol24h": 2967.53,
+    "med_spread_c": 9.5,
+    "settled": 366,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 55.0,
+     "fills": 59.0,
+     "fills_per_mkt": 1.073,
+     "edge_c": -13.923,
+     "per_market_c": 0.476,
+     "t": 0.035,
+     "recent_c": -13.923
+    },
+    "6h+": {
+     "markets": 55.0,
+     "fills": 59.0,
+     "fills_per_mkt": 1.073,
+     "edge_c": -13.923,
+     "per_market_c": 0.476,
+     "t": 0.035,
+     "recent_c": -13.923
+    }
+   },
+   "passes": false
+  }
  },
  "KXMOONVSPEND": {
   "title": "Moonshot AI Vercel spend share",
@@ -725,8 +2567,30 @@
   "frequency": "custom",
   "fee_type": "",
   "first_seen": "2026-09-23",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 27,
+    "vol24h": 13372.529999999999,
+    "med_spread_c": 72.5,
+    "settled": 151,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 59.0,
+     "fills": 2.0
+    },
+    "6h+": {
+     "markets": 59.0,
+     "fills": 2.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXMVECROSSCATEGORY": {
   "title": "MVE Cross Category",
@@ -734,8 +2598,30 @@
   "frequency": "custom",
   "fee_type": "",
   "first_seen": "2026-08-16",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 5000,
+    "vol24h": 0.0,
+    "med_spread_c": 91.7,
+    "settled": 3000,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 44.0,
+     "fills": 0.0
+    },
+    "6h+": {
+     "markets": 44.0,
+     "fills": 0.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXMVECROSSCATEGORY0": {
   "title": "MVE Cross Category",
@@ -743,8 +2629,30 @@
   "frequency": "custom",
   "fee_type": "",
   "first_seen": "2026-10-16",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 5000,
+    "vol24h": 0.0,
+    "med_spread_c": 50.9,
+    "settled": 3000,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 8.0,
+     "fills": 0.0
+    },
+    "6h+": {
+     "markets": 8.0,
+     "fills": 0.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXOAIPERSONALAGENT": {
   "title": "OpenAI personal AI agent",
@@ -752,7 +2660,15 @@
   "frequency": "custom",
   "fee_type": "",
   "first_seen": "2026-10-01",
-  "checks": [],
+  "checks": [
+   {
+    "open_markets": 3,
+    "vol24h": 4756.9800000000005,
+    "med_spread_c": 2.0,
+    "settled": 1,
+    "date": "2026-10-26"
+   }
+  ],
   "seeded": "launched since mid-Aug 2026 (cross-market scan)"
  },
  "KXOER": {
@@ -761,8 +2677,30 @@
   "frequency": "monthly",
   "fee_type": "",
   "first_seen": "2026-09-11",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 32,
+    "vol24h": 20.0,
+    "med_spread_c": 45.5,
+    "settled": 40,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 23.0,
+     "fills": 2.0
+    },
+    "6h+": {
+     "markets": 23.0,
+     "fills": 6.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXOPENADOPT": {
   "title": "OpenAI AI adoption rate",
@@ -770,7 +2708,15 @@
   "frequency": "monthly",
   "fee_type": "",
   "first_seen": "2026-09-09",
-  "checks": [],
+  "checks": [
+   {
+    "open_markets": 0,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "settled": 14,
+    "date": "2026-10-26"
+   }
+  ],
   "seeded": "launched since mid-Aug 2026 (cross-market scan)"
  },
  "KXOPENVREQ": {
@@ -779,8 +2725,30 @@
   "frequency": "custom",
   "fee_type": "",
   "first_seen": "2026-09-23",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 27,
+    "vol24h": 7600.75,
+    "med_spread_c": 83.0,
+    "settled": 151,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 59.0,
+     "fills": 17.0
+    },
+    "6h+": {
+     "markets": 59.0,
+     "fills": 17.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXOPENVSPEND": {
   "title": "OpenAI Vercel spend share",
@@ -788,8 +2756,40 @@
   "frequency": "custom",
   "fee_type": "",
   "first_seen": "2026-09-23",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 27,
+    "vol24h": 2704.71,
+    "med_spread_c": 74.0,
+    "settled": 150,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 60.0,
+     "fills": 26.0,
+     "fills_per_mkt": 0.433,
+     "edge_c": 7.543,
+     "per_market_c": 5.254,
+     "t": 1.073,
+     "recent_c": 7.543
+    },
+    "6h+": {
+     "markets": 60.0,
+     "fills": 26.0,
+     "fills_per_mkt": 0.433,
+     "edge_c": 7.543,
+     "per_market_c": 5.254,
+     "t": 1.073,
+     "recent_c": 7.543
+    }
+   },
+   "passes": false
+  }
  },
  "KXRAINWKND": {
   "title": "Where will it rain this weekend?",
@@ -797,8 +2797,40 @@
   "frequency": "weekly",
   "fee_type": "",
   "first_seen": "2026-08-24",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 35,
+    "vol24h": 1000.0799999999999,
+    "med_spread_c": 3.0,
+    "settled": 235,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 60.0,
+     "fills": 298.0,
+     "fills_per_mkt": 4.967,
+     "edge_c": 2.132,
+     "per_market_c": 7.197,
+     "t": 1.964,
+     "recent_c": 2.132
+    },
+    "6h+": {
+     "markets": 60.0,
+     "fills": 501.0,
+     "fills_per_mkt": 8.35,
+     "edge_c": 1.505,
+     "per_market_c": 1.692,
+     "t": 0.6,
+     "recent_c": 1.505
+    }
+   },
+   "passes": false
+  }
  },
  "KXTAKEOVERACQWB": {
   "title": "Warner Brothers acquisition",
@@ -806,7 +2838,15 @@
   "frequency": "custom",
   "fee_type": "",
   "first_seen": "2026-10-06",
-  "checks": [],
+  "checks": [
+   {
+    "open_markets": 0,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "settled": 3,
+    "date": "2026-10-26"
+   }
+  ],
   "seeded": "launched since mid-Aug 2026 (cross-market scan)"
  },
  "KXTXERCOTPEAKD": {
@@ -815,8 +2855,40 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-08-29",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 19,
+    "vol24h": 32134.85,
+    "med_spread_c": 15.0,
+    "settled": 973,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 55.0,
+     "fills": 20.0,
+     "fills_per_mkt": 0.364,
+     "edge_c": -5.94,
+     "per_market_c": -0.167,
+     "t": -0.018,
+     "recent_c": -5.94
+    },
+    "6h+": {
+     "markets": 55.0,
+     "fills": 20.0,
+     "fills_per_mkt": 0.364,
+     "edge_c": -5.94,
+     "per_market_c": -0.167,
+     "t": -0.018,
+     "recent_c": -5.94
+    }
+   },
+   "passes": false
+  }
  },
  "KXUSDCADAD": {
   "title": "USDCAD Daily",
@@ -824,8 +2896,30 @@
   "frequency": "daily",
   "fee_type": "",
   "first_seen": "2026-08-26",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 20,
+    "vol24h": 0.0,
+    "med_spread_c": 1.0,
+    "settled": 640,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 12.0,
+     "fills": 0.0
+    },
+    "6h+": {
+     "markets": 12.0,
+     "fills": 0.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXUSHOMEINVENT": {
   "title": "US Active Housing Inventory",
@@ -833,7 +2927,15 @@
   "frequency": "monthly",
   "fee_type": "",
   "first_seen": "2026-10-01",
-  "checks": [],
+  "checks": [
+   {
+    "open_markets": 7,
+    "vol24h": 0.0,
+    "med_spread_c": 14.0,
+    "settled": 7,
+    "date": "2026-10-26"
+   }
+  ],
   "seeded": "launched since mid-Aug 2026 (cross-market scan)"
  },
  "KXWAYMOCITY": {
@@ -842,7 +2944,15 @@
   "frequency": "custom",
   "fee_type": "",
   "first_seen": "2026-10-14",
-  "checks": [],
+  "checks": [
+   {
+    "open_markets": 37,
+    "vol24h": 2384.0,
+    "med_spread_c": 3.0,
+    "settled": 2,
+    "date": "2026-10-26"
+   }
+  ],
   "seeded": "launched since mid-Aug 2026 (cross-market scan)"
  },
  "KXZAISHARE": {
@@ -851,7 +2961,169 @@
   "frequency": "weekly",
   "fee_type": "",
   "first_seen": "2026-09-21",
-  "checks": [],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "checks": [
+   {
+    "open_markets": 0,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "settled": 28,
+    "date": "2026-10-26"
+   }
+  ],
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-10-26",
+   "windows": {
+    "6-48h": {
+     "markets": 19.0,
+     "fills": 1.0
+    },
+    "6h+": {
+     "markets": 19.0,
+     "fills": 20.0,
+     "fills_per_mkt": 1.053,
+     "edge_c": -6.321,
+     "per_market_c": -5.692,
+     "t": NaN,
+     "recent_c": -6.321
+    }
+   },
+   "passes": false
+  }
+ },
+ "KXGOOGVSPEND": {
+  "title": "Google Vercel spend share",
+  "category": "Science and Technology",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-10-26",
+  "checks": [
+   {
+    "open_markets": 18,
+    "vol24h": 175.0,
+    "med_spread_c": 83.0,
+    "date": "2026-10-26"
+   }
+  ]
+ },
+ "KXUSDMXNAD": {
+  "title": "USDMXN Daily",
+  "category": "Financials",
+  "frequency": "daily",
+  "fee_type": "quadratic",
+  "first_seen": "2026-10-26",
+  "checks": [
+   {
+    "open_markets": 30,
+    "vol24h": 1691.7600000000002,
+    "med_spread_c": 85.0,
+    "date": "2026-10-26"
+   }
+  ]
+ },
+ "KXBEAVERSNOW": {
+  "title": "Beaver Creek snowfall",
+  "category": "Climate and Weather",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-10-26",
+  "checks": [
+   {
+    "open_markets": 9,
+    "vol24h": 2.23,
+    "med_spread_c": 15.0,
+    "date": "2026-10-26"
+   }
+  ]
+ },
+ "KXZAIVSPEND": {
+  "title": "Z.AI Vercel spend share",
+  "category": "Science and Technology",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-10-26",
+  "checks": [
+   {
+    "open_markets": 18,
+    "vol24h": 379.0,
+    "med_spread_c": 79.5,
+    "date": "2026-10-26"
+   }
+  ]
+ },
+ "KXKEYSTONESNOW": {
+  "title": "Keystone snowfall",
+  "category": "Climate and Weather",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-10-26",
+  "checks": [
+   {
+    "open_markets": 9,
+    "vol24h": 122.0,
+    "med_spread_c": 90.0,
+    "date": "2026-10-26"
+   }
+  ]
+ },
+ "KXPARKCSNOW": {
+  "title": "Park City Mountain snowfall",
+  "category": "Climate and Weather",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-10-26",
+  "checks": [
+   {
+    "open_markets": 9,
+    "vol24h": 351.37,
+    "med_spread_c": 79.0,
+    "date": "2026-10-26"
+   }
+  ]
+ },
+ "KXZAIVREQ": {
+  "title": "Z.AI Vercel requests share",
+  "category": "Science and Technology",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-10-26",
+  "checks": [
+   {
+    "open_markets": 18,
+    "vol24h": 1936.4299999999998,
+    "med_spread_c": 53.0,
+    "date": "2026-10-26"
+   }
+  ]
+ },
+ "KXNORTHSTARSNOW": {
+  "title": "Northstar snowfall",
+  "category": "Climate and Weather",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-10-26",
+  "checks": [
+   {
+    "open_markets": 9,
+    "vol24h": 296.0,
+    "med_spread_c": 56.0,
+    "date": "2026-10-26"
+   }
+  ]
+ },
+ "KXSTOWESNOW": {
+  "title": "Stowe snowfall",
+  "category": "Climate and Weather",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-10-26",
+  "checks": [
+   {
+    "open_markets": 9,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "date": "2026-10-26"
+   }
+  ]
  }
 }
