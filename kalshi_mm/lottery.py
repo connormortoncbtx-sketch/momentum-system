@@ -192,7 +192,10 @@ def step(k, st, now):
             if res == "yes":
                 st["cash"] = round(st["cash"] + payout, 2)
                 if st["leg"] >= LEGS:
-                    say(f"JACKPOT: all {LEGS} legs hit -- ${STAKE:.2f} became ${st['cash']:.2f}. Roll stops here.", prio="high")
+                    # Connor (Oct 26): the jackpot goes to the market maker -- status 'done' releases the roll's cash to
+                    # the common pool (lotfiles.cash_in_bal); next Monday restarts from the $5 stake.
+                    say(f"JACKPOT: all {LEGS} legs hit -- ${STAKE:.2f} became ${st['cash']:.2f}. Handed to the market maker; "
+                        f"next roll starts Monday at ${STAKE:.2f}.", prio="high")
                     st["status"] = "done"
                 else:
                     say(f"Leg {st['leg']}/{LEGS} hit ({st['ticker']}): now ${st['cash']:.2f}. Rolling into leg {st['leg'] + 1}.")
