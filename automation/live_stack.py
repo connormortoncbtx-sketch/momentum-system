@@ -228,7 +228,12 @@ def main():
     tier = decide_tier(equity, mult, st.get("tier"))
     start = today - dt.timedelta(days=420)
     sleeves = {"SLOW": slow_weights(), "CONTRACT": contract_weights(),
-               "ETF": etf_weights(SS.etf_daily(start), today), "CRYPTO": crypto_weights(SS.crypto_daily(start), today)}
+               "ETF": etf_weights(SS.etf_daily(start), today)}
+    cp = SS.crypto_daily(start)
+    sleeves["CRYPTO"] = crypto_weights(cp, today)
+    _c = cp[cp.index < pd.Timestamp(today)]
+    print(f"::notice::crypto sleeve: {len(sleeves['CRYPTO'])} of {_c.shape[1]} coins above their 50-day average "
+          f"(last daily close {_c.index[-1]:%Y-%m-%d}); ETF sleeve: {len(sleeves['ETF'])} of {len(SS.ETFS)} ETFs in an uptrend")
     lev_vt = vol_target_leverage()
     tgt, info = targets(equity, tier, sleeves, lev_vt, mult)
     pos = tc.get_all_positions()
