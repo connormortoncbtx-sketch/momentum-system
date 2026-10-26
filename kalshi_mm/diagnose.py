@@ -55,6 +55,12 @@ def save_cache(c):
 
 
 def meta(k, c, tk):
+    """Market close time and result, cached. A market cached before it settled (result None) is looked up again once
+    its close time has passed -- the Oct 21-25 cache kept 113 of 199 markets as 'no result' forever, so 'to settle'
+    covered only the 86 markets first seen after settlement (+10.3c on 1,741 contracts vs +0.7c on all 4,049)."""
+    m0 = c["meta"].get(tk)
+    if m0 is not None and not m0.get("result") and (m0.get("close") is None or ts(m0["close"]) < dt.datetime.now(dt.timezone.utc)):
+        c["meta"].pop(tk)
     if tk not in c["meta"]:
         try:
             pace()
