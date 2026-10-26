@@ -346,4 +346,10 @@ def monitor(state, day, oc, SC):
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception:
+        import traceback
+        tb = traceback.format_exc(); print(tb)
+        print("::error::" + tb[-1200:].replace("\n", " | "))      # annotations: the Actions log isn't readable remotely
+        raise
