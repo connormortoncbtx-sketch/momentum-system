@@ -299,7 +299,9 @@ pre{{white-space:pre-wrap;font-size:12.5px;margin:0}} .dot{{display:inline-block
         h.append(f"""<div class="card"><h2>Weekly roll</h2>{html.escape(str(lot.get('status')))} · week {html.escape(str(lot.get('week')))}
 · leg {lot.get('leg')} / {os.environ.get('LOT_LEGS', '7')} · worth {money(lot_sell)} sold now, {money(lot_exp)} expected
 {('· ' + ', '.join(f"{html.escape(r['city'])} {html.escape(r['bucket'])} {r['side']} {r['n']:.0f} @ {r['p'] * 100:.0f}%" for r in lrows)) if lrows else ''}
-<div class="mut">Wholly separate from the bot: not in its caps, budget, loss stop or any of the "is it working" numbers above.</div></div>""")
+{('<div class="pos"><b>JACKPOT BANKED: ' + money(B.num(lot.get('banked'))) + ' to withdraw from Kalshi</b>, then run kmm lottery-withdrawn</div>') if B.num(lot.get('banked')) > 0 else ''}
+<div class="mut">Wholly separate from the bot: not in its caps, budget, loss stop or any of the "is it working" numbers above.
+A jackpot is banked for withdrawal (never handed to the bot); every week restarts at the $5 stake.</div></div>""")
     h.append(f"""<div class="card"><h2>Scorecard (settled) and per city</h2><pre>{html.escape(rep)}</pre></div>
 <div class="mut">Chance = market odds that the side held pays $1 (* = thin book, last trade). Expected = qty × chance.
 Read-only page; it never trades.</div></main></body></html>""")
