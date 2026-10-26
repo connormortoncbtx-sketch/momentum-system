@@ -1,5 +1,5 @@
 {
- "since": "2026-10-23T17:30:15-04:00",
+ "since": "2026-10-26T14:11:11-04:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -361,7 +361,7 @@
    "event_type": "routine",
    "summary": "October dividend announced; preliminary September financial update with $8.0B portfolio.",
    "entry_date": "2026-10-15",
-   "entry": 5.69
+   "entry": 5.567
   },
   {
    "book": "short_bad_news",
@@ -1838,8 +1838,8 @@
    "decided": "2026-10-23T13:25:11.847371-04:00",
    "event_type": "equity_financing",
    "summary": "Rights offering for $400M with CEO backstop; weak external demand; substantial dilution risk.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-26",
+   "entry": 1.41
   },
   {
    "book": "short_bad_news",
@@ -1848,8 +1848,8 @@
    "decided": "2026-10-23T13:25:15.122532-04:00",
    "event_type": "clinical_positive",
    "summary": "FDA lifts clinical hold; exploratory Phase 3 data shows modest efficacy signals for ARD-101 in PWS hyperphagia.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-26",
+   "entry": 1.245
   },
   {
    "book": "short_bad_news",
@@ -1858,8 +1858,8 @@
    "decided": "2026-10-23T13:25:20.283410-04:00",
    "event_type": "strategic_review",
    "summary": "Activist investor Vision One secures board seat, forcing governance changes and classified board phase-out.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-26",
+   "entry": 28.21
   },
   {
    "book": "short_bad_news",
@@ -1868,8 +1868,8 @@
    "decided": "2026-10-23T13:25:26.031684-04:00",
    "event_type": "prelim_results_good",
    "summary": "Q2 FY2027 earnings beat with $8.8M net income; revenue up 3.2% but loan portfolio stalled",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-26",
+   "entry": 167.04
   },
   {
    "book": "short_bad_news",
@@ -1878,8 +1878,8 @@
    "decided": "2026-10-23T13:25:31.292580-04:00",
    "event_type": "acquisition",
    "summary": "Jefferson subsidiary financing $270M debt to fund $255M DRUbit acquisition, targeting $138M pro forma EBITDA.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-26",
+   "entry": 2.53
   },
   {
    "book": "short_bad_news",
@@ -1888,8 +1888,8 @@
    "decided": "2026-10-24T02:07:57.778489-04:00",
    "event_type": "listing_deficiency",
    "summary": "Company regained Nasdaq compliance after near-delisting; stock price recovered above $1.00.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-26",
+   "entry": 2.53
   },
   {
    "book": "short_bad_news",
@@ -1898,8 +1898,8 @@
    "decided": "2026-10-24T02:08:00.544351-04:00",
    "event_type": "strategic_review",
    "summary": "First Amendment to Asset Purchase Agreement extends timeline for audited financials to October 31, 2026.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-26",
+   "entry": 6.52
   },
   {
    "book": "short_bad_news",
@@ -1908,8 +1908,8 @@
    "decided": "2026-10-24T02:08:07.157874-04:00",
    "event_type": "exec_departure",
    "summary": "Board director Manpreet Uppal resigned effective immediately; stated no disagreement with company.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-26",
+   "entry": 5.58
   },
   {
    "book": "short_bad_news",
@@ -1918,8 +1918,8 @@
    "decided": "2026-10-24T02:08:09.976521-04:00",
    "event_type": "litigation",
    "summary": "BDR Pharmaceuticals sued FDA challenging VOQUEZNA's 10-year NCE exclusivity extension through 2032.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-26",
+   "entry": 5.7
   },
   {
    "book": "long_contract_win",
@@ -1928,8 +1928,8 @@
    "decided": "2026-10-24T02:08:12.093557-04:00",
    "event_type": "contract_win",
    "summary": "Allegiant exercises 6 Boeing 737-8 aircraft options; $720M list price, delivery 2028.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-26",
+   "entry": 67.67
   },
   {
    "book": "long_contract_div",
@@ -1938,8 +1938,9 @@
    "decided": "2026-10-24T02:08:12.093557-04:00",
    "event_type": "contract_win",
    "summary": "Allegiant exercises 6 Boeing 737-8 aircraft options; $720M list price, delivery 2028.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-26",
+   "entry": 67.67,
+   "vol60": 0.4855023516118874
   },
   {
    "book": "short_bad_news",
@@ -1948,8 +1949,8 @@
    "decided": "2026-10-24T02:08:14.886072-04:00",
    "event_type": "acquisition",
    "summary": "Completed $6.95M acquisition of FAMCO utility contractor assets; strategic tuck-in complementing existing operations.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-26",
+   "entry": 9.27
   },
   {
    "book": "short_bad_news",
@@ -1958,8 +1959,8 @@
    "decided": "2026-10-24T02:08:17.816209-04:00",
    "event_type": "exec_departure",
    "summary": "CEO termination recharacterized for cause; $4.5M severance clawed back; undisclosed third-party compensation.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-26",
+   "entry": 12.13
   },
   {
    "book": "short_bad_news",
@@ -1968,8 +1969,8 @@
    "decided": "2026-10-24T02:08:20.377025-04:00",
    "event_type": "contract_loss",
    "summary": "Company's $5M convertible loan prepaid by related party; CEO family gains 71% ownership of counterparty.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-26",
+   "entry": 36.23
   },
   {
    "book": "short_bad_news",
@@ -1978,8 +1979,8 @@
    "decided": "2026-10-24T02:08:22.839942-04:00",
    "event_type": "exec_departure",
    "summary": "Chief Accounting Officer Stacie Schulz resigns effective October 30; CFO assumes accounting role.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-26",
+   "entry": 12.27
   },
   {
    "book": "short_bad_news",
@@ -1988,8 +1989,8 @@
    "decided": "2026-10-24T02:08:27.397083-04:00",
    "event_type": "exec_departure",
    "summary": "Director Kate Eberle Walker resigns effective December 1, 2026 for role at Pearson.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-26",
+   "entry": 13.73
   },
   {
    "book": "short_bad_news",
@@ -1998,8 +1999,8 @@
    "decided": "2026-10-24T02:08:37.380089-04:00",
    "event_type": "acquisition",
    "summary": "Completed $52M acquisition of DroneNX/Upgrade Energy; $25M stock + $27M contingent earn-out.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-26",
+   "entry": 16.78
   },
   {
    "book": "short_bad_news",
@@ -2008,8 +2009,8 @@
    "decided": "2026-10-24T02:08:40.943615-04:00",
    "event_type": "acquisition",
    "summary": "Shareholder approval obtained for merger with SRT; ~8.5M shares issuance; closing expected November 5.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-26",
+   "entry": 6.41
   },
   {
    "book": "short_bad_news",
@@ -2018,8 +2019,8 @@
    "decided": "2026-10-24T02:08:48.368150-04:00",
    "event_type": "strategic_review",
    "summary": "Commercial launch of TICKER prediction markets platform with Q4 2026 revenue expected.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-26",
+   "entry": 4.82
   },
   {
    "book": "short_bad_news",
@@ -2028,8 +2029,8 @@
    "decided": "2026-10-24T02:08:53.250674-04:00",
    "event_type": "acquisition",
    "summary": "Red Cat acquiring Austrian motor company Steyr Motors for EUR 205M via tender offer.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-26",
+   "entry": 4.41
   },
   {
    "book": "short_bad_news",
@@ -2038,8 +2039,8 @@
    "decided": "2026-10-24T02:08:59.057180-04:00",
    "event_type": "debt_financing",
    "summary": "Refinancing adds $90M commitments, extends maturity to May 2029; securitization requirement by year-end.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-26",
+   "entry": 1.77
   },
   {
    "book": "short_bad_news",
@@ -2048,14 +2049,144 @@
    "decided": "2026-10-24T02:09:05.283809-04:00",
    "event_type": "routine",
    "summary": "Q3 2026 earnings: $0.77 EPS, up QoQ but down YoY. Mixed performance with margin expansion offset by asset declines.",
+   "entry_date": "2026-10-26",
+   "entry": 34.0
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "PURR",
+   "accession": "0001193125-26-431200",
+   "decided": "2026-10-26T14:51:29.184812-04:00",
+   "event_type": "buyback_dividend",
+   "summary": "Board increased stock repurchase program from $30M to $100M through October 2027.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "NATH",
+   "accession": "0001104659-26-118639",
+   "decided": "2026-10-26T14:51:34.207452-04:00",
+   "event_type": "acquisition",
+   "summary": "Nathan's Famous acquired by Smithfield Foods for $102/share cash; company delisted from Nasdaq.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_win",
+   "symbol": "FRMM",
+   "accession": "0001213900-26-112303",
+   "decided": "2026-10-26T14:51:36.778338-04:00",
+   "event_type": "contract_win",
+   "summary": "Forum Edge AI secures $94.4M three-year GPU capacity contract with Fireworks AI for Dallas data center.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_div",
+   "symbol": "FRMM",
+   "accession": "0001213900-26-112303",
+   "decided": "2026-10-26T14:51:36.778338-04:00",
+   "event_type": "contract_win",
+   "summary": "Forum Edge AI secures $94.4M three-year GPU capacity contract with Fireworks AI for Dallas data center.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "MBC",
+   "accession": "0001941365-26-000081",
+   "decided": "2026-10-26T14:51:42.290671-04:00",
+   "event_type": "exec_departure",
+   "summary": "CFO Andrea Simon departed October 23; Mark Young appointed interim CFO; permanent search underway.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "AZTR",
+   "accession": "0001493152-26-048431",
+   "decided": "2026-10-26T14:51:45.118774-04:00",
+   "event_type": "clinical_positive",
+   "summary": "ATR-COSF cosmetic program shows positive ex vivo skin improvement data; first-in-human results expected year-end.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "EMPD",
+   "accession": "0001683168-26-008071",
+   "decided": "2026-10-26T14:51:58.014522-04:00",
+   "event_type": "buyback_dividend",
+   "summary": "Resumed $200M buyback program; holds 1,018 bitcoin, $70M cash, $35M debt; Midwest AI datacenter pending.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ASPI",
+   "accession": "0001193125-26-431084",
+   "decided": "2026-10-26T14:52:00.811935-04:00",
+   "event_type": "partnership",
+   "summary": "Renergen subsidiary achieves stable liquid helium production; first deliveries to offtake partners imminent.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "DFDV",
+   "accession": "0001805526-26-000142",
+   "decided": "2026-10-26T14:52:03.944411-04:00",
+   "event_type": "routine",
+   "summary": "Company accumulated 5,346 SOL; SOL treasury now 2.6M; CHAD dividend rate increases to 14%.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ABOS",
+   "accession": "0001628280-26-067129",
+   "decided": "2026-10-26T14:52:10.898167-04:00",
+   "event_type": "prelim_results_good",
+   "summary": "Q3 2026 results; ALTITUDE-AD Phase 2 topline results expected November 2026; strong cash position declining.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "UAMY",
+   "accession": "0001104659-26-118600",
+   "decided": "2026-10-26T14:52:13.932757-04:00",
+   "event_type": "routine",
+   "summary": "Mining company completes technical report on Nolan Creek Alaska antimony-gold property acquisition.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CLYM",
+   "accession": "0001193125-26-430997",
+   "decided": "2026-10-26T14:52:24.282437-04:00",
+   "event_type": "clinical_positive",
+   "summary": "Budoprutug Phase 2 data shows 70% PLA2R antibody reduction; 38% immunologic remission.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "PHAT",
+   "accession": "0001193125-26-430977",
+   "decided": "2026-10-26T14:52:28.500299-04:00",
+   "event_type": "regulatory_setback",
+   "summary": "FDA opens public docket on VOQUEZNA exclusivity challenge; generic makers litigating to enable earlier ANDA approval.",
    "entry_date": null,
    "entry": null
   }
  ],
  "div": {
-  "nav": 98.66353162560144,
+  "nav": 98.57021351507927,
   "closed": [],
-  "last_date": "2026-10-23",
+  "last_date": "2026-10-26",
   "history": {
    "2026-10-15": 100.3592,
    "2026-10-16": 98.6604,
@@ -2063,7 +2194,8 @@
    "2026-10-20": 98.5486,
    "2026-10-21": 99.0373,
    "2026-10-22": 98.7674,
-   "2026-10-23": 98.6635
+   "2026-10-23": 98.6635,
+   "2026-10-26": 98.5702
   }
  }
 }

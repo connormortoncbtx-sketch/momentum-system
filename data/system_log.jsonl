@@ -3166,3 +3166,4 @@
 {"timestamp": "2026-10-26T16:23:01.472086+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Skipped: manual_refresh already ran today (2026-10-26)", "metrics": {}, "errors": []}
 {"timestamp": "2026-10-26T17:06:05.010555+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Starting weekend refresh (manual_refresh)", "metrics": {}, "errors": []}
 {"timestamp": "2026-10-26T17:06:05.012527+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Skipped: manual_refresh already ran today (2026-10-26)", "metrics": {}, "errors": []}
+{"timestamp": "2026-10-26T18:52:36.839278+00:00", "workflow": "shadow_filings", "status": "success", "message": "Shadow filings: 24 judged-eligible, new long 1, new short 11, open trades 217, diversified-book NAV 98.57", "metrics": {}, "errors": []}
