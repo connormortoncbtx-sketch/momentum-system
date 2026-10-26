@@ -1,37 +1,5 @@
 [
   {
-    "run_label": "monday_morning",
-    "timestamp": "2026-08-17T10:49:22.382076",
-    "regime": "risk_on",
-    "top_5": [
-      {
-        "symbol": "ZIM",
-        "alpha_score": 0.884999,
-        "alpha_rank": 2
-      },
-      {
-        "symbol": "CBRL",
-        "alpha_score": 0.7391099999999998,
-        "alpha_rank": 5
-      },
-      {
-        "symbol": "LRCX",
-        "alpha_score": 0.6919099999999999,
-        "alpha_rank": 7
-      },
-      {
-        "symbol": "WVE",
-        "alpha_score": 0.94691,
-        "alpha_rank": 1
-      },
-      {
-        "symbol": "ONTO",
-        "alpha_score": 0.6451509999999999,
-        "alpha_rank": 12
-      }
-    ]
-  },
-  {
     "run_label": "sunday_night",
     "timestamp": "2026-08-24T00:50:18.507815",
     "regime": "trending_mixed",
@@ -636,6 +604,38 @@
         "symbol": "OPRT",
         "alpha_score": 0.8568429999999999,
         "alpha_rank": 15
+      }
+    ]
+  },
+  {
+    "run_label": "sunday_night",
+    "timestamp": "2026-10-26T02:14:47.332176",
+    "regime": "risk_off_mild",
+    "top_5": [
+      {
+        "symbol": "ASPN",
+        "alpha_score": 0.810858,
+        "alpha_rank": 8
+      },
+      {
+        "symbol": "SDGR",
+        "alpha_score": 0.79153,
+        "alpha_rank": 11
+      },
+      {
+        "symbol": "NTSK",
+        "alpha_score": 0.871575,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "HNST",
+        "alpha_score": 0.783627,
+        "alpha_rank": 15
+      },
+      {
+        "symbol": "OPRT",
+        "alpha_score": 0.803597,
+        "alpha_rank": 9
       }
     ]
   }
