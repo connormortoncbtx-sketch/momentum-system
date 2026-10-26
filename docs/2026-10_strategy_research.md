@@ -2712,3 +2712,20 @@ options_candidates_daily.csv = daily strategy returns of 48 candidate variants).
   plan with; the book is itself a backtest (shadow #7); intraday spreads need max-loss collateral alongside a book
   that runs 0.5-3x leverage (Reg-T margin binds). What this data can't test: covered calls / collars on the book's
   own stocks, longer-dated index puts as a hedge (ThetaData pull was same-day SPY/QQQ only).
+
+## Kalshi edge, corrected -- Oct 26, 2026 (`kmm windows`, `kmm study`): diagnose cache bug; real edge ~+1c
+- **Correction.** `kmm diagnose` cached each market's result at first sight; markets first seen while open stayed
+  "no result" forever (113 of 199), so its "to settle" column covered 86 markets. The +10.3c for favourites outside
+  :45-:59 (Oct 25) was that subset; on all settled markets it is **+0.8c (4,081 contracts)**. Fixed in diagnose.py.
+- Minute of the hour, all settled fills (city-day-clustered ±2se): :00-:14 -0.8c, :15-:29 +0.2c, :30-:44 +2.3c,
+  :45-:50 -3.8c, **:51-:59 -7.1c ±4.4c** (both halves negative) -- the hourly station readings. Long shots show the same
+  pattern. The quiet window (QUIET_MINUTES=45-59, from Oct 26) stands; it lifts favourites from ~-0.7c to ~+0.8c.
+- Long shots outside the window are ~break-even (-0.2c), not -9c: favourite-only adds little; the window does the work.
+- `kmm study` (all cuts, ±2se clustered by city-day, split halves): only the minute effect is solid. Suggestive, both
+  halves the same sign but inside the noise: 50-60c favourites -5.2c (60c+ mildly positive); fills of quotes that
+  rested 5-120 min -4 to -5c vs < 1 min +5.9c; 6-12h to close +6.5c, 24-36h -4.4c. Not supported: burst cooldown
+  (fills after other fills did better), city effects (5-7 city-days each). Current-logic trades +6.6c in the first
+  half vs -3.2c in the second (after Oct 21). Decision (Connor, Oct 26): one change only -- FAV_MIN 0.5 -> 0.6, clean
+  test restarted from market day Oct 27; markout (60-min) columns added to `kmm study` to test the rest faster.
+- Also open: Kalshi's Liquidity Incentive Program (to Jan 1, 2027) pays for resting size near the best price; the bot
+  quotes 2c behind. Check whether weather markets carry reward periods.
