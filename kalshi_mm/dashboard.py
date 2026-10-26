@@ -166,7 +166,9 @@ def history_cards():
                          HI.convergence(filt=HI.current_logic)),
                         ("ALL HISTORY, current-logic trades only, WEIGHTED BY CONTRACTS (compare with kmm diagnose's +10.3c)",
                          HI.convergence(weight="contract", filt=HI.current_logic)),
-                        ("all market days since launch (includes the old logic)", HI.convergence())):
+                        ("all market days since launch (includes the old logic)", HI.convergence()),
+                        ("all market days since launch, WEIGHTED BY CONTRACTS (compare with the current-logic contract-weighted chart)",
+                         HI.convergence(weight="contract"))):
             if not cv:
                 out.append(f"<div class='card'><h2>Is it working? {lab}</h2><div class='mut'>No settled city-days yet.</div></div>")
                 continue
