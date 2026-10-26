@@ -65,7 +65,18 @@ def market_day(ticker):
         return None
 
 
-def settled_fills():
+def current_logic(x, d, yp):
+    """Would today's bot have made this fill? Favourites only (held side >= 50c, FAV_MIN) and not in the :45-:59
+    quiet window (QUIET_MINUTES, on from Oct 26). Lets the old-logic history count for the trades that still happen."""
+    held = yp if d > 0 else 1 - yp
+    try:
+        minute = int(str(x.get("created_time", ""))[14:16])
+    except ValueError:
+        return False
+    return held >= 0.5 and not 45 <= minute <= 59
+
+
+def settled_fills(filt=None):
     result = R.market_results()
     out = []
     for f in R.rows("fills"):
@@ -74,6 +85,8 @@ def settled_fills():
         if tk not in result:
             continue
         d, yp, c = R.fill_yes(x)
+        if filt and not filt(x, d, yp):
+            continue
         pnl = d * (result[tk] - yp) * c * 100 - R.dollars_field(x, "fee_cost")
         out.append(dict(day=market_day(tk), event=tk.rsplit("-", 1)[0], pnl_c=pnl, n=c))
     return out
@@ -89,11 +102,11 @@ def settled_days():
     return [(day, v["pnl_c"] / 100, v["pnl_c"] / v["n"] if v["n"] else 0.0, len(v["events"])) for day, v in sorted(by.items())]
 
 
-def convergence(since=None, weight="cityday"):
+def convergence(since=None, weight="cityday", filt=None):
     """[(city_days, running mean c/contract, 2 s.e.)] in settlement order. weight 'cityday': each city-day's edge per
     contract counts once; 'contract': city-days weighted by contracts (what the account feels). since: market days >= it."""
     ev = {}
-    for r in settled_fills():
+    for r in settled_fills(filt):
         if since and (r["day"] is None or r["day"] < since):
             continue
         e = ev.setdefault(r["event"], [r["day"], 0.0, 0.0])

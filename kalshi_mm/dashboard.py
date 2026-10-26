@@ -150,8 +150,11 @@ def history_cards():
                        f"{svg_line(cum, h=120, fmt=lambda v: f'{v:+.0f}')}"
                        f"<div class='scroll'><table><tr><th>Market day</th><th>City-days</th><th>$</th><th>per contract</th></tr>{rows_}</table></div></div>")
         since = dt.date.fromisoformat(os.environ.get("EVAL_FROM", "2026-10-24"))
-        for lab, cv in ((f"CLEAN TEST: market days from {since:%b %d} (favourite-only + fast quoting)", HI.convergence(since)),
+        for lab, cv in ((f"CLEAN TEST: market days from {since:%b %d} (favourite-only + fast quoting + :45-:59 quiet window)", HI.convergence(since)),
                         (f"same, weighted by contracts (what the account feels)", HI.convergence(since, "contract")),
+                        ("ALL HISTORY, current-logic trades only: favourite fills outside :45-:59, old logic included "
+                         "(more data; slower quoting before Oct 22, and the filter was chosen after seeing the data)",
+                         HI.convergence(filt=HI.current_logic)),
                         ("all market days since launch (includes the old logic)", HI.convergence())):
             if not cv:
                 out.append(f"<div class='card'><h2>Is it working? {lab}</h2><div class='mut'>No settled city-days yet.</div></div>")

@@ -168,8 +168,18 @@ def test_lottery_separation():
     assert LF.cash_in_bal(dict(st, status="buying", ticker=None, cash=22.55), {}) == 22.55   # between legs
 
 
+def test_current_logic_filter():
+    import history as HI
+    f = lambda ts: {"created_time": ts}
+    assert HI.current_logic(f("2026-10-20T15:12:00Z"), 1, 0.70)           # long YES at 70c, :12 -> kept
+    assert not HI.current_logic(f("2026-10-20T15:12:00Z"), 1, 0.30)       # long YES at 30c = long shot
+    assert HI.current_logic(f("2026-10-20T15:12:00Z"), -1, 0.30)          # short YES at 30c = NO at 70c
+    assert not HI.current_logic(f("2026-10-20T15:47:00Z"), 1, 0.70)       # quiet window
+    assert not HI.current_logic(f(""), 1, 0.70)
+
+
 if __name__ == "__main__":
     for f in (test_targets, test_order_side, test_order_price, test_event_cap_helpers, test_sign_roundtrip,
               test_day_baseline_survives_restart, test_fallback_mark, test_favourite_only, test_netted, test_quiet, test_rate_limit, test_ws_parsing, test_sniper_helpers,
-              test_lottery_separation):
+              test_lottery_separation, test_current_logic_filter):
         f(); print("ok", f.__name__)
