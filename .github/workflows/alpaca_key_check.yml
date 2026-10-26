@@ -26,3 +26,5 @@ jobs:
           chk "paper 2 (ALPACA_PAPER2)" "$K2" "$S2" https://paper-api.alpaca.markets
           chk "paper 3 (ALPACA_PAPER3)" "$K3" "$S3" https://paper-api.alpaca.markets
           chk "live (ALPACA_LIVE)" "$KL" "$SL" https://api.alpaca.markets
+          chk "live key against the PAPER endpoint (200 here = it is a paper key)" "$KL" "$SL" https://paper-api.alpaca.markets
+          [ -n "$KL" ] && echo "::notice::live key starts with ${KL:0:2} (live keys usually start AK, paper PK), length ${#KL}; secret length ${#SL}"
