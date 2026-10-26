@@ -186,6 +186,7 @@ case "${1:-status}" in
   diagnose) sudo -u kmm bash -c 'set -a; . /etc/kmm/env; /home/kmm/venv/bin/python /home/kmm/app/kalshi_mm/diagnose.py "$@"' _ ${2:+"$2"} ;;
   positions) sudo -u kmm bash -c 'set -a; . /etc/kmm/env; /home/kmm/venv/bin/python /home/kmm/app/kalshi_mm/positions.py' ;;
   study) sudo -u kmm bash -c 'set -a; . /etc/kmm/env; cd /home/kmm/app/kalshi_mm; nice -n 10 /home/kmm/venv/bin/python study.py "$@"' _ ${2:+"$2"} ;;
+  edge-now) sudo -u kmm bash -c 'set -a; . /etc/kmm/env; cd /home/kmm/app/kalshi_mm; /home/kmm/venv/bin/python edge_now.py' ;;
   windows) sudo -u kmm bash -c 'set -a; . /etc/kmm/env; cd /home/kmm/app/kalshi_mm; /home/kmm/venv/bin/python window_check.py "$@"' _ ${2:+"$2"} ;;
   sniper) sudo -u kmm bash -c 'set -a; . /etc/kmm/env; /home/kmm/venv/bin/python /home/kmm/app/kalshi_mm/sniper.py report'; journalctl -u kmm-sniper -n 3 --no-pager | grep -v systemd ;;
   lottery) cat /home/kmm/data/lottery.json 2>/dev/null || echo "no weekly roll yet"; echo; journalctl -u kmm-lottery -n "${2:-10}" --no-pager | grep -v systemd ;;
@@ -199,7 +200,7 @@ case "${1:-status}" in
     sleep 1; kill $J 2>/dev/null; echo "-- update finished"
     exit ;;  # exit before bash reads past this point: the update rewrites this file
   update-log) journalctl -u "$(cat /run/kmm-last-update 2>/dev/null)" -o cat --no-pager | tail -n "${2:-60}" ;;
-  *) echo "usage: kmm status|stop|resume|logs [n]|report|positions|diagnose|lottery|sniper|windows|study|update|update-log" ;;
+  *) echo "usage: kmm status|stop|resume|logs [n]|report|positions|diagnose|lottery|sniper|windows|study|edge-now|update|update-log" ;;
 esac
 KMM
 chmod 755 /usr/local/bin/kmm
