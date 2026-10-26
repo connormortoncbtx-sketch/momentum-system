@@ -138,6 +138,15 @@ def history_cards():
         note = "" if os.environ.get("DEPOSIT_HISTORY") else " · set DEPOSIT_HISTORY so early hours aren't shown against later deposits"
         out.append(f"<div class='card'><h2>Account vs money deposited, hourly{note}</h2>"
                    f"{svg_line(pts, fmt=lambda v: f'{v:+.0f}')}</div>")
+        dep = HI.deployment_series()[-24 * 21:]
+        if dep:
+            avg = sum(r[1] for r in dep) / len(dep)
+            bud = next((r[2] for r in reversed(dep) if r[2]), None)
+            out.append(f"<div class='card'><h2>Capital deployed, hourly -- % of the bot's account value in positions (at cost; "
+                       f"resting orders not included)</h2>"
+                       f"{svg_line([(t.strftime('%b %d %-I%p'), v) for t, v, _ in dep], fmt=lambda v: f'{v:.0f}%')}"
+                       f"<div class='mut'>Now {dep[-1][1]:.0f}% · average {avg:.0f}% over the chart · peak {max(r[1] for r in dep):.0f}%"
+                       + (f" · budget {bud:.0f}% of value" if bud else "") + "</div></div>")
         days = HI.settled_days()
         if days:
             cum, run = [], 0.0

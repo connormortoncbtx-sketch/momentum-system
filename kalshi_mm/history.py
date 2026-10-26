@@ -56,6 +56,26 @@ def account_series():
     return out
 
 
+def deployment_series():
+    """Hourly [(hour, % of the bot's account value tied up in positions at cost, % budget)] from the snapshots.
+    % of value (not $) so it stays comparable as the account grows or shrinks; the budget is BUDGET_PCT of value."""
+    out, last = [], None
+    for s in R.rows("snapshots"):
+        v, u = s.get("value"), s.get("used_cost")
+        if not v or u is None:
+            continue
+        try:
+            hr = dt.datetime.fromisoformat(s["ts"]).astimezone(CT).replace(minute=0, second=0, microsecond=0)
+        except Exception:
+            continue
+        row = [hr, 100 * R.num(u) / v, 100 * R.num(s.get("budget")) / v if s.get("budget") else None]
+        if hr != last:
+            out.append(row); last = hr
+        else:
+            out[-1] = row
+    return out
+
+
 def market_day(ticker):
     """'KXHIGHNY-26OCT20-B67.5' -> date(2026, 10, 20)."""
     try:
