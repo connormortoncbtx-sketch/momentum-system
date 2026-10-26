@@ -295,6 +295,20 @@ pre{{white-space:pre-wrap;font-size:12.5px;margin:0}} .dot{{display:inline-block
 <span class="{cls(te - tc)}">({money(te - tc, True)})</span> · decided: {sum(r['p'] > .97 for r in g)} won, {sum(r['p'] < .03 for r in g)} lost</h2>
 <div class="scroll"><table><tr><th>City</th><th>Bucket</th><th>Side</th><th>Qty</th><th>Cost</th><th>Chance</th><th>Sell now</th><th>Expected</th><th>vs cost</th></tr>
 {body}</table></div></div>""")
+    try:
+        for day, rs, tot in HI.recent_settled(3):
+            won = sum(1 for r in rs if r[3] > 0.005); lost = sum(1 for r in rs if r[3] < -0.005)
+            body = "".join(
+                f"<tr class='{'win' if r[3] > 0.005 else ('lose' if r[3] < -0.005 else '')}'><td>{html.escape(r[0].split('-')[0].replace('KXHIGHT', '').replace('KXHIGH', ''))}</td>"
+                f"<td>{html.escape(r[0].rsplit('-', 1)[1])}</td>"
+                f"<td>{('YES ' + format(r[1], '.0f')) if r[1] > 0.5 else (('NO ' + format(-r[1], '.0f')) if r[1] < -0.5 else 'flat')}</td>"
+                f"<td>{r[2]:.0f}</td><td>{'YES' if r[4] >= 0.5 else 'NO'}</td><td class='{cls(r[3])}'>{money(r[3], True)}</td></tr>" for r in rs)
+            h.append(f"""<div class="card"><h2>SETTLED {day:%a %b %d} -- {len(rs)} markets · <span class="{cls(tot)}">{money(tot, True)}</span>
+· {won} won, {lost} lost</h2><div class="scroll"><table><tr><th>City</th><th>Bucket</th><th>Held at close</th><th>Contracts filled</th>
+<th>Result</th><th>P&amp;L</th></tr>{body}</table></div><div class="mut">Every fill counted (round trips too), so it matches the
+settled P&amp;L table. Lottery excluded.</div></div>""")
+    except Exception as e:
+        h.append(f"<div class='card'><h2>Recently settled</h2><div class='neg'>failed: {html.escape(str(e))[:200]}</div></div>")
     if lot:
         h.append(f"""<div class="card"><h2>Weekly roll</h2>{html.escape(str(lot.get('status')))} · week {html.escape(str(lot.get('week')))}
 · leg {lot.get('leg')} / {os.environ.get('LOT_LEGS', '7')} · worth {money(lot_sell)} sold now, {money(lot_exp)} expected

@@ -56,6 +56,27 @@ def account_series():
     return out
 
 
+def recent_settled(n_days=3):
+    """Settled positions of the last n market days, per market: [(day, [(ticker, net contracts held at settlement
+    (+YES / -NO), contracts filled, P&L $, result 1/0)], day P&L $)] newest first. P&L counts every fill, including
+    round trips, so it matches the settled-P&L table."""
+    res = R.market_results()
+    by = {}
+    for f in R.rows("fills"):
+        x = f.get("fill") or f
+        tk = x.get("ticker")
+        if tk not in res:
+            continue
+        d, yp, c = R.fill_yes(x)
+        m = by.setdefault(market_day(tk), {}).setdefault(tk, [0.0, 0.0, 0.0])
+        m[0] += d * c; m[1] += c; m[2] += (d * (res[tk] - yp) * c * 100 - R.dollars_field(x, "fee_cost")) / 100
+    out = []
+    for day in sorted((k for k in by if k), reverse=True)[:n_days]:
+        rows = sorted(((tk, v[0], v[1], v[2], res[tk]) for tk, v in by[day].items()), key=lambda r: r[0])
+        out.append((day, rows, sum(r[3] for r in rows)))
+    return out
+
+
 def deployment_series():
     """Hourly [(hour, % of the bot's account value tied up in positions at cost, % budget)] from the snapshots.
     % of value (not $) so it stays comparable as the account grows or shrinks; the budget is BUDGET_PCT of value."""
