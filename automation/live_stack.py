@@ -218,7 +218,7 @@ def main():
     from automation.notifier import notify_success, notify_alert
     if not os.environ.get("ALPACA_LIVE_KEY"):
         print("::notice::live stack: no ALPACA_LIVE_KEY secret -- skipped"); return
-    mode = os.environ.get("LIVE_STACK_MODE", "dry").strip().lower()
+    mode = (os.environ.get("LIVE_STACK_MODE") or "dry").strip().lower()
     live = mode == "live"
     today = dt.date.today()
     tc = client()
