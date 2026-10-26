@@ -1,0 +1,28 @@
+name: Alpaca key check (which keys work; prints status codes only)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check each key against its account endpoint
+        env:
+          K1: ${{ secrets.ALPACA_API_KEY }}
+          S1: ${{ secrets.ALPACA_SECRET_KEY }}
+          K2: ${{ secrets.ALPACA_PAPER2_KEY }}
+          S2: ${{ secrets.ALPACA_PAPER2_SECRET }}
+          K3: ${{ secrets.ALPACA_PAPER3_KEY }}
+          S3: ${{ secrets.ALPACA_PAPER3_SECRET }}
+          KL: ${{ secrets.ALPACA_LIVE_KEY }}
+          SL: ${{ secrets.ALPACA_LIVE_SECRET }}
+        run: |
+          chk() { [ -z "$2" ] && { echo "::notice::$1: not set"; return; }
+            c=$(curl -s -o /dev/null -w '%{http_code}' -H "APCA-API-KEY-ID: $2" -H "APCA-API-SECRET-KEY: $3" "$4/v2/account")
+            echo "::notice::$1: HTTP $c"; }
+          chk "main paper (ALPACA_API_KEY)" "$K1" "$S1" https://paper-api.alpaca.markets
+          chk "paper 2 (ALPACA_PAPER2)" "$K2" "$S2" https://paper-api.alpaca.markets
+          chk "paper 3 (ALPACA_PAPER3)" "$K3" "$S3" https://paper-api.alpaca.markets
+          chk "live (ALPACA_LIVE)" "$KL" "$SL" https://api.alpaca.markets
