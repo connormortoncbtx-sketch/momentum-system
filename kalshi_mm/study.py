@@ -2,7 +2,8 @@
 kalshi_mm/study.py -- where does the bot's edge come from, and where is it given away?   kmm study [YYYY-MM-DD]
 
 Every settled fill (all of history, or market days >= the date given), P&L per contract to settlement, cut by what
-the bot knew or controlled at the time of the fill:
+the bot knew or controlled at the time of the fill (plus the 60-minute MARKOUT: how far the market's mid moved our way
+in the hour after the fill -- several times less noisy than settlement, so a lever shows up in it much sooner):
   price paid, side, city, minute of the hour, hour of day (CT), hours to the market's close, how long the order had
   rested before it filled (order age), whether other fills hit the same city-day in the previous 10 minutes (burst),
   and how far behind the best bid the order was placed.
@@ -51,11 +52,18 @@ def close_times(tickers):
     return out
 
 
-def stats(rows):
-    """(contracts, city-days, mean c/contract, 2 s.e. clustered by city-day)."""
+def stats(rows, field="pnl"):
+    """(contracts, city-days, mean c/contract, 2 s.e. clustered by city-day). field 'pnl' (to settlement, total cents)
+    or 'm60' (markout, cents per contract; fills without one are skipped)."""
     by = {}
     for r in rows:
-        a = by.setdefault(r["ev"], [0.0, 0.0]); a[0] += r["pnl"]; a[1] += r["c"]
+        if field == "pnl":
+            v = r["pnl"]
+        elif r.get(field) is None:
+            continue
+        else:
+            v = r[field] * r["c"]
+        a = by.setdefault(r["ev"], [0.0, 0.0]); a[0] += v; a[1] += r["c"]
     N = sum(a[1] for a in by.values())
     if N <= 0:
         return 0, 0, float("nan"), float("nan")
@@ -105,6 +113,17 @@ def main():
         last.setdefault(r["ev"], []).append(r["t"])
         r["minute"] = r["t"].minute
         r["hour_ct"] = r["t"].astimezone(CT).hour
+    import diagnose as D
+    import bot as B
+    k, c = B.Kalshi("dry"), D.load_cache()
+    print("  markouts (1-minute candles, cached after the first run)...", flush=True)
+    for i, r in enumerate(fills):
+        cm = D.candles(k, c, r["tk"], r["t"] - dt.timedelta(minutes=2), r["t"] + dt.timedelta(minutes=70))
+        m60 = D.mid_after(cm, r["t"], 60)
+        r["m60"] = None if m60 is None else r["d"] * (m60 - r["yp"]) * 100
+        if i % 300 == 299:
+            D.save_cache(c); print(f"    {i + 1}/{len(fills)}", flush=True)
+    D.save_cache(c)
     half = fills[len(fills) // 2]["t"] if fills else None
     cur = [r for r in fills if r["held"] >= 0.5 and not 45 <= r["minute"] <= 59]   # what the bot trades today
     print(f"\nP&L per contract to settlement{' from ' + str(since) if since else ''}; ±2se clustered by city-day; "
@@ -113,7 +132,8 @@ def main():
 
     def table(title, key, rows):
         print(title)
-        print(f"  {'group':22} {'contracts':>9} {'city-days':>9} {'c/contract':>10} {'±2se':>7} {'1st half':>9} {'2nd half':>9}")
+        print(f"  {'group':22} {'contracts':>9} {'city-days':>9} {'c/contract':>10} {'±2se':>7} {'1st half':>9} {'2nd half':>9}"
+              f" {'markout60':>9} {'±2se':>7} {'1st':>7} {'2nd':>7}")
         g = {}
         for r in rows:
             kk = key(r)
@@ -122,12 +142,16 @@ def main():
         for kk in sorted(g, key=lambda z: (str(type(z)), z)):
             N, G, m, se = stats(g[kk])
             a = stats([r for r in g[kk] if r["t"] < half]); b = stats([r for r in g[kk] if r["t"] >= half])
-            print(f"  {str(kk):22} {N:9.0f} {G:9d} {m:+9.2f}c {se:6.2f}c {a[2]:+8.2f}c {b[2]:+8.2f}c")
+            _, _, mk, mse = stats(g[kk], "m60")
+            ma = stats([r for r in g[kk] if r["t"] < half], "m60")[2]; mb = stats([r for r in g[kk] if r["t"] >= half], "m60")[2]
+            print(f"  {str(kk):22} {N:9.0f} {G:9d} {m:+9.2f}c {se:6.2f}c {a[2]:+8.2f}c {b[2]:+8.2f}c"
+                  f" {mk:+8.2f}c {mse:6.2f}c {ma:+6.1f}c {mb:+6.1f}c")
         print()
 
     for label, rows in (("ALL", fills), ("CURRENT", cur)):
         N, G, m, se = stats(rows)
-        print(f"{label}: {m:+.2f}c ±{se:.2f}c per contract over {N:.0f} contracts, {G} city-days")
+        _, _, mk, mse = stats(rows, "m60")
+        print(f"{label}: {m:+.2f}c ±{se:.2f}c per contract over {N:.0f} contracts, {G} city-days; 60-min markout {mk:+.2f}c ±{mse:.2f}c")
     print()
     band = lambda p: "<20c" if p < .2 else "20-50c" if p < .5 else "50-60c" if p < .6 else "60-70c" if p < .7 else "70-80c" if p < .8 else "80-90c" if p < .9 else "90c+"
     table("PRICE PAID for the side held (ALL)", lambda r: band(r["held"]), fills)
