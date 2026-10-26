@@ -192,13 +192,7 @@ def step(k, st, now):
             if res == "yes":
                 st["cash"] = round(st["cash"] + payout, 2)
                 if st["leg"] >= LEGS:
-                    # Connor (Oct 26): a jackpot is BANKED -- set aside for him to withdraw, never handed to the market
-                    # maker; next Monday starts again from the $5 stake. lotfiles.cash_in_bal keeps it out of the bot's
-                    # money until 'kmm lottery-withdrawn' clears it after the withdrawal.
-                    st["banked"] = round(float(st.get("banked") or 0) + st["cash"], 2)
-                    say(f"JACKPOT: all {LEGS} legs hit -- ${STAKE:.2f} became ${st['cash']:.2f}. BANKED: withdraw "
-                        f"${st['banked']:.2f} from Kalshi, then run 'kmm lottery-withdrawn'. Next roll starts Monday at ${STAKE:.2f}.", prio="high")
-                    st["cash"] = 0.0
+                    say(f"JACKPOT: all {LEGS} legs hit -- ${STAKE:.2f} became ${st['cash']:.2f}. Roll stops here.", prio="high")
                     st["status"] = "done"
                 else:
                     say(f"Leg {st['leg']}/{LEGS} hit ({st['ticker']}): now ${st['cash']:.2f}. Rolling into leg {st['leg'] + 1}.")

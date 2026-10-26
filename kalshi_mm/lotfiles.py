@@ -71,13 +71,12 @@ def cash_in_bal(st, live_pos, result=None):
     st: lottery.json; live_pos: {ticker: contracts} from the account; result: YES value (1/0) of the roll's market
     once decided (used only when its position has already been paid out). lottery.json is updated every 15 min, so
     fills and payouts since its last pass are reconstructed from the live position, not taken from the file."""
-    banked = max(0.0, num(st.get("banked")))      # a jackpot waiting to be withdrawn: never the bot's money
     if st.get("status") not in ("buying", "holding"):
-        return banked                               # idle / done: leftovers of a missed week go back to the pool
+        return 0.0                                  # idle / done: whatever is left is back in the common pool
     cash, held, px, tk = num(st.get("cash")), num(st.get("held")), num(st.get("price")), st.get("ticker")
     if not tk:
-        return banked + max(0.0, cash)
+        return max(0.0, cash)
     p = num(live_pos.get(tk, 0.0))
     if p <= 0 and held > 0:                         # position gone = settled; the payout is already in cash
-        return banked + max(0.0, cash + held * (px if result is None else result))
-    return banked + max(0.0, cash - (p - held) * px)   # fills since its last pass were paid at its order price
+        return max(0.0, cash + held * (px if result is None else result))
+    return max(0.0, cash - (p - held) * px)         # fills since its last pass were paid at its order price
