@@ -201,7 +201,12 @@ def main():
         print(f"::notice::paper condor {VARIANT}: no {KEY_ENV} secret -- skipped"); return
     now = dt.datetime.now(ET)
     state = json.loads(STATE.read_text()) if STATE.exists() else {"days": {}}
-    rows = reconcile(state, now.date())
+    try:
+        rows = reconcile(state, now.date())
+    except Exception as ex:                              # never let yesterday's bookkeeping block today's entry
+        rows = []
+        print(f"::warning::paper condor {VARIANT}: reconcile failed: {str(ex)[:200]}")
+        notify_alert(f"Paper condor {VARIANT}", f"reconcile failed: {str(ex)[:200]}")
     if rows:
         with LEDGER.open("a") as fh:
             for r in rows:
