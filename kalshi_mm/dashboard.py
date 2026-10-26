@@ -155,6 +155,7 @@ def history_cards():
                         ("ALL HISTORY, current-logic trades only: favourite fills outside :45-:59, old logic included "
                          "(more data; slower quoting before Oct 22, and the filter was chosen after seeing the data)",
                          HI.convergence(filt=HI.current_logic)),
+                        ("same, weighted by contracts", HI.convergence(weight="contract", filt=HI.current_logic)),
                         ("all market days since launch (includes the old logic)", HI.convergence())):
             if not cv:
                 out.append(f"<div class='card'><h2>Is it working? {lab}</h2><div class='mut'>No settled city-days yet.</div></div>")
