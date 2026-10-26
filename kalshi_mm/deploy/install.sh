@@ -176,7 +176,7 @@ WantedBy=timers.target
 EOF
 cat > /usr/local/bin/kmm <<'KMM'
 #!/usr/bin/env bash
-# kmm status | stop | resume | logs [n] | report | positions | diagnose | lottery | update      (run with sudo)
+# kmm status | stop | resume | logs [n] | report | positions | diagnose | lottery | update | update-log   (run with sudo)
 case "${1:-status}" in
   status) systemctl --no-pager status kmm | head -5; tail -n 1 /home/kmm/data/snapshots.jsonl 2>/dev/null; echo ;;
   stop)   sudo -u kmm touch /home/kmm/data/KILL; echo "kill switch set: the bot cancels all orders within ~30s and stays stopped" ;;
@@ -187,8 +187,17 @@ case "${1:-status}" in
   positions) sudo -u kmm bash -c 'set -a; . /etc/kmm/env; /home/kmm/venv/bin/python /home/kmm/app/kalshi_mm/positions.py' ;;
   sniper) sudo -u kmm bash -c 'set -a; . /etc/kmm/env; /home/kmm/venv/bin/python /home/kmm/app/kalshi_mm/sniper.py report'; journalctl -u kmm-sniper -n 3 --no-pager | grep -v systemd ;;
   lottery) cat /home/kmm/data/lottery.json 2>/dev/null || echo "no weekly roll yet"; echo; journalctl -u kmm-lottery -n "${2:-10}" --no-pager | grep -v systemd ;;
-  update) exec bash -c "curl -fsSL https://raw.githubusercontent.com/connormortoncbtx-sketch/momentum-system/main/kalshi_mm/deploy/install.sh | bash" ;;  # exec: this script gets rewritten mid-update
-  *) echo "usage: kmm status|stop|resume|logs [n]|report|positions|diagnose|lottery|sniper|update" ;;
+  update)  # runs as its own background service, so a dropped phone/SSH session can't kill it half-way
+    U="kmm-update-$(date +%H%M%S)"
+    systemd-run --quiet --unit="$U" --collect -p Nice=10 bash -c "curl -fsSL https://raw.githubusercontent.com/connormortoncbtx-sketch/momentum-system/main/kalshi_mm/deploy/install.sh | bash"
+    echo "$U" > /run/kmm-last-update
+    echo "update running in the background as $U -- safe to disconnect; 'kmm update-log' shows it later. Ctrl+C stops watching only."
+    journalctl -fu "$U" -o cat --no-pager & J=$!
+    while systemctl is-active -q "$U" 2>/dev/null || systemctl is-activating -q "$U" 2>/dev/null; do sleep 2; done
+    sleep 1; kill $J 2>/dev/null; echo "-- update finished"
+    exit ;;  # exit before bash reads past this point: the update rewrites this file
+  update-log) journalctl -u "$(cat /run/kmm-last-update 2>/dev/null)" -o cat --no-pager | tail -n "${2:-60}" ;;
+  *) echo "usage: kmm status|stop|resume|logs [n]|report|positions|diagnose|lottery|sniper|update|update-log" ;;
 esac
 KMM
 chmod 755 /usr/local/bin/kmm
