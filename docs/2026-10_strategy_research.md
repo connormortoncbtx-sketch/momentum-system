@@ -2774,3 +2774,28 @@ months, or Kalshi publishes low perp fees, revisit with mark-vs-spot basis and f
   spot BTC: ~9-15%/yr gross on notional, ~7-11%/yr on capital after margin collateral, i.e. ~3-7 pts over T-bills,
   market-neutral, with venue / funding-flip (only 52% of settlements positive) / liquidation risk and 5 months of
   history. Next: track it as a no-order shadow (daily funding accrued on a hedged short) before any application.
+
+## Weather categories beyond daily highs: is there room to scale? (Oct 27, 2026)
+`research/kalshi/weather_other.py`: a live inventory of all ~250 Climate & Weather series, plus the bot's deep-fill test (2¢ behind, 5-lot, held to settlement) on every series with at least 10 settled markets. The 8 daily highs are the control (median +2.6¢ per market). Capital velocity is added because a cent earned on money locked up for a month is worth far less than a cent earned on money locked up for a day.
+
+| kind | 24h volume now | bot's test | capital held |
+|---|---|---|---|
+| daily highs (24 cities) | 311k | control +2.6¢ | ~0.5 day |
+| rain: 90% is KXRAIN daily | 283k | KXRAIN -0.3¢ (t -0.1): no edge | ~0.7 day |
+| rain: KXRAINWKND weekly | 3k | +11.7¢, t 2.3, 35 open markets | ~1 day |
+| rain: monthly city series | <6k each | KXRAINLAXM +6.9¢ t 6.9 | ~16 days |
+| daily lows | 54k | ≤0 (Oct 19: skip) | |
+| hourly temps | 30k | scan -11¢ weighted; closes inside the bot's 6h rule | hours |
+| snow monthly (season starting) | <1k now | +4–7¢ | ~9 days |
+| hurricanes / climate / disasters | 3–10k (OI 0.2–0.5M) | +2–10¢ on few markets | 7–15 days |
+| ski resort opening dates | ~45k (Aspen, Alta lead) | untested: annual, too few settled | weeks |
+| heat | ~0 | dead | |
+
+Conclusions:
+- Capacity is not what limits growth. The bot fills a few hundred contracts a day against 311k of daily-high volume, so even at $4k it would be well under 1% of that flow. Cutting weak cities does not shrink the room left to grow.
+- No other weather category combines the volume and the edge of daily highs. The one large pool, the KXRAIN daily rain markets, shows no edge.
+- Long-dated markets (snow, hurricanes, climate, disasters) do show positive edge, but they lock capital up 10–30× longer. Per dollar per day they earn roughly a tenth of daily highs.
+- The scale path, in order:
+  1. Add the next-tier daily-high cities (HOU, MIN, PHX, SEA, SF; Oct 19 study).
+  2. Raise caps on the cap ladder.
+  3. Possibly add one small extra: KXRAINWKND. It is weekly, with a good edge but thin volume, and needs per-series windows. Shadow it before any money goes in.
