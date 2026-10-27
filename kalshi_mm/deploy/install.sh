@@ -190,6 +190,15 @@ case "${1:-status}" in
   windows) sudo -u kmm bash -c 'set -a; . /etc/kmm/env; cd /home/kmm/app/kalshi_mm; /home/kmm/venv/bin/python window_check.py "$@"' _ ${2:+"$2"} ;;
   sniper) sudo -u kmm bash -c 'set -a; . /etc/kmm/env; /home/kmm/venv/bin/python /home/kmm/app/kalshi_mm/sniper.py report'; journalctl -u kmm-sniper -n 3 --no-pager | grep -v systemd ;;
   lottery) cat /home/kmm/data/lottery.json 2>/dev/null || echo "no weekly roll yet"; echo; journalctl -u kmm-lottery -n "${2:-10}" --no-pager | grep -v systemd ;;
+  calibrate)  # backtest vs real fills; background service (tape download takes ~10 min the first time)
+    U="kmm-calibrate-$(date +%H%M%S)"; echo "$U" > /run/kmm-last-calibrate
+    systemd-run --quiet --unit="$U" --collect -p Nice=10 -p User=kmm -p EnvironmentFile=/etc/kmm/env \
+      -p WorkingDirectory=/home/kmm/app/kalshi_mm /home/kmm/venv/bin/python -u calibrate.py ${2:+"$2"}
+    echo "calibration running in the background as $U -- safe to disconnect; 'kmm calibrate-log' shows it later."
+    journalctl -fu "$U" -o cat --no-pager & J=$!
+    while systemctl is-active -q "$U" 2>/dev/null || systemctl is-activating -q "$U" 2>/dev/null; do sleep 2; done
+    sleep 1; kill $J 2>/dev/null ;;
+  calibrate-log) journalctl -u "$(cat /run/kmm-last-calibrate 2>/dev/null)" -o cat --no-pager | tail -n "${2:-40}" ;;
   update)  # runs as its own background service, so a dropped phone/SSH session can't kill it half-way
     U="kmm-update-$(date +%H%M%S)"
     systemd-run --quiet --unit="$U" --collect -p Nice=10 bash -c "curl -fsSL https://raw.githubusercontent.com/connormortoncbtx-sketch/momentum-system/main/kalshi_mm/deploy/install.sh | bash"
@@ -200,7 +209,7 @@ case "${1:-status}" in
     sleep 1; kill $J 2>/dev/null; echo "-- update finished"
     exit ;;  # exit before bash reads past this point: the update rewrites this file
   update-log) journalctl -u "$(cat /run/kmm-last-update 2>/dev/null)" -o cat --no-pager | tail -n "${2:-60}" ;;
-  *) echo "usage: kmm status|stop|resume|logs [n]|report|positions|diagnose|lottery|sniper|windows|study|edge-now|update|update-log" ;;
+  *) echo "usage: kmm status|stop|resume|logs [n]|report|positions|diagnose|lottery|sniper|windows|study|edge-now|calibrate|calibrate-log|update|update-log" ;;
 esac
 KMM
 chmod 755 /usr/local/bin/kmm
