@@ -1,0 +1,445 @@
+series,open_markets,vol_24h,open_interest,next_close,title,category,frequency,fee_type,fee_multiplier,tags,kind
+HURNO,0,0.0,0.0,,Hurricane hits New Orleans,Climate and Weather,annual,quadratic,1.0,"['Hurricanes', 'Natural disasters']",hurricane / tropical
+KXRAINMINM,7,0.0,153.85,2026-12-01T04:59:59Z,Rain in Minneapolis,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],rain
+KXLAXSNOWM,0,0.0,0.0,,LA Snowfall Markets,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],snow
+KXKILLINGTONOPEN,5,16.0,1038.98,2026-11-07T15:00:00Z,Killington Opening,Climate and Weather,annual,quadratic,1.0,['Ski Resorts'],other
+KXEARTHQUAKEM7,0,0.0,0.0,,Will there be a 7.0 mag earthquake in June,Climate and Weather,one_off,quadratic,1.0,['Natural disasters'],disaster
+HURCTOTMAJ,0,0.0,0.0,,Number of major hurricanes,Climate and Weather,annual,quadratic,1.0,"['Hurricanes', 'Natural disasters']",hurricane / tropical
+KXEARTHQUAKEJAPAN,1,0.0,13209.67,2030-01-01T04:59:00Z,Earthquake in Japan,Climate and Weather,custom,quadratic,1.0,['Natural disasters'],disaster
+KXCOPPEROPEN,4,14.64,3250.56,2026-11-07T15:00:00Z,Copper Mountain Opening,Climate and Weather,annual,quadratic,1.0,['Ski Resorts'],other
+KXHURCAT,132,282.54,176454.93,2026-12-02T04:59:00Z,Hurricane category,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXHIGHTVHHH,0,0.0,0.0,,Daily high temp Hong Kong,Climate and Weather,daily,quadratic,1.0,,daily high
+KXRAIND,0,0.0,0.0,,Rain Daily,Climate and Weather,daily,quadratic,1.0,,rain
+KXERUPTSUPER,1,0.0,10818.47,2050-01-01T04:59:00Z,Supervolcano,Climate and Weather,custom,quadratic,1.0,,disaster
+KXHIGHLAX,6,36242.57,30139.68,2026-10-28T08:00:00Z,Highest temperature in Los Angeles,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily high
+HURCATI,0,0.0,0.0,,Hurricane Ida size,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXHOBBYTEMP,0,0.0,0.0,,Maximum temperature at Houston Hobby Airport,Climate and Weather,one_off,quadratic,1.0,,daily high
+KXARCTICICEMIN,0,0.0,0.0,,Arctic sea ice min extent,Climate and Weather,custom,quadratic,1.0,['Climate change'],climate
+KXLOWTKSAN,0,0.0,0.0,,Low Temperature San Diego,Climate and Weather,daily,quadratic,1.0,,daily low
+KXRAINSEAM,14,1971.43,12709.849999999999,2026-11-01T03:59:59Z,RAIN SEATTLE,Climate and Weather,custom,quadratic,1.0,['Snow and rain'],rain
+KXEMERGENCYCOL,0,0.0,0.0,,Natural disaster hits Columbus,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],disaster
+HIGHNY,0,0.0,0.0,,Highest temperature in NYC,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily high
+KXHURPATHGENERAL,0,0.0,0.0,,HURRICANE GENERAL LANDFALL,Climate and Weather,one_off,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXLOWTPHIL,6,1792.9199999999998,1642.3999999999999,2026-10-28T05:00:00Z,Lowest temperature in Philadelphia,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily low
+KXLOWDEN,0,0.0,0.0,,Lowest temperature in Denver,Climate and Weather,daily,quadratic,1.0,,daily low
+KXHIGHTEWR,6,590.8100000000001,532.8100000000001,2026-10-28T05:00:00Z,"Newark, NJ (EWR) Daily Max Temp",Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily high
+KXRAINPHILM,7,0.0,0.0,2026-12-01T04:59:59Z,Rain in Philadelphia,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],rain
+KXVEI4,3,1.0,5566.18,2027-06-29T15:00:00Z,VEI 4,Climate and Weather,one_off,quadratic,1.0,['Natural disasters'],other
+KXMONTHLOWMSN,0,0.0,0.0,,Madison monthly low temperature,Climate and Weather,monthly,quadratic,1.0,,other
+KXTEMP,0,0.0,0.0,,Average annual temperature deviation,Climate and Weather,annual,quadratic,1.0,,climate
+KXLOWTLTFM,0,0.0,0.0,,Daily low temp Istanbul,Climate and Weather,daily,quadratic,1.0,,daily low
+KXRAINDPARIS,1,0.0,1491.8,2027-09-04T05:59:00Z,Daily Rain - Paris ,Climate and Weather,daily,quadratic,1.0,['Snow and rain'],rain
+KXHIGHTPHX,6,7280.65,6425.33,2026-10-28T07:00:00Z,Phoenix High Temperature Daily,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily high
+KXERUPTETNA,0,0.0,0.0,,Etna,Climate and Weather,custom,quadratic,1.0,,disaster
+KXRAINDCM,7,20.0,20.0,2026-12-01T04:59:59Z,Rain in Washington DC,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],rain
+KXDROUGHTLEVEL,0,0.0,0.0,,Drought level,Climate and Weather,one_off,quadratic,1.0,['Natural disasters'],disaster
+KXRAINCLLM,11,109.02000000000001,3578.0799999999995,2026-11-01T03:59:59Z,RAIN COLLEGE STATION,Climate and Weather,custom,quadratic,1.0,['Snow and rain'],rain
+AVGTEMP,0,0.0,0.0,,US average temp,Climate and Weather,monthly,quadratic,1.0,['Climate change'],other
+KXLOWTOKC,6,3880.5899999999997,3135.5299999999997,2026-10-28T06:00:00Z,Low Temperature Oklahoma City,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily low
+KXTEMPMIAH,10,24199.019999999997,18778.969999999994,2026-10-27T14:00:00Z,Hourly Directional Miami Temperature,Climate and Weather,hourly,quadratic,1.0,['Hourly temperature'],hourly temp
+EMERGENCYWIL,0,0.0,0.0,,Natural disaster hits Wilmington,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],disaster
+KXRAINCHIM,12,345.37,4077.6400000000003,2026-11-01T03:59:59Z,Rain Chicago,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],rain
+RAINNYCM,0,0.0,0.0,,Monthly rain in New York,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],rain
+KXHIGHTSATX,6,5432.91,4297.16,2026-10-28T06:00:00Z,San Antonio Daily Maximum Temperature,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily high
+EMERGENCYMIA,0,0.0,0.0,,Natural disaster hits Miami,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],disaster
+KXHURCLAND,0,0.0,0.0,,Hurricanes making landfall,Climate and Weather,custom,quadratic,1.0,"['Hurricanes', 'Natural disasters']",hurricane / tropical
+KXLOWTWSSS,0,0.0,0.0,,Daily low temp Singapore,Climate and Weather,daily,quadratic,1.0,,daily low
+KXRAINHOUM,13,114.58,4134.48,2026-11-01T03:59:59Z,Rain Houston,Climate and Weather,custom,quadratic,1.0,['Snow and rain'],rain
+KXDCSNOWM,6,28.43,2397.43,2027-01-01T04:59:00Z,DC Monthly Snow,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],snow
+KXBACHELOROPEN,5,1979.14,519.52,2026-12-12T15:00:00Z,Mt. Bachelor Opening,Climate and Weather,annual,quadratic,1.0,['Ski Resorts'],other
+KXAVGTKDFW,0,0.0,0.0,,Average Weekly Temp in Dallas ,Climate and Weather,weekly,quadratic,1.0,['Heatwaves'],weekly avg temp
+EMERGENCYNOLA,0,0.0,0.0,,Natural disaster in New Orleans,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],disaster
+KXHURRICANE,11,29.0,12277.190000000002,2026-12-01T15:00:00Z,Hurricanes,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXLOWTCYYZ,0,0.0,0.0,,Daily low temp Toronto,Climate and Weather,daily,quadratic,1.0,,daily low
+KXEARTHQUAKE,0,0.0,0.0,,earthquake,Climate and Weather,custom,quadratic,1.0,['Natural disasters'],disaster
+KXHIGHUS,0,0.0,0.0,,High temp in United States,Climate and Weather,daily,quadratic,1.0,,daily high
+HIGHMIA,0,0.0,0.0,,Highest temperature in Miami,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily high
+KXAVGTKSAT,0,0.0,0.0,,Average Weekly Temp in San Antonio ,Climate and Weather,weekly,quadratic,1.0,['Heatwaves'],weekly avg temp
+TEMPMON,0,0.0,0.0,,Global monthly temperature average,Climate and Weather,monthly,quadratic,1.0,['Global heat'],climate
+KXALYOPEN,5,24.0,2319.5299999999997,2026-11-21T15:00:00Z,Alyeska Opening,Climate and Weather,annual,quadratic,1.0,['Ski Resorts'],other
+KXHURRICANENAMES,38,39.89,80539.18000000001,2026-12-01T15:00:00Z,Hurricane Names,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXEMERGENCYHOU,0,0.0,0.0,,Natural disaster hits Houston,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],disaster
+KXHURPATHAL,1,6.59,13290.08,2026-12-31T04:59:00Z,hurricane hits alabama,Climate and Weather,one_off,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXHIGHTEGLL,0,0.0,0.0,,Daily high temp London ,Climate and Weather,daily,quadratic,1.0,,daily high
+KXDENHIGH,0,0.0,0.0,,Highest temperature in Denver,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily high
+KXHIGHNYD,0,0.0,0.0,,Hourly Directional NYC Temperature,Climate and Weather,hourly,quadratic,1.0,['Hourly temperature'],hourly temp
+EMERGENCYCOL,0,0.0,0.0,,Natural disaster hits Columbus,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],disaster
+KXHURNJ,0,0.0,0.0,,Hurricane hitting New Jersey,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXHIGHTOMDB,0,0.0,0.0,,Daily high temp Dubai,Climate and Weather,daily,quadratic,1.0,,daily high
+KXHURCAL,0,0.0,0.0,,Hurricane hits California,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXTEMPBOSH,0,0.0,0.0,,Hourly Directional Boston Temperature,Climate and Weather,hourly,quadratic,1.0,['Hourly temperature'],hourly temp
+KXRAINSGFM,7,0.0,0.0,2026-12-01T04:59:59Z,Rain in Springfield,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],rain
+SNOW,0,0.0,0.0,,Snow totals,Climate and Weather,one_off,quadratic,1.0,,snow
+KXHURRLANDFL4,1,0.0,18056.55,2027-01-01T04:58:00Z,Florida Category 4+ hurricane landfall,Climate and Weather,one_off,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXGTEMP,2,1648.07,121321.45,2027-01-01T04:59:00Z,Hottest year ever,Climate and Weather,annual,quadratic,1.0,['Climate change'],climate
+MEAD,0,0.0,0.0,,Lake Mead water levels,Climate and Weather,monthly,quadratic,1.0,,disaster
+USCLIMATE,0,0.0,0.0,,US climate goals,Climate and Weather,one_off,quadratic,1.0,['Climate change'],climate
+KXHIGHTSDF,6,363.46000000000004,327.96000000000004,2026-10-28T05:00:00Z,HIGHEST Temperature SATX,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily high
+ARCTICICEMAX,0,0.0,0.0,,Arctic sea ice max extent,Climate and Weather,custom,quadratic,1.0,['Climate change'],climate
+KXCORIVER,0,0.0,0.0,,Lake Mead water level projections,Climate and Weather,annual,quadratic,1.0,['Climate change'],disaster
+KXMKESNOWM,6,583.06,246.46999999999997,2027-01-01T05:59:00Z,Milwaukee monthly snowfall,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],snow
+KXAVGTKOKC,0,0.0,0.0,,Average Weekly Temp in Oklahoma City ,Climate and Weather,weekly,quadratic,1.0,['Heatwaves'],weekly avg temp
+KXDVHIGH,0,0.0,0.0,,Death Valley temperature,Climate and Weather,daily,quadratic,1.0,,other
+KXHIGHTHOU,6,6491.0,5436.610000000001,2026-10-28T06:00:00Z,Daily High Temperature Houston,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily high
+HURCATFL,0,0.0,0.0,,Hurricane warning FL,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXHIGHTEHAM,0,0.0,0.0,,Amsterdam Daily High Temperature,Climate and Weather,daily,quadratic,1.0,,daily high
+KXEMERGENCYLA,0,0.0,0.0,,Natural disaster hits Los Angeles,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],disaster
+KXTSUNAMI,0,0.0,0.0,,Tsunami ,Climate and Weather,custom,quadratic,1.0,"['Natural disasters', 'Climate change']",other
+KXRAINHOLIDAY,0,0.0,0.0,,Where will it rain on holidays? ,Climate and Weather,custom,quadratic,1.0,['Snow and rain'],rain
+KXAVGTKLAS,0,0.0,0.0,,Average Weekly Temp in Las Vegas ,Climate and Weather,weekly,quadratic,1.0,['Heatwaves'],weekly avg temp
+KXCHISNOWM,6,1.03,632.76,2027-01-01T05:59:00Z,Chicago Snowfall Monthly,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],snow
+KXPHILHIGH,0,0.0,0.0,,Highest temperature in Philadelphia,Climate and Weather,custom,quadratic,1.0,['Daily temperature'],daily high
+KXTSNOWFALLBIGSKYM,10,46.06,80796.47,2027-01-01T06:59:00Z,Big Sky monthly snowfall,Climate and Weather,monthly,quadratic,1.0,,snow
+KXHURORL,0,0.0,0.0,,Hurricane hits Orlando,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXMAXTEMP100,0,0.0,0.0,,Max temp 100,Climate and Weather,custom,quadratic,1.0,,daily high
+KXNAMEDSTORM,8,5.1,4020.2,2026-12-01T15:00:00Z,Named Storms,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+HURWIL,0,0.0,0.0,,Hurricane hits Wilmington,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXAUSSNOWM,0,0.0,0.0,,Austin Snowfall Monthly,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],snow
+KXHURNOR,0,0.0,0.0,,Hurricane hits Norfolk,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXRAINAUSM,13,516.99,6849.01,2026-11-01T03:59:59Z,RAIN AUSTIN,Climate and Weather,custom,quadratic,1.0,['Snow and rain'],rain
+KXHMONTH,1,6917.45,16411.43,2026-11-16T03:59:00Z,Hottest month instance,Climate and Weather,monthly,quadratic,1.0,['Climate change'],climate
+KXAVGTKAUS,0,0.0,0.0,,Average Weekly Temp in Austin ,Climate and Weather,weekly,quadratic,1.0,['Heatwaves'],weekly avg temp
+HURMYR,0,0.0,0.0,,Hurricane hits North Myrtle Beach,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXWHISTLEROPEN,0,0.0,0.0,,Whistler Blackcomb opening,Climate and Weather,one_off,quadratic,1.0,['Ski Resorts'],other
+KXRAINTTNM,7,460.72,460.72,2026-12-01T04:59:59Z,Rain in Trenton,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],rain
+KXRAINDENM,14,556.6999999999999,14569.759999999997,2026-11-01T03:59:59Z,RAIN DENVER,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],rain
+KXHURRLANDNE3,1,46.79,25117.34,2027-01-01T04:58:00Z,Northeast Category 3+ hurricane landfall,Climate and Weather,one_off,quadratic,1.0,['Hurricanes'],hurricane / tropical
+HURSAV,0,0.0,0.0,,Hurricane hits Savannah,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXHOLIDAYTMAX,0,0.0,0.0,,Max temperature holiday by city,Climate and Weather,custom,quadratic,1.0,['Daily temperature'],daily high
+KXHURPATHGULFCOAST,0,0.0,0.0,,GULF COAST HURRICANE LANDFALL,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXLOWTMMMX,0,0.0,0.0,,Daily low temp Mexico City,Climate and Weather,daily,quadratic,1.0,,daily low
+KXHIGHHOU,0,0.0,0.0,,Highest temperature in Houston,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily high
+KXSNOWCHIM,0,0.0,0.0,,Total snow in Chicago,Climate and Weather,one_off,quadratic,1.0,['Snow and rain'],snow
+KXHURPATHFLA,0,0.0,0.0,,hurricane hits florida,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+EMERGENCYPHIL,0,0.0,0.0,,Natural disaster in Philadelphia,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],disaster
+KXLOWTDAL,6,2012.23,1639.5,2026-10-28T06:00:00Z,Lowest temperature Dallas,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily low
+KXHEAVENLYCLOSE,0,0.0,0.0,,Heavenly Mountain Resort Closing,Climate and Weather,annual,quadratic,1.0,['Ski Resorts'],ski / snowpack
+KXLOWNY,0,0.0,0.0,,Lowest Temperature in NYC,Climate and Weather,daily,quadratic,1.0,,daily low
+EMERGENCYDES,0,0.0,0.0,,Natural disaster hits Des Moines,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],disaster
+KXSNOWS,0,0.0,0.0,,White Christmas,Climate and Weather,annual,quadratic,1.0,,snow
+KXLOWTZBAA,0,0.0,0.0,,Beijing Daily Low Temperature,Climate and Weather,daily,quadratic,1.0,,daily low
+KXLOWTLV,6,2296.3999999999996,1556.93,2026-10-28T08:00:00Z,Las Vegas Daily Low Temperature,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily low
+KXHIGHTLFPG,0,0.0,0.0,,Daily high temp Paris,Climate and Weather,daily,quadratic,1.0,,daily high
+KXLOWTDEN,6,1842.54,1683.95,2026-10-28T07:00:00Z,Lowest temperature in Denver,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily low
+KXSTOWEOPEN,5,161.68,1663.42,2026-11-15T04:59:00Z,Stowe Mountain Resort Opening,Climate and Weather,annual,quadratic,1.0,['Ski Resorts'],ski / snowpack
+KXPARKCOPEN,5,0.56,1162.5800000000002,2026-11-22T04:59:00Z,Park City Mountain Opening,Climate and Weather,annual,quadratic,1.0,['Ski Resorts'],other
+KXDENSNOWXMAS,0,0.0,0.0,,Denver Snow Christmas,Climate and Weather,one_off,quadratic,1.0,['Snow and rain'],snow
+KXLOWTBOS,6,600.0,548.4300000000001,2026-10-28T05:00:00Z,Low Temperature Boston,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily low
+KXHURPATHHAWAII,1,577.04,52140.95,2027-01-01T04:59:00Z,HURRICANE HITS HAWAII,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXKILAUEA,0,0.0,0.0,,Kilauea eruption,Climate and Weather,one_off,quadratic,1.0,,disaster
+KXLOWTSDF,6,1271.68,1247.3,2026-10-28T05:00:00Z,Lowest Temperature SDX,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily low
+KXBOSSNOWXMAS,0,0.0,0.0,,Boston White Christmas,Climate and Weather,one_off,quadratic,1.0,['Snow and rain'],snow
+KXASPENMTNOPEN,5,19825.190000000002,58043.54000000001,2026-11-21T15:00:00Z,Aspen Mountain Opening,Climate and Weather,annual,quadratic,1.0,['Ski Resorts'],other
+KXRAINSATXM,7,0.0,0.0,2026-12-01T04:59:59Z,Rain in San Antonio,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],rain
+KXHURPATHSCAROLINA,0,0.0,0.0,,hurricane hits SOUTH CAROLINA,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXTEMPCHIHS,10,2189.91,714.85,2026-10-27T14:00:00Z,Hourly Directional Chicago Metro Temperature,Climate and Weather,hourly,quadratic,1.0,['Hourly temperature'],hourly temp
+KXTEMPLAHS,0,0.0,0.0,,Hourly Directional Coastal LA Temperature,Climate and Weather,hourly,quadratic,1.0,,hourly temp
+KXHEATWARNING,0,0.0,0.0,,Heat warning,Climate and Weather,custom,quadratic,1.0,,heat
+KXEMERGENCYPHIL,0,0.0,0.0,,Natural disaster in Philadelphia,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],disaster
+KXLOWTLSSG,0,0.0,0.0,,Daily low temp Geneva,Climate and Weather,daily,quadratic,1.0,,daily low
+KXHIGHTYSSY,0,0.0,0.0,,Daily high temp Sydney,Climate and Weather,daily,quadratic,1.0,,daily high
+KXRAINSTLM,7,0.0,0.0,2026-12-01T04:59:59Z,Rain in St. Louis,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],rain
+KXAVGTATL,0,0.0,0.0,,Average Weekly Temp in Atlanta ,Climate and Weather,weekly,quadratic,1.0,['Heatwaves'],weekly avg temp
+KXECLIPSECOVER,0,0.0,0.0,,Cloud coverage in cities during eclipse,Climate and Weather,one_off,quadratic,1.0,['Space'],other
+KXLOWTSBGR,0,0.0,0.0,,Daily low temp Sao Paulo ,Climate and Weather,daily,quadratic,1.0,,daily low
+KXLOWTPHX,6,2389.87,1929.5,2026-10-28T07:00:00Z,Low Temperature Phoenix,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily low
+KXHIGHTOKC,6,10146.98,8781.82,2026-10-28T06:00:00Z,Oklahoma City Maximum High Temperature,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily high
+KXTEMPAUSH,0,0.0,0.0,,Hourly Directional Austin Temperature,Climate and Weather,hourly,quadratic,1.0,['Hourly temperature'],hourly temp
+KXHIGHTEDDF,0,0.0,0.0,,Daily high temp Frankfurt,Climate and Weather,daily,quadratic,1.0,,daily high
+KXHURCITYTPA,6,114.0,11922.800000000001,2026-12-01T04:59:00Z,Tampa hurricane landfall,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXPHILSNOWM,6,14.44,60834.969999999994,2027-01-01T04:59:00Z,Philadelphia Monthly Snow,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],snow
+HURMIA,0,0.0,0.0,,Hurricane hits Miami,Climate and Weather,custom,quadratic,1.0,"['Hurricanes', 'Natural disasters']",hurricane / tropical
+KXEARTHQUAKEJAPANTATSUKI,0,0.0,0.0,,Earthquake in Japan July 2025,Climate and Weather,custom,quadratic,1.0,['Natural disasters'],disaster
+KXLOWTCHI,6,2765.69,2483.84,2026-10-28T06:00:00Z,Lowest Temperature Chicago,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily low
+KXHURCROSSHOU,0,0.0,0.0,,Houston hurricane crossing,Climate and Weather,custom,quadratic,1.0,,hurricane / tropical
+KXHURHAT,0,0.0,0.0,,Hurricane hits Hatteras Island,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXMEAD,8,42.830000000000005,8396.880000000001,2027-01-07T15:00:00Z,Lake Mead water levels,Climate and Weather,monthly,quadratic,1.0,,disaster
+KXRAINLEXM,13,112.3,2184.2,2026-11-01T03:59:59Z,RAIN LEXINGTON,Climate and Weather,custom,quadratic,1.0,['Snow and rain'],rain
+KXRAINBOSM,7,0.0,419.81,2026-12-01T04:59:59Z,Rain in Boston,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],rain
+KXRAINDTWM,7,729.8,972.61,2026-12-01T04:59:59Z,Rain in Detroit,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],rain
+HMONTHRANGE,0,0.0,0.0,,Monthly Temperature Increase (ºC),Climate and Weather,custom,quadratic,1.0,['Climate change'],climate
+KXLOWPHIL,0,0.0,0.0,,Lowest temperature in Philadelphia,Climate and Weather,daily,quadratic,1.0,,daily low
+KXHIGHTMMMX,0,0.0,0.0,,Daily high temp Mexico City,Climate and Weather,daily,quadratic,1.0,,daily high
+EARTHQUAKE,0,0.0,0.0,,earthquake,Climate and Weather,custom,quadratic,1.0,['Natural disasters'],disaster
+KXFEMA,0,0.0,0.0,,States that declare natural disasters,Climate and Weather,annual,quadratic,1.0,,disaster
+KXDALSNOWM,0,0.0,0.0,,Dallas Snowfall Monthly,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],snow
+KXHURWIL,0,0.0,0.0,,Hurricane hits Wilmington,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+HURCHARL,0,0.0,0.0,,Hurricane hits Charleston,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXHIGHMIA,6,21958.0,16642.62,2026-10-28T05:00:00Z,Highest temperature in Miami,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily high
+ERCOTX,0,0.0,0.0,,Texas share of electricity from renewables,Climate and Weather,monthly,quadratic,1.0,['Climate change'],other
+KXRAINSFOM,14,354.37,3183.47,2026-11-01T03:59:59Z,RAIN SAN FRANCISCO,Climate and Weather,custom,quadratic,1.0,['Snow and rain'],rain
+FEMA,0,0.0,0.0,,States that declare natural disasters,Climate and Weather,annual,quadratic,1.0,,disaster
+KXNEXTHURDATE,0,0.0,0.0,,Next hurricane date,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXBEAVEROPEN,5,0.0,1586.22,2026-11-22T04:59:00Z,Beaver Creek Resort Opening,Climate and Weather,annual,quadratic,1.0,['Ski Resorts'],ski / snowpack
+KXRAINTPAM,7,1195.67,866.0,2026-12-01T04:59:59Z,Rain in Tampa,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],rain
+KXRAINNYCW,0,0.0,0.0,,How much will it rain in NYC this week? ,Climate and Weather,weekly,quadratic,1.0,['Snow and rain'],rain
+KXSNOWAZ,0,0.0,0.0,,Snow in Phoenix,Climate and Weather,custom,quadratic,1.0,,snow
+KXAVGTKMSY,0,0.0,0.0,,Average Weekly Temp in New Orleans ,Climate and Weather,weekly,quadratic,1.0,['Heatwaves'],weekly avg temp
+KXHURPATHGENERALMAJOR,0,0.0,0.0,,MAJOR HURRICANE GENERAL LANDFALL,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXRAINPVDM,12,149.4,1614.9,2026-11-01T03:59:59Z,RAIN PROVIDENCE,Climate and Weather,custom,quadratic,1.0,['Snow and rain'],rain
+KXHIGHTRJTT,0,0.0,0.0,,Daily high temp Tokyo,Climate and Weather,daily,quadratic,1.0,,daily high
+KXHURJACKFL,0,0.0,0.0,,Hurricane hits Jacksonville,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+RAINNYC,0,0.0,0.0,,NYC rain,Climate and Weather,daily,quadratic,1.0,['Snow and rain'],rain
+KXNORTHSTARCLOSE,0,0.0,0.0,,Northstar California Resort Closing,Climate and Weather,annual,quadratic,1.0,['Ski Resorts'],ski / snowpack
+KXECLIPSECOVERBUFF,0,0.0,0.0,,Eclipse Cover Buffalo,Climate and Weather,one_off,quadratic,1.0,['Space'],other
+KXBEAVERCLOSE,0,0.0,0.0,,Beaver Creek Resort Closing,Climate and Weather,annual,quadratic,1.0,['Ski Resorts'],ski / snowpack
+KXHURNYC,0,0.0,0.0,,Hurricane hits NYC,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXHIGHPHIL,6,22696.86,18668.15,2026-10-28T05:00:00Z,Highest temperature in Philadelphia,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily high
+KXLOWTSATX,6,1737.42,1527.1399999999999,2026-10-28T06:00:00Z,Lowest Temperature SATX,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily low
+EMERGENCYSTL,0,0.0,0.0,,Natural disaster hits St. Louis,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],disaster
+KXHURMYR,0,0.0,0.0,,Hurricane hits North Myrtle Beach,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXNYCSNOWM,6,0.0,2307.66,2027-01-01T04:59:00Z,NYC Snowfall monthly,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],snow
+KXLOWTLAX,6,3551.69,3383.66,2026-10-28T08:00:00Z,Lowest Temperature in LA,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily low
+KXWARMING,1,0.0,4098.26,2050-01-01T04:59:00Z,Global warming,Climate and Weather,one_off,quadratic,1.0,['Climate change'],climate
+KXHEATAPHX,0,0.0,0.0,,Average weekly heat in Phoenix,Climate and Weather,weekly,quadratic,1.0,,weekly avg temp
+KXTORNADO,22,2199.0400000000004,10349.970000000001,2026-11-01T03:59:00Z,Number of Tornadoes,Climate and Weather,monthly,quadratic,1.0,['Natural disasters'],disaster
+KXPITSNOWM,6,0.0,1669.6999999999998,2027-01-01T04:59:00Z,Pittsburgh monthly snowfall,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],snow
+KXEMERGENCYNOLA,0,0.0,0.0,,Natural disaster in New Orleans,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],disaster
+KXBRECKOPEN,5,24.99,4320.12,2026-11-01T04:59:00Z,Breckenridge Ski Resort Opening,Climate and Weather,annual,quadratic,1.0,['Ski Resorts'],ski / snowpack
+KXHIGHNY,6,67944.17,50534.5,2026-10-28T05:00:00Z,Highest temperature in NYC,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily high
+KXHIGHTTTN,6,1710.63,1686.63,2026-10-28T05:00:00Z,"Trenton, NJ Daily Max Temp",Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily high
+KXSNOWNY,0,0.0,0.0,,Snow in NYC,Climate and Weather,custom,quadratic,1.0,['Snow and rain'],snow
+KXHURCTOT,9,211.38,40295.98,2026-12-02T04:59:00Z,Number of hurricanes,Climate and Weather,annual,quadratic,1.0,"['Hurricanes', 'Natural disasters']",hurricane / tropical
+HURORL,0,0.0,0.0,,Hurricane hits Orlando,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXWASDESTATCORN,0,0.0,0.0,,Corn,Climate and Weather,one_off,quadratic,1.0,,other
+KXHEAVENLYOPEN,5,0.0,2205.36,2026-11-22T04:59:00Z,Heavenly Mountain Resort Opening,Climate and Weather,annual,quadratic,1.0,['Ski Resorts'],ski / snowpack
+KXLOWTMIA,6,2903.3700000000003,2350.58,2026-10-28T05:00:00Z,Lowest temperature in Miami,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily low
+KXRAININDM,7,0.0,0.0,2026-12-01T04:59:59Z,Rain in Indianapolis,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],rain
+KXHIGHTEMPDEN,0,0.0,0.0,,High temperature denver,Climate and Weather,custom,quadratic,1.0,,daily high
+KXTEMPCHIMETROHS,0,0.0,0.0,,Hourly Directional Chicago Metro Temperature,Climate and Weather,hourly,quadratic,1.0,,hourly temp
+KXLOWCHI,0,0.0,0.0,,Lowest temperature in Chicago,Climate and Weather,daily,quadratic,1.0,,daily low
+KXSNOWSTORM,0,0.0,0.0,,Snowstorms,Climate and Weather,one_off,quadratic,1.0,['Snow and rain'],snow
+KXRAINCMHM,13,26.490000000000002,970.96,2026-11-01T03:59:59Z,RAIN COLUMBUS,Climate and Weather,custom,quadratic,1.0,['Snow and rain'],rain
+HURNYC,0,0.0,0.0,,Hurricane hits NYC,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXHIGHCHI,6,15795.639999999998,13457.249999999998,2026-10-28T06:00:00Z,Highest temperature in Chicago,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily high
+KXVAILOPEN,0,0.0,0.0,,Vail Mountain Opening,Climate and Weather,annual,quadratic,1.0,['Ski Resorts'],other
+HMONTH,0,0.0,0.0,,Hottest month instance,Climate and Weather,monthly,quadratic,1.0,['Climate change'],climate
+KXALTASNOW,0,0.0,0.0,,Snowfall in Alta Ski Resort,Climate and Weather,annual,quadratic,1.0,,ski / snowpack
+KXLOWTATL,6,3670.51,2490.01,2026-10-28T05:00:00Z,Low Temperature Atlanta,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily low
+KXLOWTVABB,0,0.0,0.0,,Daily low temp Mumbai,Climate and Weather,daily,quadratic,1.0,,daily low
+KXRAINWPBM,7,0.0,0.0,2026-12-01T04:59:59Z,Rain in West Palm Beach,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],rain
+KXTROPSTORM,8,46.48,19102.42,2026-12-02T04:59:00Z,Number of tropical storms,Climate and Weather,annual,quadratic,1.0,"['Hurricanes', 'Natural disasters']",hurricane / tropical
+KXDENSNOWM,6,17.55,360.84000000000003,2027-01-01T06:59:00Z,Denver snowfall monthly,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],snow
+KXRAINNYC,0,0.0,0.0,,NYC rain,Climate and Weather,daily,quadratic,1.0,['Snow and rain'],rain
+KXERCOTX,0,0.0,0.0,,Texas share of electricity from renewables,Climate and Weather,monthly,quadratic,1.0,['Climate change'],other
+RAINMIA,0,0.0,0.0,,Miami rain,Climate and Weather,custom,quadratic,1.0,,rain
+ECLIPSECOVERBUFF,0,0.0,0.0,,Eclipse Cover Buffalo,Climate and Weather,one_off,quadratic,1.0,['Space'],other
+KXHIGHTRKSI,0,0.0,0.0,,Daily high temp Seoul,Climate and Weather,daily,quadratic,1.0,,daily high
+KXWEEKHTNYC,0,0.0,0.0,,Weekly high temperature New York,Climate and Weather,weekly,quadratic,1.0,,other
+RAINSEA,0,0.0,0.0,,Seattle rain,Climate and Weather,daily,quadratic,1.0,,rain
+ARTICICE,0,0.0,0.0,,Arctic sea ice,Climate and Weather,custom,quadratic,1.0,['Climate change'],climate
+KXHIGHTSAN,6,865.52,821.8900000000001,2026-10-28T08:00:00Z,High Temperature San Diego,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily high
+HURJACKFL,0,0.0,0.0,,Hurricane hits Jacksonville,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+HURNOR,0,0.0,0.0,,Hurricane hits Norfolk,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXKEYSTONECLOSE,0,0.0,0.0,,Keystone Resort Closing,Climate and Weather,annual,quadratic,1.0,['Ski Resorts'],ski / snowpack
+KXRAINLAXM,14,5696.65,80407.52999999998,2026-11-01T03:59:59Z,Rain Los Angeles,Climate and Weather,custom,quadratic,1.0,['Snow and rain'],rain
+KXTEMPCHIH,0,0.0,0.0,,Hourly Directional Chicago Temperature,Climate and Weather,hourly,quadratic,1.0,['Hourly temperature'],hourly temp
+KXWEEKHTLAS,0,0.0,0.0,,Weekly high temperature Las Vegas,Climate and Weather,weekly,quadratic,1.0,,other
+EMERGENCYRAP,0,0.0,0.0,,Natural disaster hits Rapid City,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],disaster
+KXEMERGENCYJAC,0,0.0,0.0,,Natural disaster hits Jackson,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],disaster
+TROPSTORM,0,0.0,0.0,,Number of tropical storms,Climate and Weather,annual,quadratic,1.0,"['Hurricanes', 'Natural disasters']",hurricane / tropical
+KXRAINLVM,7,0.0,0.0,2026-12-01T04:59:59Z,Rain in Las Vegas,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],rain
+KXBOSSNOWM,6,12.56,3816.93,2027-01-01T04:59:00Z,Boston Snow Monthly,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],snow
+KXEMERGENCYMIA,0,0.0,0.0,,Natural disaster hits Miami,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],disaster
+KXRAIN,70,253727.23,186716.34000000003,2026-10-28T05:00:00Z,Where will it rain daily,Climate and Weather,daily,quadratic,1.0,['Snow and rain'],rain
+KXSNOWBASINOPEN,5,0.0,121.18,2026-11-28T15:00:00Z,Snowbasin Opening,Climate and Weather,annual,quadratic,1.0,['Ski Resorts'],snow
+KXWEEKHTMIA,0,0.0,0.0,,Weekly high temperature Miami,Climate and Weather,weekly,quadratic,1.0,,other
+CO2,0,0.0,0.0,,US CO2 totals,Climate and Weather,monthly,quadratic,1.0,['Climate change'],climate
+KXLOWLAX,0,0.0,0.0,,Lowest temperature in Los Angeles,Climate and Weather,daily,quadratic,1.0,,daily low
+KXASPSNOWM,0,0.0,0.0,,Aspen Snow Monthly,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],snow
+KXSJCLOWT,1,651.13,2667.86,2027-01-01T07:59:00Z,Monthly minimum temperature in San Jose,Climate and Weather,monthly,quadratic,1.0,['Heatwaves'],other
+KXEARTHQUAKELA,0,0.0,0.0,,Earthquake in LA,Climate and Weather,custom,quadratic,1.0,['Natural disasters'],disaster
+KILAUEA,0,0.0,0.0,,Kilauea eruption,Climate and Weather,one_off,quadratic,1.0,,disaster
+KXRAINSNYC,0,0.0,0.0,,Rainstorm in NYC,Climate and Weather,custom,quadratic,1.0,['Snow and rain'],rain
+KXSFOSNOWM,0,0.0,0.0,,San Francisco Snowfall markets,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],snow
+KXLOWTRJTT,0,0.0,0.0,,Daily low temp Tokyo,Climate and Weather,daily,quadratic,1.0,,daily low
+INDIACLIMATE,0,0.0,0.0,,India climate goals,Climate and Weather,custom,quadratic,1.0,['Climate change'],climate
+KXEVSHARE,4,3.0,11782.06,2030-05-01T15:00:00Z,EV market share,Climate and Weather,custom,quadratic,1.0,"['Energy', 'KPIs', 'Companies']",other
+ARCTICICEMIN,0,0.0,0.0,,Arctic sea ice min extent,Climate and Weather,custom,quadratic,1.0,['Climate change'],climate
+EMERGENCYJAC,0,0.0,0.0,,Natural disaster hits Jackson,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],disaster
+KXBIGGESTQUAKE,6,3262.4199999999996,2710.88,2026-10-27T23:59:59Z,Biggest earthquake,Climate and Weather,daily,quadratic,1.0,,disaster
+KXMSPSNOWM,6,0.0,769.43,2027-01-01T05:59:00Z,Minneapolis monthly snowfall,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],snow
+KXLOWTDC,6,1487.9899999999998,1401.4499999999998,2026-10-28T05:00:00Z,Lowest Temperature DC ,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily low
+KXRAINSTPM,0,0.0,0.0,,St Petersburg Rain Monthly,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],rain
+KXEMERGENCYWIL,0,0.0,0.0,,Natural disaster hits Wilmington,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],disaster
+EMERGENCYSF,0,0.0,0.0,,Natural disaster hits San Francisco,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],disaster
+KXAQICITY,0,0.0,0.0,,AQI in city at time,Climate and Weather,custom,quadratic,1.0,,disaster
+KXBRECKCLOSE,0,0.0,0.0,,Breckenridge Ski Resort Closing,Climate and Weather,annual,quadratic,1.0,['Ski Resorts'],ski / snowpack
+KXHIGHTSBGR,0,0.0,0.0,,Daly high temp Sao Paulo,Climate and Weather,daily,quadratic,1.0,,daily high
+HURHAT,0,0.0,0.0,,Hurricane hits Hatteras Island,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXSTOWECLOSE,0,0.0,0.0,,Stowe Mountain Resort Closing,Climate and Weather,annual,quadratic,1.0,['Ski Resorts'],ski / snowpack
+KXTEMPNYCHS,10,2019.46,2009.0900000000001,2026-10-27T14:00:00Z,Hourly Directional NYC Temperature,Climate and Weather,hourly,quadratic,1.0,['Hourly temperature'],hourly temp
+KXCHISNOWXMAS,0,0.0,0.0,,Chistmas Chicago ,Climate and Weather,one_off,quadratic,1.0,['Snow and rain'],snow
+KXSEASNOWM,6,6.29,13436.260000000002,2027-01-01T07:59:00Z,Seattle Snowfall Monthly,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],snow
+KXLOWTTTN,6,146.86,126.86,2026-10-28T05:00:00Z,Trenton Daily low temp ,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily low
+KXAVGTKPHX,0,0.0,0.0,,Average Weekly Temp in Phoenix ,Climate and Weather,weekly,quadratic,1.0,['Heatwaves'],weekly avg temp
+KXCO2LEVEL,5,135.37,5029.79,2030-01-01T04:59:00Z,CO2 level,Climate and Weather,custom,quadratic,1.0,,climate
+KXSNOWNYM,0,0.0,0.0,,Total snow in NYC,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],snow
+KXMIASNOWM,0,0.0,0.0,,Chicago Snowfall Monthly,Climate and Weather,one_off,quadratic,1.0,['Snow and rain'],snow
+KXCO2,0,0.0,0.0,,US CO2 totals,Climate and Weather,monthly,quadratic,1.0,['Climate change'],climate
+KXEMERGENCYLOU,0,0.0,0.0,,Natural disaster hits Louisville,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],disaster
+KXRAINDNYC,1,1030.58,1030.58,2026-11-02T04:59:00Z,Daily Rain - NYC,Climate and Weather,daily,quadratic,1.0,['Snow and rain'],rain
+KXRAINONT,1,8.0,3590.51,2027-02-28T07:59:00Z,"Rain in Ontario, California",Climate and Weather,daily,quadratic,1.0,['Snow and rain'],rain
+KXRAINSEA,0,0.0,0.0,,Seattle rain,Climate and Weather,daily,quadratic,1.0,,rain
+KXELNINO,0,0.0,0.0,,Will El Niño conditions be declared?,Climate and Weather,one_off,quadratic,1.0,,climate
+KXAVGTKDEN,0,0.0,0.0,,Average Weekly Temp in Denver ,Climate and Weather,weekly,quadratic,1.0,['Heatwaves'],weekly avg temp
+KXLOWAUS,0,0.0,0.0,,Lowest temperature in Austin,Climate and Weather,daily,quadratic,1.0,,daily low
+KXLOWTEDDF,0,0.0,0.0,,Daily low temp Frankfurt,Climate and Weather,daily,quadratic,1.0,,daily low
+KXTEMPMON,0,0.0,0.0,,Global monthly temperature average,Climate and Weather,monthly,quadratic,1.0,,climate
+EMERGENCYLOU,0,0.0,0.0,,Natural disaster hits Louisville,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],disaster
+KXHIGHTSFO,6,7894.57,6963.099999999999,2026-10-28T08:00:00Z,San Francisco High Temperature Daily,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily high
+KXDENSNOWMB,0,0.0,0.0,,Denver monthly snow,Climate and Weather,monthly,quadratic,1.0,,snow
+KXMICHTEMP,0,0.0,0.0,,Lake Michigan surface water temperature,Climate and Weather,monthly,quadratic,1.0,,other
+KXLOWTEBBR,0,0.0,0.0,,Daily low temp Brussels,Climate and Weather,daily,quadratic,1.0,,daily low
+KXALTAOPEN,5,12815.869999999999,1006.3499999999999,2026-11-28T15:00:00Z,Alta Opening,Climate and Weather,annual,quadratic,1.0,['Ski Resorts'],other
+KXRAINNOLAM,7,1.44,601.44,2026-12-01T04:59:59Z,Rain in New Orleans,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],rain
+KXHIGHOU,0,0.0,0.0,,Highest temperature in Houston,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily high
+KXHURCOASTTEX,0,0.0,0.0,,Hurricane hits coastal Texas,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXEARTHQUAKEM,0,0.0,0.0,,Earthquake monthly,Climate and Weather,one_off,quadratic,1.0,['Natural disasters'],disaster
+HURCTOT,0,0.0,0.0,,Number of hurricanes,Climate and Weather,annual,quadratic,1.0,"['Hurricanes', 'Natural disasters']",hurricane / tropical
+KXHURCATH,0,0.0,0.0,,Hurricane Henri size,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXLOWTNOLA,6,1361.49,1201.95,2026-10-28T06:00:00Z,NOLA Low Temperature,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily low
+HURCMAJ,0,0.0,0.0,,Number of major hurricanes,Climate and Weather,custom,quadratic,1.0,"['Hurricanes', 'Natural disasters']",hurricane / tropical
+KXEMERGENCYDES,0,0.0,0.0,,Natural disaster hits Des Moines,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],disaster
+TORNADO,0,0.0,0.0,,Number of Tornadoes,Climate and Weather,monthly,quadratic,1.0,['Natural disasters'],disaster
+EUCLIMATE,0,0.0,0.0,,EU hits climate goals,Climate and Weather,one_off,quadratic,1.0,['Climate change'],climate
+KXTXURI,3,0.0,209.97,2027-01-01T15:00:00Z,Will the average temperature in Texas (DFW & IAH) fall below 20°F for at least 2 days within a 4-day span?,Climate and Weather,one_off,quadratic,1.0,,other
+KXHIGHTSEA,6,3905.15,3201.12,2026-10-28T08:00:00Z,Seattle Maximum Temperature Daily,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily high
+KXLOWTHOU,6,1148.44,1001.56,2026-10-28T06:00:00Z,Low Temperature Houston,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily low
+KXHIGHTDAL,6,8888.26,7609.549999999999,2026-10-28T06:00:00Z,Dallas Maximum Temperature,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily high
+KXHURCATI,0,0.0,0.0,,Hurricane Ida size,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXDETSNOWM,6,160.47,1314.21,2027-01-01T04:59:00Z,Detroit Monthly Snow,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],snow
+KXLOWTEHAM,0,0.0,0.0,,Amsterdam Daily Low Temperature,Climate and Weather,daily,quadratic,1.0,,daily low
+KXRAINNAPAM,24,5.38,17069.84,2026-11-01T06:59:00Z,Napa rainfall totals,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],rain
+KXLOWTSAN,6,592.37,576.9200000000001,2026-10-28T08:00:00Z,Low Temperature San Diego,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily low
+EVSHARE,0,0.0,0.0,,EV market share,Climate and Weather,custom,quadratic,1.0,"['Elon Musk', 'Energy']",other
+KXHIGHTEBBR,0,0.0,0.0,,Daily high temp Brussels,Climate and Weather,daily,quadratic,1.0,,daily high
+KXJACKSONOPEN,5,4915.59,226.56,2026-11-28T15:00:00Z,Jackson Hole Mountain Resort Opening,Climate and Weather,annual,quadratic,1.0,['Ski Resorts'],ski / snowpack
+KXTEMPLAXHS,10,2006.99,2006.7200000000003,2026-10-27T14:00:00Z,Hourly Directional Coastal LA Temperature,Climate and Weather,hourly,quadratic,1.0,['Hourly temperature'],hourly temp
+KXKEYSTONEOPEN,4,78.11,2420.34,2026-11-01T04:59:00Z,Keystone Resort Opening,Climate and Weather,annual,quadratic,1.0,['Ski Resorts'],ski / snowpack
+KXLOWTMIN,6,4179.990000000001,3754.67,2026-10-28T06:00:00Z,Low  temperature Minnesota,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily low
+KXINDIACLIMATE,1,0.0,2770.15,2031-12-31T15:00:00Z,India climate goals,Climate and Weather,custom,quadratic,1.0,['Climate change'],climate
+KXHIGHTBOS,6,35832.56,31149.35,2026-10-28T05:00:00Z,Boston Maximum Daily Temperature,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily high
+KXAVGTEMP,0,0.0,0.0,,US average temp,Climate and Weather,monthly,quadratic,1.0,['Climate change'],weekly avg temp
+EMERGENCYLA,0,0.0,0.0,,Natural disaster hits Los Angeles,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],disaster
+EMERGENCYHOU,0,0.0,0.0,,Natural disaster hits Houston,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],disaster
+KXRAINPITM,7,0.0,0.0,2026-12-01T04:59:59Z,Rain in Pittsburgh,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],rain
+KXLOWMIA,0,0.0,0.0,,Lowest temperature in Miami,Climate and Weather,daily,quadratic,1.0,,daily low
+KXRAINDALM,14,490.29,7616.330000000001,2026-11-01T03:59:59Z,Rain Dallas,Climate and Weather,custom,quadratic,1.0,['Snow and rain'],rain
+KXARTICICE,0,0.0,0.0,,Arctic sea ice,Climate and Weather,custom,quadratic,1.0,['Climate change'],climate
+HURCAL,0,0.0,0.0,,Hurricane hits California,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXWEEKHTPHX,0,0.0,0.0,,Weekly high temperature Phoenix,Climate and Weather,weekly,quadratic,1.0,,other
+KXFIRSTHURRICANE,0,0.0,0.0,,First Hurricane,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXHOUHIGH,0,0.0,0.0,,Highest temperature in Houston,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily high
+MICHTEMP,0,0.0,0.0,,Lake Michigan surface water temperature,Climate and Weather,monthly,quadratic,1.0,,other
+ECLIPSECOVER,0,0.0,0.0,,Cloud coverage in cities during eclipse,Climate and Weather,one_off,quadratic,1.0,['Space'],other
+KXHURPATHHOU,0,0.0,0.0,,hurricane hits houston,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+HIGHUS,0,0.0,0.0,,High temp in United States,Climate and Weather,daily,quadratic,1.0,,other
+KXHIGHDEN,6,11490.150000000001,10032.68,2026-10-28T07:00:00Z,Highest temperature in Denver,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily high
+KXNEXTCAT5HURDATE,2,0.0,7070.02,2026-11-01T03:59:00Z,Next CAT 5 hurricane date,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXRONI,16,362.11,50046.130000000005,2027-04-05T14:00:00Z,RONI,Climate and Weather,one_off,quadratic,1.0,,other
+KXRAINMIAM,10,865.32,9692.229999999998,2026-11-01T03:59:59Z,Rain Miami,Climate and Weather,custom,quadratic,1.0,['Snow and rain'],rain
+KXHIGHTNOLA,6,2033.0,1766.08,2026-10-28T06:00:00Z,New Orleans Max temp Daily,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily high
+KXHIGHTMIN,6,4312.86,3544.51,2026-10-28T06:00:00Z,Minneapolis Daily High Temperature,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily high
+KXLOWTEGLL,0,0.0,0.0,,Daily low temp London,Climate and Weather,daily,quadratic,1.0,,daily low
+MINNYC,0,0.0,0.0,,Min NYC temp,Climate and Weather,monthly,quadratic,1.0,"['Climate change', 'Daily temperature']",other
+KXRAINEWRM,7,0.0,0.0,2026-12-01T04:59:59Z,Rain in Newark,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],rain
+KXLOWTSEA,6,779.34,606.74,2026-10-28T08:00:00Z,Low Temperature Seattle,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily low
+KXHIGHTLSGG,0,0.0,0.0,,Daily high temp Geneva,Climate and Weather,daily,quadratic,1.0,,daily high
+KXHOTYEAR,0,0.0,0.0,,Global heat,Climate and Weather,annual,quadratic,1.0,['Climate change'],heat
+KXLOWTNYC,6,4965.71,4207.83,2026-10-28T05:00:00Z,Lowest temperature in NYC,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily low
+KXBIGSKYOPEN,5,1146.26,41905.329999999994,2026-11-21T15:00:00Z,Big Sky Opening,Climate and Weather,annual,quadratic,1.0,['Ski Resorts'],other
+KXUSCLIMATE,2,0.76,9061.27,2030-12-31T15:00:00Z,US climate goals,Climate and Weather,one_off,quadratic,1.0,['Climate change'],climate
+KXJACWSNOWM,0,0.0,0.0,,"Jackson, WY Monthly Snow",Climate and Weather,monthly,quadratic,1.0,,snow
+KXRAINATLM,7,154.11,926.11,2026-12-01T04:59:59Z,Rain in Atlanta,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],rain
+KXSNOWBIRDOPEN,5,0.0,3747.2000000000003,2026-11-28T15:00:00Z,Snowbird Opening,Climate and Weather,annual,quadratic,1.0,['Ski Resorts'],snow
+KXARCTICICEMAX,0,0.0,0.0,,Arctic sea ice max extent,Climate and Weather,custom,quadratic,1.0,['Climate change'],climate
+KXHURSAV,0,0.0,0.0,,Hurricane hits Savannah,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+HURCAT,0,0.0,0.0,,Hurricane category,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXASPENOPEN,0,0.0,0.0,,Aspen Snowmass Opening,Climate and Weather,annual,quadratic,1.0,['Ski Resorts'],snow
+KXLOWTYSSY,0,0.0,0.0,,Daily low temp Sydney,Climate and Weather,daily,quadratic,1.0,,daily low
+KXWEEKHTLAX,0,0.0,0.0,,Weekly high temperature Los Angeles,Climate and Weather,weekly,quadratic,1.0,,other
+KXSNOWNYC,0,0.0,0.0,,SNOW IN NYC,Climate and Weather,custom,quadratic,1.0,['Snow and rain'],snow
+HOTYEAR,0,0.0,0.0,,Global heat,Climate and Weather,annual,quadratic,1.0,['Climate change'],heat
+KXECLIPSEREYK,0,0.0,0.0,,Solar Eclipse Reykjavik,Climate and Weather,one_off,quadratic,1.0,['Space'],other
+KXAVGTKSAN,0,0.0,0.0,,Average Weekly Temp in San Diego ,Climate and Weather,weekly,quadratic,1.0,['Heatwaves'],weekly avg temp
+KXLOWTLSGG,0,0.0,0.0,,Daily low temperature Geneva,Climate and Weather,daily,quadratic,1.0,,daily low
+HIGHAUS,0,0.0,0.0,,Highest temperature in Austin,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily high
+KXHOUSNOWM,0,0.0,0.0,,Houston Snowfall Markets,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],snow
+KXLOWTAUS,6,5622.73,2515.81,2026-10-28T06:00:00Z,Lowest temperature in Austin,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily low
+HURTB,0,0.0,0.0,,Hurricane hits Tampa,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+HIGHCHI,0,0.0,0.0,,Highest temperature in Chicago,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily high
+KXMINNYC,0,0.0,0.0,,Min NYC temp,Climate and Weather,monthly,quadratic,1.0,"['Climate change', 'Daily temperature']",other
+KXSLCSNOWM,0,0.0,0.0,,Salt Lake City Monthly,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],snow
+KXLOWTVHHH,0,0.0,0.0,,Daily low temp Hong Kong,Climate and Weather,daily,quadratic,1.0,,daily low
+KXHIGHTWSSS,0,0.0,0.0,,Daily high temp Singapore,Climate and Weather,daily,quadratic,1.0,,daily high
+KXEUCLIMATE,1,0.0,1498.9,2032-12-31T15:00:00Z,EU hits climate goals,Climate and Weather,one_off,quadratic,1.0,['Climate change'],climate
+KXHURCTOTMAJ,7,1355.25,58308.590000000004,2026-12-02T04:59:00Z,Number of major hurricanes,Climate and Weather,annual,quadratic,1.0,"['Hurricanes', 'Natural disasters']",hurricane / tropical
+GTEMP,0,0.0,0.0,,Hottest year ever,Climate and Weather,annual,quadratic,1.0,['Climate change'],climate
+KXHIGHAUS,6,17922.759999999995,13293.849999999999,2026-10-28T06:00:00Z,Highest temperature in Austin,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily high
+HURCATH,0,0.0,0.0,,Hurricane Henri size,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXHURNO,0,0.0,0.0,,Hurricane hits New Orleans,Climate and Weather,annual,quadratic,1.0,"['Hurricanes', 'Natural disasters']",hurricane / tropical
+KXEMERGENCYSF,0,0.0,0.0,,Natural disaster hits San Francisco,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],disaster
+HURCLAND,0,0.0,0.0,,Hurricanes making landfall,Climate and Weather,custom,quadratic,1.0,"['Hurricanes', 'Natural disasters']",hurricane / tropical
+KXLOWTOMDB,0,0.0,0.0,,Daily low temp Dubai,Climate and Weather,daily,quadratic,1.0,,daily low
+KXRAINOKCM,7,0.0,0.0,2026-12-01T04:59:59Z,Rain in Oklahoma City,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],rain
+KXSIERRAOPEN,5,27.88,178.19000000000003,2026-12-19T15:00:00Z,Sierra-at-Tahoe Opening,Climate and Weather,annual,quadratic,1.0,['Ski Resorts'],other
+KXNORTHSTAROPEN,6,0.0,2201.9,2026-11-22T04:59:00Z,Northstar California Resort Opening,Climate and Weather,annual,quadratic,1.0,['Ski Resorts'],ski / snowpack
+KXHIGHTDC,6,9148.869999999999,8480.99,2026-10-28T05:00:00Z,Washington DC Daily Max Temp,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily high
+KXXFLARE,0,0.0,0.0,,X flare,Climate and Weather,custom,quadratic,1.0,,other
+KXRAINPHXM,7,3454.29,2838.73,2026-12-01T04:59:59Z,Rain in Phoenix,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],rain
+KXLOWTRKSI,0,0.0,0.0,,Daily low temp Seoul,Climate and Weather,daily,quadratic,1.0,,daily low
+SNOWNYM,0,0.0,0.0,,Total snow in NYC,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],snow
+KXRAINABQM,7,6416.219999999999,4126.06,2026-12-01T04:59:59Z,Rain in Albuquerque,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],rain
+TSUNAMI,0,0.0,0.0,,Tsunami ,Climate and Weather,custom,quadratic,1.0,"['Climate change', 'Natural disasters']",other
+KXRAINNYCM,5,942.54,6800.97,2026-11-01T03:59:00Z,Monthly rain in New York,Climate and Weather,monthly,quadratic,1.0,['Snow and rain'],rain
+KXEMERGENCYRAP,0,0.0,0.0,,Natural disaster hits Rapid City,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],disaster
+KXCITIESWEATHER,0,0.0,0.0,,Highest temperature in cities,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily high
+KXLOWTSFO,6,734.28,626.01,2026-10-28T08:00:00Z,Lowest Temperature San Francisco,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily low
+KXHIGHTVABB,0,0.0,0.0,,Daily high temp Mumbai,Climate and Weather,daily,quadratic,1.0,,daily high
+KXTEMPLAXH,0,0.0,0.0,,Hourly Directional Los Angeles Temperature,Climate and Weather,hourly,quadratic,1.0,['Hourly temperature'],hourly temp
+KXHIGHTATL,6,8222.03,6943.950000000001,2026-10-28T05:00:00Z,Atlanta Max Temperature,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily high
+KXLOWTEDDB,0,0.0,0.0,,Daily Low Temp Berlin ,Climate and Weather,daily,quadratic,1.0,,daily low
+KXHIGHTZBAA,0,0.0,0.0,,Beijing Daily High Temperature,Climate and Weather,daily,quadratic,1.0,,daily high
+KXERUPTKILUAEA,0,0.0,0.0,,Kiluaea,Climate and Weather,custom,quadratic,1.0,,disaster
+KXMSNLOWT,1,47.68,2514.4,2026-11-01T04:58:59Z,Madison temperature below threshold,Climate and Weather,monthly,quadratic,1.0,,other
+KXRAINSBOS,0,0.0,0.0,,Rainstorm in Boston,Climate and Weather,custom,quadratic,1.0,['Snow and rain'],rain
+KXTEMPNYCH,0,0.0,0.0,,Hourly Directional NYC Temperature,Climate and Weather,hourly,quadratic,1.0,['Hourly temperature'],hourly temp
+KXPARKCCLOSE,0,0.0,0.0,,Park City Mountain Closing,Climate and Weather,annual,quadratic,1.0,['Ski Resorts'],other
+KXHURCATFL,0,0.0,0.0,,Hurricane warning FL,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXNYCSNOWXMAS,0,0.0,0.0,,NYC Snow christmas,Climate and Weather,one_off,quadratic,1.0,['Snow and rain'],snow
+KXTEMPDCH,0,0.0,0.0,,Hourly Directional DC Temperature,Climate and Weather,hourly,quadratic,1.0,['Hourly temperature'],hourly temp
+KXHOLIDAYTMIN,0,0.0,0.0,,Min temperature holidays ,Climate and Weather,custom,quadratic,1.0,,daily low
+KXRAINMKEM,13,79.78,867.86,2026-11-01T03:59:59Z,RAIN MILWAUKEE,Climate and Weather,custom,quadratic,1.0,['Snow and rain'],rain
+HURNJ,0,0.0,0.0,,Hurricane hitting New Jersey,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXHMONTHRANGE,6,922.98,6203.43,2026-11-16T04:59:00Z,Monthly Temperature Increase (ºC),Climate and Weather,custom,quadratic,1.0,['Climate change'],climate
+KXRAINDC,0,0.0,0.0,,Daily Rain DC,Climate and Weather,daily,quadratic,1.0,,rain
+KXHIGHTLTFM,0,0.0,0.0,,Daily high temp Istanbul,Climate and Weather,daily,quadratic,1.0,,daily high
+KXBALDYOPEN,5,2336.92,1477.52,2026-11-28T15:00:00Z,Bald Mountain Opening,Climate and Weather,annual,quadratic,1.0,['Ski Resorts'],other
+KXHURPATHNC,1,284.75,1762.03,2027-01-01T04:59:00Z,Hurricane hits north carolina,Climate and Weather,one_off,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXHIGHTEDDB,0,0.0,0.0,,Daily high temp Berlin,Climate and Weather,daily,quadratic,1.0,,daily high
+TEMP,0,0.0,0.0,,Average annual temperature deviation,Climate and Weather,annual,quadratic,1.0,['Global heat'],climate
+KXSPURRERUPT,0,0.0,0.0,,Mount Spurr eruption,Climate and Weather,custom,quadratic,1.0,,disaster
+KXHIGHTCYYZ,0,0.0,0.0,,Daily high temp Toronto,Climate and Weather,daily,quadratic,1.0,,daily high
+KXHURTB,0,0.0,0.0,,Hurricane hits Tampa,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXLOWTLFPG,0,0.0,0.0,,Daily low temp Paris ,Climate and Weather,daily,quadratic,1.0,,daily low
+KXRAINWKND,35,3017.5800000000004,2567.95,2026-11-02T05:00:00Z,Where will it rain this weekend?,Climate and Weather,weekly,quadratic,1.0,['Snow and rain'],rain
+KXLOWTZSPD,0,0.0,0.0,,Daily low temp Shanghai,Climate and Weather,daily,quadratic,1.0,,daily low
+KXHIGHTLV,6,4115.58,3701.9700000000003,2026-10-28T08:00:00Z,Las Vegas Max Daily Temperature,Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily high
+KXHURMIA,0,0.0,0.0,,Hurricane hits Miami,Climate and Weather,custom,quadratic,1.0,"['Hurricanes', 'Natural disasters']",hurricane / tropical
+HURCOASTTEX,0,0.0,0.0,,Hurricane hits coastal Texas,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXHIGHTZSPD,0,0.0,0.0,,Daily high temp Shanghai,Climate and Weather,daily,quadratic,1.0,,daily high
+SNOWNY,0,0.0,0.0,,Total snow in NYC,Climate and Weather,custom,quadratic,1.0,['Snow and rain'],snow
+KXHURCMAJ,0,0.0,0.0,,Number of major hurricanes,Climate and Weather,custom,quadratic,1.0,"['Hurricanes', 'Natural disasters']",hurricane / tropical
+KXLOWTEWR,6,2023.7600000000002,537.5500000000001,2026-10-28T05:00:00Z,"Newark, NJ (EWR) Daily Low Temp",Climate and Weather,daily,quadratic,1.0,['Daily temperature'],daily low
+KXLOWNYC,0,0.0,0.0,,Lowest temperature in New York,Climate and Weather,daily,quadratic,1.0,,daily low
+SNOWCHIM,0,0.0,0.0,,Total snow in Chicago,Climate and Weather,one_off,quadratic,1.0,['Snow and rain'],snow
+KXAVGTKIAH,0,0.0,0.0,,Average Weekly Temp in Houston (Bush) ,Climate and Weather,weekly,quadratic,1.0,['Heatwaves'],weekly avg temp
+CORIVER,0,0.0,0.0,,Lake Mead water level projections,Climate and Weather,annual,quadratic,1.0,['Climate change'],disaster
+KXHDDCVG,9,4.26,1271.47,2027-01-01T04:59:00Z,Cincinnati heating degree days,Climate and Weather,custom,quadratic,1.0,,heat
+KXHURCITYHOU,0,0.0,0.0,,Houston hurricane landfall,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXHURCHARL,0,0.0,0.0,,Hurricane hits Charleston,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],hurricane / tropical
+KXHIGHTKSAN,0,0.0,0.0,,Daily High Temperature San Diego,Climate and Weather,daily,quadratic,1.0,,daily high
+KXEMERGENCYSTL,0,0.0,0.0,,Natural disaster hits St. Louis,Climate and Weather,custom,quadratic,1.0,['Hurricanes'],disaster
+KXEARTHQUAKECALIFORNIA,3,377.95,267567.80000000005,2027-01-01T04:59:00Z,Earthquake in California,Climate and Weather,custom,quadratic,1.0,['Natural disasters'],disaster
+KXBIGGESTQUAKEH,0,0.0,0.0,,Biggest earthquake hourly,Climate and Weather,hourly,quadratic,1.0,,hourly temp
