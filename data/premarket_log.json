@@ -67,6 +67,103 @@
           "pm_volume": 0
         }
       }
+    },
+    {
+      "check_num": 2,
+      "check_name": "6:30",
+      "timestamp": "11:31:28",
+      "prices": {
+        "AMPL": {
+          "premarket_price": 17.0,
+          "prior_close": 17.3,
+          "gap_pct": -0.0173,
+          "pm_volume": 0
+        },
+        "ECO": {
+          "premarket_price": 94.97,
+          "prior_close": 96.85,
+          "gap_pct": -0.0194,
+          "pm_volume": 0
+        },
+        "SDGR": {
+          "premarket_price": 24.86,
+          "prior_close": 24.5,
+          "gap_pct": 0.0147,
+          "pm_volume": 0
+        },
+        "STLN": {
+          "premarket_price": 6.28,
+          "prior_close": 6.29,
+          "gap_pct": -0.0016,
+          "pm_volume": 0
+        },
+        "FRO": {
+          "premarket_price": 54.68,
+          "prior_close": 55.23,
+          "gap_pct": -0.01,
+          "pm_volume": 0
+        },
+        "OMER": {
+          "premarket_price": 16.45,
+          "prior_close": 16.29,
+          "gap_pct": 0.0098,
+          "pm_volume": 0
+        },
+        "HNST": {
+          "premarket_price": 4.72,
+          "prior_close": 4.76,
+          "gap_pct": -0.0074,
+          "pm_volume": 0
+        },
+        "CRSR": {
+          "premarket_price": 13.65,
+          "prior_close": 13.6,
+          "gap_pct": 0.0037,
+          "pm_volume": 0
+        },
+        "UGP": {
+          "premarket_price": 6.54,
+          "prior_close": 6.56,
+          "gap_pct": -0.0023,
+          "pm_volume": 0
+        },
+        "KSS": {
+          "premarket_price": 23.63,
+          "prior_close": 23.65,
+          "gap_pct": -0.0008,
+          "pm_volume": 0
+        },
+        "ASAN": {
+          "premarket_price": 11.98,
+          "prior_close": 12.01,
+          "gap_pct": -0.0025,
+          "pm_volume": 0
+        },
+        "KLAR": {
+          "premarket_price": 12.65,
+          "prior_close": 12.62,
+          "gap_pct": 0.0024,
+          "pm_volume": 0
+        },
+        "SNOW": {
+          "premarket_price": 333.0,
+          "prior_close": 334.95,
+          "gap_pct": -0.0058,
+          "pm_volume": 0
+        },
+        "NTAP": {
+          "premarket_price": 224.55,
+          "prior_close": 222.08,
+          "gap_pct": 0.0111,
+          "pm_volume": 0
+        },
+        "RPD": {
+          "premarket_price": 18.19,
+          "prior_close": 17.93,
+          "gap_pct": 0.0145,
+          "pm_volume": 0
+        }
+      }
     }
   ]
 }
