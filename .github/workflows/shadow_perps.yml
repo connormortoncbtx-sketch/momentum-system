@@ -1,0 +1,43 @@
+name: Shadow Perps (BTC funding carry, no orders)
+
+# Marks the KXBTCPERP funding carry (short perp + long spot) forward from Oct 27, 2026. Public data only.
+on:
+  schedule:
+    - cron: '25 2 * * *'     # daily, after the 00:00 UTC funding
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: shadow-perps
+  cancel-in-progress: false
+
+jobs:
+  perps:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - name: Install dependencies
+        run: pip install pandas alpaca-py
+      - name: Update shadow perps
+        run: python automation/shadow_perps.py
+      - name: Commit ledger
+        run: |
+          git config user.name  "momentum-bot"
+          git config user.email "momentum-bot@users.noreply.github.com"
+          for f in data/shadow_perps_state.json data/shadow_perps_ledger.jsonl; do if [ -e "$f" ]; then git add "$f"; fi; done
+          git diff --cached --quiet && exit 0
+          git commit -q -m "shadow perps: $(date +%Y-%m-%d) update"
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push; then break; fi
+            git rebase --abort 2>/dev/null || true
+            git pull origin main --no-rebase --strategy=recursive -X theirs --no-edit 2>/dev/null || true
+            [ $attempt -eq 5 ] && exit 1
+            sleep $((RANDOM % 5 + 2))
+          done
