@@ -17,6 +17,10 @@ jobs:
           K3: ${{ secrets.ALPACA_PAPER3_KEY }}
           S3: ${{ secrets.ALPACA_PAPER3_SECRET }}
           KL: ${{ secrets.ALPACA_LIVE_KEY }}
+          V_MODE: ${{ vars.LIVE_STACK_MODE }}
+          V_CONDOR: ${{ vars.CONDOR_LIVE }}
+          V_LEV: ${{ vars.LEV_CAP }}
+          S_MODE: ${{ secrets.LIVE_STACK_MODE != '' }}
           SL: ${{ secrets.ALPACA_LIVE_SECRET }}
         run: |
           chk() { [ -z "$2" ] && { echo "::notice::$1: not set"; return; }
@@ -28,3 +32,6 @@ jobs:
           chk "live (ALPACA_LIVE)" "$KL" "$SL" https://api.alpaca.markets
           chk "live key against the PAPER endpoint (200 here = it is a paper key)" "$KL" "$SL" https://paper-api.alpaca.markets
           [ -n "$KL" ] && echo "::notice::live key starts with ${KL:0:2} (live keys usually start AK, paper PK), length ${#KL}; secret length ${#SL}"
+          echo "::notice::variables: LIVE_STACK_MODE='${V_MODE}' (live bot places orders only if exactly 'live'), CONDOR_LIVE='${V_CONDOR}', LEV_CAP='${V_LEV}'"
+          [ "$S_MODE" = "true" ] && echo "::warning::a SECRET named LIVE_STACK_MODE exists -- it is ignored; the switch must be a VARIABLE"
+          true
