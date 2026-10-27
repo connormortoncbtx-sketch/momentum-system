@@ -1,5 +1,5 @@
 {
- "since": "2026-10-26T17:30:28-04:00",
+ "since": "2026-10-27T13:26:20-04:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -2059,8 +2059,8 @@
    "decided": "2026-10-26T14:51:29.184812-04:00",
    "event_type": "buyback_dividend",
    "summary": "Board increased stock repurchase program from $30M to $100M through October 2027.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-27",
+   "entry": 9.174
   },
   {
    "book": "short_bad_news",
@@ -2079,8 +2079,8 @@
    "decided": "2026-10-26T14:51:36.778338-04:00",
    "event_type": "contract_win",
    "summary": "Forum Edge AI secures $94.4M three-year GPU capacity contract with Fireworks AI for Dallas data center.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-27",
+   "entry": 3.29
   },
   {
    "book": "long_contract_div",
@@ -2089,8 +2089,9 @@
    "decided": "2026-10-26T14:51:36.778338-04:00",
    "event_type": "contract_win",
    "summary": "Forum Edge AI secures $94.4M three-year GPU capacity contract with Fireworks AI for Dallas data center.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-27",
+   "entry": 3.29,
+   "vol60": 0.6946598522436269
   },
   {
    "book": "short_bad_news",
@@ -2099,8 +2100,8 @@
    "decided": "2026-10-26T14:51:42.290671-04:00",
    "event_type": "exec_departure",
    "summary": "CFO Andrea Simon departed October 23; Mark Young appointed interim CFO; permanent search underway.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-27",
+   "entry": 6.75
   },
   {
    "book": "short_bad_news",
@@ -2109,8 +2110,8 @@
    "decided": "2026-10-26T14:51:45.118774-04:00",
    "event_type": "clinical_positive",
    "summary": "ATR-COSF cosmetic program shows positive ex vivo skin improvement data; first-in-human results expected year-end.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-27",
+   "entry": 1.21
   },
   {
    "book": "short_bad_news",
@@ -2119,8 +2120,8 @@
    "decided": "2026-10-26T14:51:58.014522-04:00",
    "event_type": "buyback_dividend",
    "summary": "Resumed $200M buyback program; holds 1,018 bitcoin, $70M cash, $35M debt; Midwest AI datacenter pending.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-27",
+   "entry": 2.72
   },
   {
    "book": "short_bad_news",
@@ -2129,8 +2130,8 @@
    "decided": "2026-10-26T14:52:00.811935-04:00",
    "event_type": "partnership",
    "summary": "Renergen subsidiary achieves stable liquid helium production; first deliveries to offtake partners imminent.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-27",
+   "entry": 2.09
   },
   {
    "book": "short_bad_news",
@@ -2139,8 +2140,8 @@
    "decided": "2026-10-26T14:52:03.944411-04:00",
    "event_type": "routine",
    "summary": "Company accumulated 5,346 SOL; SOL treasury now 2.6M; CHAD dividend rate increases to 14%.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-27",
+   "entry": 3.75
   },
   {
    "book": "short_bad_news",
@@ -2149,8 +2150,8 @@
    "decided": "2026-10-26T14:52:10.898167-04:00",
    "event_type": "prelim_results_good",
    "summary": "Q3 2026 results; ALTITUDE-AD Phase 2 topline results expected November 2026; strong cash position declining.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-27",
+   "entry": 2.25
   },
   {
    "book": "short_bad_news",
@@ -2159,8 +2160,8 @@
    "decided": "2026-10-26T14:52:13.932757-04:00",
    "event_type": "routine",
    "summary": "Mining company completes technical report on Nolan Creek Alaska antimony-gold property acquisition.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-27",
+   "entry": 2.95
   },
   {
    "book": "short_bad_news",
@@ -2169,8 +2170,8 @@
    "decided": "2026-10-26T14:52:24.282437-04:00",
    "event_type": "clinical_positive",
    "summary": "Budoprutug Phase 2 data shows 70% PLA2R antibody reduction; 38% immunologic remission.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-27",
+   "entry": 9.09
   },
   {
    "book": "short_bad_news",
@@ -2179,8 +2180,8 @@
    "decided": "2026-10-26T14:52:28.500299-04:00",
    "event_type": "regulatory_setback",
    "summary": "FDA opens public docket on VOQUEZNA exclusivity challenge; generic makers litigating to enable earlier ANDA approval.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-27",
+   "entry": 5.91
   },
   {
    "book": "short_bad_news",
@@ -2189,8 +2190,8 @@
    "decided": "2026-10-27T02:33:16.267749-04:00",
    "event_type": "listing_deficiency",
    "summary": "NYSE initiated delisting proceedings for company warrants due to abnormally low price; common stock unaffected.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-27",
+   "entry": 1.59
   },
   {
    "book": "short_bad_news",
@@ -2199,8 +2200,8 @@
    "decided": "2026-10-27T02:33:18.860679-04:00",
    "event_type": "strategic_review",
    "summary": "Acquisition litigation forces supplemental proxy disclosures; deal closure at risk.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-27",
+   "entry": 17.27
   },
   {
    "book": "short_bad_news",
@@ -2209,8 +2210,8 @@
    "decided": "2026-10-27T02:33:21.963813-04:00",
    "event_type": "debt_financing",
    "summary": "Material land acquisition financing via sale-leaseback and amended development agreement with McKinney, Texas municipality.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-27",
+   "entry": 1.31
   },
   {
    "book": "short_bad_news",
@@ -2219,8 +2220,8 @@
    "decided": "2026-10-27T02:33:24.227665-04:00",
    "event_type": "exec_departure",
    "summary": "Director stepped down from committees due to independence violation; new director appointed.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-27",
+   "entry": 2.26
   },
   {
    "book": "short_bad_news",
@@ -2229,8 +2230,8 @@
    "decided": "2026-10-27T02:33:27.279511-04:00",
    "event_type": "equity_financing",
    "summary": "Equity financing closes: $20M raised via common stock and pre-funded warrants after EQ504 trial milestone met.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-27",
+   "entry": 1.26
   },
   {
    "book": "short_bad_news",
@@ -2239,8 +2240,8 @@
    "decided": "2026-10-27T02:33:31.900608-04:00",
    "event_type": "restructuring",
    "summary": "Mexico graphite electrode facility closure; $25-35M non-cash charges estimated.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-27",
+   "entry": 10.65
   },
   {
    "book": "short_bad_news",
@@ -2249,8 +2250,8 @@
    "decided": "2026-10-27T02:33:34.885775-04:00",
    "event_type": "prelim_results_good",
    "summary": "Q1 FY2027 sales grew 3.2% to $114M; net income per share declined; margin pressured by FX and inflation.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-27",
+   "entry": 70.08
   },
   {
    "book": "short_bad_news",
@@ -2259,8 +2260,8 @@
    "decided": "2026-10-27T02:33:39.649575-04:00",
    "event_type": "regulatory_approval",
    "summary": "Cumberland seeking FDA approval for ifetroban DMD cardiomyopathy treatment via NDA filing",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-27",
+   "entry": 4.27
   },
   {
    "book": "short_bad_news",
@@ -2279,8 +2280,8 @@
    "decided": "2026-10-27T02:33:55.164683-04:00",
    "event_type": "debt_financing",
    "summary": "Exchange offer for $120M 6.625% notes due 2029 closed; routine debt restructuring transaction.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-27",
+   "entry": 18.85
   },
   {
    "book": "short_bad_news",
@@ -2289,8 +2290,8 @@
    "decided": "2026-10-27T02:33:58.441748-04:00",
    "event_type": "debt_financing",
    "summary": "Maine Natural subsidiary issued $40M senior unsecured notes due 2031 to refinance existing debt.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-27",
+   "entry": 54.8
   },
   {
    "book": "short_bad_news",
@@ -2299,8 +2300,8 @@
    "decided": "2026-10-27T02:34:03.046070-04:00",
    "event_type": "exec_departure",
    "summary": "Lead Independent Director Walter Wilkinson resigned effective immediately; successor appointed.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-27",
+   "entry": 14.73
   },
   {
    "book": "short_bad_news",
@@ -2309,8 +2310,8 @@
    "decided": "2026-10-27T02:34:05.237797-04:00",
    "event_type": "exec_departure",
    "summary": "Lead Independent Director Walter Wilkinson resigns; board reduced to seven members.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-27",
+   "entry": 18.46
   },
   {
    "book": "short_bad_news",
@@ -2319,8 +2320,8 @@
    "decided": "2026-10-27T02:34:08.090319-04:00",
    "event_type": "equity_financing",
    "summary": "Completed $15M rights offering; only $8.9M subscribed, backstop investors purchased remaining $6.1M",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-27",
+   "entry": 2.89
   },
   {
    "book": "short_bad_news",
@@ -2329,8 +2330,8 @@
    "decided": "2026-10-27T02:34:10.552204-04:00",
    "event_type": "exec_departure",
    "summary": "Lead Independent Director Walter Wilkinson resigned immediately after 12 years; replaced by George Stelljes.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-27",
+   "entry": 8.86
   },
   {
    "book": "short_bad_news",
@@ -2339,8 +2340,8 @@
    "decided": "2026-10-27T02:34:12.804913-04:00",
    "event_type": "exec_departure",
    "summary": "Lead Independent Director Walter Wilkinson resigned effective immediately after 12 years of service.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-27",
+   "entry": 12.06
   },
   {
    "book": "short_bad_news",
@@ -2349,8 +2350,8 @@
    "decided": "2026-10-27T02:34:15.829904-04:00",
    "event_type": "routine",
    "summary": "Q3 2026 earnings release with guidance update and strategic presentation; routine disclosure.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-27",
+   "entry": 2.775
   },
   {
    "book": "short_bad_news",
@@ -2359,8 +2360,8 @@
    "decided": "2026-10-27T02:34:18.658773-04:00",
    "event_type": "strategic_review",
    "summary": "Activist investor Atlas Holdings gains board seat; cooperation agreement with standstill but acquisition trigger clauses.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-27",
+   "entry": 38.42
   },
   {
    "book": "short_bad_news",
@@ -2369,8 +2370,8 @@
    "decided": "2026-10-27T02:34:21.328192-04:00",
    "event_type": "exec_departure",
    "summary": "CFO Sherri Baker resigns effective November 13, 2026; Q3 showed net loss despite improved EBITDA.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-27",
+   "entry": 17.06
   },
   {
    "book": "short_bad_news",
@@ -2379,14 +2380,134 @@
    "decided": "2026-10-27T02:34:26.800901-04:00",
    "event_type": "acquisition",
    "summary": "Company acquired by Peoples Bancorp in all-stock deal; $43.75/share valuation announced prior; mixed Q3 results.",
+   "entry_date": "2026-10-27",
+   "entry": 41.26
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "BWIN",
+   "accession": "0001781755-26-000062",
+   "decided": "2026-10-27T14:14:23.425653-04:00",
+   "event_type": "prelim_results_good",
+   "summary": "Q3 2026 preliminary earnings released; results unaudited pending 10-Q filing.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "AIAI",
+   "accession": "0001493152-26-048643",
+   "decided": "2026-10-27T14:14:28.330829-04:00",
+   "event_type": "partnership",
+   "summary": "War Tech Consortium partnership with M42 for defense tech acquisitions; $125M projected 2027 revenue.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "EARN",
+   "accession": "0001628280-26-067429",
+   "decided": "2026-10-27T14:14:30.671829-04:00",
+   "event_type": "equity_financing",
+   "summary": "Fund established $125M ATM equity distribution agreement with four underwriting agents.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_win",
+   "symbol": "MBOT",
+   "accession": "0001493152-26-048640",
+   "decided": "2026-10-27T14:14:32.717495-04:00",
+   "event_type": "contract_win",
+   "summary": "First Office-Based Lab customer signed 12-month LIBERTY device supply order; West Coast expansion.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_div",
+   "symbol": "MBOT",
+   "accession": "0001493152-26-048640",
+   "decided": "2026-10-27T14:14:32.717495-04:00",
+   "event_type": "contract_win",
+   "summary": "First Office-Based Lab customer signed 12-month LIBERTY device supply order; West Coast expansion.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ARTV",
+   "accession": "0001193125-26-432806",
+   "decided": "2026-10-27T14:14:38.251785-04:00",
+   "event_type": "strategic_review",
+   "summary": "Company halting AlloNK development, cutting 94% workforce, exploring strategic alternatives to maximize shareholder value.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "PEW",
+   "accession": "0001193125-26-432788",
+   "decided": "2026-10-27T14:14:40.968831-04:00",
+   "event_type": "acquisition",
+   "summary": "Company acquired Camfour LLC, firearms/ammunition distributor, for $34M cash; regulatory approval needed.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "IMSR",
+   "accession": "0002019804-26-000030",
+   "decided": "2026-10-27T14:14:50.315408-04:00",
+   "event_type": "buyback_dividend",
+   "summary": "Terrestrial Energy authorizes $25M share repurchase program; expiration October 2027.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ZURA",
+   "accession": "0001855644-26-000012",
+   "decided": "2026-10-27T14:14:55.704849-04:00",
+   "event_type": "routine",
+   "summary": "Q3 2026 earnings release and updated corporate presentation; clinical-stage biotech company.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "MFIC",
+   "accession": "0001193125-26-432622",
+   "decided": "2026-10-27T14:15:02.786179-04:00",
+   "event_type": "acquisition",
+   "summary": "Merger agreement with Ares Capital Corporation at $10.88 per share; $1.21 cash plus ARCC stock.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ACRS",
+   "accession": "0001104659-26-118952",
+   "decided": "2026-10-27T14:15:08.095765-04:00",
+   "event_type": "clinical_positive",
+   "summary": "Phase 1b POC positive for ATI-052 bispecific antibody in atopic dermatitis and asthma",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "HYMC",
+   "accession": "0001493152-26-048626",
+   "decided": "2026-10-27T14:15:10.584088-04:00",
+   "event_type": "routine",
+   "summary": "Q3 results, CFO transition to advisory role, two executive departures, four new directors appointed.",
    "entry_date": null,
    "entry": null
   }
  ],
  "div": {
-  "nav": 98.57021351507927,
+  "nav": 102.30856718511754,
   "closed": [],
-  "last_date": "2026-10-26",
+  "last_date": "2026-10-27",
   "history": {
    "2026-10-15": 100.3592,
    "2026-10-16": 98.6604,
@@ -2395,7 +2516,8 @@
    "2026-10-21": 99.0373,
    "2026-10-22": 98.7674,
    "2026-10-23": 98.6635,
-   "2026-10-26": 98.5702
+   "2026-10-26": 98.5702,
+   "2026-10-27": 102.3086
   }
  }
 }
