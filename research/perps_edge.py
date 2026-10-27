@@ -139,6 +139,7 @@ def kalshi_candles(t0):
     k["t"] = pd.to_datetime(k.ts, unit="s", utc=True)
     k["mid"] = (k.bid + k.ask) / 2
     k["spread_bps"] = (k.ask - k.bid) / k.mid * 1e4
+    k = k.drop_duplicates("ts", keep="last")
     return k.set_index("t").sort_index()
 
 
@@ -149,6 +150,7 @@ def btc_spot(t0):
     b = CryptoHistoricalDataClient().get_crypto_bars(CryptoBarsRequest(symbol_or_symbols="BTC/USD", timeframe=TimeFrame.Hour,
                                                                       start=t0)).df.reset_index()
     b["t"] = pd.to_datetime(b.timestamp, utc=True) + pd.Timedelta("1h")        # bar end, like Kalshi's end_period_ts
+    b = b.drop_duplicates("t", keep="last")
     return b.set_index("t").close.sort_index()
 
 
