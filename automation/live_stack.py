@@ -9,7 +9,8 @@ account grows (Connor, Oct 25, 2026). The design and weights are shadow #7 v2's 
             CONTRACT 23.8%  shadow #6's diversified contract-win book (data/shadow_filings_state.json, open
                          long_contract_div positions, weights 1/vol60 capped at 25%, held 10 sessions)
             ETFTREND 50.4%  41 ETFs, 63-day trend, 10% vol target each, month-end weights, capped at 1x
-            CRYPTO 15.4%    16 coins above their 50-day average, 40% vol target each, capped at 1x
+            CRYPTO 15.4%    16 coins above their 50-day average, 40% vol target each, capped at 1x -- held through
+                         spot ETFs (IBIT/ETHA/BSOL/XRP) since crypto isn't available in Texas; other coins = cash
   sizing    vol target: leverage = 0.020698 / sd(last 8 weekly stack returns) from shadow #7's own history
 
   TIERS (decided from the live account each run; hysteresis so it doesn't flip back and forth)
@@ -54,6 +55,13 @@ LEV_CAP = float(os.environ.get("LEV_CAP", "2.0"))
 LITE_LEV_CAP = 1.0
 MIN_TRADE, BAND = 1.0, 0.10      # Alpaca's $1 minimum; then only re-trade a gap > 10% of the position
 CAP_DIV = 0.25
+# Connor's live account (Texas) can't trade crypto (Alpaca offers it only in approved states; no crypto agreement
+# exists on the account -- Oct 27, 2026). The crypto sleeve is held through US spot ETFs instead: same coin signals
+# and weights; a coin without a tradable ETF stays in cash (Connor's choice, "faithful" -- research/crypto4.py tests
+# the 4-coin renormalised alternative for January). CRYPTO_VIA=coins restores direct coins.
+CRYPTO_VIA = (os.environ.get("CRYPTO_VIA") or "etf").strip().lower()
+CRYPTO_ETF = {"BTC/USD": ["IBIT", "FBTC"], "ETH/USD": ["ETHA", "FETH"], "SOL/USD": ["BSOL", "FSOL", "GSOL"],
+              "XRP/USD": ["XRP", "GXRP", "XRPZ"]}
 CONDOR_MAXLOSS_SPY2, CONDOR_RISK = 170.0, 0.04   # SPY $2-wide condor, ~max loss per contract; risk per day at ~$4-5k
 
 
@@ -117,8 +125,23 @@ def decide_tier(equity, multiplier, prev):
     return "FULL" if equity >= FULL_ON else "LITE"
 
 
-def targets(equity, tier, sleeves, lev_vt, multiplier):
-    """{symbol: target $} (negative = short) and a summary. sleeves: {name: {symbol: weight within sleeve}}."""
+def resolve_crypto_etfs(tc):
+    """{coin: ETF ticker} for the coins with a tradable ETF in this account (first candidate that is active+tradable)."""
+    out = {}
+    for coin, cands in CRYPTO_ETF.items():
+        for t in cands:
+            try:
+                a = tc.get_asset(t)
+                if a.tradable and str(a.status).lower().endswith("active") and "equity" in str(a.asset_class).lower():
+                    out[coin] = t; break
+            except Exception:
+                continue
+    return out
+
+
+def targets(equity, tier, sleeves, lev_vt, multiplier, coin_etf=None):
+    """{symbol: target $} (negative = short) and a summary. sleeves: {name: {symbol: weight within sleeve}}.
+    coin_etf: hold each coin through this ETF instead (coins not in it go to cash)."""
     lev = min(lev_vt, LEV_CAP if tier == "FULL" else LITE_LEV_CAP)
     tgt = {}
     for name, sw in (("SLOW_h", sleeves["SLOW"]), ("CONTRACT_h", sleeves["CONTRACT"]), ("ETFTREND", sleeves["ETF"]),
@@ -130,6 +153,11 @@ def targets(equity, tier, sleeves, lev_vt, multiplier):
         inv_slow, inv_con = sum(sleeves["SLOW"].values()), sum(sleeves["CONTRACT"].values())
         hedge = -equity * lev * (W2["SLOW_h"] * BETA["SLOW_h"] * inv_slow + W2["CONTRACT_h"] * BETA["CONTRACT_h"] * inv_con)
         tgt["IWM"] = tgt.get("IWM", 0.0) + hedge
+    if coin_etf is not None:
+        for k in [k for k in tgt if "/" in k]:
+            v = tgt.pop(k)
+            if k in coin_etf:
+                tgt[coin_etf[k]] = tgt.get(coin_etf[k], 0.0) + v
     # what the account can carry: crypto is paid in cash (never on margin); stocks (long + short) up to 95% of the
     # margin multiplier x the equity left after crypto (Reg-T 50% on both sides). LITE: no margin at all.
     cry = sum(v for k, v in tgt.items() if "/" in k)
@@ -235,7 +263,15 @@ def main():
     print(f"::notice::crypto sleeve: {len(sleeves['CRYPTO'])} of {_c.shape[1]} coins above their 50-day average "
           f"(last daily close {_c.index[-1]:%Y-%m-%d}); ETF sleeve: {len(sleeves['ETF'])} of {len(SS.ETFS)} ETFs in an uptrend")
     lev_vt = vol_target_leverage()
-    tgt, info = targets(equity, tier, sleeves, lev_vt, mult)
+    market_open = bool(tc.get_clock().is_open)
+    coin_etf = resolve_crypto_etfs(tc) if CRYPTO_VIA == "etf" else None
+    if coin_etf is not None:
+        held = [c for c in sleeves["CRYPTO"] if c in coin_etf]
+        print(f"::notice::crypto via ETFs: {len(held)} of {len(sleeves['CRYPTO'])} trending coins have a tradable ETF "
+              f"({', '.join(sorted(coin_etf.values()))} available); the rest of the sleeve stays in cash")
+        if not market_open:
+            print("::notice::market closed and no direct crypto -- nothing to trade"); return
+    tgt, info = targets(equity, tier, sleeves, lev_vt, mult, coin_etf)
     pos = tc.get_all_positions()
     norm = lambda p: (p.symbol[:-3] + "/USD") if "crypto" in str(p.asset_class).lower() and "/" not in p.symbol else p.symbol
     cur = {norm(p): float(p.market_value) for p in pos}
@@ -247,7 +283,6 @@ def main():
         except Exception:
             frac[s] = False
     orders, skipped = plan_orders(tgt, cur, px, frac)
-    market_open = bool(tc.get_clock().is_open)
     results = []
     for sym, side, kind, amt in orders:
         if not live:
