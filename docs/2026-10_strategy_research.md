@@ -2729,3 +2729,22 @@ options_candidates_daily.csv = daily strategy returns of 48 candidate variants).
   test restarted from market day Oct 27; markout (60-min) columns added to `kmm study` to test the rest faster.
 - Also open: Kalshi's Liquidity Incentive Program (to Jan 1, 2027) pays for resting size near the best price; the bot
   quotes 2c behind. Check whether weather markets carry reward periods.
+
+## Machine learning for quote toxicity -- Oct 26, 2026 (`research/kalshi/toxicity.py`): NO USABLE SIGNAL in public data
+Connor asked whether ML/clustering has an angle. Our own fills are ~80 independent city-days (any model memorises noise),
+so the model was trained on the public trade sample (3.0M taker trades, May 2024 - Oct 2026): every trade scored from the
+maker's side, maker holding the favourite (50-97c), 1-48h before close -- 1.32M fills, 3,735 city-days. Label: 60-min
+markout (and settlement). 14 causal features (minute, hour, hours to close, days ahead, price, size, time since last
+trade, city-day activity 10/60 min, net taker flow 30 min, price move 5/30 min, city, weekday). Small gradient-boosted
+trees (depth 3, 200 iterations, min leaf 500-2000), judged only out of sample, ±2se clustered by city-day.
+- Dev < Oct 2025 -> holdout after: in-sample quintiles +4.4c ... -4.6c (m60) collapse to **+0.5 ... -0.5c** out of sample;
+  skipping the predicted-worst 20% lifts m60 +0.10 -> +0.26c and settlement +1.29 -> +1.43c -- inside the noise.
+- Retrained on recent data (Oct 2025 - May 2026 -> test Jun - Oct 2026): same picture (skip worst 20%: m60 +0.24 -> +0.39c,
+  settle +1.51 -> +1.63c, ±0.8 / ±2.9c). Top features: hours to close, city, 5-min price move.
+- The minute-of-hour rule shows NO effect on public taker trades either (as `minute_window.py` found), although it is
+  -7c on our own fills (Oct 26, 54 city-days, both halves). So what picks off the bot is specific to ITS quotes (deep,
+  resting, hit around the hourly readings), not visible in generic maker-at-the-touch data -- a public-tape model
+  cannot learn it.
+Verdict: no ML filter from public data. The right training set is the bot's own fills with markouts (`kmm study`), which
+needs months, not weeks, of data -- revisit at ~300+ city-days. The bigger ML idea (a forecast model for bucket
+probabilities from NWS/model output) remains the long project; the market does not lag model runs (model_lag.py).
