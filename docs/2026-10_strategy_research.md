@@ -2818,3 +2818,22 @@ Conclusions:
 - Volume is growing: October weekends had 750–880 backtest contracts, against 20–180 in Aug–Sep.
 - **Realistic:** shrink the edge toward zero (t 1.6 → about +3–4¢) and apply the 0.28× fill rate. That is **≈ $3–6 per weekend**.
 - **Verdict:** not worth deploying. Re-run in mid-December (about 18 weekends) and fold it into the January review.
+
+## Crypto sleeve via spot ETFs (Oct 27, 2026)
+Crypto isn't available on the live Alpaca account: Alpaca offers it only in approved states, and Texas isn't one; the account has no crypto agreement. Connor approved the "faithful" switch:
+- **Rule:** same coin signals and weights; each coin is held through its spot ETF (BTC→IBIT, ETH→ETHA, SOL→BSOL, XRP→XRP/GXRP); coins without an ETF stay in cash.
+- **Implementation:** `CRYPTO_VIA=etf` is the default in `automation/live_stack.py`. The weekend runs now exit quietly, since there's nothing to trade.
+
+`research/crypto4.py` compares the three versions inside the live mix. Figures are at 1×, before vol targeting; the crypto era starts June 2021.
+
+| Variant | Ann. return, crypto era | Excess Sharpe, crypto era | Dev | Holdout |
+|---|---|---|---|---|
+| C16, as backtested | 15.8% | 1.12 | 1.04 | 1.38 |
+| C4 faithful (live now) | 14.6% | 1.05 | 1.03 | 1.29 |
+| C4 renormalised | 17.4% | 1.21 | 1.06 | 1.49 |
+
+**Caveats:**
+- **Cost of faithful:** about 1.2 points a year and about 0.07 of Sharpe.
+- **Renorm's edge is flattered:** BTC, ETH, SOL and XRP got ETFs *because* they won (survivorship). On dev the gap is small (1.06 vs 1.03); most of the gap is in the holdout.
+- **Concentration:** renorm also puts up to 15% of the book into just four coins.
+- **Decision:** at the January review.
