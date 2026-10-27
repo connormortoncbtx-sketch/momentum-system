@@ -2748,3 +2748,17 @@ trees (depth 3, 200 iterations, min leaf 500-2000), judged only out of sample, Â
 Verdict: no ML filter from public data. The right training set is the bot's own fills with markouts (`kmm study`), which
 needs months, not weeks, of data -- revisit at ~300+ city-days. The bigger ML idea (a forecast model for bucket
 probabilities from NWS/model output) remains the long project; the market does not lag model runs (model_lag.py).
+
+## Kalshi perpetuals: funding-rate carry -- Oct 26, 2026 (`research/perps_funding.py`): REAL BUT THIN, watch only
+Public `/margin/funding_rates/historical`, all 28 perps (crypto every 8h since Jun 2026; metals, US500, US Tech 100, WTI
+daily since Sep-Oct 2026). Carry trade = short the perp + hold the same notional spot, collect funding (positive = longs
+pay shorts). Annualised simple funding (avg daily x 365, Kalshi's convention), whole history | last 30 days:
+- **BTC +9.4% | +14.9%** (144 days, worst 30-day stretch still +0.2%, but only 52% of settlements positive); XRP +6.2 |
+  +18.0; SOL +3.3 | +13.7; LINK +5.3 | +22.9; ETH -0.6 | +1.9; most smaller coins slightly NEGATIVE (shorts pay).
+- Metals: **platinum +16.3%** (82% of days positive, 32 days), palladium +6.9, silver +6.2, gold +4.9; US500 +4.7,
+  US Tech 100 +2.9, WTI +2.4 (2-3 weeks of data).
+Reading: funding exists and is positive on BTC and the metals, but after the cash the capital could earn anyway (~3.8%)
+and two-venue costs (spot round trip ~0.5%, Kalshi perp fees unknown, collateral for the short), BTC carry is roughly
++4-5%/yr excess on capital, with venue, liquidation and basis risk and ~5 months of history. Not worth an application
+now (on a few hundred dollars it is ~$10-20/yr). Watch: if BTC/platinum funding stays > ~15% annualised for a few
+months, or Kalshi publishes low perp fees, revisit with mark-vs-spot basis and fee data.
