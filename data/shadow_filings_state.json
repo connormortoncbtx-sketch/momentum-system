@@ -1,5 +1,5 @@
 {
- "since": "2026-10-26T14:11:11-04:00",
+ "since": "2026-10-26T17:30:28-04:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -2179,6 +2179,206 @@
    "decided": "2026-10-26T14:52:28.500299-04:00",
    "event_type": "regulatory_setback",
    "summary": "FDA opens public docket on VOQUEZNA exclusivity challenge; generic makers litigating to enable earlier ANDA approval.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "EVEX",
+   "accession": "0001554855-26-002191",
+   "decided": "2026-10-27T02:33:16.267749-04:00",
+   "event_type": "listing_deficiency",
+   "summary": "NYSE initiated delisting proceedings for company warrants due to abnormally low price; common stock unaffected.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "LXFR",
+   "accession": "0002077096-26-000291",
+   "decided": "2026-10-27T02:33:18.860679-04:00",
+   "event_type": "strategic_review",
+   "summary": "Acquisition litigation forces supplemental proxy disclosures; deal closure at risk.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "VENU",
+   "accession": "0001493152-26-048581",
+   "decided": "2026-10-27T02:33:21.963813-04:00",
+   "event_type": "debt_financing",
+   "summary": "Material land acquisition financing via sale-leaseback and amended development agreement with McKinney, Texas municipality.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CYCU",
+   "accession": "0001868419-26-000061",
+   "decided": "2026-10-27T02:33:24.227665-04:00",
+   "event_type": "exec_departure",
+   "summary": "Director stepped down from committees due to independence violation; new director appointed.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "EQ",
+   "accession": "0001193125-26-432158",
+   "decided": "2026-10-27T02:33:27.279511-04:00",
+   "event_type": "equity_financing",
+   "summary": "Equity financing closes: $20M raised via common stock and pre-funded warrants after EQ504 trial milestone met.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "EAF",
+   "accession": "0000931148-26-000090",
+   "decided": "2026-10-27T02:33:31.900608-04:00",
+   "event_type": "restructuring",
+   "summary": "Mexico graphite electrode facility closure; $25-35M non-cash charges estimated.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "FLXS",
+   "accession": "0001193125-26-432068",
+   "decided": "2026-10-27T02:33:34.885775-04:00",
+   "event_type": "prelim_results_good",
+   "summary": "Q1 FY2027 sales grew 3.2% to $114M; net income per share declined; margin pressured by FX and inflation.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CPIX",
+   "accession": "0001087294-26-000072",
+   "decided": "2026-10-27T02:33:39.649575-04:00",
+   "event_type": "regulatory_approval",
+   "summary": "Cumberland seeking FDA approval for ifetroban DMD cardiomyopathy treatment via NDA filing",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "WEAV",
+   "accession": "0001609151-26-000120",
+   "decided": "2026-10-27T02:33:44.545224-04:00",
+   "event_type": "acquisition",
+   "summary": "Francisco Partners completed acquisition of company for $7.40/share; $240M debt financing arranged.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "FDUS",
+   "accession": "0001193125-26-432003",
+   "decided": "2026-10-27T02:33:55.164683-04:00",
+   "event_type": "debt_financing",
+   "summary": "Exchange offer for $120M 6.625% notes due 2029 closed; routine debt restructuring transaction.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "UTL",
+   "accession": "0000755001-26-000035",
+   "decided": "2026-10-27T02:33:58.441748-04:00",
+   "event_type": "debt_financing",
+   "summary": "Maine Natural subsidiary issued $40M senior unsecured notes due 2031 to refinance existing debt.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "GAIN",
+   "accession": "0001193125-26-431974",
+   "decided": "2026-10-27T02:34:03.046070-04:00",
+   "event_type": "exec_departure",
+   "summary": "Lead Independent Director Walter Wilkinson resigned effective immediately; successor appointed.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "GLAD",
+   "accession": "0001193125-26-431963",
+   "decided": "2026-10-27T02:34:05.237797-04:00",
+   "event_type": "exec_departure",
+   "summary": "Lead Independent Director Walter Wilkinson resigns; board reduced to seven members.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "RENT",
+   "accession": "0000950103-26-016172",
+   "decided": "2026-10-27T02:34:08.090319-04:00",
+   "event_type": "equity_financing",
+   "summary": "Completed $15M rights offering; only $8.9M subscribed, backstop investors purchased remaining $6.1M",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "LAND",
+   "accession": "0001193125-26-431959",
+   "decided": "2026-10-27T02:34:10.552204-04:00",
+   "event_type": "exec_departure",
+   "summary": "Lead Independent Director Walter Wilkinson resigned immediately after 12 years; replaced by George Stelljes.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "GOOD",
+   "accession": "0001193125-26-431956",
+   "decided": "2026-10-27T02:34:12.804913-04:00",
+   "event_type": "exec_departure",
+   "summary": "Lead Independent Director Walter Wilkinson resigned effective immediately after 12 years of service.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "JBLU",
+   "accession": "0001158463-26-000095",
+   "decided": "2026-10-27T02:34:15.829904-04:00",
+   "event_type": "routine",
+   "summary": "Q3 2026 earnings release with guidance update and strategic presentation; routine disclosure.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "GBX",
+   "accession": "0001193125-26-431927",
+   "decided": "2026-10-27T02:34:18.658773-04:00",
+   "event_type": "strategic_review",
+   "summary": "Activist investor Atlas Holdings gains board seat; cooperation agreement with standstill but acquisition trigger clauses.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CLW",
+   "accession": "0001628280-26-067280",
+   "decided": "2026-10-27T02:34:21.328192-04:00",
+   "event_type": "exec_departure",
+   "summary": "CFO Sherri Baker resigns effective November 13, 2026; Q3 showed net loss despite improved EBITDA.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CBNK",
+   "accession": "0001419536-26-000166",
+   "decided": "2026-10-27T02:34:26.800901-04:00",
+   "event_type": "acquisition",
+   "summary": "Company acquired by Peoples Bancorp in all-stock deal; $43.75/share valuation announced prior; mixed Q3 results.",
    "entry_date": null,
    "entry": null
   }
