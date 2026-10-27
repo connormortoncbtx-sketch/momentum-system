@@ -2799,3 +2799,22 @@ Conclusions:
   1. Add the next-tier daily-high cities (HOU, MIN, PHX, SEA, SF; Oct 19 study).
   2. Raise caps on the cap ladder.
   3. Possibly add one small extra: KXRAINWKND. It is weekly, with a good edge but thin volume, and needs per-series windows. Shadow it before any money goes in.
+
+## Backtest vs real fills, and the full weekend-rain history (Oct 27, 2026)
+**`kmm calibrate`** runs the research backtest (2¢ behind, 5-lot, sweeps) on the 188 settled markets the bot really traded (favourite, outside the quiet window) and compares it with the real fills on those markets.
+
+| | Backtest | Real |
+|---|---|---|
+| Edge per contract | +1.45¢ | +1.28¢ |
+| Contracts per market | 83 | 23 |
+
+- Paired real minus backtest: +0.75¢ ±3.0¢. **The per-contract edge needs no markdown.** Volume does: the bot gets **~0.28× the backtest's contracts**.
+- City direction mostly agrees: DAL, LAX and AUS are good in both; ATL and BOS are bad in both. This is a second independent strike against ATL and BOS for Nov 4.
+
+**`research/kalshi/rain_weekend.py`, KXRAINWKND, every settled market** (Aug 22 – Oct 24: 10 weekends, 205 markets):
+- Bot rule: **+7.6¢ ±9.5 (clustered by weekend), t 1.6**. Not significant. Leaving out any one weekend gives +5.3 to +11.9¢.
+- The edge sits 6–24h before close (+10.7¢). Fills 96h+ out are negative. That contradicts the "early forecasts are mushy" explanation; the edge behaves like the daily highs.
+- The per-city numbers are noise: 1–8 markets each.
+- Volume is growing: October weekends had 750–880 backtest contracts, against 20–180 in Aug–Sep.
+- **Realistic:** shrink the edge toward zero (t 1.6 → about +3–4¢) and apply the 0.28× fill rate. That is **≈ $3–6 per weekend**.
+- **Verdict:** not worth deploying. Re-run in mid-December (about 18 weekends) and fold it into the January review.
