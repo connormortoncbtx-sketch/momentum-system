@@ -2762,3 +2762,15 @@ and two-venue costs (spot round trip ~0.5%, Kalshi perp fees unknown, collateral
 +4-5%/yr excess on capital, with venue, liquidation and basis risk and ~5 months of history. Not worth an application
 now (on a few hundred dollars it is ~$10-20/yr). Watch: if BTC/platinum funding stays > ~15% annualised for a few
 months, or Kalshi publishes low perp fees, revisit with mark-vs-spot basis and fee data.
+- **Perps edge, follow-up (Oct 27, `research/perps_edge.py`, Connor: "there has to be inefficiencies").** (1) Funding vs
+  offshore, BTC, same days since Jun 2026: Kalshi +9.5%/yr vs **Deribit +3.3% (spread +6.2%, t 8.0, Kalshi richer on
+  67% of days, last 30 days +12.0%)**; vs OKX (Jul-Oct) +12.8 vs +5.7 (spread +7.0%, t 8.1, 75% of days, last 30 +11.3);
+  vs Hyperliquid (also retail-heavy) +1.4% (t 1.8, n.s.); Bybit blocks US. **A real structural premium**: longs on the
+  US-only venue pay ~6-7 pts/yr more than on the big offshore exchanges -- fenced-off retail demand, as in 0DTE options.
+  (2) Basis, Kalshi BTC perp mid vs spot (hourly): 90% of hours within ±2 bps of its own 7-day median, median bid/ask
+  0.5 bps, deviations decay within minutes (AR(1) half-life ~0.1h). A reversion rule shows 8-14 "trades" at +120-190 bps
+  with 100% wins -- that is the signature of stale hourly snapshots / outliers, not a tradeable edge; the basis is
+  tightly arbitraged. Verdict: no basis edge; the funding premium is real. Harvesting it = short Kalshi BTC perp + long
+  spot BTC: ~9-15%/yr gross on notional, ~7-11%/yr on capital after margin collateral, i.e. ~3-7 pts over T-bills,
+  market-neutral, with venue / funding-flip (only 52% of settlements positive) / liquidation risk and 5 months of
+  history. Next: track it as a no-order shadow (daily funding accrued on a hedged short) before any application.
