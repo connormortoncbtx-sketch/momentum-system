@@ -178,6 +178,29 @@ def reconcile_state_with_broker(client, state: dict,
 
 # ── ORDER HELPERS ─────────────────────────────────────────────────────────────
 
+def free_qty(pos) -> int:
+    """Shares not already reserved by another open SELL (Alpaca's qty_available). 2026-10-28: a partial sell that
+    hadn't filled yet held 59 of DGII's 79 shares, and stops/trails sized on the full qty were rejected ("insufficient
+    qty"), leaving the position briefly uncovered. Every stop/trail is now sized on the free shares."""
+    q = getattr(pos, "qty_available", None)
+    try:
+        return int(float(q)) if q is not None else int(float(pos.qty))
+    except (TypeError, ValueError):
+        return int(float(pos.qty))
+
+
+def open_market_sells(client, symbol: str) -> list:
+    """Open non-stop SELL orders for the symbol (e.g. a Phase 2 partial sell still working)."""
+    from alpaca.trading.requests import GetOrdersRequest
+    from alpaca.trading.enums import OrderSide, OrderType, QueryOrderStatus
+    try:
+        oo = client.get_orders(filter=GetOrdersRequest(status=QueryOrderStatus.OPEN, symbols=[symbol]))
+    except Exception:
+        return []
+    return [o for o in oo if o.symbol == symbol and o.side == OrderSide.SELL
+            and o.order_type not in (OrderType.STOP, OrderType.STOP_LIMIT, OrderType.TRAILING_STOP)]
+
+
 def find_open_stop_orders(client, symbol: str) -> dict:
     """
     List open SELL stop-style orders for a symbol, classified by type.
@@ -324,7 +347,7 @@ def ensure_phase1_stop(client, symbol: str, state: dict) -> bool:
     try:
         pos = client.get_open_position(symbol)
         actual_entry = float(pos.avg_entry_price)
-        shares       = int(float(pos.qty))
+        shares       = free_qty(pos)             # shares a pending partial sell holds are already exiting
     except Exception as e:
         log.warning(f"  {symbol}: get_open_position failed: {e} -- stop not placed this poll")
         return False
@@ -582,8 +605,15 @@ def upgrade_to_phase2(client, symbol: str, current_price: float,
     sell_qty = int(total_qty * sell_pct)
     partial_order_id = None
     partial_succeeded = False
+    working = open_market_sells(client, symbol)
 
-    if sell_qty < 1 or (total_qty - sell_qty) < 1:
+    if working:                                  # a previous attempt's partial sell is still filling: don't sell twice
+        log.info(f"  Step 3: Partial sell already working for {symbol} ({[str(o.id) for o in working]}) -- not resubmitted")
+        try:
+            trail_qty = free_qty(client.get_open_position(symbol))
+        except Exception:
+            trail_qty = 0
+    elif sell_qty < 1 or (total_qty - sell_qty) < 1:
         log.info(f"  Step 3: Partial sell skipped -- split {total_qty}×{sell_pct:.2f} "
                  f"produces degenerate qty ({sell_qty}/{total_qty - sell_qty})")
         trail_qty = total_qty
@@ -621,7 +651,7 @@ def upgrade_to_phase2(client, symbol: str, current_price: float,
             # will reconcile when partial sell fills).
             try:
                 refreshed_pos = client.get_open_position(symbol)
-                trail_qty = int(float(refreshed_pos.qty))
+                trail_qty = free_qty(refreshed_pos)  # shares the unfilled partial sell holds are already exiting
             except Exception:
                 trail_qty = total_qty - sell_qty
         except Exception as sell_err:
