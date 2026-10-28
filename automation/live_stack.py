@@ -54,6 +54,10 @@ FULL_ON, FULL_OFF = 2000.0, 1800.0
 LEV_CAP = float(os.environ.get("LEV_CAP", "2.0"))
 LITE_LEV_CAP = 1.0
 MIN_TRADE, BAND = 1.0, 0.10      # Alpaca's $1 minimum; then only re-trade a gap > 10% of the position
+# Idle cash -> a T-bill ETF (Connor, Oct 28, 2026): the backtest (research/stack_v2.py) credits idle sleeve cash with
+# T-bill interest; uninvested cash at Alpaca earns nothing. Whatever the sleeves leave unused (up to 95% of equity,
+# after crypto ETFs; never bought with margin) is held in CASH_ETF and sold down first when the sleeves need it.
+CASH_ETF = (os.environ.get("CASH_ETF") or "SGOV").strip().upper()
 CAP_DIV = 0.25
 # Connor's live account (Texas) can't trade crypto (Alpaca offers it only in approved states; no crypto agreement
 # exists on the account -- Oct 27, 2026). The crypto sleeve is held through US spot ETFs instead: same coin signals
@@ -165,7 +169,15 @@ def targets(equity, tier, sleeves, lev_vt, multiplier, coin_etf=None):
     room = 0.95 * (min(multiplier, 2.0) if tier == "FULL" else 1.0) * max(equity - cry, 0.0)
     scale = min(1.0, room / stk) if stk > 0 else 1.0
     tgt = {k: (v * scale if "/" not in k else v) for k, v in tgt.items()}
-    return tgt, dict(lev=lev, lev_vt=lev_vt, stock_scale=scale, hedge=hedge * scale)
+    idle = 0.0
+    if CASH_ETF and CASH_ETF != "NONE":
+        longs = sum(v for k, v in tgt.items() if v > 0)
+        idle = max(0.0, 0.95 * equity - longs)
+        if idle >= 5.0:
+            tgt[CASH_ETF] = tgt.get(CASH_ETF, 0.0) + idle
+        else:
+            idle = 0.0
+    return tgt, dict(lev=lev, lev_vt=lev_vt, stock_scale=scale, hedge=hedge * scale, idle=idle)
 
 
 def plan_orders(tgt, cur, px, fractionable):
@@ -226,6 +238,21 @@ def prices(syms):
     return out
 
 
+def wait_for_sells(tc, timeout=20):
+    """Wait (up to timeout s) until no SELL orders are still open, so the buys that follow have the cash."""
+    import time
+    from alpaca.trading.requests import GetOrdersRequest
+    from alpaca.trading.enums import QueryOrderStatus, OrderSide
+    t0 = time.time()
+    while time.time() - t0 < timeout:
+        try:
+            if not any(o.side == OrderSide.SELL for o in tc.get_orders(filter=GetOrdersRequest(status=QueryOrderStatus.OPEN))):
+                return
+        except Exception:
+            return
+        time.sleep(1.5)
+
+
 def submit(tc, sym, side, kind, amt, market_open):
     from alpaca.trading.requests import MarketOrderRequest
     from alpaca.trading.enums import OrderSide, TimeInForce
@@ -284,9 +311,14 @@ def main():
             frac[s] = False
     orders, skipped = plan_orders(tgt, cur, px, frac)
     results = []
+    waited = False
     for sym, side, kind, amt in orders:
         if not live:
             results.append((sym, side, kind, amt, "dry run")); continue
+        if side == "buy" and not waited:                # sells first: let them fill so their cash funds the buys
+            waited = True
+            if any(r[1] == "sell" for r in results):
+                wait_for_sells(tc)
         try:
             results.append((sym, side, kind, amt, submit(tc, sym, side, kind, amt, market_open)))
         except Exception as e:
@@ -295,13 +327,15 @@ def main():
     condor = ("gated (approve after the January review)" if os.environ.get("CONDOR_LIVE", "no") != "yes" else "approved -- not built yet") \
         + (f"; eligible for {condor_n} SPY $2-wide contract(s)/day at 4% risk" if condor_n >= 1 else "; not yet eligible (~$4,250 for 1 contract)")
     # public log: no dollars, no positions
+    print(f"::notice::idle cash -> {CASH_ETF}: {'yes' if info.get('idle') else 'nothing idle'}")
     print(f"::notice::live stack ({mode}): tier {tier}, leverage {info['lev']:.2f}x (vol target {info['lev_vt']:.2f}), "
           f"stock scale {info['stock_scale']:.2f}, {len(orders)} orders planned, {len(skipped)} skipped, errors {sum('error' in r[4] for r in results)}; condor {condor.split(';')[0]}")
     if tier != st.get("tier") and st.get("tier") is not None:
         notify_alert("Live stack", f"TIER CHANGE {st.get('tier')} -> {tier} (equity ${equity:,.2f}, margin x{mult:g})")
     STATE.write_text(json.dumps({"tier": tier, "last_run": today.isoformat(), "mode": mode}, indent=1))
     lines = [f"{'LIVE' if live else 'DRY RUN'} {today}: equity ${equity:,.2f}, tier {tier}, leverage {info['lev']:.2f}x"
-             + (f", IWM hedge ${info['hedge']:,.0f}" if tier == "FULL" else "")]
+             + (f", IWM hedge ${info['hedge']:,.0f}" if tier == "FULL" else "")
+             + (f", idle cash ${info['idle']:,.2f} -> {CASH_ETF}" if info.get("idle") else "")]
     lines += [f"{s} {sd} {('$' + format(a, ',.2f')) if k == 'notional' else (format(a, 'g') if k == 'qty' else 'ALL')} -> {r}"
               for s, sd, k, a, r in results]
     lines += [f"skipped {s}: {why}" for s, why in skipped]
