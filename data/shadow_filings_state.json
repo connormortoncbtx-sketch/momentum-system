@@ -1,5 +1,5 @@
 {
- "since": "2026-10-27T13:26:20-04:00",
+ "since": "2026-10-27T17:28:51-04:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -2500,6 +2500,146 @@
    "decided": "2026-10-27T14:15:10.584088-04:00",
    "event_type": "routine",
    "summary": "Q3 results, CFO transition to advisory role, two executive departures, four new directors appointed.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ACRS",
+   "accession": "0001104659-26-119231",
+   "decided": "2026-10-28T03:01:23.111778-04:00",
+   "event_type": "equity_financing",
+   "summary": "Company raises $46.7M via equity offering with significant dilution and pre-funded warrants.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "SPRO",
+   "accession": "0001193125-26-434452",
+   "decided": "2026-10-28T03:01:25.668191-04:00",
+   "event_type": "exec_departure",
+   "summary": "COO Timothy Keutzer retiring December 31, 2026 after 11 years; consulting through February 2027.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "HCTI",
+   "accession": "0001213900-26-112972",
+   "decided": "2026-10-28T03:01:28.892665-04:00",
+   "event_type": "listing_deficiency",
+   "summary": "1:20 reverse stock split executed to address Nasdaq delisting determination; hearing scheduled November 5.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "OCFC",
+   "accession": "0001004702-26-000122",
+   "decided": "2026-10-28T03:01:35.707470-04:00",
+   "event_type": "prelim_results_good",
+   "summary": "Q3 earnings miss with YoY decline; core conversion complete; regular dividend $0.20/share.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "BWMN",
+   "accession": "0001140361-26-040909",
+   "decided": "2026-10-28T03:01:38.572801-04:00",
+   "event_type": "acquisition",
+   "summary": "Acquisition by BCP-affiliated Prive Parent ongoing; two stockholder lawsuits filed alleging proxy disclosure deficiencies.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "MPB",
+   "accession": "0000879635-26-000060",
+   "decided": "2026-10-28T03:01:43.085316-04:00",
+   "event_type": "exec_departure",
+   "summary": "COO Dana Stewart resigning from Mid Penn Bank subsidiary effective October 30, 2026.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "AIAI",
+   "accession": "0001493152-26-048718",
+   "decided": "2026-10-28T03:01:48.216034-04:00",
+   "event_type": "exec_departure",
+   "summary": "Director Eric Affeldt resigned October 21, 2026; no dispute cited.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "NKLR",
+   "accession": "0001140361-26-040902",
+   "decided": "2026-10-28T03:01:51.011048-04:00",
+   "event_type": "auditor_change",
+   "summary": "MaloneBailey re-engaged as auditor for FY2026 after prior January 2026 termination.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CNXU",
+   "accession": "0001062993-26-005569",
+   "decided": "2026-10-28T03:01:56.885919-04:00",
+   "event_type": "dilution_other",
+   "summary": "Warrant inducement program approved; potential 20% dilution requires stockholder approval.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "NBHC",
+   "accession": "0001104659-26-119174",
+   "decided": "2026-10-28T03:02:00.029945-04:00",
+   "event_type": "prelim_results_bad",
+   "summary": "Q3 2026 net loss $8.8M; $40.6M provision expense on commercial credits",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "VC",
+   "accession": "0001111335-26-000056",
+   "decided": "2026-10-28T03:02:10.156143-04:00",
+   "event_type": "exec_departure",
+   "summary": "CFO Jerome Rouquet departing November 30; Colleen Myers appointed interim CFO pending permanent successor search.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "DSGR",
+   "accession": "0001193125-26-434245",
+   "decided": "2026-10-28T03:02:18.634016-04:00",
+   "event_type": "acquisition",
+   "summary": "Subsidiary acquired GradeEight for $145M debt-funded; pending CEO-led going-private merger.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "IIPR",
+   "accession": "0001104659-26-119155",
+   "decided": "2026-10-28T03:02:25.549167-04:00",
+   "event_type": "debt_financing",
+   "summary": "Loan agreement maturity extended 3 months to January 2027; $62.5M outstanding.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "TZOO",
+   "accession": "0001133311-26-000019",
+   "decided": "2026-10-28T03:02:33.659741-04:00",
+   "event_type": "prelim_results_bad",
+   "summary": "Q3 2026: Revenue +3% to $22.9M but operating loss $2.6M; Club Members +65% but profitability declined",
    "entry_date": null,
    "entry": null
   }
