@@ -1,5 +1,5 @@
 {
- "since": "2026-10-27T17:28:51-04:00",
+ "since": "2026-10-28T14:24:44-04:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -2390,8 +2390,8 @@
    "decided": "2026-10-27T14:14:23.425653-04:00",
    "event_type": "prelim_results_good",
    "summary": "Q3 2026 preliminary earnings released; results unaudited pending 10-Q filing.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-28",
+   "entry": 31.9
   },
   {
    "book": "short_bad_news",
@@ -2400,8 +2400,8 @@
    "decided": "2026-10-27T14:14:28.330829-04:00",
    "event_type": "partnership",
    "summary": "War Tech Consortium partnership with M42 for defense tech acquisitions; $125M projected 2027 revenue.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-28",
+   "entry": 1.69
   },
   {
    "book": "short_bad_news",
@@ -2410,8 +2410,8 @@
    "decided": "2026-10-27T14:14:30.671829-04:00",
    "event_type": "equity_financing",
    "summary": "Fund established $125M ATM equity distribution agreement with four underwriting agents.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-28",
+   "entry": 3.74
   },
   {
    "book": "long_contract_win",
@@ -2420,8 +2420,8 @@
    "decided": "2026-10-27T14:14:32.717495-04:00",
    "event_type": "contract_win",
    "summary": "First Office-Based Lab customer signed 12-month LIBERTY device supply order; West Coast expansion.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-28",
+   "entry": 1.11
   },
   {
    "book": "long_contract_div",
@@ -2430,8 +2430,9 @@
    "decided": "2026-10-27T14:14:32.717495-04:00",
    "event_type": "contract_win",
    "summary": "First Office-Based Lab customer signed 12-month LIBERTY device supply order; West Coast expansion.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-28",
+   "entry": 1.11,
+   "vol60": 0.5494765901338683
   },
   {
    "book": "short_bad_news",
@@ -2440,8 +2441,8 @@
    "decided": "2026-10-27T14:14:38.251785-04:00",
    "event_type": "strategic_review",
    "summary": "Company halting AlloNK development, cutting 94% workforce, exploring strategic alternatives to maximize shareholder value.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-28",
+   "entry": 4.35
   },
   {
    "book": "short_bad_news",
@@ -2450,8 +2451,8 @@
    "decided": "2026-10-27T14:14:40.968831-04:00",
    "event_type": "acquisition",
    "summary": "Company acquired Camfour LLC, firearms/ammunition distributor, for $34M cash; regulatory approval needed.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-28",
+   "entry": 1.99
   },
   {
    "book": "short_bad_news",
@@ -2460,8 +2461,8 @@
    "decided": "2026-10-27T14:14:50.315408-04:00",
    "event_type": "buyback_dividend",
    "summary": "Terrestrial Energy authorizes $25M share repurchase program; expiration October 2027.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-28",
+   "entry": 2.95
   },
   {
    "book": "short_bad_news",
@@ -2470,8 +2471,8 @@
    "decided": "2026-10-27T14:14:55.704849-04:00",
    "event_type": "routine",
    "summary": "Q3 2026 earnings release and updated corporate presentation; clinical-stage biotech company.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-28",
+   "entry": 4.23
   },
   {
    "book": "short_bad_news",
@@ -2480,8 +2481,8 @@
    "decided": "2026-10-27T14:15:02.786179-04:00",
    "event_type": "acquisition",
    "summary": "Merger agreement with Ares Capital Corporation at $10.88 per share; $1.21 cash plus ARCC stock.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-28",
+   "entry": 10.25
   },
   {
    "book": "short_bad_news",
@@ -2490,8 +2491,8 @@
    "decided": "2026-10-27T14:15:08.095765-04:00",
    "event_type": "clinical_positive",
    "summary": "Phase 1b POC positive for ATI-052 bispecific antibody in atopic dermatitis and asthma",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-28",
+   "entry": 3.7
   },
   {
    "book": "short_bad_news",
@@ -2500,8 +2501,8 @@
    "decided": "2026-10-27T14:15:10.584088-04:00",
    "event_type": "routine",
    "summary": "Q3 results, CFO transition to advisory role, two executive departures, four new directors appointed.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-28",
+   "entry": 16.9
   },
   {
    "book": "short_bad_news",
@@ -2510,8 +2511,8 @@
    "decided": "2026-10-28T03:01:23.111778-04:00",
    "event_type": "equity_financing",
    "summary": "Company raises $46.7M via equity offering with significant dilution and pre-funded warrants.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-28",
+   "entry": 3.7
   },
   {
    "book": "short_bad_news",
@@ -2520,8 +2521,8 @@
    "decided": "2026-10-28T03:01:25.668191-04:00",
    "event_type": "exec_departure",
    "summary": "COO Timothy Keutzer retiring December 31, 2026 after 11 years; consulting through February 2027.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-28",
+   "entry": 1.18
   },
   {
    "book": "short_bad_news",
@@ -2530,8 +2531,8 @@
    "decided": "2026-10-28T03:01:28.892665-04:00",
    "event_type": "listing_deficiency",
    "summary": "1:20 reverse stock split executed to address Nasdaq delisting determination; hearing scheduled November 5.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-28",
+   "entry": 6.74
   },
   {
    "book": "short_bad_news",
@@ -2540,8 +2541,8 @@
    "decided": "2026-10-28T03:01:35.707470-04:00",
    "event_type": "prelim_results_good",
    "summary": "Q3 earnings miss with YoY decline; core conversion complete; regular dividend $0.20/share.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-28",
+   "entry": 17.17
   },
   {
    "book": "short_bad_news",
@@ -2550,8 +2551,8 @@
    "decided": "2026-10-28T03:01:38.572801-04:00",
    "event_type": "acquisition",
    "summary": "Acquisition by BCP-affiliated Prive Parent ongoing; two stockholder lawsuits filed alleging proxy disclosure deficiencies.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-28",
+   "entry": 42.9
   },
   {
    "book": "short_bad_news",
@@ -2560,8 +2561,8 @@
    "decided": "2026-10-28T03:01:43.085316-04:00",
    "event_type": "exec_departure",
    "summary": "COO Dana Stewart resigning from Mid Penn Bank subsidiary effective October 30, 2026.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-28",
+   "entry": 34.23
   },
   {
    "book": "short_bad_news",
@@ -2570,8 +2571,8 @@
    "decided": "2026-10-28T03:01:48.216034-04:00",
    "event_type": "exec_departure",
    "summary": "Director Eric Affeldt resigned October 21, 2026; no dispute cited.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-28",
+   "entry": 1.69
   },
   {
    "book": "short_bad_news",
@@ -2580,8 +2581,8 @@
    "decided": "2026-10-28T03:01:51.011048-04:00",
    "event_type": "auditor_change",
    "summary": "MaloneBailey re-engaged as auditor for FY2026 after prior January 2026 termination.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-28",
+   "entry": 2.15
   },
   {
    "book": "short_bad_news",
@@ -2590,8 +2591,8 @@
    "decided": "2026-10-28T03:01:56.885919-04:00",
    "event_type": "dilution_other",
    "summary": "Warrant inducement program approved; potential 20% dilution requires stockholder approval.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-28",
+   "entry": 2.92
   },
   {
    "book": "short_bad_news",
@@ -2600,8 +2601,8 @@
    "decided": "2026-10-28T03:02:00.029945-04:00",
    "event_type": "prelim_results_bad",
    "summary": "Q3 2026 net loss $8.8M; $40.6M provision expense on commercial credits",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-28",
+   "entry": 38.6
   },
   {
    "book": "short_bad_news",
@@ -2610,8 +2611,8 @@
    "decided": "2026-10-28T03:02:10.156143-04:00",
    "event_type": "exec_departure",
    "summary": "CFO Jerome Rouquet departing November 30; Colleen Myers appointed interim CFO pending permanent successor search.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-28",
+   "entry": 70.62
   },
   {
    "book": "short_bad_news",
@@ -2620,8 +2621,8 @@
    "decided": "2026-10-28T03:02:18.634016-04:00",
    "event_type": "acquisition",
    "summary": "Subsidiary acquired GradeEight for $145M debt-funded; pending CEO-led going-private merger.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-28",
+   "entry": 35.05
   },
   {
    "book": "short_bad_news",
@@ -2630,8 +2631,8 @@
    "decided": "2026-10-28T03:02:25.549167-04:00",
    "event_type": "debt_financing",
    "summary": "Loan agreement maturity extended 3 months to January 2027; $62.5M outstanding.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-28",
+   "entry": 53.01
   },
   {
    "book": "short_bad_news",
@@ -2640,14 +2641,144 @@
    "decided": "2026-10-28T03:02:33.659741-04:00",
    "event_type": "prelim_results_bad",
    "summary": "Q3 2026: Revenue +3% to $22.9M but operating loss $2.6M; Club Members +65% but profitability declined",
+   "entry_date": "2026-10-28",
+   "entry": 4.98
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "OSS",
+   "accession": "0001193125-26-435262",
+   "decided": "2026-10-28T14:29:35.759266-04:00",
+   "event_type": "equity_financing",
+   "summary": "Company establishes $50M at-the-market equity offering program with Piper Sandler.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "SKYA",
+   "accession": "0001493152-26-048827",
+   "decided": "2026-10-28T14:29:40.606352-04:00",
+   "event_type": "settlement",
+   "summary": "Company settles with Bastion Trading on amended tender offer terms; expanded warrant eligibility, extended deadline.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "EMAT",
+   "accession": "0001213900-26-113120",
+   "decided": "2026-10-28T14:29:54.276626-04:00",
+   "event_type": "partnership",
+   "summary": "Equipment delivery and Pohang City investment framework with $28M grant; magnet capacity expansion to 10,000 MT.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "NPB",
+   "accession": "0001336706-26-000083",
+   "decided": "2026-10-28T14:29:59.669447-04:00",
+   "event_type": "divestiture",
+   "summary": "Definitive agreement to sell mortgage origination channels to CMG; 15 bps contingent revenue.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_win",
+   "symbol": "FWRD",
+   "accession": "0001628280-26-067736",
+   "decided": "2026-10-28T14:30:04.952640-04:00",
+   "event_type": "contract_win",
+   "summary": "Definitive agreement retains significant customer portion for two years; revenue expected to grow versus 2025.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_div",
+   "symbol": "FWRD",
+   "accession": "0001628280-26-067736",
+   "decided": "2026-10-28T14:30:04.952640-04:00",
+   "event_type": "contract_win",
+   "summary": "Definitive agreement retains significant customer portion for two years; revenue expected to grow versus 2025.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "OLN",
+   "accession": "0000950157-26-001129",
+   "decided": "2026-10-28T14:30:08.093136-04:00",
+   "event_type": "debt_financing",
+   "summary": "Credit facility refinancing for pending Huntsman merger; $2.5B replacement financing with leverage covenant stepping down from 5.5x to 4.0x",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "BCAL",
+   "accession": "0001493152-26-048825",
+   "decided": "2026-10-28T14:30:16.753914-04:00",
+   "event_type": "prelim_results_bad",
+   "summary": "Q3 2026 earnings show declining profitability despite deposit growth; deteriorating credit metrics concerning.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "FMNB",
+   "accession": "0001437749-26-033702",
+   "decided": "2026-10-28T14:30:22.009656-04:00",
+   "event_type": "prelim_results_good",
+   "summary": "Q3 2026 earnings announced: $0.25 EPS GAAP, $0.47 core. Strong loan growth 6.6% annualized, NIM expanded.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ENVX",
+   "accession": "0001828318-26-000063",
+   "decided": "2026-10-28T14:30:28.263276-04:00",
+   "event_type": "buyback_dividend",
+   "summary": "Company declares warrant dividend: 1 warrant per 4 common shares, record date Nov 13, 2026.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ENTA",
+   "accession": "0001193125-26-435092",
+   "decided": "2026-10-28T14:30:35.650774-04:00",
+   "event_type": "exec_departure",
+   "summary": "CEO retiring Feb 2027 after 23 years; COO appointed; successor search underway.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "SCL",
+   "accession": "0001193125-26-435067",
+   "decided": "2026-10-28T14:30:39.019904-04:00",
+   "event_type": "prelim_results_good",
+   "summary": "Q3 2026: net income +64%, adjusted EBITDA +18%, organic volume +7%. Restructuring ongoing.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "OPFI",
+   "accession": "0001818502-26-000084",
+   "decided": "2026-10-28T14:30:49.152978-04:00",
+   "event_type": "prelim_results_good",
+   "summary": "Q3 2026 earnings announcement with guidance; pending BNCC acquisition; regulatory headwinds noted.",
    "entry_date": null,
    "entry": null
   }
  ],
  "div": {
-  "nav": 102.30856718511754,
+  "nav": 103.55678072601123,
   "closed": [],
-  "last_date": "2026-10-27",
+  "last_date": "2026-10-28",
   "history": {
    "2026-10-15": 100.3592,
    "2026-10-16": 98.6604,
@@ -2657,7 +2788,8 @@
    "2026-10-22": 98.7674,
    "2026-10-23": 98.6635,
    "2026-10-26": 98.5702,
-   "2026-10-27": 102.3086
+   "2026-10-27": 102.3086,
+   "2026-10-28": 103.5568
   }
  }
 }
