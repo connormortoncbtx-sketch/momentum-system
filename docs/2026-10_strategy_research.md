@@ -2837,3 +2837,9 @@ Crypto isn't available on the live Alpaca account: Alpaca offers it only in appr
 - **Renorm's edge is flattered:** BTC, ETH, SOL and XRP got ETFs *because* they won (survivorship). On dev the gap is small (1.06 vs 1.03); most of the gap is in the holdout.
 - **Concentration:** renorm also puts up to 15% of the book into just four coins.
 - **Decision:** at the January review.
+
+## Do quiet-hours price drifts predict settlement? (Oct 28, 2026, `research/kalshi/drift.py`): NO usable signal
+The test: daily-high markets in the public trade sample (19,618 snapshots priced 10–90c). At 30/24/18/12/9/6 hours before close, take the favourite's price drift over the previous 3 or 6 hours. Score it against settlement minus price, and against the price change over the next 3 hours. Errors are clustered by city-day; dev is before Oct 2025, holdout after.
+- **Settlement:** no anchor/lookback has a slope that is significant with the same sign in both dev and holdout. Dev hints at mild snap-back at 12 hours (−0.36¢ per ¢ of drift, ±0.19), but the holdout shows −0.08 (±0.17).
+- **Strongest drifters:** favourites that ran up the most (top fifth, about +25¢ in 3 hours, 12 hours out) settled −8.6¢ (dev) and −3.7¢ (holdout) below price. The sign is consistent, but neither is significant (±5–7¢). It's a hint, not a rule.
+- **Sample size:** about 1–2k snapshots per anchor. The trade sample covers only part of the markets, so a full-coverage re-run from hourly candles would have roughly 10× the data. Not pursued unless there's another reason; the prior from the earlier ML test is low.
