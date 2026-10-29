@@ -16,7 +16,7 @@ Safety: post_only orders only; per-market inventory cap; total capital budget; d
 limit; a KILL file or KILL=1 env cancels everything and exits; all orders cancelled on exit.
 Every quote/fill/snapshot is appended to LOG_DIR/*.jsonl for the edge measurement.
 """
-import base64, datetime as dt, http.client, json, logging, os, signal, sys, threading, time, uuid
+import base64, datetime as dt, http.client, json, logging, math, os, signal, sys, threading, time, uuid
 import urllib.error, urllib.parse, urllib.request
 from concurrent.futures import ThreadPoolExecutor
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -32,6 +32,9 @@ MODE = E("MODE", "dry")
 SERIES = E("SERIES", "KXHIGHNY,KXHIGHCHI,KXHIGHLAX,KXHIGHMIA,KXHIGHPHIL,KXHIGHDEN,KXHIGHAUS,KXHIGHTDAL").split(",")
 OFFSET = float(E("OFFSET_C", "2")) / 100          # cents behind the best bid
 SIZE = int(E("SIZE", "5"))                        # contracts per quote
+TOPUP = E("TOPUP", "no").lower() == "yes"           # Oct 29: near a cap, quote only the room left (1-4 contracts) instead
+                                                   # of stopping one 5-lot short -- caps become exact. Off until Connor's
+                                                   # first cap-ladder step (Nov 4 review).
 INV_CAP = int(E("INV_CAP", "25"))                 # max |net position| per market, contracts
 # only take on inventory in the FAVOURITE side (priced >= FAV_MIN): live fills (Oct 19-21) and the 2021-26 backtest
 # agree -- fills that leave the bot holding a < 50c side lose (holdout -1.2 / -5.0c per city-day), favourite-side fills
@@ -377,9 +380,10 @@ def targets(yes_bids, no_bids, pos, hours_left):
         return {}
     out = {}
     py, pn = round(by - OFFSET, 2), round(bn - OFFSET, 2)
-    if py >= 0.01 and pos + SIZE <= INV_CAP:
+    step = 1 if TOPUP else SIZE                         # TOPUP: any room left at all; the order is sized to it later
+    if py >= 0.01 and pos + step <= INV_CAP:
         out["yes"] = py
-    if pn >= 0.01 and -pos + SIZE <= INV_CAP:
+    if pn >= 0.01 and -pos + step <= INV_CAP:
         out["no"] = pn
     return out
 
@@ -652,7 +656,7 @@ class Bot:
             if quiet:                                          # observation window: only position-reducing quotes
                 want = {sd: px for sd, px in want.items() if not adds_exposure(sd, pos.get(tk, 0.0))}
             ev = event_of(tk)
-            if live and ev_held.get(ev, 0.0) + SIZE > EVENT_CAP:     # event full: only quote sides that reduce it
+            if live and ev_held.get(ev, 0.0) + (1 if TOPUP else SIZE) > EVENT_CAP:     # event full: only reduce it
                 want = {sd: px for sd, px in want.items() if not adds_exposure(sd, pos.get(tk, 0.0))}
             if not live:
                 if want:
@@ -683,14 +687,21 @@ class Bot:
                 if live and resting_cost + tgt * SIZE > 0.98 * bal:     # never rest more than the cash on hand
                     continue
                 grows = adds_exposure(side, pos.get(tk, 0.0))
-                if grows and ev_exp.get(ev, 0.0) + SIZE > EVENT_CAP:
+                n_ord = SIZE
+                if grows and TOPUP:
+                    p0 = pos.get(tk, 0.0)
+                    room = min(EVENT_CAP - ev_exp.get(ev, 0.0), INV_CAP - (p0 if side == "yes" else -p0))
+                    n_ord = min(SIZE, int(math.floor(room + 1e-9)))
+                    if n_ord < 1:
+                        continue
+                elif grows and ev_exp.get(ev, 0.0) + SIZE > EVENT_CAP:
                     continue
                 try:
-                    o = self.k.place(tk, side, tgt, SIZE)
-                    resting_cost += tgt * SIZE; placed += 1
+                    o = self.k.place(tk, side, tgt, n_ord)
+                    resting_cost += tgt * n_ord; placed += 1
                     if grows:
-                        ev_exp[ev] = ev_exp.get(ev, 0.0) + SIZE
-                    jlog("orders", ticker=tk, side=side, price=tgt, count=SIZE, hours_left=round(hours[tk], 2),
+                        ev_exp[ev] = ev_exp.get(ev, 0.0) + n_ord
+                    jlog("orders", ticker=tk, side=side, price=tgt, count=n_ord, hours_left=round(hours[tk], 2),
                          best_yes_bid=y[0][0], best_no_bid=n[0][0], order_id=o.get("order_id"),
                          filled=o.get("fill_count"), remaining=o.get("remaining_count"))
                 except Exception as e:
@@ -783,7 +794,7 @@ class Bot:
                 jlog("settlements", key=key, settlement=x)
 
     def run(self):
-        log.info(f"MODE={MODE} series={','.join(SERIES)} offset={OFFSET * 100:.0f}c size={SIZE} cap={INV_CAP} event_cap={EVENT_CAP:.0f} "
+        log.info(f"MODE={MODE} series={','.join(SERIES)} offset={OFFSET * 100:.0f}c size={SIZE}{' topup' if TOPUP else ''} cap={INV_CAP} event_cap={EVENT_CAP:.0f} "
                  f"budget={sizing_desc()}")
         jlog("events", event="start", params=dict(series=SERIES, offset=OFFSET, size=SIZE, inv_cap=INV_CAP, event_cap=EVENT_CAP,
                                                    budget=BUDGET, budget_pct=BUDGET_PCT, budget_max=BUDGET_MAX,
