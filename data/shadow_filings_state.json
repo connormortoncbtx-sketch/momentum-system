@@ -1,5 +1,5 @@
 {
- "since": "2026-10-28T14:24:44-04:00",
+ "since": "2026-10-28T17:30:06-04:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -2771,6 +2771,116 @@
    "decided": "2026-10-28T14:30:49.152978-04:00",
    "event_type": "prelim_results_good",
    "summary": "Q3 2026 earnings announcement with guidance; pending BNCC acquisition; regulatory headwinds noted.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "JAGX",
+   "accession": "0001193125-26-436334",
+   "decided": "2026-10-29T03:24:17.311045-04:00",
+   "event_type": "dilution_other",
+   "summary": "Series R preferred dividend and 6x stock plan expansion creates severe shareholder dilution.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "GRDX",
+   "accession": "0001104659-26-119672",
+   "decided": "2026-10-29T03:24:22.588709-04:00",
+   "event_type": "debt_financing",
+   "summary": "Company advanced $1.5M to Pronghorn Resources, consolidating $5M convertible secured note due Dec 2026.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "MG",
+   "accession": "0001140361-26-041054",
+   "decided": "2026-10-29T03:24:30.025292-04:00",
+   "event_type": "acquisition",
+   "summary": "H.I.G. Capital acquisition go-shop period expires; stockholder vote November 24.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "LENZ",
+   "accession": "0001815776-26-000056",
+   "decided": "2026-10-29T03:24:35.031128-04:00",
+   "event_type": "restructuring",
+   "summary": "Massive 75% workforce reduction and CEO departure; $5M restructuring charge; major strategic upheaval.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CYH",
+   "accession": "0001193125-26-436229",
+   "decided": "2026-10-29T03:24:42.654890-04:00",
+   "event_type": "prelim_results_bad",
+   "summary": "Q3 2026 net loss of $86M; adjusted EBITDA declined 25% YoY; payor mix worsened",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "MCHB",
+   "accession": "0001518715-26-000070",
+   "decided": "2026-10-29T03:24:46.488913-04:00",
+   "event_type": "prelim_results_bad",
+   "summary": "Q3 earnings miss with declining profitability, portfolio losses, and contracting balance sheet.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "RM",
+   "accession": "0001519401-26-000019",
+   "decided": "2026-10-29T03:24:49.438113-04:00",
+   "event_type": "prelim_results_good",
+   "summary": "Q3 2026: Net income up 5.3%, EPS up 13.4%, record revenue $178.8M, but credit metrics deteriorate.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ADAM",
+   "accession": "0001273685-26-000075",
+   "decided": "2026-10-29T03:24:54.804015-04:00",
+   "event_type": "routine",
+   "summary": "Q3 2026 earnings announcement; routine quarterly results disclosure with supplemental financials.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CTO",
+   "accession": "0001104659-26-119638",
+   "decided": "2026-10-29T03:24:59.331604-04:00",
+   "event_type": "equity_financing",
+   "summary": "Company adds BofA to $250M at-the-market common stock offering program.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "GRDX",
+   "accession": "0001104659-26-119636",
+   "decided": "2026-10-29T03:25:06.233409-04:00",
+   "event_type": "equity_financing",
+   "summary": "Company raised $2.15M via pre-funded and common warrants; significant dilution risk.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CBAN",
+   "accession": "0001104659-26-119632",
+   "decided": "2026-10-29T03:25:13.510337-04:00",
+   "event_type": "divestiture",
+   "summary": "Bank sold three branch properties for $19.9M in sale-leaseback transaction with 15-year lease terms.",
    "entry_date": null,
    "entry": null
   }
