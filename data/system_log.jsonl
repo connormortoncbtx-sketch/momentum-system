@@ -3210,3 +3210,5 @@
 {"timestamp": "2026-10-29T19:46:26.883750+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=exit", "metrics": {}, "errors": []}
 {"timestamp": "2026-10-29T19:46:26.885588+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Skipped: not exit day (expected friday)", "metrics": {}, "errors": []}
 {"timestamp": "2026-10-29T20:22:02.896002+00:00", "workflow": "shadow_overnight", "status": "success", "message": "Shadow overnight: 1 night(s) marked; NAV raw_1bp 100.29, raw_2bp 100.13, hedged_1bp 100.16, day_only 98.78, iwm_night 100.18", "metrics": {"raw_1bp": 100.29281364841228, "raw_2bp": 100.132514556512, "hedged_1bp": 100.16196600340024, "day_only": 98.77684521057132, "iwm_night": 100.17708067238428}, "errors": []}
+{"timestamp": "2026-10-29T23:37:33.307780+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=exit", "metrics": {}, "errors": []}
+{"timestamp": "2026-10-29T23:37:33.309514+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Skipped: not exit day (expected friday)", "metrics": {}, "errors": []}
