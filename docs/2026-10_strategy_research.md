@@ -2850,3 +2850,14 @@ The test covered all 4,465 settled markets in the bot's 11 series over the last 
 - **Demand:** takers bought the dead side at 2¢ or more after 5pm in only **3.9%** of markets (median 0 contracts). Most of that volume sat in the few markets that weren't really dead.
 - **Value:** at 20 contracts a market, an ask at 2–4¢ would have made **$0.07–0.92/day across all 11 cities** before queue position, and about a quarter of that at the bot's real fill rate.
 - **Verdict:** pennies. Buyers of long shots show up while the outcome is still uncertain, not after the high is in. Not built.
+
+## Marginal-contract curve past the city-day cap (Oct 29, 2026, `research/kalshi/depth_curve.py`)
+The test replayed whole city-days (440: the 40 most recent per series, 11 series) under the bot's backtest rule (favourite ≥ 60¢, 6–48h before close, quiet window) with no cap. Edge per contract by contracts already held in the city-day, with 95% bands by city-day and by market day:
+
+| Depth | 0–9 | 10–19 | 20–29 | 30–39 | 40–59 | 60–79 | 80–119 | 120+ |
+|---|---|---|---|---|---|---|---|---|
+| Edge per contract | +1.1¢ | +2.2¢ | +0.1¢ | +3.5¢ | +2.7¢ | +3.7¢ | +2.8¢ | +1.7¢ (±~3) |
+
+- **The curve is flat.** Contracts deeper in a city-day earn about the same in the backtest; there is no sign of decay out to 120+ backtest contracts (roughly 33+ real at the 0.28 fill ratio).
+- **Why live still matters:** the backtest can't model queue adverse selection, i.e. being filled when the makers ahead of us pull their quotes. So the live per-city-day > per-contract gap is either that effect or "busy days are bad days" (weather volatility), and the live DEPTH table in `kmm study` is the arbiter.
+- **Read:** nothing in the public tape argues against stepping the cap up (30 → 40). Judge each step by its live depth band.
