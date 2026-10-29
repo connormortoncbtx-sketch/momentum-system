@@ -2843,3 +2843,10 @@ The test: daily-high markets in the public trade sample (19,618 snapshots priced
 - **Settlement:** no anchor/lookback has a slope that is significant with the same sign in both dev and holdout. Dev hints at mild snap-back at 12 hours (−0.36¢ per ¢ of drift, ±0.19), but the holdout shows −0.08 (±0.17).
 - **Strongest drifters:** favourites that ran up the most (top fifth, about +25¢ in 3 hours, 12 hours out) settled −8.6¢ (dev) and −3.7¢ (holdout) below price. The sign is consistent, but neither is significant (±5–7¢). It's a hint, not a rule.
 - **Sample size:** about 1–2k snapshots per anchor. The trade sample covers only part of the markets, so a full-coverage re-run from hourly candles would have roughly 10× the data. Not pursued unless there's another reason; the prior from the earlier ML test is low.
+
+## Selling dead positions at 2–3¢ ("salvage"), Oct 29, 2026 (`research/kalshi/salvage.py`): NOT WORTH IT
+The test covered all 4,465 settled markets in the bot's 11 series over the last 90 days (67 market days). At 5pm local on the market day, 4,389 had a side priced at 5¢ or less.
+- **Safety:** that "dead" side won 0.07% of the time (3 markets): 1 of 4,222 priced at 1¢, 1 of 48 at 3¢, 1 of 38 at 4–5¢.
+- **Demand:** takers bought the dead side at 2¢ or more after 5pm in only **3.9%** of markets (median 0 contracts). Most of that volume sat in the few markets that weren't really dead.
+- **Value:** at 20 contracts a market, an ask at 2–4¢ would have made **$0.07–0.92/day across all 11 cities** before queue position, and about a quarter of that at the bot's real fill rate.
+- **Verdict:** pennies. Buyers of long shots show up while the outcome is still uncertain, not after the high is in. Not built.
