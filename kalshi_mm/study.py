@@ -6,7 +6,8 @@ the bot knew or controlled at the time of the fill (plus the 60-minute MARKOUT: 
 in the hour after the fill -- several times less noisy than settlement, so a lever shows up in it much sooner):
   price paid, side, city, minute of the hour, hour of day (CT), hours to the market's close, how long the order had
   rested before it filled (order age), whether other fills hit the same city-day in the previous 10 minutes (burst),
-  and how far behind the best bid the order was placed.
+  and how far behind the best bid the order was placed, and DEPTH (contracts already filled in the city-day before
+  this one: the marginal-contract curve each cap-ladder step is judged on).
 Each row: contracts, city-days, P&L per contract, ±2 standard errors CLUSTERED BY CITY-DAY (contracts in one city-day
 move together, so per-contract errors would be far too small), and the same number in the first and second half of
 the data -- a lever is only worth testing if both halves agree. Read-only; prints summaries only.
@@ -96,8 +97,10 @@ def main():
     fills.sort(key=lambda r: r["t"])
     print(f"  {len(fills)} settled fills; looking up close times...", flush=True)
     ct = close_times(sorted({r["tk"] for r in fills}))
-    last = {}
+    last, depth = {}, {}
     for r in fills:
+        r["depth"] = depth.get(r["ev"], 0.0)          # contracts already filled in this city-day before this fill
+        depth[r["ev"]] = r["depth"] + r["c"]
         cl = ct.get(r["tk"])
         r["hours"] = (cl - r["t"]).total_seconds() / 3600 if cl else None
         o = orders.get(r["x"].get("order_id"))
@@ -168,6 +171,9 @@ def main():
           else "5-30 min" if r["age_min"] < 30 else "30-120 min" if r["age_min"] < 120 else "2h+", cur)
     table("BURST: earlier fills in the same city-day within 10 min (CURRENT)",
           lambda r: "0" if r["burst"] == 0 else "1" if r["burst"] == 1 else "2-3" if r["burst"] <= 3 else "4+", cur)
+    table("DEPTH: contracts already filled in the city-day before this fill (CURRENT) -- the marginal-contract curve "
+          "for the cap ladder", lambda r: "0-9" if r["depth"] < 10 else "10-19" if r["depth"] < 20 else "20-29"
+          if r["depth"] < 30 else "30-39" if r["depth"] < 40 else "40+", cur)
     table("CENTS BEHIND THE BEST BID when placed (CURRENT)", lambda r: None if r["behind_c"] is None else
           ("<=0 (at/above best)" if r["behind_c"] <= 0 else f"{min(r['behind_c'], 5)}{'+' if r['behind_c'] >= 5 else ''}c behind"), cur)
 
