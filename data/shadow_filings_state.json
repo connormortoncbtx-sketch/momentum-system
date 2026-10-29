@@ -1,5 +1,5 @@
 {
- "since": "2026-10-28T17:30:06-04:00",
+ "since": "2026-10-29T13:46:21-04:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -202,17 +202,6 @@
    "entry": 14.87
   },
   {
-   "book": "long_contract_div",
-   "symbol": "RARE",
-   "accession": "0001193125-26-421079",
-   "decided": "2026-10-14T13:35:13.419461-04:00",
-   "event_type": "contract_win",
-   "summary": "Company sells Rare Pediatric Disease Priority Review Voucher for $203M cash",
-   "entry_date": "2026-10-15",
-   "entry": 14.87,
-   "vol60": 1.2762635430206901
-  },
-  {
    "book": "short_bad_news",
    "symbol": "SKYX",
    "accession": "0001493152-26-046938",
@@ -251,17 +240,6 @@
    "summary": "Exclusive U.S. license agreement for LIBERVANT seizure treatment; $10M upfront plus $47.5M milestones.",
    "entry_date": "2026-10-15",
    "entry": 53.275
-  },
-  {
-   "book": "long_contract_div",
-   "symbol": "ETON",
-   "accession": "0001437749-26-032600",
-   "decided": "2026-10-14T13:35:44.946641-04:00",
-   "event_type": "contract_win",
-   "summary": "Exclusive U.S. license agreement for LIBERVANT seizure treatment; $10M upfront plus $47.5M milestones.",
-   "entry_date": "2026-10-15",
-   "entry": 53.275,
-   "vol60": 0.9275765163611955
   },
   {
    "book": "short_bad_news",
@@ -2651,8 +2629,8 @@
    "decided": "2026-10-28T14:29:35.759266-04:00",
    "event_type": "equity_financing",
    "summary": "Company establishes $50M at-the-market equity offering program with Piper Sandler.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-29",
+   "entry": 6.07
   },
   {
    "book": "short_bad_news",
@@ -2661,8 +2639,8 @@
    "decided": "2026-10-28T14:29:40.606352-04:00",
    "event_type": "settlement",
    "summary": "Company settles with Bastion Trading on amended tender offer terms; expanded warrant eligibility, extended deadline.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-29",
+   "entry": 2.94
   },
   {
    "book": "short_bad_news",
@@ -2671,8 +2649,8 @@
    "decided": "2026-10-28T14:29:54.276626-04:00",
    "event_type": "partnership",
    "summary": "Equipment delivery and Pohang City investment framework with $28M grant; magnet capacity expansion to 10,000 MT.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-29",
+   "entry": 1.72
   },
   {
    "book": "short_bad_news",
@@ -2681,8 +2659,8 @@
    "decided": "2026-10-28T14:29:59.669447-04:00",
    "event_type": "divestiture",
    "summary": "Definitive agreement to sell mortgage origination channels to CMG; 15 bps contingent revenue.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-29",
+   "entry": 16.52
   },
   {
    "book": "long_contract_win",
@@ -2691,8 +2669,8 @@
    "decided": "2026-10-28T14:30:04.952640-04:00",
    "event_type": "contract_win",
    "summary": "Definitive agreement retains significant customer portion for two years; revenue expected to grow versus 2025.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-29",
+   "entry": 17.65
   },
   {
    "book": "long_contract_div",
@@ -2701,8 +2679,9 @@
    "decided": "2026-10-28T14:30:04.952640-04:00",
    "event_type": "contract_win",
    "summary": "Definitive agreement retains significant customer portion for two years; revenue expected to grow versus 2025.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-29",
+   "entry": 17.65,
+   "vol60": 0.6583076318305344
   },
   {
    "book": "short_bad_news",
@@ -2711,8 +2690,8 @@
    "decided": "2026-10-28T14:30:08.093136-04:00",
    "event_type": "debt_financing",
    "summary": "Credit facility refinancing for pending Huntsman merger; $2.5B replacement financing with leverage covenant stepping down from 5.5x to 4.0x",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-29",
+   "entry": 16.51
   },
   {
    "book": "short_bad_news",
@@ -2721,8 +2700,8 @@
    "decided": "2026-10-28T14:30:16.753914-04:00",
    "event_type": "prelim_results_bad",
    "summary": "Q3 2026 earnings show declining profitability despite deposit growth; deteriorating credit metrics concerning.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-29",
+   "entry": 21.74
   },
   {
    "book": "short_bad_news",
@@ -2731,8 +2710,8 @@
    "decided": "2026-10-28T14:30:22.009656-04:00",
    "event_type": "prelim_results_good",
    "summary": "Q3 2026 earnings announced: $0.25 EPS GAAP, $0.47 core. Strong loan growth 6.6% annualized, NIM expanded.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-29",
+   "entry": 15.72
   },
   {
    "book": "short_bad_news",
@@ -2741,8 +2720,8 @@
    "decided": "2026-10-28T14:30:28.263276-04:00",
    "event_type": "buyback_dividend",
    "summary": "Company declares warrant dividend: 1 warrant per 4 common shares, record date Nov 13, 2026.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-29",
+   "entry": 3.44
   },
   {
    "book": "short_bad_news",
@@ -2751,8 +2730,8 @@
    "decided": "2026-10-28T14:30:35.650774-04:00",
    "event_type": "exec_departure",
    "summary": "CEO retiring Feb 2027 after 23 years; COO appointed; successor search underway.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-29",
+   "entry": 11.65
   },
   {
    "book": "short_bad_news",
@@ -2761,8 +2740,8 @@
    "decided": "2026-10-28T14:30:39.019904-04:00",
    "event_type": "prelim_results_good",
    "summary": "Q3 2026: net income +64%, adjusted EBITDA +18%, organic volume +7%. Restructuring ongoing.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-29",
+   "entry": 68.55
   },
   {
    "book": "short_bad_news",
@@ -2771,8 +2750,8 @@
    "decided": "2026-10-28T14:30:49.152978-04:00",
    "event_type": "prelim_results_good",
    "summary": "Q3 2026 earnings announcement with guidance; pending BNCC acquisition; regulatory headwinds noted.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-29",
+   "entry": 5.7
   },
   {
    "book": "short_bad_news",
@@ -2781,8 +2760,8 @@
    "decided": "2026-10-29T03:24:17.311045-04:00",
    "event_type": "dilution_other",
    "summary": "Series R preferred dividend and 6x stock plan expansion creates severe shareholder dilution.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-29",
+   "entry": 2.08
   },
   {
    "book": "short_bad_news",
@@ -2791,8 +2770,8 @@
    "decided": "2026-10-29T03:24:22.588709-04:00",
    "event_type": "debt_financing",
    "summary": "Company advanced $1.5M to Pronghorn Resources, consolidating $5M convertible secured note due Dec 2026.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-29",
+   "entry": 5.615
   },
   {
    "book": "short_bad_news",
@@ -2801,8 +2780,8 @@
    "decided": "2026-10-29T03:24:30.025292-04:00",
    "event_type": "acquisition",
    "summary": "H.I.G. Capital acquisition go-shop period expires; stockholder vote November 24.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-29",
+   "entry": 20.4
   },
   {
    "book": "short_bad_news",
@@ -2811,8 +2790,8 @@
    "decided": "2026-10-29T03:24:35.031128-04:00",
    "event_type": "restructuring",
    "summary": "Massive 75% workforce reduction and CEO departure; $5M restructuring charge; major strategic upheaval.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-29",
+   "entry": 3.0
   },
   {
    "book": "short_bad_news",
@@ -2821,8 +2800,8 @@
    "decided": "2026-10-29T03:24:42.654890-04:00",
    "event_type": "prelim_results_bad",
    "summary": "Q3 2026 net loss of $86M; adjusted EBITDA declined 25% YoY; payor mix worsened",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-29",
+   "entry": 2.47
   },
   {
    "book": "short_bad_news",
@@ -2831,8 +2810,8 @@
    "decided": "2026-10-29T03:24:46.488913-04:00",
    "event_type": "prelim_results_bad",
    "summary": "Q3 earnings miss with declining profitability, portfolio losses, and contracting balance sheet.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-29",
+   "entry": 14.9
   },
   {
    "book": "short_bad_news",
@@ -2841,8 +2820,8 @@
    "decided": "2026-10-29T03:24:49.438113-04:00",
    "event_type": "prelim_results_good",
    "summary": "Q3 2026: Net income up 5.3%, EPS up 13.4%, record revenue $178.8M, but credit metrics deteriorate.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-29",
+   "entry": 36.0
   },
   {
    "book": "short_bad_news",
@@ -2851,8 +2830,8 @@
    "decided": "2026-10-29T03:24:54.804015-04:00",
    "event_type": "routine",
    "summary": "Q3 2026 earnings announcement; routine quarterly results disclosure with supplemental financials.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-29",
+   "entry": 7.1
   },
   {
    "book": "short_bad_news",
@@ -2861,8 +2840,8 @@
    "decided": "2026-10-29T03:24:59.331604-04:00",
    "event_type": "equity_financing",
    "summary": "Company adds BofA to $250M at-the-market common stock offering program.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-29",
+   "entry": 19.01
   },
   {
    "book": "short_bad_news",
@@ -2871,8 +2850,8 @@
    "decided": "2026-10-29T03:25:06.233409-04:00",
    "event_type": "equity_financing",
    "summary": "Company raised $2.15M via pre-funded and common warrants; significant dilution risk.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-29",
+   "entry": 5.615
   },
   {
    "book": "short_bad_news",
@@ -2881,14 +2860,197 @@
    "decided": "2026-10-29T03:25:13.510337-04:00",
    "event_type": "divestiture",
    "summary": "Bank sold three branch properties for $19.9M in sale-leaseback transaction with 15-year lease terms.",
+   "entry_date": "2026-10-29",
+   "entry": 20.82
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "FNWB",
+   "accession": "0001437749-26-033875",
+   "decided": "2026-10-29T14:39:03.473230-04:00",
+   "event_type": "prelim_results_bad",
+   "summary": "Bank holding company reports Q3 2026 net loss; YTD profitability deteriorating significantly",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "XFOR",
+   "accession": "0001501697-26-000084",
+   "decided": "2026-10-29T14:39:06.436920-04:00",
+   "event_type": "routine",
+   "summary": "Investor Day presentation on mavorixafor Phase 3 trial progress; full enrollment expected Q4 2026, topline Q1 2028.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CNTN",
+   "accession": "0001493152-26-049196",
+   "decided": "2026-10-29T14:39:09.354457-04:00",
+   "event_type": "partnership",
+   "summary": "First publicly traded company to tokenize shares on Canton blockchain via TSV LLC partnership.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_win",
+   "symbol": "EMAT",
+   "accession": "0001213900-26-113580",
+   "decided": "2026-10-29T14:39:12.470122-04:00",
+   "event_type": "contract_win",
+   "summary": "Secured 754 metric tons non-China neodymium metal; covers ~50% of 2027 feedstock needs for $400-460M guidance.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_div",
+   "symbol": "EMAT",
+   "accession": "0001213900-26-113580",
+   "decided": "2026-10-29T14:39:12.470122-04:00",
+   "event_type": "contract_win",
+   "summary": "Secured 754 metric tons non-China neodymium metal; covers ~50% of 2027 feedstock needs for $400-460M guidance.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "BWFG",
+   "accession": "0001628280-26-068043",
+   "decided": "2026-10-29T14:39:22.729973-04:00",
+   "event_type": "routine",
+   "summary": "Q3 2026 earnings: $12.7M net income, $1.58 EPS; $0.20 quarterly dividend announced.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "BCBP",
+   "accession": "0001193125-26-437028",
+   "decided": "2026-10-29T14:39:38.099600-04:00",
+   "event_type": "prelim_results_bad",
+   "summary": "Q3 net loss $132.5M; sold $204M problem loans; $98M equity raise completed.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "INMB",
+   "accession": "0001213900-26-113535",
+   "decided": "2026-10-29T14:39:40.558313-04:00",
+   "event_type": "equity_financing",
+   "summary": "Registered direct offering 3M shares at $1.50/share plus 3M warrants; $4.5M gross proceeds.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "NUAI",
+   "accession": "0001213900-26-113530",
+   "decided": "2026-10-29T14:39:44.856630-04:00",
+   "event_type": "equity_financing",
+   "summary": "New Era Energy & Digital raises $64M via private placement; significant shareholder dilution from 117M to 140M shares",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "MYE",
+   "accession": "0001193125-26-436960",
+   "decided": "2026-10-29T14:39:54.231284-04:00",
+   "event_type": "prelim_results_good",
+   "summary": "Q3 revenue +8.1% YoY, but margins pressured by resin spike and mix. Divestiture completed, margin recovery expected Q4.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ALT",
+   "accession": "0001326190-26-000060",
+   "decided": "2026-10-29T14:39:57.014936-04:00",
+   "event_type": "debt_financing",
+   "summary": "Drew $10M tranche from $125M credit facility upon hitting clinical milestone; debt extended to 2028.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CCB",
+   "accession": "0001437958-26-000077",
+   "decided": "2026-10-29T14:40:07.577051-04:00",
+   "event_type": "exec_departure",
+   "summary": "President of FinTech division transitioning to consultant; CEO slashes salary amid cost-cutting.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "JELD",
+   "accession": "0001674335-26-000132",
+   "decided": "2026-10-29T14:40:16.865308-04:00",
+   "event_type": "debt_financing",
+   "summary": "Exchange offer for 2027 notes; $410M new money raise; refinancing necessity signals leverage concerns.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "FOR",
+   "accession": "0001628280-26-067973",
+   "decided": "2026-10-29T14:40:20.054471-04:00",
+   "event_type": "exec_departure",
+   "summary": "Executive Chairman Tomnitz retires; CEO Oxley assumes dual role with 2-year consulting arrangement.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_win",
+   "symbol": "EMAT",
+   "accession": "0001213900-26-113420",
+   "decided": "2026-10-29T14:40:23.412516-04:00",
+   "event_type": "contract_win",
+   "summary": "Submitted capability statement for U.S. Army rare earth magnets for drone motors; early opportunity.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_div",
+   "symbol": "EMAT",
+   "accession": "0001213900-26-113420",
+   "decided": "2026-10-29T14:40:23.412516-04:00",
+   "event_type": "contract_win",
+   "summary": "Submitted capability statement for U.S. Army rare earth magnets for drone motors; early opportunity.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "HIVE",
+   "accession": "0001062993-26-005585",
+   "decided": "2026-10-29T14:40:26.265419-04:00",
+   "event_type": "debt_financing",
+   "summary": "BUZZ HPC secures $129M fixed-rate financing for sovereign AI GPU infrastructure deployment",
    "entry_date": null,
    "entry": null
   }
  ],
  "div": {
-  "nav": 103.55678072601123,
-  "closed": [],
-  "last_date": "2026-10-28",
+  "nav": 103.06340224941376,
+  "closed": [
+   {
+    "symbol": "RARE",
+    "entry_date": "2026-10-15",
+    "exit_date": "2026-10-29",
+    "vol60": 1.2762635430206901
+   },
+   {
+    "symbol": "ETON",
+    "entry_date": "2026-10-15",
+    "exit_date": "2026-10-29",
+    "vol60": 0.9275765163611955
+   }
+  ],
+  "last_date": "2026-10-29",
   "history": {
    "2026-10-15": 100.3592,
    "2026-10-16": 98.6604,
@@ -2899,7 +3061,8 @@
    "2026-10-23": 98.6635,
    "2026-10-26": 98.5702,
    "2026-10-27": 102.3086,
-   "2026-10-28": 103.5568
+   "2026-10-28": 103.5568,
+   "2026-10-29": 103.0634
   }
  }
 }
