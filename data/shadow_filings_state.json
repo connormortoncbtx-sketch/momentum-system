@@ -1,5 +1,5 @@
 {
- "since": "2026-10-29T17:28:13-04:00",
+ "since": "2026-10-30T14:00:24-04:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -402,17 +402,6 @@
    "entry": 1.54
   },
   {
-   "book": "long_contract_div",
-   "symbol": "EMAT",
-   "accession": "0001213900-26-109622",
-   "decided": "2026-10-15T13:19:29.209385-04:00",
-   "event_type": "contract_win",
-   "summary": "Equipment delivery begins for ten-fold rare earth magnet capacity expansion to 10,000 metric tons.",
-   "entry_date": "2026-10-16",
-   "entry": 1.54,
-   "vol60": 1.4666393695798283
-  },
-  {
    "book": "short_bad_news",
    "symbol": "BZH",
    "accession": "0001104659-26-116005",
@@ -501,17 +490,6 @@
    "summary": "Master supply agreement with NuSil extended through 2031 with auto-renewal options.",
    "entry_date": "2026-10-16",
    "entry": 61.65
-  },
-  {
-   "book": "long_contract_div",
-   "symbol": "ESTA",
-   "accession": "0001104659-26-115928",
-   "decided": "2026-10-15T13:20:05.569579-04:00",
-   "event_type": "contract_win",
-   "summary": "Master supply agreement with NuSil extended through 2031 with auto-renewal options.",
-   "entry_date": "2026-10-16",
-   "entry": 61.65,
-   "vol60": 0.4945029397983647
   },
   {
    "book": "short_bad_news",
@@ -612,17 +590,6 @@
    "summary": "PERC wins $39.8M design-build water purification facility contract in California",
    "entry_date": "2026-10-16",
    "entry": 28.72
-  },
-  {
-   "book": "long_contract_div",
-   "symbol": "CWCO",
-   "accession": "0001104659-26-116231",
-   "decided": "2026-10-16T02:04:22.628754-04:00",
-   "event_type": "contract_win",
-   "summary": "PERC wins $39.8M design-build water purification facility contract in California",
-   "entry_date": "2026-10-16",
-   "entry": 28.72,
-   "vol60": 0.2698899410456325
   },
   {
    "book": "short_bad_news",
@@ -2870,8 +2837,8 @@
    "decided": "2026-10-29T14:39:03.473230-04:00",
    "event_type": "prelim_results_bad",
    "summary": "Bank holding company reports Q3 2026 net loss; YTD profitability deteriorating significantly",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-30",
+   "entry": 10.46
   },
   {
    "book": "short_bad_news",
@@ -2880,8 +2847,8 @@
    "decided": "2026-10-29T14:39:06.436920-04:00",
    "event_type": "routine",
    "summary": "Investor Day presentation on mavorixafor Phase 3 trial progress; full enrollment expected Q4 2026, topline Q1 2028.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-30",
+   "entry": 3.33
   },
   {
    "book": "short_bad_news",
@@ -2890,8 +2857,8 @@
    "decided": "2026-10-29T14:39:09.354457-04:00",
    "event_type": "partnership",
    "summary": "First publicly traded company to tokenize shares on Canton blockchain via TSV LLC partnership.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-30",
+   "entry": 2.02
   },
   {
    "book": "long_contract_win",
@@ -2900,8 +2867,8 @@
    "decided": "2026-10-29T14:39:12.470122-04:00",
    "event_type": "contract_win",
    "summary": "Secured 754 metric tons non-China neodymium metal; covers ~50% of 2027 feedstock needs for $400-460M guidance.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-30",
+   "entry": 1.66
   },
   {
    "book": "long_contract_div",
@@ -2910,8 +2877,9 @@
    "decided": "2026-10-29T14:39:12.470122-04:00",
    "event_type": "contract_win",
    "summary": "Secured 754 metric tons non-China neodymium metal; covers ~50% of 2027 feedstock needs for $400-460M guidance.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-30",
+   "entry": 1.66,
+   "vol60": 1.4117179719261388
   },
   {
    "book": "short_bad_news",
@@ -2920,8 +2888,8 @@
    "decided": "2026-10-29T14:39:22.729973-04:00",
    "event_type": "routine",
    "summary": "Q3 2026 earnings: $12.7M net income, $1.58 EPS; $0.20 quarterly dividend announced.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-30",
+   "entry": 70.35
   },
   {
    "book": "short_bad_news",
@@ -2930,8 +2898,8 @@
    "decided": "2026-10-29T14:39:38.099600-04:00",
    "event_type": "prelim_results_bad",
    "summary": "Q3 net loss $132.5M; sold $204M problem loans; $98M equity raise completed.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-30",
+   "entry": 8.64
   },
   {
    "book": "short_bad_news",
@@ -2940,8 +2908,8 @@
    "decided": "2026-10-29T14:39:40.558313-04:00",
    "event_type": "equity_financing",
    "summary": "Registered direct offering 3M shares at $1.50/share plus 3M warrants; $4.5M gross proceeds.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-30",
+   "entry": 1.53
   },
   {
    "book": "short_bad_news",
@@ -2950,8 +2918,8 @@
    "decided": "2026-10-29T14:39:44.856630-04:00",
    "event_type": "equity_financing",
    "summary": "New Era Energy & Digital raises $64M via private placement; significant shareholder dilution from 117M to 140M shares",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-30",
+   "entry": 2.68
   },
   {
    "book": "short_bad_news",
@@ -2960,8 +2928,8 @@
    "decided": "2026-10-29T14:39:54.231284-04:00",
    "event_type": "prelim_results_good",
    "summary": "Q3 revenue +8.1% YoY, but margins pressured by resin spike and mix. Divestiture completed, margin recovery expected Q4.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-30",
+   "entry": 29.46
   },
   {
    "book": "short_bad_news",
@@ -2970,8 +2938,8 @@
    "decided": "2026-10-29T14:39:57.014936-04:00",
    "event_type": "debt_financing",
    "summary": "Drew $10M tranche from $125M credit facility upon hitting clinical milestone; debt extended to 2028.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-30",
+   "entry": 2.135
   },
   {
    "book": "short_bad_news",
@@ -2980,8 +2948,8 @@
    "decided": "2026-10-29T14:40:07.577051-04:00",
    "event_type": "exec_departure",
    "summary": "President of FinTech division transitioning to consultant; CEO slashes salary amid cost-cutting.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-30",
+   "entry": 43.08
   },
   {
    "book": "short_bad_news",
@@ -2990,8 +2958,8 @@
    "decided": "2026-10-29T14:40:16.865308-04:00",
    "event_type": "debt_financing",
    "summary": "Exchange offer for 2027 notes; $410M new money raise; refinancing necessity signals leverage concerns.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-30",
+   "entry": 1.34
   },
   {
    "book": "short_bad_news",
@@ -3000,8 +2968,8 @@
    "decided": "2026-10-29T14:40:20.054471-04:00",
    "event_type": "exec_departure",
    "summary": "Executive Chairman Tomnitz retires; CEO Oxley assumes dual role with 2-year consulting arrangement.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-30",
+   "entry": 24.99
   },
   {
    "book": "long_contract_win",
@@ -3010,8 +2978,8 @@
    "decided": "2026-10-29T14:40:23.412516-04:00",
    "event_type": "contract_win",
    "summary": "Submitted capability statement for U.S. Army rare earth magnets for drone motors; early opportunity.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-30",
+   "entry": 1.66
   },
   {
    "book": "long_contract_div",
@@ -3020,8 +2988,9 @@
    "decided": "2026-10-29T14:40:23.412516-04:00",
    "event_type": "contract_win",
    "summary": "Submitted capability statement for U.S. Army rare earth magnets for drone motors; early opportunity.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-30",
+   "entry": 1.66,
+   "vol60": 1.4117179719261388
   },
   {
    "book": "short_bad_news",
@@ -3030,8 +2999,8 @@
    "decided": "2026-10-29T14:40:26.265419-04:00",
    "event_type": "debt_financing",
    "summary": "BUZZ HPC secures $129M fixed-rate financing for sovereign AI GPU infrastructure deployment",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-30",
+   "entry": 1.935
   },
   {
    "book": "short_bad_news",
@@ -3040,8 +3009,8 @@
    "decided": "2026-10-30T03:26:51.180080-04:00",
    "event_type": "strategic_review",
    "summary": "Company adopts poison pill stockholder rights agreement to deter hostile takeovers and acquisitions.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-30",
+   "entry": 34.86
   },
   {
    "book": "short_bad_news",
@@ -3050,8 +3019,8 @@
    "decided": "2026-10-30T03:26:56.676732-04:00",
    "event_type": "exec_appointment",
    "summary": "Founder Jonathan Oringer appointed CEO/Chairman; Hichame Assi named President/COO with $1.5M RSU award.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-30",
+   "entry": 4.31
   },
   {
    "book": "short_bad_news",
@@ -3060,8 +3029,8 @@
    "decided": "2026-10-30T03:26:59.741849-04:00",
    "event_type": "exec_departure",
    "summary": "CFO Stefan Chkautovich resigned effective November 7, 2026; President Matthew Funke assumes principal financial officer role.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-30",
+   "entry": 71.84
   },
   {
    "book": "short_bad_news",
@@ -3070,8 +3039,8 @@
    "decided": "2026-10-30T03:27:08.551803-04:00",
    "event_type": "prelim_results_good",
    "summary": "Q3 2026: $50.4M net income on $58.8M unrealized SKY gain; 2.32B SKY tokens held; staking revenue $2.1M.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-30",
+   "entry": 1.03
   },
   {
    "book": "long_contract_win",
@@ -3080,8 +3049,8 @@
    "decided": "2026-10-30T03:27:11.331401-04:00",
    "event_type": "contract_win",
    "summary": "Five-year turbine lease of 300MW capacity to investment-grade US company; accretive to earnings and liquidity.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-30",
+   "entry": 3.79
   },
   {
    "book": "long_contract_div",
@@ -3090,8 +3059,9 @@
    "decided": "2026-10-30T03:27:11.331401-04:00",
    "event_type": "contract_win",
    "summary": "Five-year turbine lease of 300MW capacity to investment-grade US company; accretive to earnings and liquidity.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-30",
+   "entry": 3.79,
+   "vol60": 1.186642346695025
   },
   {
    "book": "short_bad_news",
@@ -3100,8 +3070,8 @@
    "decided": "2026-10-30T03:27:16.300121-04:00",
    "event_type": "routine",
    "summary": "Q3 loss, leadership transitions, share buyback authorization increase to $630M.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-30",
+   "entry": 7.49
   },
   {
    "book": "short_bad_news",
@@ -3110,8 +3080,8 @@
    "decided": "2026-10-30T03:27:19.411144-04:00",
    "event_type": "exec_departure",
    "summary": "Executive VP Business Development transitioned to part-time corporate strategy role at 20% capacity.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-30",
+   "entry": 6.3
   },
   {
    "book": "long_contract_win",
@@ -3120,8 +3090,8 @@
    "decided": "2026-10-30T03:27:22.161214-04:00",
    "event_type": "contract_win",
    "summary": "Sanofi milestone payment of $125M triggered by Phase 3 vaccine trial fifth patient dosing.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-30",
+   "entry": 10.27
   },
   {
    "book": "long_contract_div",
@@ -3130,8 +3100,9 @@
    "decided": "2026-10-30T03:27:22.161214-04:00",
    "event_type": "contract_win",
    "summary": "Sanofi milestone payment of $125M triggered by Phase 3 vaccine trial fifth patient dosing.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-30",
+   "entry": 10.27,
+   "vol60": 0.7929704763521107
   },
   {
    "book": "short_bad_news",
@@ -3140,8 +3111,8 @@
    "decided": "2026-10-30T03:27:24.946865-04:00",
    "event_type": "listing_deficiency",
    "summary": "Director resignation caused Nasdaq listing rule violations; cure period granted through Oct 2027.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-30",
+   "entry": 3.19
   },
   {
    "book": "short_bad_news",
@@ -3150,8 +3121,8 @@
    "decided": "2026-10-30T03:27:28.126224-04:00",
    "event_type": "prelim_results_bad",
    "summary": "Q1 FY2027: sales down 3%, EPS down 43%, margin compression despite transformation efforts.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-30",
+   "entry": 65.62
   },
   {
    "book": "short_bad_news",
@@ -3160,8 +3131,8 @@
    "decided": "2026-10-30T03:27:35.369243-04:00",
    "event_type": "equity_financing",
    "summary": "Registered direct offering of 5M shares at $4.20/share for $21M gross, $20M net.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-30",
+   "entry": 4.6
   },
   {
    "book": "short_bad_news",
@@ -3170,8 +3141,8 @@
    "decided": "2026-10-30T03:27:38.880045-04:00",
    "event_type": "prelim_results_bad",
    "summary": "Q3 2026 earnings miss: $0.92 loss per share, 16% book value decline, negative 11.6% return.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-30",
+   "entry": 5.47
   },
   {
    "book": "short_bad_news",
@@ -3180,8 +3151,8 @@
    "decided": "2026-10-30T03:27:41.008206-04:00",
    "event_type": "divestiture",
    "summary": "Company divested Tissue Health Plus subsidiary assets for ~$2M plus earnout rights.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-30",
+   "entry": 32.76
   },
   {
    "book": "short_bad_news",
@@ -3190,8 +3161,8 @@
    "decided": "2026-10-30T03:28:00.213511-04:00",
    "event_type": "strategic_review",
    "summary": "Company acquired full ownership of lorundrostat IP from Tanabe; milestone obligations continue.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-30",
+   "entry": 20.99
   },
   {
    "book": "short_bad_news",
@@ -3200,8 +3171,8 @@
    "decided": "2026-10-30T03:28:12.862962-04:00",
    "event_type": "litigation",
    "summary": "European patent invalidated in UPC decision; infringement case against Pfizer lost.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-30",
+   "entry": 11.08
   },
   {
    "book": "short_bad_news",
@@ -3210,8 +3181,8 @@
    "decided": "2026-10-30T03:28:17.716066-04:00",
    "event_type": "contract_loss",
    "summary": "BMS terminates PRX019 development program; Company loses $617.5M milestone potential",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-30",
+   "entry": 8.79
   },
   {
    "book": "short_bad_news",
@@ -3220,8 +3191,8 @@
    "decided": "2026-10-30T03:28:23.750078-04:00",
    "event_type": "prelim_results_bad",
    "summary": "Q3 2026 earnings miss: Net income $19.4M (down 40%), EPS $0.40 (down 39%), revenues down 22%.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-10-30",
+   "entry": 10.85
   },
   {
    "book": "short_bad_news",
@@ -3230,27 +3201,113 @@
    "decided": "2026-10-30T03:28:27.013461-04:00",
    "event_type": "routine",
    "summary": "Q3 2026 earnings release; community bank with modest growth challenges and portfolio shifts.",
+   "entry_date": "2026-10-30",
+   "entry": 6.21
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "UNG",
+   "accession": "0001104659-26-120518",
+   "decided": "2026-10-30T14:11:56.822006-04:00",
+   "event_type": "routine",
+   "summary": "Routine monthly account statement filed; net loss despite trading gains; significant investor redemptions.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "PTHS",
+   "accession": "0001104659-26-120457",
+   "decided": "2026-10-30T14:12:02.992491-04:00",
+   "event_type": "acquisition",
+   "summary": "Pelthos acquiring Castle Creek Biosciences; 5.2M shares upfront plus $300M+ in contingent milestone payments for D-Fi drug program",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_win",
+   "symbol": "GPRE",
+   "accession": "0001628280-26-068462",
+   "decided": "2026-10-30T14:12:05.746434-04:00",
+   "event_type": "contract_win",
+   "summary": "Ethanol producer monetizes $250M-$325M of 2026 45Z tax credits via two institutional buyers.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_div",
+   "symbol": "GPRE",
+   "accession": "0001628280-26-068462",
+   "decided": "2026-10-30T14:12:05.746434-04:00",
+   "event_type": "contract_win",
+   "summary": "Ethanol producer monetizes $250M-$325M of 2026 45Z tax credits via two institutional buyers.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "TTGT",
+   "accession": "0001193125-26-439991",
+   "decided": "2026-10-30T14:12:09.644973-04:00",
+   "event_type": "exec_departure",
+   "summary": "Bill Morelli, President Intelligence & Advisory, resigns effective December 2026; orderly transition planned.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "VRRM",
+   "accession": "0001628280-26-068453",
+   "decided": "2026-10-30T14:12:14.577575-04:00",
+   "event_type": "prelim_results_bad",
+   "summary": "Q3 2026: revenue flat, net income down 14%, Commercial Services declining sharply, leadership transition underway.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "AZTA",
+   "accession": "0001628280-26-068443",
+   "decided": "2026-10-30T14:12:17.708731-04:00",
+   "event_type": "acquisition",
+   "summary": "Acquired SynPlexity DNA assembly company; exclusive Elegen license for gene synthesis technology with $32-71M capex planned.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CRI",
+   "accession": "0001060822-26-000126",
+   "decided": "2026-10-30T14:12:24.653742-04:00",
+   "event_type": "exec_departure",
+   "summary": "Carter's COO stepping down; Q3 earnings beat with margin improvement but revenue outlook cut.",
    "entry_date": null,
    "entry": null
   }
  ],
  "div": {
-  "nav": 103.06340224941376,
+  "nav": 98.69022363276325,
   "closed": [
    {
-    "symbol": "RARE",
-    "entry_date": "2026-10-15",
-    "exit_date": "2026-10-29",
-    "vol60": 1.2762635430206901
+    "symbol": "EMAT",
+    "entry_date": "2026-10-16",
+    "exit_date": "2026-10-30",
+    "vol60": 1.4666393695798283
    },
    {
-    "symbol": "ETON",
-    "entry_date": "2026-10-15",
-    "exit_date": "2026-10-29",
-    "vol60": 0.9275765163611955
+    "symbol": "ESTA",
+    "entry_date": "2026-10-16",
+    "exit_date": "2026-10-30",
+    "vol60": 0.4945029397983647
+   },
+   {
+    "symbol": "CWCO",
+    "entry_date": "2026-10-16",
+    "exit_date": "2026-10-30",
+    "vol60": 0.2698899410456325
    }
   ],
-  "last_date": "2026-10-29",
+  "last_date": "2026-10-30",
   "history": {
    "2026-10-15": 100.3592,
    "2026-10-16": 98.6604,
@@ -3262,7 +3319,8 @@
    "2026-10-26": 98.5702,
    "2026-10-27": 102.3086,
    "2026-10-28": 103.5568,
-   "2026-10-29": 103.0634
+   "2026-10-29": 103.0634,
+   "2026-10-30": 98.6902
   }
  }
 }
