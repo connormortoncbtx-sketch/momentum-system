@@ -1,5 +1,5 @@
 {
- "since": "2026-10-29T13:46:21-04:00",
+ "since": "2026-10-29T17:28:13-04:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -289,7 +289,7 @@
    "event_type": "prelim_results_bad",
    "summary": "REIT reports Q3 estimated loss of $0.90/share; heavy RMBS losses; maintains monthly dividend.",
    "entry_date": "2026-10-15",
-   "entry": 5.12
+   "entry": 5.018
   },
   {
    "book": "short_bad_news",
@@ -773,7 +773,7 @@
    "event_type": "listing_deficiency",
    "summary": "Company delisting from NYSE; liquidating remaining assets; transitioning to liquidating trust structure.",
    "entry_date": "2026-10-19",
-   "entry": 6.37
+   "entry": 2.321
   },
   {
    "book": "long_contract_win",
@@ -2389,7 +2389,7 @@
    "event_type": "equity_financing",
    "summary": "Fund established $125M ATM equity distribution agreement with four underwriting agents.",
    "entry_date": "2026-10-28",
-   "entry": 3.74
+   "entry": 3.658
   },
   {
    "book": "long_contract_win",
@@ -3030,6 +3030,206 @@
    "decided": "2026-10-29T14:40:26.265419-04:00",
    "event_type": "debt_financing",
    "summary": "BUZZ HPC secures $129M fixed-rate financing for sovereign AI GPU infrastructure deployment",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "DIN",
+   "accession": "0001193125-26-438102",
+   "decided": "2026-10-30T03:26:51.180080-04:00",
+   "event_type": "strategic_review",
+   "summary": "Company adopts poison pill stockholder rights agreement to deter hostile takeovers and acquisitions.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "SSTK",
+   "accession": "0001140361-26-041191",
+   "decided": "2026-10-30T03:26:56.676732-04:00",
+   "event_type": "exec_appointment",
+   "summary": "Founder Jonathan Oringer appointed CEO/Chairman; Hichame Assi named President/COO with $1.5M RSU award.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "SMBC",
+   "accession": "0001104659-26-120262",
+   "decided": "2026-10-30T03:26:59.741849-04:00",
+   "event_type": "exec_departure",
+   "summary": "CFO Stefan Chkautovich resigned effective November 7, 2026; President Matthew Funke assumes principal financial officer role.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "SDEV",
+   "accession": "0001437749-26-033952",
+   "decided": "2026-10-30T03:27:08.551803-04:00",
+   "event_type": "prelim_results_good",
+   "summary": "Q3 2026: $50.4M net income on $58.8M unrealized SKY gain; 2.32B SKY tokens held; staking revenue $2.1M.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_win",
+   "symbol": "NFE",
+   "accession": "0001749723-26-000172",
+   "decided": "2026-10-30T03:27:11.331401-04:00",
+   "event_type": "contract_win",
+   "summary": "Five-year turbine lease of 300MW capacity to investment-grade US company; accretive to earnings and liquidity.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_div",
+   "symbol": "NFE",
+   "accession": "0001749723-26-000172",
+   "decided": "2026-10-30T03:27:11.331401-04:00",
+   "event_type": "contract_win",
+   "summary": "Five-year turbine lease of 300MW capacity to investment-grade US company; accretive to earnings and liquidity.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "PMT",
+   "accession": "0001193125-26-437878",
+   "decided": "2026-10-30T03:27:16.300121-04:00",
+   "event_type": "routine",
+   "summary": "Q3 loss, leadership transitions, share buyback authorization increase to $630M.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "MBLY",
+   "accession": "0001104659-26-120225",
+   "decided": "2026-10-30T03:27:19.411144-04:00",
+   "event_type": "exec_departure",
+   "summary": "Executive VP Business Development transitioned to part-time corporate strategy role at 20% capacity.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_win",
+   "symbol": "NVAX",
+   "accession": "0001104659-26-120221",
+   "decided": "2026-10-30T03:27:22.161214-04:00",
+   "event_type": "contract_win",
+   "summary": "Sanofi milestone payment of $125M triggered by Phase 3 vaccine trial fifth patient dosing.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_div",
+   "symbol": "NVAX",
+   "accession": "0001104659-26-120221",
+   "decided": "2026-10-30T03:27:22.161214-04:00",
+   "event_type": "contract_win",
+   "summary": "Sanofi milestone payment of $125M triggered by Phase 3 vaccine trial fifth patient dosing.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "GLND",
+   "accession": "0001829126-26-011775",
+   "decided": "2026-10-30T03:27:24.946865-04:00",
+   "event_type": "listing_deficiency",
+   "summary": "Director resignation caused Nasdaq listing rule violations; cure period granted through Oct 2027.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "STRT",
+   "accession": "0000933034-26-000009",
+   "decided": "2026-10-30T03:27:28.126224-04:00",
+   "event_type": "prelim_results_bad",
+   "summary": "Q1 FY2027: sales down 3%, EPS down 43%, margin compression despite transformation efforts.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CDZI",
+   "accession": "0001213900-26-113824",
+   "decided": "2026-10-30T03:27:35.369243-04:00",
+   "event_type": "equity_financing",
+   "summary": "Registered direct offering of 5M shares at $4.20/share for $21M gross, $20M net.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "IVR",
+   "accession": "0001437071-26-000080",
+   "decided": "2026-10-30T03:27:38.880045-04:00",
+   "event_type": "prelim_results_bad",
+   "summary": "Q3 2026 earnings miss: $0.92 loss per share, 16% book value decline, negative 11.6% return.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "SMTI",
+   "accession": "0001493152-26-049275",
+   "decided": "2026-10-30T03:27:41.008206-04:00",
+   "event_type": "divestiture",
+   "summary": "Company divested Tissue Health Plus subsidiary assets for ~$2M plus earnout rights.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "MLYS",
+   "accession": "0001933414-26-000136",
+   "decided": "2026-10-30T03:28:00.213511-04:00",
+   "event_type": "strategic_review",
+   "summary": "Company acquired full ownership of lorundrostat IP from Tanabe; milestone obligations continue.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ENTA",
+   "accession": "0001193125-26-437774",
+   "decided": "2026-10-30T03:28:12.862962-04:00",
+   "event_type": "litigation",
+   "summary": "European patent invalidated in UPC decision; infringement case against Pfizer lost.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "PRTA",
+   "accession": "0001559053-26-000026",
+   "decided": "2026-10-30T03:28:17.716066-04:00",
+   "event_type": "contract_loss",
+   "summary": "BMS terminates PRX019 development program; Company loses $617.5M milestone potential",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ACIC",
+   "accession": "0001401521-26-000042",
+   "decided": "2026-10-30T03:28:23.750078-04:00",
+   "event_type": "prelim_results_bad",
+   "summary": "Q3 2026 earnings miss: Net income $19.4M (down 40%), EPS $0.40 (down 39%), revenues down 22%.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "BAFN",
+   "accession": "0001649739-26-000143",
+   "decided": "2026-10-30T03:28:27.013461-04:00",
+   "event_type": "routine",
+   "summary": "Q3 2026 earnings release; community bank with modest growth challenges and portfolio shifts.",
    "entry_date": null,
    "entry": null
   }
