@@ -213,13 +213,14 @@ def history_cards():
             if not cv:
                 out.append(f"<div class='card'><h2>Is it working? {lab}</h2><div class='mut'>No settled city-days yet.</div></div>")
                 continue
-            n, m, b = cv[-1]
-            verdict = ("too early to tell" if n < 30 or b != b else
+            n, m, b, nd = cv[-1]
+            verdict = ("too early to tell" if nd < 3 or b != b else
                        ("edge is positive (band above 0)" if m - b > 0 else ("edge is negative (band below 0)" if m + b < 0 else "band still straddles 0")))
             out.append(f"<div class='card'><h2>Is it working? {lab} -- edge per contract, running average over settled city-days "
-                       f"(shaded = ±2 standard errors; research target +2 to +3c; decision at ~50)</h2>"
-                       f"{svg_line([(f'{i} city-days', mm) for i, mm, _ in cv], band=[(mm - bb, mm + bb) for _, mm, bb in cv], fmt=lambda v: f'{v:+.0f}c')}"
-                       f"<div>Now: <b class='{'pos' if m >= 0 else 'neg'}'>{m:+.1f}c</b> ± {b if b == b else float('nan'):.1f}c over {n} city-days — {verdict}</div></div>")
+                       f"(shaded = 95% band clustered by MARKET DAY -- cities on one date move together, so the band reflects "
+                       f"the number of dates, not city-days; research target +2 to +3c)</h2>"
+                       f"{svg_line([(f'{i} city-days', mm) for i, mm, _, _ in cv], band=[(mm - min(bb, 25), mm + min(bb, 25)) if bb == bb else (mm, mm) for _, mm, bb, _ in cv], fmt=lambda v: f'{v:+.0f}c')}"
+                       f"<div>Now: <b class='{'pos' if m >= 0 else 'neg'}'>{m:+.1f}c</b> ± {b:.1f}c over {n} city-days on {nd} market days — {verdict}</div></div>")
         fd = HI.fills_per_day()
         if fd:
             out.append(f"<div class='card'><h2>Contracts filled per day</h2>"

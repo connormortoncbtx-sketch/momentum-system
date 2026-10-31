@@ -5,7 +5,7 @@ kalshi_mm/history.py -- trend series for the dashboard (all from the bot's own l
                     deposits as a dated schedule DEPOSIT_HISTORY="2026-10-19 12:00=100;2026-10-20 07:00=245"
                     (falls back to the constant DEPOSITS_USD, which makes pre-deposit history look low)
   settled_days()    per market date: P&L in $ and c/contract of every fill in settled markets, city-days
-  convergence()     running edge per contract over city-days, with a 2-standard-error band (the "is it working" chart)
+  convergence()     running edge per contract over city-days, with a 95% band clustered by market day (the "is it working" chart)
   fills_per_day()   contracts filled per (Central) day
 """
 import datetime as dt
@@ -143,9 +143,22 @@ def settled_days():
     return [(day, v["pnl_c"] / 100, v["pnl_c"] / v["n"] if v["n"] else 0.0, len(v["events"])) for day, v in sorted(by.items())]
 
 
+T975 = {1: 12.71, 2: 4.30, 3: 3.18, 4: 2.78, 5: 2.57, 6: 2.45, 7: 2.36, 8: 2.31, 9: 2.26, 10: 2.23, 12: 2.18, 15: 2.13,
+        20: 2.09, 25: 2.06, 30: 2.04, 40: 2.02, 60: 2.00, 120: 1.98}
+
+
+def tcrit(df):
+    for k in sorted(T975):
+        if df <= k:
+            return T975[k]
+    return 1.96
+
+
 def convergence(since=None, weight="cityday", filt=None):
-    """[(city_days, running mean c/contract, 2 s.e.)] in settlement order. weight 'cityday': each city-day's edge per
-    contract counts once; 'contract': city-days weighted by contracts (what the account feels). since: market days >= it."""
+    """[(city_days, running mean c/contract, 95% half-width, market days)] in settlement order. weight 'cityday': each
+    city-day's edge per contract counts once; 'contract': city-days weighted by contracts (what the account feels).
+    since: market days >= it. Oct 31: the band is clustered by MARKET DAY (cities on one date share the weather pattern
+    and the market's mood, so they are not independent evidence) with a Student-t multiplier -- as kmm edge-now."""
     ev = {}
     for r in settled_fills(filt):
         if since and (r["day"] is None or r["day"] < since):
@@ -155,15 +168,14 @@ def convergence(since=None, weight="cityday", filt=None):
     evs = [v for v in sorted(ev.values(), key=lambda v: (v[0] or dt.date.min)) if v[2] > 0]
     out = []
     for i in range(1, len(evs) + 1):
-        xs = [v[1] / v[2] for v in evs[:i]]
-        w = [v[2] if weight == "contract" else 1.0 for v in evs[:i]]
-        W = sum(w); m = sum(a * b for a, b in zip(xs, w)) / W
-        if i > 2:
-            var = sum(b * (a - m) ** 2 for a, b in zip(xs, w)) / W * i / (i - 1)
-            se = (var * sum(b * b for b in w) / W ** 2) ** 0.5
-        else:
-            se = float("nan")
-        out.append((i, m, 2 * se))
+        xs = [(v[1] / v[2], v[2] if weight == "contract" else 1.0, v[0]) for v in evs[:i]]
+        W = sum(w for _, w, _ in xs); m = sum(a * w for a, w, _ in xs) / W
+        u = {}
+        for a, w, d in xs:
+            u[d] = u.get(d, 0.0) + w * (a - m)
+        G = len(u)
+        hw = tcrit(G - 1) * (sum(x * x for x in u.values()) / W ** 2 * G / (G - 1)) ** 0.5 if G > 1 else float("nan")
+        out.append((i, m, hw, G))
     return out
 
 
