@@ -1,5 +1,5 @@
 {
- "since": "2026-10-30T14:00:24-04:00",
+ "since": "2026-10-30T17:29:06-04:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -3281,6 +3281,116 @@
    "decided": "2026-10-30T14:12:24.653742-04:00",
    "event_type": "exec_departure",
    "summary": "Carter's COO stepping down; Q3 earnings beat with margin improvement but revenue outlook cut.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "RAPP",
+   "accession": "0001193125-26-441851",
+   "decided": "2026-10-31T03:14:37.944071-04:00",
+   "event_type": "equity_financing",
+   "summary": "Dual equity and debt offering: $215.7M net from stock/warrants; $172.5M convertible notes",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ANVS",
+   "accession": "0001104659-26-120732",
+   "decided": "2026-10-31T03:14:40.774331-04:00",
+   "event_type": "listing_deficiency",
+   "summary": "NYSE notice of listing standard non-compliance; 9-month cure period required or delisting.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "TCBK",
+   "accession": "0000356171-26-000119",
+   "decided": "2026-10-31T03:14:43.205427-04:00",
+   "event_type": "acquisition",
+   "summary": "TriCo stockholders approved acquisition by First Hawaiian; deal close expected late 2026.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "GRDX",
+   "accession": "0001104659-26-120725",
+   "decided": "2026-10-31T03:14:45.681198-04:00",
+   "event_type": "exec_appointment",
+   "summary": "CFO consulting agreement amended; $27K monthly retainer plus 250K RSUs through 2027.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "PODC",
+   "accession": "0001213900-26-114477",
+   "decided": "2026-10-31T03:14:49.538265-04:00",
+   "event_type": "exec_departure",
+   "summary": "Interim CFO Craig Christensen departs effective October 30, 2026 to pursue other opportunity.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "TE",
+   "accession": "0001213900-26-114466",
+   "decided": "2026-10-31T03:14:53.860777-04:00",
+   "event_type": "dilution_other",
+   "summary": "Company registers 13.4M shares for resale from $50M convertible notes conversion.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "PAL",
+   "accession": "0001213900-26-114421",
+   "decided": "2026-10-31T03:14:58.647157-04:00",
+   "event_type": "exec_appointment",
+   "summary": "Co-founder of acquired company appointed to board; significant related-party leases disclosed.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "PLPC",
+   "accession": "0000080035-26-000039",
+   "decided": "2026-10-31T03:15:00.802325-04:00",
+   "event_type": "exec_departure",
+   "summary": "Board member Glenn Corlett retired after 22 years; board reduced to seven directors.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "TREE",
+   "accession": "0001683168-26-008194",
+   "decided": "2026-10-31T03:15:13.964093-04:00",
+   "event_type": "exec_departure",
+   "summary": "General Counsel Heather Novitsky departing; severance benefits approved; bylaws updated.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "VRRM",
+   "accession": "0001193125-26-441633",
+   "decided": "2026-10-31T03:15:16.437240-04:00",
+   "event_type": "exec_departure",
+   "summary": "CFO Craig Conti resigning; interim CFO from Alvarez & Marsal appointed; turnaround consulting engaged.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "LE",
+   "accession": "0001193125-26-441618",
+   "decided": "2026-10-31T03:15:20.057920-04:00",
+   "event_type": "exec_departure",
+   "summary": "Head of Technology Transformation resigns effective November 6, 2026.",
    "entry_date": null,
    "entry": null
   }
