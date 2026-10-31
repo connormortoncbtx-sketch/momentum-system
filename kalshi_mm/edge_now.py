@@ -17,7 +17,8 @@ import history as H
 def provisional(res):
     """Add 1/0 for decided-but-unsettled markets the bot filled in; returns the set of provisional tickers."""
     import bot as B
-    B.READ_LIMIT = B.RateLimit(3)                       # yield to the live bot on the shared rate limit
+    if getattr(B.READ_LIMIT, "gap", 0) < 1 / 3:          # yield to the live bot (keep a slower limit, e.g. the dashboard's)
+        B.READ_LIMIT = B.RateLimit(3)
     k = B.Kalshi("dry")
     need = sorted({(f.get("fill") or f).get("ticker") for f in R.rows("fills")} - set(res) - {None})
     out = set()
@@ -103,19 +104,25 @@ def edge(fills, res, filt=None, since=None):
     return out
 
 
-def main():
+def compute():
+    """{'prov': n, 'pdays': n, 'since': date, 'rows': [(label, edge() dict or None)]} -- used by main() and the dashboard."""
     res = R.market_results()
-    print("checking decided-but-unsettled markets...", flush=True)
     prov = provisional(res)
-    pdays = {tk.rsplit("-", 1)[0] for tk in prov}
-    print(f"  {len(prov)} markets counted as decided (provisional), across {len(pdays)} city-days\n")
     fills = R.rows("fills")
     since = dt.date.fromisoformat(os.environ.get("EVAL_FROM", "2026-10-27"))
+    rows = [(lab, edge(fills, res, **kw)) for lab, kw in (
+        (f"CLEAN TEST (market days from {since:%b %d})", dict(since=since)),
+        ("ALL HISTORY, current-logic trades only", dict(filt=H.current_logic)),
+        ("ALL market days since launch", {}))]
+    return dict(prov=len(prov), pdays=len({tk.rsplit("-", 1)[0] for tk in prov}), since=since, rows=rows)
+
+
+def main():
+    print("checking decided-but-unsettled markets...", flush=True)
+    c = compute()
+    print(f"  {c['prov']} markets counted as decided (provisional), across {c['pdays']} city-days\n")
     print(f"  {'view':40} {'city-days':>9} {'days':>4} {'per city-day':>14} {'by day':>7} {'per contract':>14} {'by day':>7}")
-    for lab, kw in ((f"CLEAN TEST (market days from {since:%b %d})", dict(since=since)),
-                    ("ALL HISTORY, current-logic trades only", dict(filt=H.current_logic)),
-                    ("ALL market days since launch", {})):
-        o = edge(fills, res, **kw)
+    for lab, o in c["rows"]:
         if not o:
             print(f"  {lab:40} too few city-days"); continue
         (m1, b1, _), (_, b1d, D), (m2, b2, _), (_, b2d, _) = o["cd"], o["cd_day"], o["ct"], o["ct_day"]

@@ -130,6 +130,47 @@ def limits_card():
     return "".join(out)
 
 
+_edge = {"t": 0.0, "data": None, "err": None}
+EDGE_S = 3600                                      # the edge card is recomputed hourly (one API call per unsettled market)
+
+
+def edge_refresher():
+    import edge_now as EN
+    while True:
+        try:
+            d = EN.compute()
+            _edge.update(t=time.time(), data=d, err=None)
+        except Exception as e:
+            _edge.update(err=str(e)[:200])
+        time.sleep(EDGE_S)
+
+
+def edge_card():
+    """kmm edge-now on the page (Oct 30: no copyable terminal on the phone)."""
+    d = _edge.get("data")
+    if not d:
+        msg = f"failed: {html.escape(_edge['err'])}" if _edge.get("err") else "computing (first run takes a minute)..."
+        return f"<div class='card'><h2>Edge now</h2><div class='mut'>{msg}</div></div>"
+    import edge_now as EN
+    body = []
+    for lab, o in d["rows"]:
+        if not o:
+            body.append(f"<tr><td>{html.escape(lab)}</td><td colspan=6 class='mut'>too few city-days</td></tr>"); continue
+        (m1, _, _), (_, b1d, D), (m2, _, _), (_, b2d, _) = o["cd"], o["cd_day"], o["ct"], o["ct_day"]
+        sm, sb, wt = o["shrunk"]
+        sig = lambda m, b: "pos" if m - b > 0 else ("neg" if m + b < 0 else "")
+        body.append(f"<tr><td>{html.escape(lab)}</td><td>{o['G']}</td><td>{D}</td>"
+                    f"<td class='{sig(m1, b1d)}'>{m1:+.1f}c ±{b1d:.1f}</td><td class='{sig(m2, b2d)}'>{m2:+.1f}c ±{b2d:.1f}</td>"
+                    f"<td>{sm:+.1f}c ±{sb:.1f} <span class='mut'>({wt:.0%} live)</span></td></tr>")
+    age = (time.time() - _edge["t"]) / 60
+    return (f"<div class='card'><h2>Edge now -- includes {d['prov']} decided-but-unpaid markets ({d['pdays']} city-days); "
+            f"updated {age:.0f} min ago</h2><div class='scroll'><table><tr><th>View</th><th>City-days</th><th>Days</th>"
+            f"<th>Per city-day</th><th>Per contract</th><th>Shrunk per contract</th></tr>{''.join(body)}</table></div>"
+            f"<div class='mut'>± = 95% band clustered by MARKET DAY (cities on one date move together). Green/red = the band "
+            f"clears zero. Shrunk = research prior {EN.PRIOR_C:+.1f}c blended with live data -- the cap-ladder number "
+            f"(step up at >= +2c).</div></div>")
+
+
 def history_cards():
     out = []
     try:
@@ -281,6 +322,7 @@ pre{{white-space:pre-wrap;font-size:12.5px;margin:0}} .dot{{display:inline-block
                    "and this card disagree with it, these are the numbers to trust.</div></div>")
     except Exception as e:
         h.append(f"<div class='card'><h2>Kalshi's own numbers</h2><div class='neg'>unavailable: {html.escape(str(e))[:200]}</div></div>")
+    h.append(edge_card())
     h.append(limits_card())
     h.append(history_cards())
     for day in sorted({r["day"] for r in rows}):
@@ -352,4 +394,5 @@ class H(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     threading.Thread(target=refresher, daemon=True).start()
+    threading.Thread(target=edge_refresher, daemon=True).start()
     ThreadingHTTPServer(("127.0.0.1", PORT), H).serve_forever()
