@@ -32,6 +32,9 @@ MODE = E("MODE", "dry")
 SERIES = E("SERIES", "KXHIGHNY,KXHIGHCHI,KXHIGHLAX,KXHIGHMIA,KXHIGHPHIL,KXHIGHDEN,KXHIGHAUS,KXHIGHTDAL").split(",")
 OFFSET = float(E("OFFSET_C", "2")) / 100          # cents behind the best bid
 SIZE = int(E("SIZE", "5"))                        # contracts per quote
+NEW_SERIES = {x for x in E("NEW_SERIES", "").split(",") if x}   # Oct 30: newly added cities trade at a reduced
+EVENT_CAP_NEW = float(E("EVENT_CAP_NEW", "15"))                     # city-day cap until promoted (kmm add-series /
+                                                                    # kmm promote-series)
 TOPUP = E("TOPUP", "no").lower() == "yes"           # Oct 29: near a cap, quote only the room left (1-4 contracts) instead
                                                    # of stopping one 5-lot short -- caps become exact. Off until Connor's
                                                    # first cap-ladder step (Nov 4 review).
@@ -656,7 +659,8 @@ class Bot:
             if quiet:                                          # observation window: only position-reducing quotes
                 want = {sd: px for sd, px in want.items() if not adds_exposure(sd, pos.get(tk, 0.0))}
             ev = event_of(tk)
-            if live and ev_held.get(ev, 0.0) + (1 if TOPUP else SIZE) > EVENT_CAP:     # event full: only reduce it
+            cap = EVENT_CAP_NEW if tk.split("-")[0] in NEW_SERIES else EVENT_CAP
+            if live and ev_held.get(ev, 0.0) + (1 if TOPUP else SIZE) > cap:     # event full: only reduce it
                 want = {sd: px for sd, px in want.items() if not adds_exposure(sd, pos.get(tk, 0.0))}
             if not live:
                 if want:
@@ -690,11 +694,11 @@ class Bot:
                 n_ord = SIZE
                 if grows and TOPUP:
                     p0 = pos.get(tk, 0.0)
-                    room = min(EVENT_CAP - ev_exp.get(ev, 0.0), INV_CAP - (p0 if side == "yes" else -p0))
+                    room = min(cap - ev_exp.get(ev, 0.0), INV_CAP - (p0 if side == "yes" else -p0))
                     n_ord = min(SIZE, int(math.floor(room + 1e-9)))
                     if n_ord < 1:
                         continue
-                elif grows and ev_exp.get(ev, 0.0) + SIZE > EVENT_CAP:
+                elif grows and ev_exp.get(ev, 0.0) + SIZE > cap:
                     continue
                 try:
                     o = self.k.place(tk, side, tgt, n_ord)
@@ -794,7 +798,7 @@ class Bot:
                 jlog("settlements", key=key, settlement=x)
 
     def run(self):
-        log.info(f"MODE={MODE} series={','.join(SERIES)} offset={OFFSET * 100:.0f}c size={SIZE}{' topup' if TOPUP else ''} cap={INV_CAP} event_cap={EVENT_CAP:.0f} "
+        log.info(f"MODE={MODE} series={','.join(SERIES)} offset={OFFSET * 100:.0f}c size={SIZE}{' topup' if TOPUP else ''} cap={INV_CAP} event_cap={EVENT_CAP:.0f}{f' (new {sorted(NEW_SERIES)}: {EVENT_CAP_NEW:.0f})' if NEW_SERIES else ''} "
                  f"budget={sizing_desc()}")
         jlog("events", event="start", params=dict(series=SERIES, offset=OFFSET, size=SIZE, inv_cap=INV_CAP, event_cap=EVENT_CAP,
                                                    budget=BUDGET, budget_pct=BUDGET_PCT, budget_max=BUDGET_MAX,

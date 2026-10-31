@@ -199,6 +199,20 @@ case "${1:-status}" in
     while systemctl is-active -q "$U" 2>/dev/null || systemctl is-activating -q "$U" 2>/dev/null; do sleep 2; done
     sleep 1; kill $J 2>/dev/null ;;
   calibrate-log) journalctl -u "$(cat /run/kmm-last-calibrate 2>/dev/null)" -o cat --no-pager | tail -n "${2:-40}" ;;
+  add-series)  # add a new city at the reduced starter cap (EVENT_CAP_NEW); promote-series lifts it to the normal cap
+    [ -n "${2:-}" ] || { echo "usage: kmm add-series KXHIGHT..."; exit 1; }
+    CUR=$(sudo -u kmm bash -c 'set -a; . /etc/kmm/env; cd /home/kmm/app/kalshi_mm; /home/kmm/venv/bin/python -c "import bot; print(\",\".join(bot.SERIES))"' 2>/dev/null | tail -1)
+    case "$CUR" in KX*) ;; *) echo "could not read the current series list -- nothing changed"; exit 1 ;; esac
+    case ",$CUR," in *",$2,"*) echo "$2 is already traded"; exit 0 ;; esac
+    NEW=$(grep '^NEW_SERIES=' /etc/kmm/env | cut -d= -f2)
+    sed -i '/^SERIES=/d;/^NEW_SERIES=/d' /etc/kmm/env
+    echo "SERIES=$CUR,$2" >> /etc/kmm/env; echo "NEW_SERIES=${NEW:+$NEW,}$2" >> /etc/kmm/env
+    systemctl restart kmm; echo "added $2 at the starter city-day cap; bot restarted" ;;
+  promote-series)
+    [ -n "${2:-}" ] || { echo "usage: kmm promote-series KXHIGHT..."; exit 1; }
+    NEW=$(grep '^NEW_SERIES=' /etc/kmm/env | cut -d= -f2 | tr ',' '\n' | grep -vx "$2" | paste -sd, -)
+    sed -i '/^NEW_SERIES=/d' /etc/kmm/env; [ -n "$NEW" ] && echo "NEW_SERIES=$NEW" >> /etc/kmm/env
+    systemctl restart kmm; echo "$2 now trades at the normal city-day cap; bot restarted" ;;
   update)  # runs as its own background service, so a dropped phone/SSH session can't kill it half-way
     U="kmm-update-$(date +%H%M%S)"
     systemd-run --quiet --unit="$U" --collect -p Nice=10 bash -c "curl -fsSL https://raw.githubusercontent.com/connormortoncbtx-sketch/momentum-system/main/kalshi_mm/deploy/install.sh | bash"
@@ -209,7 +223,7 @@ case "${1:-status}" in
     sleep 1; kill $J 2>/dev/null; echo "-- update finished"
     exit ;;  # exit before bash reads past this point: the update rewrites this file
   update-log) journalctl -u "$(cat /run/kmm-last-update 2>/dev/null)" -o cat --no-pager | tail -n "${2:-60}" ;;
-  *) echo "usage: kmm status|stop|resume|logs [n]|report|positions|diagnose|lottery|sniper|windows|study|edge-now|calibrate|calibrate-log|update|update-log" ;;
+  *) echo "usage: kmm status|stop|resume|logs [n]|report|positions|diagnose|lottery|sniper|windows|study|edge-now|calibrate|calibrate-log|add-series|promote-series|update|update-log" ;;
 esac
 KMM
 chmod 755 /usr/local/bin/kmm

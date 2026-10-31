@@ -41,6 +41,24 @@ NOT_KEYWORDS = re.compile(r"\b(say|says|mention|mentions|tax|tariff|DOGE|stimulu
 SKIP_CATS = {"Sports", "Politics", "Elections"}
 RECURRING = {"daily", "weekly", "monthly", "custom", "hourly"}
 GRADUATE_AT, EXPIRE_DAYS = 20, 180
+WX_ALERTED = DATA / "kalshi_weather_alerted.json"
+WEATHER = re.compile(r"^KX(HIGH|LOW)")
+# Oct 30, 2026: likely next daily-temperature cities and the station Kalshi would most plausibly settle on (NWS climate
+# report). A FALLBACK hint only -- the alert quotes the market's own rules, which are what count. "!" = a city with more
+# than one airport / a settlement station people commonly get wrong.
+LIKELY_STATIONS = {
+    "PDX": "KPDX Portland Intl", "SLC": "KSLC Salt Lake City Intl", "BNA": "KBNA Nashville Intl",
+    "CLT": "KCLT Charlotte Douglas", "DTW": "KDTW Detroit Metro", "MCI": "KMCI Kansas City Intl ! (not downtown KMKC)",
+    "STL": "KSTL St. Louis Lambert", "TPA": "KTPA Tampa Intl", "MCO": "KMCO Orlando Intl ! (not Executive KORL)",
+    "IND": "KIND Indianapolis Intl", "CMH": "KCMH Columbus", "CLE": "KCLE Cleveland Hopkins", "PIT": "KPIT Pittsburgh Intl",
+    "BWI": "KBWI Baltimore-Washington (DC itself settles on KDCA)", "RDU": "KRDU Raleigh-Durham",
+    "SAC": "KSAC Sacramento Executive ! (or KSMF Intl -- check)", "ABQ": "KABQ Albuquerque", "TUS": "KTUS Tucson",
+    "MEM": "KMEM Memphis", "JAX": "KJAX Jacksonville", "HNL": "PHNL Honolulu", "ANC": "PANC Anchorage",
+    "SJC": "KSJC San Jose", "BUF": "KBUF Buffalo", "MKE": "KMKE Milwaukee", "OMA": "KOMA Omaha", "RIC": "KRIC Richmond",
+    "BOI": "KBOI Boise", "ELP": "KELP El Paso", "IAH": "KIAH Houston Bush ! (Kalshi's Houston daily high uses Hobby KHOU)",
+    "ORD": "KORD O'Hare ! (Kalshi's Chicago uses Midway KMDW)", "IAD": "KIAD Dulles ! (Kalshi's DC uses National KDCA)",
+}
+STATION_RX = re.compile(r"\b[KPC][A-Z]{3}\b|(?i:Central Park|Midway|Hobby)|[A-Z][a-z]+(?: [A-Z][a-z]+)* (?:International )?Airport")
 TODAY = dt.date.today().isoformat()
 
 
@@ -122,10 +140,41 @@ def keyword_check(S, seen):
     print(f"keyword check: {len(new)} new series, {len(hits)} corporate-event hits")
 
 
+def weather_check(S, seen):
+    """Daily: alert once for each NEW daily-temperature series (KXHIGH*/KXLOW*), with its settlement station from the
+    market's own rules and the one-line command to add it to the bot at the reduced starter cap."""
+    if seen is None:
+        return
+    done = set(json.loads(WX_ALERTED.read_text())) if WX_ALERTED.exists() else set()
+    new = S[~S.ticker.isin(seen) & ~S.ticker.isin(done) & S.ticker.fillna("").str.match(WEATHER)]
+    for r in new.itertuples():
+        try:
+            mk = M.paged("/markets", "markets", max_pages=2, series_ticker=r.ticker, status="open")
+        except Exception as e:
+            mk = []; print(f"markets {r.ticker}: {e}")
+        rules = " ".join(str(mk[0].get(k) or "") for k in ("rules_primary", "rules_secondary")) if mk else ""
+        hits = sorted({m.group(0) for m in STATION_RX.finditer(rules)})[:4]
+        code = re.sub(r"^KX(HIGH|LOW)T?", "", r.ticker)
+        hint = LIKELY_STATIONS.get(code[:3])
+        lines = [f"NEW weather series {r.ticker}: {r.title} ({r.frequency})", f"{len(mk)} open markets"]
+        lines.append(f"Settles on (from the rules): {', '.join(hits) if hits else 'not found -- read the market rules'}"
+                     + (f" | likely: {hint}" if hint else ""))
+        if rules:
+            lines.append("Rules: " + rules[:300])
+        if r.ticker.startswith("KXHIGH"):
+            lines.append("Starter add (reduced city-day cap until the auto-test passes at 20 settled markets), on the server:")
+            lines.append(f"  sudo kmm add-series {r.ticker}")
+        notify("\n".join(lines), title="Kalshi: NEW weather market", urgent=True)
+        done.add(r.ticker)
+    WX_ALERTED.write_text(json.dumps(sorted(done)))
+    print(f"weather check: {len(new)} new temperature series")
+
+
 def main():
     S = all_series()
     seen = set(json.loads(SEEN.read_text())) if SEEN.exists() else None
     keyword_check(S, seen)
+    weather_check(S, seen)
     if os.environ.get("MODE") == "keywords":          # daily: alert only, leave the weekly report its new series
         return
     watch = json.loads(WATCH.read_text()) if WATCH.exists() else {}
