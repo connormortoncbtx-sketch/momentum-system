@@ -2861,3 +2861,15 @@ The test replayed whole city-days (440: the 40 most recent per series, 11 series
 - **The curve is flat.** Contracts deeper in a city-day earn about the same in the backtest; there is no sign of decay out to 120+ backtest contracts (roughly 33+ real at the 0.28 fill ratio).
 - **Why live still matters:** the backtest can't model queue adverse selection, i.e. being filled when the makers ahead of us pull their quotes. So the live per-city-day > per-contract gap is either that effect or "busy days are bad days" (weather volatility), and the live DEPTH table in `kmm study` is the arbiter.
 - **Read:** nothing in the public tape argues against stepping the cap up (30 → 40). Judge each step by its live depth band.
+
+## FROZEN decision rule for the Kalshi cap ladder (Oct 31, 2026; Connor + Claude)
+This rule is applied at each weekly review from Nov 4, using the dashboard's Edge now card / `kmm edge-now`:
+
+| Check | Action |
+|---|---|
+| Shrunk per contract ≥ +2¢ and per-city-day (by-day band) not clearly negative | Step the city-day cap up one rung (30 → 40 → 50 …), TOPUP=yes from the first step |
+| Shrunk per contract between +1¢ and +2¢ | Hold |
+| Shrunk per contract < +1¢ | Step back one rung |
+| Per-city-day by-day band entirely below zero | Pause and review |
+
+Measurement methods are frozen until the January review. They change only to fix an actual bug, and any such change is stated plainly. Context: Oct 31, the shrunk per-contract figure was +3.2¢, and per city-day +11¢ ±8.5 by day.
