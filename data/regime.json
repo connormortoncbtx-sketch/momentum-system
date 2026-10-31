@@ -1,13 +1,13 @@
 {
   "regime": "risk_off_mild",
   "description": "Defensive rotation underway. Favor quality/defensives. Reduce exposure.",
-  "composite": -0.3557,
+  "composite": -0.3591,
   "scores": {
-    "trend": -0.275,
-    "breadth": -0.1387,
-    "sentiment": -0.309,
+    "trend": -0.4056,
+    "breadth": -0.1669,
+    "sentiment": -0.1839,
     "rotation": -1.0,
-    "safety": -0.2498
+    "safety": -0.2
   },
   "weights": {
     "trend": 0.25,
@@ -18,57 +18,57 @@
   },
   "details": {
     "trend": {
-      "spy_ret_5d": -0.0085,
-      "spy_ret_20d": -0.0074,
-      "spy_ret_50d": -0.014,
+      "spy_ret_5d": -0.0126,
+      "spy_ret_20d": -0.0247,
+      "spy_ret_50d": -0.0077,
       "spy_above_sma50": false,
       "spy_above_sma200": true,
-      "spy_drawdown": -0.0245
+      "spy_drawdown": -0.03
     },
     "breadth": {
-      "qqq_ret_5d": -0.0194,
-      "qqq_ret_20d": -0.0436,
-      "iwm_ret_5d": 0.0165,
-      "iwm_ret_20d": -0.0152,
-      "iwm_vs_spy_5d": 0.025,
-      "iwm_vs_spy_20d": -0.0079,
+      "qqq_ret_5d": -0.0305,
+      "qqq_ret_20d": -0.0869,
+      "iwm_ret_5d": 0.0084,
+      "iwm_ret_20d": -0.0143,
+      "iwm_vs_spy_5d": 0.0211,
+      "iwm_vs_spy_20d": 0.0104,
       "iwm_above_sma50": false
     },
     "sentiment": {
-      "vix": 19.45,
-      "vix_ma20": 16.54,
-      "vix_trend": 2.91,
-      "hyg_vs_spy_5d": 0.0114,
-      "hyg_vs_spy_20d": 0.0055
+      "vix": 19.42,
+      "vix_ma20": 17.0,
+      "vix_trend": 2.42,
+      "hyg_vs_spy_5d": 0.0156,
+      "hyg_vs_spy_20d": 0.0305
     },
     "rotation": {
-      "offensive_ret_5d": -0.0171,
-      "defensive_ret_5d": 0.0206,
-      "offensive_ret_20d": -0.0509,
-      "defensive_ret_20d": 0.0679,
-      "rotation_spread_5d": -0.0376,
-      "rotation_spread_20d": -0.1188,
-      "xlk_slope": -0.004724,
-      "xlu_slope": 0.004054
+      "offensive_ret_5d": -0.0335,
+      "defensive_ret_5d": 0.0228,
+      "offensive_ret_20d": -0.0967,
+      "defensive_ret_20d": 0.0982,
+      "rotation_spread_5d": -0.0563,
+      "rotation_spread_20d": -0.1949,
+      "xlk_slope": -0.005307,
+      "xlu_slope": 0.002974
     },
     "safety": {
-      "tlt_vs_spy_5d": 0.0322,
-      "tlt_vs_spy_20d": 0.0461,
-      "gld_vs_spy_5d": -0.026,
-      "gld_vs_spy_20d": -0.0225
+      "tlt_vs_spy_5d": 0.0146,
+      "tlt_vs_spy_20d": 0.086,
+      "gld_vs_spy_5d": -0.0201,
+      "gld_vs_spy_20d": -0.038
     }
   },
   "transition": {
-    "transitioning": true,
-    "direction": "strengthening",
-    "composite_delta": 0.2377,
-    "prev_composite": -0.5934,
-    "prev_regime": "risk_off_severe"
+    "transitioning": false,
+    "direction": null,
+    "composite_delta": -0.0034,
+    "prev_composite": -0.3557,
+    "prev_regime": "risk_off_mild"
   },
   "context": {
-    "spy_realized_vol_20d": 0.0975,
-    "vix": 19.45,
-    "as_of": "2026-10-24"
+    "spy_realized_vol_20d": 0.1159,
+    "vix": 19.42,
+    "as_of": "2026-10-31"
   },
   "playbook": {
     "momentum": 1.0,
