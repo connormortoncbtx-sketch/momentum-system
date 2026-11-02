@@ -3273,3 +3273,5 @@
 {"timestamp": "2026-10-31T08:54:58.573446+00:00", "workflow": "weekly_pipeline", "status": "info", "message": "Starting Stage 06: Report generator", "metrics": {}, "errors": []}
 {"timestamp": "2026-10-31T08:54:58.940143+00:00", "workflow": "weekly_pipeline", "status": "success", "message": "Stage 06: Report generator complete", "metrics": {"stage": "06", "elapsed_sec": 0.4}, "errors": []}
 {"timestamp": "2026-10-31T08:54:58.941263+00:00", "workflow": "weekly_pipeline", "status": "success", "message": "Pipeline complete (54.2 min)", "metrics": {"elapsed_min": 54.2, "stages_run": 6}, "errors": []}
+{"timestamp": "2026-11-02T02:51:48.782144+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Starting weekend refresh (manual_refresh)", "metrics": {}, "errors": []}
+{"timestamp": "2026-11-02T03:13:33.934750+00:00", "workflow": "weekend_refresh", "status": "success", "message": "Refresh complete (manual_refresh)", "metrics": {"run_label": "manual_refresh", "symbols": 2446, "regime": "risk_off_mild", "top_pick": "HTFL", "top_score": 0.8498}, "errors": []}
