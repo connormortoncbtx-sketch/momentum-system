@@ -3284,3 +3284,5 @@
 {"timestamp": "2026-11-02T19:53:51.994880+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Skipped: manual_refresh already ran today (2026-11-02)", "metrics": {}, "errors": []}
 {"timestamp": "2026-11-02T20:36:07.566997+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Starting weekend refresh (manual_refresh)", "metrics": {}, "errors": []}
 {"timestamp": "2026-11-02T20:36:07.568788+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Skipped: manual_refresh already ran today (2026-11-02)", "metrics": {}, "errors": []}
+{"timestamp": "2026-11-02T20:46:44.944094+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=entry", "metrics": {}, "errors": []}
+{"timestamp": "2026-11-02T20:46:45.482947+00:00", "workflow": "alpaca_trader", "status": "success", "message": "Entry: all 10 orders placed", "metrics": {"filled": 10, "fallbacks_used": 0, "top_pick": "ECO"}, "errors": []}
