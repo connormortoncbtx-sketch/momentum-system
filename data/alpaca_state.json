@@ -13,7 +13,10 @@
       "is_fallback": false,
       "phase": 1,
       "high_water_mark": 101.33,
-      "order_id": "72800aa6-9fd4-4d60-bfa1-6cbffa34d4bf"
+      "order_id": "72800aa6-9fd4-4d60-bfa1-6cbffa34d4bf",
+      "hard_stop_order_id": "16dc7cc9-c0b6-4583-8220-6b68a3d099b0",
+      "hard_stop_price": 85.24,
+      "entry_price_actual": 91.66
     },
     "HTFL": {
       "shares": 111,
@@ -27,7 +30,10 @@
       "is_fallback": false,
       "phase": 1,
       "high_water_mark": 55.05,
-      "order_id": "a2c0a1b3-d1e8-42f8-b83e-47471e6e51b9"
+      "order_id": "a2c0a1b3-d1e8-42f8-b83e-47471e6e51b9",
+      "hard_stop_order_id": "55f1b54f-34a3-430e-becc-3ac49f6e2750",
+      "hard_stop_price": 49.63,
+      "entry_price_actual": 55.14
     },
     "KOD": {
       "shares": 61,
@@ -41,7 +47,10 @@
       "is_fallback": false,
       "phase": 1,
       "high_water_mark": 99.18,
-      "order_id": "629ad488-2b7d-4153-a606-20a3e544b444"
+      "order_id": "629ad488-2b7d-4153-a606-20a3e544b444",
+      "hard_stop_order_id": "cc70cab7-5a9f-4cb4-bd44-96c2b2a72b1b",
+      "hard_stop_price": 83.1,
+      "entry_price_actual": 97.77
     },
     "SG": {
       "shares": 531,
@@ -55,7 +64,10 @@
       "is_fallback": false,
       "phase": 1,
       "high_water_mark": 11.55,
-      "order_id": "4247241c-9c5f-4d77-8812-3268eee42332"
+      "order_id": "4247241c-9c5f-4d77-8812-3268eee42332",
+      "hard_stop_order_id": "1e229e1d-3cc7-49af-8d48-d9b3d8eb534c",
+      "hard_stop_price": 10.74,
+      "entry_price_actual": 11.55
     },
     "VSTS": {
       "shares": 416,
@@ -69,7 +81,10 @@
       "is_fallback": false,
       "phase": 1,
       "high_water_mark": 14.73,
-      "order_id": "effc2d62-b47d-4303-b795-3f3f5482046a"
+      "order_id": "effc2d62-b47d-4303-b795-3f3f5482046a",
+      "hard_stop_order_id": "2367a13e-26e7-4ed8-86dd-3ca287c6dac6",
+      "hard_stop_price": 13.7,
+      "entry_price_actual": 14.73
     },
     "NTSK": {
       "shares": 277,
@@ -83,7 +98,10 @@
       "is_fallback": false,
       "phase": 1,
       "high_water_mark": 22.14,
-      "order_id": "160b3a4e-ae6d-49b3-a883-44ba4a82aac6"
+      "order_id": "160b3a4e-ae6d-49b3-a883-44ba4a82aac6",
+      "hard_stop_order_id": "3297db5a-8703-4d46-806f-dea37c4d75a2",
+      "hard_stop_price": 19.94,
+      "entry_price_actual": 22.16
     },
     "PAYS": {
       "shares": 424,
@@ -97,7 +115,10 @@
       "is_fallback": false,
       "phase": 1,
       "high_water_mark": 14.46,
-      "order_id": "f309d580-34d5-48f9-b0c8-9a70ed8177a4"
+      "order_id": "f309d580-34d5-48f9-b0c8-9a70ed8177a4",
+      "hard_stop_order_id": "10285d4e-2ca1-4bf6-a2ff-f79924197dd1",
+      "hard_stop_price": 13.04,
+      "entry_price_actual": 14.49
     },
     "OMER": {
       "shares": 335,
@@ -111,7 +132,10 @@
       "is_fallback": false,
       "phase": 1,
       "high_water_mark": 18.29,
-      "order_id": "62530903-6690-47b2-a951-88853df33486"
+      "order_id": "62530903-6690-47b2-a951-88853df33486",
+      "hard_stop_order_id": "40c062a0-14db-4f3f-9013-64fde748b05f",
+      "hard_stop_price": 16.19,
+      "entry_price_actual": 17.99
     },
     "AZTA": {
       "shares": 157,
@@ -125,7 +149,10 @@
       "is_fallback": false,
       "phase": 1,
       "high_water_mark": 39.06,
-      "order_id": "69c5ac6b-ec36-4c5e-8d1a-5d0e328c8a17"
+      "order_id": "69c5ac6b-ec36-4c5e-8d1a-5d0e328c8a17",
+      "hard_stop_order_id": "7a7b1e43-4bec-4fe0-9831-101f6e41a02a",
+      "hard_stop_price": 33.47,
+      "entry_price_actual": 35.99
     },
     "CDNA": {
       "shares": 70,
@@ -139,7 +166,10 @@
       "is_fallback": false,
       "phase": 1,
       "high_water_mark": 86.68,
-      "order_id": "2f198b9a-4598-4694-a2f1-711ec5752b55"
+      "order_id": "2f198b9a-4598-4694-a2f1-711ec5752b55",
+      "hard_stop_order_id": "540d2a21-0ee8-46aa-bfb1-8d9c315fc2ca",
+      "hard_stop_price": 80.71,
+      "entry_price_actual": 86.79
     }
   },
   "entry_date": "2026-11-02"
