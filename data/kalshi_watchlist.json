@@ -1747,9 +1747,35 @@
     "med_spread_c": 1.0,
     "settled": 12,
     "date": "2026-10-26"
+   },
+   {
+    "open_markets": 14,
+    "vol24h": 18743.91,
+    "med_spread_c": 6.5,
+    "settled": 23,
+    "date": "2026-11-02"
    }
   ],
-  "seeded": "launched since mid-Aug 2026 (cross-market scan)"
+  "seeded": "launched since mid-Aug 2026 (cross-market scan)",
+  "test": {
+   "date": "2026-11-02",
+   "windows": {
+    "6-48h": {
+     "markets": 23.0,
+     "fills": 5.0
+    },
+    "6h+": {
+     "markets": 23.0,
+     "fills": 23.0,
+     "fills_per_mkt": 1.0,
+     "edge_c": -9.786,
+     "per_market_c": 6.15,
+     "t": NaN,
+     "recent_c": -9.786
+    }
+   },
+   "passes": false
+  }
  },
  "KXANTHVREQ": {
   "title": "Anthropic Vercel requests share",
@@ -2125,6 +2151,13 @@
     "med_spread_c": 5.5,
     "settled": 12,
     "date": "2026-10-26"
+   },
+   {
+    "open_markets": 10,
+    "vol24h": 801.47,
+    "med_spread_c": 5.0,
+    "settled": 12,
+    "date": "2026-11-02"
    }
   ],
   "seeded": "launched since mid-Aug 2026 (cross-market scan)"
@@ -2667,6 +2700,13 @@
     "med_spread_c": 2.0,
     "settled": 1,
     "date": "2026-10-26"
+   },
+   {
+    "open_markets": 2,
+    "vol24h": 163.63,
+    "med_spread_c": 1.5,
+    "settled": 2,
+    "date": "2026-11-02"
    }
   ],
   "seeded": "launched since mid-Aug 2026 (cross-market scan)"
@@ -2715,6 +2755,13 @@
     "med_spread_c": null,
     "settled": 14,
     "date": "2026-10-26"
+   },
+   {
+    "open_markets": 0,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "settled": 14,
+    "date": "2026-11-02"
    }
   ],
   "seeded": "launched since mid-Aug 2026 (cross-market scan)"
@@ -2845,6 +2892,13 @@
     "med_spread_c": null,
     "settled": 3,
     "date": "2026-10-26"
+   },
+   {
+    "open_markets": 0,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "settled": 3,
+    "date": "2026-11-02"
    }
   ],
   "seeded": "launched since mid-Aug 2026 (cross-market scan)"
@@ -2934,6 +2988,13 @@
     "med_spread_c": 14.0,
     "settled": 7,
     "date": "2026-10-26"
+   },
+   {
+    "open_markets": 7,
+    "vol24h": 102.0,
+    "med_spread_c": 14.0,
+    "settled": 7,
+    "date": "2026-11-02"
    }
   ],
   "seeded": "launched since mid-Aug 2026 (cross-market scan)"
@@ -2951,6 +3012,13 @@
     "med_spread_c": 3.0,
     "settled": 2,
     "date": "2026-10-26"
+   },
+   {
+    "open_markets": 37,
+    "vol24h": 7191.72,
+    "med_spread_c": 4.0,
+    "settled": 2,
+    "date": "2026-11-02"
    }
   ],
   "seeded": "launched since mid-Aug 2026 (cross-market scan)"
@@ -3003,6 +3071,13 @@
     "vol24h": 175.0,
     "med_spread_c": 83.0,
     "date": "2026-10-26"
+   },
+   {
+    "open_markets": 27,
+    "vol24h": 37.0,
+    "med_spread_c": 85.0,
+    "settled": 18,
+    "date": "2026-11-02"
    }
   ]
  },
@@ -3018,8 +3093,29 @@
     "vol24h": 1691.7600000000002,
     "med_spread_c": 85.0,
     "date": "2026-10-26"
+   },
+   {
+    "open_markets": 0,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "settled": 100,
+    "date": "2026-11-02"
    }
-  ]
+  ],
+  "test": {
+   "date": "2026-11-02",
+   "windows": {
+    "6-48h": {
+     "markets": 26.0,
+     "fills": 0.0
+    },
+    "6h+": {
+     "markets": 26.0,
+     "fills": 0.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXBEAVERSNOW": {
   "title": "Beaver Creek snowfall",
@@ -3033,6 +3129,13 @@
     "vol24h": 2.23,
     "med_spread_c": 15.0,
     "date": "2026-10-26"
+   },
+   {
+    "open_markets": 9,
+    "vol24h": 9.84,
+    "med_spread_c": 28.0,
+    "settled": 0,
+    "date": "2026-11-02"
    }
   ]
  },
@@ -3048,6 +3151,13 @@
     "vol24h": 379.0,
     "med_spread_c": 79.5,
     "date": "2026-10-26"
+   },
+   {
+    "open_markets": 27,
+    "vol24h": 24.01,
+    "med_spread_c": 80.5,
+    "settled": 18,
+    "date": "2026-11-02"
    }
   ]
  },
@@ -3063,6 +3173,13 @@
     "vol24h": 122.0,
     "med_spread_c": 90.0,
     "date": "2026-10-26"
+   },
+   {
+    "open_markets": 9,
+    "vol24h": 0.0,
+    "med_spread_c": 88.0,
+    "settled": 0,
+    "date": "2026-11-02"
    }
   ]
  },
@@ -3078,6 +3195,13 @@
     "vol24h": 351.37,
     "med_spread_c": 79.0,
     "date": "2026-10-26"
+   },
+   {
+    "open_markets": 9,
+    "vol24h": 0.0,
+    "med_spread_c": 65.0,
+    "settled": 0,
+    "date": "2026-11-02"
    }
   ]
  },
@@ -3093,6 +3217,13 @@
     "vol24h": 1936.4299999999998,
     "med_spread_c": 53.0,
     "date": "2026-10-26"
+   },
+   {
+    "open_markets": 27,
+    "vol24h": 40.0,
+    "med_spread_c": 91.0,
+    "settled": 18,
+    "date": "2026-11-02"
    }
   ]
  },
@@ -3108,6 +3239,13 @@
     "vol24h": 296.0,
     "med_spread_c": 56.0,
     "date": "2026-10-26"
+   },
+   {
+    "open_markets": 9,
+    "vol24h": 0.0,
+    "med_spread_c": 56.0,
+    "settled": 0,
+    "date": "2026-11-02"
    }
   ]
  },
@@ -3123,6 +3261,538 @@
     "vol24h": 0.0,
     "med_spread_c": null,
     "date": "2026-10-26"
+   },
+   {
+    "open_markets": 9,
+    "vol24h": 0.0,
+    "med_spread_c": 94.0,
+    "settled": 0,
+    "date": "2026-11-02"
+   }
+  ]
+ },
+ "KXRAINDCLL": {
+  "title": "Daily Rain - College Station",
+  "category": "Climate and Weather",
+  "frequency": "daily",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-02",
+  "checks": [
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": 98.0,
+    "date": "2026-11-02"
+   }
+  ]
+ },
+ "KXCEOBX": {
+  "title": "Blackstone CEO leaving",
+  "category": "Financials",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-02",
+  "checks": [
+   {
+    "open_markets": 3,
+    "vol24h": 0.0,
+    "med_spread_c": 8.0,
+    "date": "2026-11-02"
+   }
+  ]
+ },
+ "KXBTCABOVE95BY": {
+  "title": "Bitcoin above $95,000 by a date",
+  "category": "Crypto",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-02",
+  "checks": [
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "date": "2026-11-02"
+   }
+  ]
+ },
+ "KXRAINDDAL": {
+  "title": "Daily Rain - Dallas",
+  "category": "Climate and Weather",
+  "frequency": "daily",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-02",
+  "checks": [
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": 98.0,
+    "date": "2026-11-02"
+   }
+  ]
+ },
+ "KXCEODELL": {
+  "title": "Dell CEO leaving",
+  "category": "Financials",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-02",
+  "checks": [
+   {
+    "open_markets": 3,
+    "vol24h": 0.0,
+    "med_spread_c": 8.0,
+    "date": "2026-11-02"
+   }
+  ]
+ },
+ "KXOSSPEND": {
+  "title": "Open source share of spend",
+  "category": "Science and Technology",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-02",
+  "checks": [
+   {
+    "open_markets": 27,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "date": "2026-11-02"
+   }
+  ]
+ },
+ "KXRAINDMIA": {
+  "title": "Daily Rain - Miami",
+  "category": "Climate and Weather",
+  "frequency": "daily",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-02",
+  "checks": [
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": 98.0,
+    "date": "2026-11-02"
+   }
+  ]
+ },
+ "KXACQUANNOUNCELEGENDARY": {
+  "title": "Legendary Entertainment acquisitions",
+  "category": "Financials",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-02",
+  "checks": [
+   {
+    "open_markets": 4,
+    "vol24h": 0.0,
+    "med_spread_c": 8.0,
+    "date": "2026-11-02"
+   }
+  ]
+ },
+ "KXRAINDDET": {
+  "title": "Daily Rain - Detroit",
+  "category": "Climate and Weather",
+  "frequency": "daily",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-02",
+  "checks": [
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": 98.0,
+    "date": "2026-11-02"
+   }
+  ]
+ },
+ "KXRAINDCHI": {
+  "title": "Daily Rain - Chicago",
+  "category": "Climate and Weather",
+  "frequency": "daily",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-02",
+  "checks": [
+   {
+    "open_markets": 2,
+    "vol24h": 0.0,
+    "med_spread_c": 97.5,
+    "date": "2026-11-02"
+   }
+  ]
+ },
+ "KXRAINDPHIL": {
+  "title": "Daily Rain - Philadelphia",
+  "category": "Climate and Weather",
+  "frequency": "daily",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-02",
+  "checks": [
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": 98.0,
+    "date": "2026-11-02"
+   }
+  ]
+ },
+ "KXRAINDMKE": {
+  "title": "Daily Rain - Milwaukee",
+  "category": "Climate and Weather",
+  "frequency": "daily",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-02",
+  "checks": [
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "date": "2026-11-02"
+   }
+  ]
+ },
+ "KXRAINDLV": {
+  "title": "Daily Rain - Las Vegas",
+  "category": "Climate and Weather",
+  "frequency": "daily",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-02",
+  "checks": [
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "date": "2026-11-02"
+   }
+  ]
+ },
+ "KXBTCABOVE100BY": {
+  "title": "Bitcoin above $100,000 by a date",
+  "category": "Crypto",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-02",
+  "checks": [
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "date": "2026-11-02"
+   }
+  ]
+ },
+ "KXBTCABOVE90BY": {
+  "title": "Bitcoin above $90,000 by a date",
+  "category": "Crypto",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-02",
+  "checks": [
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "date": "2026-11-02"
+   }
+  ]
+ },
+ "KXRAINDSEA": {
+  "title": "Daily Rain - Seattle",
+  "category": "Climate and Weather",
+  "frequency": "daily",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-02",
+  "checks": [
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": 98.0,
+    "date": "2026-11-02"
+   }
+  ]
+ },
+ "KXRAINDDC": {
+  "title": "Daily Rain - Washington, DC",
+  "category": "Climate and Weather",
+  "frequency": "daily",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-02",
+  "checks": [
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "date": "2026-11-02"
+   }
+  ]
+ },
+ "KXRAINDSATX": {
+  "title": "Daily Rain - San Antonio",
+  "category": "Climate and Weather",
+  "frequency": "daily",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-02",
+  "checks": [
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": 98.0,
+    "date": "2026-11-02"
+   }
+  ]
+ },
+ "KXRAINDNOLA": {
+  "title": "Daily Rain - New Orleans",
+  "category": "Climate and Weather",
+  "frequency": "daily",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-02",
+  "checks": [
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": 98.0,
+    "date": "2026-11-02"
+   }
+  ]
+ },
+ "KXRAINDPIT": {
+  "title": "Daily Rain - Pittsburgh",
+  "category": "Climate and Weather",
+  "frequency": "daily",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-02",
+  "checks": [
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "date": "2026-11-02"
+   }
+  ]
+ },
+ "KXRAINDHOU": {
+  "title": "Daily Rain - Houston",
+  "category": "Climate and Weather",
+  "frequency": "daily",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-02",
+  "checks": [
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": 98.0,
+    "date": "2026-11-02"
+   }
+  ]
+ },
+ "KXCEOLVMH": {
+  "title": "LVMH CEO leaving",
+  "category": "Financials",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-02",
+  "checks": [
+   {
+    "open_markets": 3,
+    "vol24h": 0.0,
+    "med_spread_c": 8.0,
+    "date": "2026-11-02"
+   }
+  ]
+ },
+ "KXCEOCRM": {
+  "title": "Salesforce CEO leaving",
+  "category": "Financials",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-02",
+  "checks": [
+   {
+    "open_markets": 3,
+    "vol24h": 0.0,
+    "med_spread_c": 8.0,
+    "date": "2026-11-02"
+   }
+  ]
+ },
+ "KXRAINDAUS": {
+  "title": "Daily Rain - Austin",
+  "category": "Climate and Weather",
+  "frequency": "daily",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-02",
+  "checks": [
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "date": "2026-11-02"
+   }
+  ]
+ },
+ "KXCEOAVGO": {
+  "title": "Broadcom CEO leaving",
+  "category": "Financials",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-02",
+  "checks": [
+   {
+    "open_markets": 3,
+    "vol24h": 0.0,
+    "med_spread_c": 8.0,
+    "date": "2026-11-02"
+   }
+  ]
+ },
+ "KXRAINELECTION": {
+  "title": "Rain on Election Day",
+  "category": "Climate and Weather",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-02",
+  "checks": [
+   {
+    "open_markets": 49,
+    "vol24h": 18880.149999999998,
+    "med_spread_c": 11.5,
+    "date": "2026-11-02"
+   }
+  ]
+ },
+ "KXRAINDSFO": {
+  "title": "Daily Rain - San Francisco",
+  "category": "Climate and Weather",
+  "frequency": "daily",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-02",
+  "checks": [
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": 98.0,
+    "date": "2026-11-02"
+   }
+  ]
+ },
+ "KXRAINDSAN": {
+  "title": "Daily Rain - San Diego",
+  "category": "Climate and Weather",
+  "frequency": "daily",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-02",
+  "checks": [
+   {
+    "open_markets": 2,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "date": "2026-11-02"
+   }
+  ]
+ },
+ "KXBTCABOVE85BY": {
+  "title": "Bitcoin above $85,000 by a date",
+  "category": "Crypto",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-02",
+  "checks": [
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "date": "2026-11-02"
+   }
+  ]
+ },
+ "KXRAINDTPA": {
+  "title": "Daily Rain - Tampa",
+  "category": "Climate and Weather",
+  "frequency": "daily",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-02",
+  "checks": [
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": 97.0,
+    "date": "2026-11-02"
+   }
+  ]
+ },
+ "KXRAINDIND": {
+  "title": "Daily Rain - Indianapolis",
+  "category": "Climate and Weather",
+  "frequency": "daily",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-02",
+  "checks": [
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": 98.0,
+    "date": "2026-11-02"
+   }
+  ]
+ },
+ "KXCEONVDA": {
+  "title": "Nvidia CEO leaving",
+  "category": "Financials",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-02",
+  "checks": [
+   {
+    "open_markets": 3,
+    "vol24h": 0.0,
+    "med_spread_c": 8.0,
+    "date": "2026-11-02"
+   }
+  ]
+ },
+ "KXRAINDBOS": {
+  "title": "Daily Rain - Boston",
+  "category": "Climate and Weather",
+  "frequency": "daily",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-02",
+  "checks": [
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": 98.0,
+    "date": "2026-11-02"
+   }
+  ]
+ },
+ "KXBTCABOVEBY": {
+  "title": "Bitcoin above a threshold by a date",
+  "category": "Crypto",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-02",
+  "checks": [
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "date": "2026-11-02"
+   }
+  ]
+ },
+ "KXCEOBLK": {
+  "title": "BlackRock CEO leaving",
+  "category": "Financials",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-02",
+  "checks": [
+   {
+    "open_markets": 3,
+    "vol24h": 0.0,
+    "med_spread_c": 8.0,
+    "date": "2026-11-02"
    }
   ]
  }
