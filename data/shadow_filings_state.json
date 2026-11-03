@@ -1,5 +1,5 @@
 {
- "since": "2026-11-02T16:52:40-05:00",
+ "since": "2026-11-02T17:29:00-05:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -1632,7 +1632,7 @@
    "event_type": "routine",
    "summary": "Q3 2026 earnings announcement with typical regulatory disclosures and earnings call notice.",
    "entry_date": "2026-10-23",
-   "entry": 49.84
+   "entry": 49.67
   },
   {
    "book": "short_bad_news",
@@ -3640,6 +3640,36 @@
    "decided": "2026-11-02T16:58:06.360532-05:00",
    "event_type": "exec_appointment",
    "summary": "Amended employment agreements with CEO and three COOs; enhanced change-of-control severance packages.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "AGPU",
+   "accession": "0001171843-26-007036",
+   "decided": "2026-11-03T03:12:11.731723-05:00",
+   "event_type": "exec_departure",
+   "summary": "Three directors including Chairman resigned; CEO appointed Chair; board restructuring post-divestiture.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "BWEN",
+   "accession": "0001437749-26-034471",
+   "decided": "2026-11-03T03:12:14.587001-05:00",
+   "event_type": "acquisition",
+   "summary": "Acquired MCM precision metal components manufacturer for $25.5M including earn-out, financed via debt.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "PODC",
+   "accession": "0001213900-26-114996",
+   "decided": "2026-11-03T03:12:16.658173-05:00",
+   "event_type": "exec_departure",
+   "summary": "Board director Ramin Arani resigns for personal reasons; vacates audit, compensation, nominating committees.",
    "entry_date": null,
    "entry": null
   }
