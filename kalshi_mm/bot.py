@@ -193,6 +193,11 @@ def watchdog_ping():
         pass
 
 
+QUIET_FULL = E("QUIET_FULL", "yes").lower() == "yes"   # Nov 4: the window pulls ALL quotes, reducing ones too.
+# kmm study, clean test Oct 27-Nov 3: the position-REDUCING quotes left up in :45-:59 were swept at -37.5c/contract
+# (:45-:50, 108 contracts, 60-min markout -29c) -- the same informed sweeps the window was built to avoid.
+
+
 def quiet_now(minute):
     return QUIET is not None and QUIET[0] <= minute <= QUIET[1]
 
@@ -656,8 +661,8 @@ class Bot:
             want = targets(y, n, pos.get(tk, 0.0), hours.get(tk, -1))
             if FAV_MIN > 0:
                 want = favourite_only(want, pos.get(tk, 0.0))
-            if quiet:                                          # observation window: only position-reducing quotes
-                want = {sd: px for sd, px in want.items() if not adds_exposure(sd, pos.get(tk, 0.0))}
+            if quiet:                                          # observation window: no quotes at all (QUIET_FULL)
+                want = {} if QUIET_FULL else {sd: px for sd, px in want.items() if not adds_exposure(sd, pos.get(tk, 0.0))}
             ev = event_of(tk)
             cap = EVENT_CAP_NEW if tk.split("-")[0] in NEW_SERIES else EVENT_CAP
             if live and ev_held.get(ev, 0.0) + (1 if TOPUP else SIZE) > cap:     # event full: only reduce it
