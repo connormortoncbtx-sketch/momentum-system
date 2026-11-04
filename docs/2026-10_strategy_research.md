@@ -2873,3 +2873,31 @@ This rule is applied at each weekly review from Nov 4, using the dashboard's Edg
 | Per-city-day by-day band entirely below zero | Pause and review |
 
 Measurement methods are frozen until the January review. They change only to fix an actual bug, and any such change is stated plainly. Context: Oct 31, the shrunk per-contract figure was +3.2¢, and per city-day +11¢ ±8.5 by day.
+
+## Nov 4, 2026 Kalshi review (frozen rule applied)
+Clean test, Oct 27 – Nov 3: 88 city-days, 9 market days. Per city-day +7.7¢ ±4.4 by day (clears zero). Per contract +1.4¢ ±4.5. **Shrunk per contract +1.9¢ (51% live) → HOLD the city-day cap at 30.**
+
+**Leak found and fixed (`kmm study`):** the quiet window had left position-reducing quotes up.
+
+| Window | Contracts | Edge per contract | 60-min markout |
+|---|---|---|---|
+| :45–:50 | 108 | −37.5¢ | −29¢ |
+| :51–:59 | 125 | +10.3¢ | |
+
+Net about −$28 over the 9 days. From Nov 4, `QUIET_FULL=yes` pulls all quotes in :45–:59.
+
+**DEPTH:**
+
+| Contracts in | 0–9 | 10–19 | 20–29 | 30–39 | 40+ |
+|---|---|---|---|---|---|
+| Edge per contract | +2.1¢ | +3.1¢ | −2.0¢ (±8.5) | +4.1¢ | +4.4¢ |
+
+No decay, so no lower cap.
+
+**BURST:** after 2 or more fills in a city-day within 10 minutes, −3.4¢ / −9.5¢ (356 contracts; halves disagree). Build a pause option and decide on Nov 11.
+
+**Cities:** none pruned. ATL is +4.9¢ and BOS +4.4¢ in the clean test; all cities are within noise at 7–8 city-days each.
+
+**Incentives:** zero (below the $1 payout minimum at our size); dropped.
+
+**Next review:** Nov 11.
