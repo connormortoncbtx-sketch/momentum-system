@@ -153,22 +153,27 @@ def edge_card():
         return f"<div class='card'><h2>Edge now</h2><div class='mut'>{msg}</div></div>"
     import edge_now as EN
     body = []
+    sig = lambda m, b: "pos" if m - b > 0 else ("neg" if m + b < 0 else "")
     for lab, o in d["rows"]:
         if not o:
-            body.append(f"<tr><td>{html.escape(lab)}</td><td colspan=6 class='mut'>too few city-days</td></tr>"); continue
+            body.append(f"<div style='margin:10px 0'><b>{html.escape(lab)}</b><div class='mut'>too few city-days</div></div>"); continue
         (m1, _, _), (_, b1d, D), (m2, _, _), (_, b2d, _) = o["cd"], o["cd_day"], o["ct"], o["ct_day"]
         sm, sb, wt = o["shrunk"]
-        sig = lambda m, b: "pos" if m - b > 0 else ("neg" if m + b < 0 else "")
-        body.append(f"<tr><td>{html.escape(lab)}</td><td>{o['G']}</td><td>{D}</td>"
-                    f"<td class='{sig(m1, b1d)}'>{m1:+.1f}c ±{b1d:.1f}</td><td class='{sig(m2, b2d)}'>{m2:+.1f}c ±{b2d:.1f}</td>"
-                    f"<td>{sm:+.1f}c ±{sb:.1f} <span class='mut'>({wt:.0%} live)</span></td></tr>")
+        # stacked, not a wide table: it has to read on a phone without scrolling sideways (Nov 4)
+        body.append(f"<div style='margin:12px 0;padding-top:8px;border-top:1px solid var(--line)'><b>{html.escape(lab)}</b>"
+                    f"<div class='mut'>{o['G']} city-days on {D} market days</div>"
+                    f"<div class='grid' style='margin-top:6px'>"
+                    f"<div><div class='mut'>Shrunk per contract (the ladder number)</div><div class='big' style='font-size:22px'>"
+                    f"{sm:+.1f}c</div><div class='mut'>±{sb:.1f} · {wt:.0%} live data</div></div>"
+                    f"<div><div class='mut'>Per city-day</div><div class='big {sig(m1, b1d)}' style='font-size:22px'>{m1:+.1f}c</div>"
+                    f"<div class='mut'>±{b1d:.1f} by day</div></div>"
+                    f"<div><div class='mut'>Per contract</div><div class='big {sig(m2, b2d)}' style='font-size:22px'>{m2:+.1f}c</div>"
+                    f"<div class='mut'>±{b2d:.1f} by day</div></div></div></div>")
     age = (time.time() - _edge["t"]) / 60
     return (f"<div class='card'><h2>Edge now -- includes {d['prov']} decided-but-unpaid markets ({d['pdays']} city-days); "
-            f"updated {age:.0f} min ago</h2><div class='scroll'><table><tr><th>View</th><th>City-days</th><th>Days</th>"
-            f"<th>Per city-day</th><th>Per contract</th><th>Shrunk per contract</th></tr>{''.join(body)}</table></div>"
+            f"updated {age:.0f} min ago</h2>{''.join(body)}"
             f"<div class='mut'>± = 95% band clustered by MARKET DAY (cities on one date move together). Green/red = the band "
-            f"clears zero. Shrunk = research prior {EN.PRIOR_C:+.1f}c blended with live data -- the cap-ladder number "
-            f"(step up at >= +2c).</div></div>")
+            f"clears zero. Ladder rule (frozen Oct 31): shrunk >= +2c step up · +1 to +2c hold · < +1c step back.</div></div>")
 
 
 def history_cards():
