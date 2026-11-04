@@ -1,5 +1,5 @@
 {
- "since": "2026-11-03T14:15:39-05:00",
+ "since": "2026-11-03T17:27:58-05:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -3831,6 +3831,226 @@
    "decided": "2026-11-03T14:48:05.121619-05:00",
    "event_type": "divestiture",
    "summary": "Divested Life Sciences & Healthcare segment; mixed Q3 results with flat organic growth but improved ACV.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "SWRD",
+   "accession": "0001663577-26-000333",
+   "decided": "2026-11-04T02:43:42.333598-05:00",
+   "event_type": "debt_financing",
+   "summary": "Company raises $5.5M convertible debt with aggressive terms; material dilution and operational constraints ahead.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ZSQR",
+   "accession": "0001185185-26-005151",
+   "decided": "2026-11-04T02:43:45.387484-05:00",
+   "event_type": "exec_appointment",
+   "summary": "CTO Jeffery Harris elected director; fills vacancy created by May 2026 departure; related party conflicts with portfolio companies.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ENVX",
+   "accession": "0001828318-26-000065",
+   "decided": "2026-11-04T02:43:51.662142-05:00",
+   "event_type": "exec_departure",
+   "summary": "Chief Legal Officer departed effective October 30, 2026; signed by interim CEO.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "RWT",
+   "accession": "0001104659-26-122170",
+   "decided": "2026-11-04T02:43:54.563979-05:00",
+   "event_type": "strategic_review",
+   "summary": "Company plans C-corp conversion, revoking REIT status Q1 2027; repurchases trust preferred securities at discount.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "AHRT",
+   "accession": "0001569187-26-000166",
+   "decided": "2026-11-04T02:44:01.216651-05:00",
+   "event_type": "debt_financing",
+   "summary": "Company refinances $935M debt with new $650M credit facility, extending maturities to 2030-2033.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "XMAX",
+   "accession": "0001493152-26-049815",
+   "decided": "2026-11-04T02:44:06.074354-05:00",
+   "event_type": "prelim_results_bad",
+   "summary": "Q3 revenue fell 34% YoY to $6.42M; expected net loss $12-13M despite improved margins.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ATNI",
+   "accession": "0001628280-26-069621",
+   "decided": "2026-11-04T02:44:08.508458-05:00",
+   "event_type": "exec_departure",
+   "summary": "Senior VP General Counsel Mary Mabey departure extended to December 31, 2026 with $100k severance.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "JELD",
+   "accession": "0001674335-26-000138",
+   "decided": "2026-11-04T02:44:19.954434-05:00",
+   "event_type": "prelim_results_good",
+   "summary": "Q3 2026 results show EBITDA improvement and EPS recovery despite revenue decline and weak demand.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "WWW",
+   "accession": "0001628280-26-069594",
+   "decided": "2026-11-04T02:44:22.204153-05:00",
+   "event_type": "exec_departure",
+   "summary": "President of Active Group departed; separation agreement with severance and non-compete clause.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "WYFI",
+   "accession": "0001213900-26-115575",
+   "decided": "2026-11-04T02:44:33.299229-05:00",
+   "event_type": "acquisition",
+   "summary": "Completed $60M acquisition of two NC data center properties; previously announced, now closed.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CMTG",
+   "accession": "0001193125-26-445433",
+   "decided": "2026-11-04T02:44:38.484999-05:00",
+   "event_type": "prelim_results_bad",
+   "summary": "Q3 2026 net loss $14.3M; $1.1B watchlist loans; heavy CECL reserves.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CHCT",
+   "accession": "0001631569-26-000047",
+   "decided": "2026-11-04T02:44:51.527002-05:00",
+   "event_type": "routine",
+   "summary": "Q3 2026 earnings announced: $0.09 EPS, FFO $0.54/share, occupancy 90.1%, dividend maintained.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "RWT",
+   "accession": "0000930236-26-000030",
+   "decided": "2026-11-04T02:44:56.294380-05:00",
+   "event_type": "routine",
+   "summary": "Q3 2026 earnings: GAAP book value down 4.9%, announced planned C-corp transition for 2027.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "BNC",
+   "accession": "0001482541-26-000072",
+   "decided": "2026-11-04T02:44:58.789029-05:00",
+   "event_type": "exec_appointment",
+   "summary": "Anthony Scaramucci appointed to board; brings digital asset institutional expertise.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "USNA",
+   "accession": "0000896264-26-000064",
+   "decided": "2026-11-04T02:45:06.078806-05:00",
+   "event_type": "prelim_results_bad",
+   "summary": "Q3 2026 results mixed; sales down 4% YoY, net loss $5.6M; guidance cut to $900M.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "QDEL",
+   "accession": "0001906324-26-000040",
+   "decided": "2026-11-04T02:45:17.706026-05:00",
+   "event_type": "restructuring",
+   "summary": "Restructuring program targeting $80M annual savings; COO departure; two exec promotions with significant retention packages.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "NVTS",
+   "accession": "0001628280-26-069489",
+   "decided": "2026-11-04T02:45:21.148267-05:00",
+   "event_type": "prelim_results_good",
+   "summary": "Q3 revenue $14M (+33% seq, +38% YoY); gross margin expansion; 40% AI infrastructure target",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "PROF",
+   "accession": "0001104659-26-121980",
+   "decided": "2026-11-04T02:45:30.429021-05:00",
+   "event_type": "partnership",
+   "summary": "Partnership with Cook Medical to distribute TULSA-PRO system in US via iMRI suite offering",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "TSLX",
+   "accession": "0001193125-26-445319",
+   "decided": "2026-11-04T02:45:37.198204-05:00",
+   "event_type": "prelim_results_good",
+   "summary": "Q3 2026 earnings with stable NII, dividend maintained, but NAV down and leverage increased.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "HZO",
+   "accession": "0001193125-26-445327",
+   "decided": "2026-11-04T02:45:40.235930-05:00",
+   "event_type": "acquisition",
+   "summary": "Merger with Blackstone-backed Safe Harbor Marinas cleared regulatory approval; shareholder vote pending November 11.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "METC",
+   "accession": "0001104659-26-121974",
+   "decided": "2026-11-04T02:45:47.676408-05:00",
+   "event_type": "routine",
+   "summary": "Q3 2026 earnings, $30M jury verdict, dividend declared, 2027 guidance pending.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "LITS",
+   "accession": "0001193125-26-445292",
+   "decided": "2026-11-04T02:45:54.386827-05:00",
+   "event_type": "dilution_other",
+   "summary": "Green Dragon exercised 517,509 warrants for 517,465 shares via cashless exercise.",
    "entry_date": null,
    "entry": null
   }
