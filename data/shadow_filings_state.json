@@ -1,5 +1,5 @@
 {
- "since": "2026-11-03T17:27:58-05:00",
+ "since": "2026-11-04T14:17:12-05:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -1172,17 +1172,6 @@
    "entry": 3.76
   },
   {
-   "book": "long_contract_div",
-   "symbol": "CLNN",
-   "accession": "0001437749-26-032960",
-   "decided": "2026-10-20T13:30:38.574140-04:00",
-   "event_type": "contract_win",
-   "summary": "Year 4 of $45.1M NIH grant awarded; $7.2M subaward from NYU for ALS therapy program.",
-   "entry_date": "2026-10-21",
-   "entry": 3.76,
-   "vol60": 0.8475136069226435
-  },
-  {
    "book": "short_bad_news",
    "symbol": "SRZN",
    "accession": "0001193125-26-426828",
@@ -1281,17 +1270,6 @@
    "summary": "25-year Master Energy Purchase Agreement with Great Plains Development Authority for 150 MW initial phase targeting September 2028 commercial operation.",
    "entry_date": "2026-10-21",
    "entry": 2.91
-  },
-  {
-   "book": "long_contract_div",
-   "symbol": "FISN",
-   "accession": "0001104659-26-117389",
-   "decided": "2026-10-21T02:16:10.466000-04:00",
-   "event_type": "contract_win",
-   "summary": "25-year Master Energy Purchase Agreement with Great Plains Development Authority for 150 MW initial phase targeting September 2028 commercial operation.",
-   "entry_date": "2026-10-21",
-   "entry": 2.91,
-   "vol60": 1.0206579658168644
   },
   {
    "book": "short_bad_news",
@@ -3681,8 +3659,8 @@
    "decided": "2026-11-03T14:46:59.023605-05:00",
    "event_type": "debt_financing",
    "summary": "Amended revolving credit agreement with Wells Fargo; $30M base facility through 2030.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 78.97
   },
   {
    "book": "short_bad_news",
@@ -3691,8 +3669,8 @@
    "decided": "2026-11-03T14:47:02.187482-05:00",
    "event_type": "routine",
    "summary": "Q3 2026 earnings call: small net loss, capital raise $14M, significant shareholder dilution event.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 6.12
   },
   {
    "book": "short_bad_news",
@@ -3701,8 +3679,8 @@
    "decided": "2026-11-03T14:47:05.272479-05:00",
    "event_type": "debt_financing",
    "summary": "Refinanced $7.5M Woodforest facility with $25M Amerisource revolving credit, higher rates.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 4.08
   },
   {
    "book": "short_bad_news",
@@ -3711,8 +3689,8 @@
    "decided": "2026-11-03T14:47:07.944426-05:00",
    "event_type": "regulatory_setback",
    "summary": "Company withdraws BNC bank acquisition regulatory applications; reaffirms 2026 guidance.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 6.06
   },
   {
    "book": "short_bad_news",
@@ -3721,8 +3699,8 @@
    "decided": "2026-11-03T14:47:10.508225-05:00",
    "event_type": "strategic_review",
    "summary": "Online brokerage addresses stock volatility; reaffirms AI R&D expansion plans in Silicon Valley.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 10.8
   },
   {
    "book": "short_bad_news",
@@ -3731,8 +3709,8 @@
    "decided": "2026-11-03T14:47:13.529128-05:00",
    "event_type": "prelim_results_good",
    "summary": "Q3 2026: Strong revenue/earnings growth but guidance narrowed; affordability headwinds persist.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 46.11
   },
   {
    "book": "short_bad_news",
@@ -3741,8 +3719,8 @@
    "decided": "2026-11-03T14:47:19.307921-05:00",
    "event_type": "prelim_results_bad",
    "summary": "Q3 2026 net loss $11M; EBITDA $20M; sales $146M. Turnaround completed; distribution maintained at $1.79/unit.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 117.75
   },
   {
    "book": "short_bad_news",
@@ -3751,8 +3729,8 @@
    "decided": "2026-11-03T14:47:21.714564-05:00",
    "event_type": "regulatory_approval",
    "summary": "HSR antitrust waiting period expired November 2, 2026 for Western Union acquisition. Pending California DFPI approval.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 8.6
   },
   {
    "book": "short_bad_news",
@@ -3761,8 +3739,8 @@
    "decided": "2026-11-03T14:47:29.148753-05:00",
    "event_type": "restructuring",
    "summary": "Company winding down butter product line; $8-13M inventory obsolescence charges by FY end.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 10.15
   },
   {
    "book": "short_bad_news",
@@ -3771,8 +3749,8 @@
    "decided": "2026-11-03T14:47:32.025756-05:00",
    "event_type": "contract_loss",
    "summary": "SPAC terminates merger agreement with HZJL; continues seeking business combination target.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 11.2
   },
   {
    "book": "short_bad_news",
@@ -3781,8 +3759,8 @@
    "decided": "2026-11-03T14:47:37.693112-05:00",
    "event_type": "routine",
    "summary": "Q3 2026 results: flat revenue growth, negative GAAP margin, supply pressures persist despite AI opportunities.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 5.01
   },
   {
    "book": "short_bad_news",
@@ -3791,8 +3769,8 @@
    "decided": "2026-11-03T14:47:40.118521-05:00",
    "event_type": "routine",
    "summary": "Company postpones Q3 2026 earnings; reviewing ERP implementation cost accounting treatment.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 13.14
   },
   {
    "book": "short_bad_news",
@@ -3801,8 +3779,8 @@
    "decided": "2026-11-03T14:47:50.825036-05:00",
    "event_type": "guidance_raise",
    "summary": "Q2 FY27 results beat expectations; guidance raised on strong Kito Crosby integration progress.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 18.41
   },
   {
    "book": "short_bad_news",
@@ -3811,8 +3789,8 @@
    "decided": "2026-11-03T14:47:54.215154-05:00",
    "event_type": "restatement",
    "summary": "Material restatement of three prior fiscal years due to fixed asset accounting errors; internal control weaknesses persist.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 10.98
   },
   {
    "book": "short_bad_news",
@@ -3821,8 +3799,8 @@
    "decided": "2026-11-03T14:48:02.349797-05:00",
    "event_type": "debt_financing",
    "summary": "Refinanced $43.4M Ritz-Carlton Lake Tahoe debt; $60M at SOFR+265bp, extends maturity to 2029+2yr options.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 1.51
   },
   {
    "book": "short_bad_news",
@@ -3831,8 +3809,8 @@
    "decided": "2026-11-03T14:48:05.121619-05:00",
    "event_type": "divestiture",
    "summary": "Divested Life Sciences & Healthcare segment; mixed Q3 results with flat organic growth but improved ACV.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 2.05
   },
   {
    "book": "short_bad_news",
@@ -3841,8 +3819,8 @@
    "decided": "2026-11-04T02:43:42.333598-05:00",
    "event_type": "debt_financing",
    "summary": "Company raises $5.5M convertible debt with aggressive terms; material dilution and operational constraints ahead.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 3.09
   },
   {
    "book": "short_bad_news",
@@ -3851,8 +3829,8 @@
    "decided": "2026-11-04T02:43:45.387484-05:00",
    "event_type": "exec_appointment",
    "summary": "CTO Jeffery Harris elected director; fills vacancy created by May 2026 departure; related party conflicts with portfolio companies.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 3.74
   },
   {
    "book": "short_bad_news",
@@ -3861,8 +3839,8 @@
    "decided": "2026-11-04T02:43:51.662142-05:00",
    "event_type": "exec_departure",
    "summary": "Chief Legal Officer departed effective October 30, 2026; signed by interim CEO.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 2.92
   },
   {
    "book": "short_bad_news",
@@ -3871,8 +3849,8 @@
    "decided": "2026-11-04T02:43:54.563979-05:00",
    "event_type": "strategic_review",
    "summary": "Company plans C-corp conversion, revoking REIT status Q1 2027; repurchases trust preferred securities at discount.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 2.75
   },
   {
    "book": "short_bad_news",
@@ -3881,8 +3859,8 @@
    "decided": "2026-11-04T02:44:01.216651-05:00",
    "event_type": "debt_financing",
    "summary": "Company refinances $935M debt with new $650M credit facility, extending maturities to 2030-2033.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 6.7
   },
   {
    "book": "short_bad_news",
@@ -3891,8 +3869,8 @@
    "decided": "2026-11-04T02:44:06.074354-05:00",
    "event_type": "prelim_results_bad",
    "summary": "Q3 revenue fell 34% YoY to $6.42M; expected net loss $12-13M despite improved margins.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 4.19
   },
   {
    "book": "short_bad_news",
@@ -3901,8 +3879,8 @@
    "decided": "2026-11-04T02:44:08.508458-05:00",
    "event_type": "exec_departure",
    "summary": "Senior VP General Counsel Mary Mabey departure extended to December 31, 2026 with $100k severance.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 25.95
   },
   {
    "book": "short_bad_news",
@@ -3911,8 +3889,8 @@
    "decided": "2026-11-04T02:44:19.954434-05:00",
    "event_type": "prelim_results_good",
    "summary": "Q3 2026 results show EBITDA improvement and EPS recovery despite revenue decline and weak demand.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 1.43
   },
   {
    "book": "short_bad_news",
@@ -3921,8 +3899,8 @@
    "decided": "2026-11-04T02:44:22.204153-05:00",
    "event_type": "exec_departure",
    "summary": "President of Active Group departed; separation agreement with severance and non-compete clause.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 22.4
   },
   {
    "book": "short_bad_news",
@@ -3931,8 +3909,8 @@
    "decided": "2026-11-04T02:44:33.299229-05:00",
    "event_type": "acquisition",
    "summary": "Completed $60M acquisition of two NC data center properties; previously announced, now closed.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 9.97
   },
   {
    "book": "short_bad_news",
@@ -3941,8 +3919,8 @@
    "decided": "2026-11-04T02:44:38.484999-05:00",
    "event_type": "prelim_results_bad",
    "summary": "Q3 2026 net loss $14.3M; $1.1B watchlist loans; heavy CECL reserves.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 1.52
   },
   {
    "book": "short_bad_news",
@@ -3951,8 +3929,8 @@
    "decided": "2026-11-04T02:44:51.527002-05:00",
    "event_type": "routine",
    "summary": "Q3 2026 earnings announced: $0.09 EPS, FFO $0.54/share, occupancy 90.1%, dividend maintained.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 13.78
   },
   {
    "book": "short_bad_news",
@@ -3961,8 +3939,8 @@
    "decided": "2026-11-04T02:44:56.294380-05:00",
    "event_type": "routine",
    "summary": "Q3 2026 earnings: GAAP book value down 4.9%, announced planned C-corp transition for 2027.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 2.75
   },
   {
    "book": "short_bad_news",
@@ -3971,8 +3949,8 @@
    "decided": "2026-11-04T02:44:58.789029-05:00",
    "event_type": "exec_appointment",
    "summary": "Anthony Scaramucci appointed to board; brings digital asset institutional expertise.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 4.88
   },
   {
    "book": "short_bad_news",
@@ -3981,8 +3959,8 @@
    "decided": "2026-11-04T02:45:06.078806-05:00",
    "event_type": "prelim_results_bad",
    "summary": "Q3 2026 results mixed; sales down 4% YoY, net loss $5.6M; guidance cut to $900M.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 12.69
   },
   {
    "book": "short_bad_news",
@@ -3991,8 +3969,8 @@
    "decided": "2026-11-04T02:45:17.706026-05:00",
    "event_type": "restructuring",
    "summary": "Restructuring program targeting $80M annual savings; COO departure; two exec promotions with significant retention packages.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 14.61
   },
   {
    "book": "short_bad_news",
@@ -4001,8 +3979,8 @@
    "decided": "2026-11-04T02:45:21.148267-05:00",
    "event_type": "prelim_results_good",
    "summary": "Q3 revenue $14M (+33% seq, +38% YoY); gross margin expansion; 40% AI infrastructure target",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 9.365
   },
   {
    "book": "short_bad_news",
@@ -4011,8 +3989,8 @@
    "decided": "2026-11-04T02:45:30.429021-05:00",
    "event_type": "partnership",
    "summary": "Partnership with Cook Medical to distribute TULSA-PRO system in US via iMRI suite offering",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 7.05
   },
   {
    "book": "short_bad_news",
@@ -4021,8 +3999,8 @@
    "decided": "2026-11-04T02:45:37.198204-05:00",
    "event_type": "prelim_results_good",
    "summary": "Q3 2026 earnings with stable NII, dividend maintained, but NAV down and leverage increased.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 17.68
   },
   {
    "book": "short_bad_news",
@@ -4031,8 +4009,8 @@
    "decided": "2026-11-04T02:45:40.235930-05:00",
    "event_type": "acquisition",
    "summary": "Merger with Blackstone-backed Safe Harbor Marinas cleared regulatory approval; shareholder vote pending November 11.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 52.85
   },
   {
    "book": "short_bad_news",
@@ -4041,8 +4019,8 @@
    "decided": "2026-11-04T02:45:47.676408-05:00",
    "event_type": "routine",
    "summary": "Q3 2026 earnings, $30M jury verdict, dividend declared, 2027 guidance pending.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-04",
+   "entry": 6.62
   },
   {
    "book": "short_bad_news",
@@ -4051,14 +4029,87 @@
    "decided": "2026-11-04T02:45:54.386827-05:00",
    "event_type": "dilution_other",
    "summary": "Green Dragon exercised 517,509 warrants for 517,465 shares via cashless exercise.",
+   "entry_date": "2026-11-04",
+   "entry": 1.05
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "LYEL",
+   "accession": "0001193125-26-446317",
+   "decided": "2026-11-04T15:00:33.689331-05:00",
+   "event_type": "equity_financing",
+   "summary": "Private placement of 7.4M shares for $80M proceeds; substantial dilution for pre-revenue company.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "STIM",
+   "accession": "0001193125-26-446239",
+   "decided": "2026-11-04T15:00:59.216390-05:00",
+   "event_type": "routine",
+   "summary": "Q3 2026 earnings announcement; routine quarterly results disclosure with investor presentation.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "NUCL",
+   "accession": "0001104659-26-122371",
+   "decided": "2026-11-04T15:01:02.604925-05:00",
+   "event_type": "acquisition",
+   "summary": "Binding LOI to acquire Canadian uranium company Noble Plains for CAD $0.125/share, 92% premium.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ADNT",
+   "accession": "0001670541-26-000115",
+   "decided": "2026-11-04T15:01:22.303900-05:00",
+   "event_type": "strategic_review",
+   "summary": "Tax Benefits Preservation Plan (poison pill) adopted; protects NOLs from ownership changes.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ASIX",
+   "accession": "0001673985-26-000056",
+   "decided": "2026-11-04T15:01:25.428307-05:00",
+   "event_type": "prelim_results_bad",
+   "summary": "Q3 2026: Sales up 15% but EPS swung negative; EBITDA fell 41% on production cuts.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "LKSP",
+   "accession": "0001477932-26-006625",
+   "decided": "2026-11-04T15:01:31.205708-05:00",
+   "event_type": "acquisition",
+   "summary": "Amended SPAC merger agreement with OMG; $300M closing + $700M milestones at $10/share",
    "entry_date": null,
    "entry": null
   }
  ],
  "div": {
-  "nav": 97.12515828322414,
-  "closed": [],
-  "last_date": "2026-11-03",
+  "nav": 100.85358767268433,
+  "closed": [
+   {
+    "symbol": "CLNN",
+    "entry_date": "2026-10-21",
+    "exit_date": "2026-11-04",
+    "vol60": 0.8475136069226435
+   },
+   {
+    "symbol": "FISN",
+    "entry_date": "2026-10-21",
+    "exit_date": "2026-11-04",
+    "vol60": 1.0206579658168644
+   }
+  ],
+  "last_date": "2026-11-04",
   "history": {
    "2026-10-15": 100.3592,
    "2026-10-16": 98.6604,
@@ -4073,7 +4124,8 @@
    "2026-10-29": 103.0634,
    "2026-10-30": 98.6902,
    "2026-11-02": 95.5824,
-   "2026-11-03": 97.1252
+   "2026-11-03": 97.1252,
+   "2026-11-04": 100.8536
   }
  }
 }
