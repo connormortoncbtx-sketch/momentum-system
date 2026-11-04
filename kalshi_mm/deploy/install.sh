@@ -106,6 +106,29 @@ User=kmm
 EnvironmentFile=$ETC/env
 ExecStart=/home/kmm/venv/bin/python $APP/kalshi_mm/report.py
 EOF
+cat > /etc/systemd/system/kmm-daily.service <<EOF
+[Unit]
+Description=Kalshi bot daily health check + study, pushed to the private report repo for Claude's daily review
+[Service]
+Type=oneshot
+User=kmm
+WorkingDirectory=$DATA
+EnvironmentFile=$ETC/env
+ExecStart=/home/kmm/venv/bin/python $APP/kalshi_mm/daily_report.py
+MemoryMax=400M
+CPUWeight=30
+Nice=10
+TimeoutStartSec=3600
+EOF
+cat > /etc/systemd/system/kmm-daily.timer <<EOF
+[Unit]
+Description=Kalshi bot daily health check (10:15 Central, after the morning settlements)
+[Timer]
+OnCalendar=*-*-* 10:15:00 America/Chicago
+Persistent=true
+[Install]
+WantedBy=timers.target
+EOF
 cat > /etc/systemd/system/kmm-dash.service <<EOF
 [Unit]
 Description=Kalshi bot read-only dashboard (127.0.0.1:8787; reach it via 'tailscale serve')
@@ -213,6 +236,26 @@ case "${1:-status}" in
     NEW=$(grep '^NEW_SERIES=' /etc/kmm/env | cut -d= -f2 | tr ',' '\n' | grep -vx "$2" | paste -sd, -)
     sed -i '/^NEW_SERIES=/d' /etc/kmm/env; [ -n "$NEW" ] && echo "NEW_SERIES=$NEW" >> /etc/kmm/env
     systemctl restart kmm; echo "$2 now trades at the normal city-day cap; bot restarted" ;;
+  report-setup)  # once: connect the daily report to Connor's PRIVATE repo (token pasted here, never shown or logged)
+    REPO="${2:-connormortoncbtx-sketch/kmm-reports}"
+    read -rsp "Paste the GitHub token for $REPO (input hidden), then Enter: " TOK; echo
+    [ -n "$TOK" ] || { echo "no token -- nothing changed"; exit 1; }
+    umask 027; printf '%s' "$TOK" > /etc/kmm/report_token; chown root:kmm /etc/kmm/report_token; chmod 640 /etc/kmm/report_token
+    HDR="Authorization: Basic $(printf 'x-access-token:%s' "$TOK" | base64 -w0)"; unset TOK
+    rm -rf /home/kmm/reports
+    if sudo -u kmm git -c "http.extraHeader=$HDR" clone -q "https://github.com/$REPO.git" /home/kmm/reports; then
+      echo "connected to $REPO -- run 'sudo kmm report-now' to send the first report"
+    else
+      echo "clone failed: check the repo name, that it has at least one file (a README), and the token's access"
+    fi ;;
+  report-now)
+    U="kmm-daily-now-$(date +%H%M%S)"
+    systemd-run --quiet --unit="$U" --collect -p User=kmm -p EnvironmentFile=/etc/kmm/env -p Nice=10 \
+      -p WorkingDirectory=/home/kmm/data /home/kmm/venv/bin/python -u /home/kmm/app/kalshi_mm/daily_report.py
+    echo "daily report running as $U (takes a few minutes; safe to disconnect)"
+    journalctl -fu "$U" -o cat --no-pager & J=$!
+    while systemctl is-active -q "$U" 2>/dev/null || systemctl is-activating -q "$U" 2>/dev/null; do sleep 2; done
+    sleep 1; kill $J 2>/dev/null ;;
   update)  # runs as its own background service, so a dropped phone/SSH session can't kill it half-way
     U="kmm-update-$(date +%H%M%S)"
     systemd-run --quiet --unit="$U" --collect -p Nice=10 bash -c "curl -fsSL https://raw.githubusercontent.com/connormortoncbtx-sketch/momentum-system/main/kalshi_mm/deploy/install.sh | bash"
@@ -223,12 +266,13 @@ case "${1:-status}" in
     sleep 1; kill $J 2>/dev/null; echo "-- update finished"
     exit ;;  # exit before bash reads past this point: the update rewrites this file
   update-log) journalctl -u "$(cat /run/kmm-last-update 2>/dev/null)" -o cat --no-pager | tail -n "${2:-60}" ;;
-  *) echo "usage: kmm status|stop|resume|logs [n]|report|positions|diagnose|lottery|sniper|windows|study|edge-now|calibrate|calibrate-log|add-series|promote-series|update|update-log" ;;
+  *) echo "usage: kmm status|stop|resume|logs [n]|report|positions|diagnose|lottery|sniper|windows|study|edge-now|calibrate|calibrate-log|add-series|promote-series|report-setup|report-now|update|update-log" ;;
 esac
 KMM
 chmod 755 /usr/local/bin/kmm
 systemctl daemon-reload
 systemctl enable -q kmm-report.timer && systemctl start kmm-report.timer
+systemctl enable -q kmm-daily.timer && systemctl start kmm-daily.timer
 systemctl enable -q kmm-lottery.timer && systemctl start kmm-lottery.timer
 systemctl enable -q kmm-dash && systemctl restart kmm-dash
 systemctl enable -q kmm-sniper && systemctl restart kmm-sniper
