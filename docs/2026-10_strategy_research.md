@@ -2901,3 +2901,23 @@ No decay, so no lower cap.
 **Incentives:** zero (below the $1 payout minimum at our size); dropped.
 
 **Next review:** Nov 11.
+
+## Does market activity say when/where to deploy? (Nov 4, 2026, `research/kalshi/activity.py`)
+Public tape, about 880 recent city-days (80 per series, Aug–Nov) in the bot's 11 cities, using the backtest rule (as `depth_curve`). Bands are 95%, clustered by market day.
+
+**1. Busy vs quiet: NO SIGNAL.** City-days are split by contracts traded in the 3 hours before the fill (causal), in thirds:
+
+| Third | Edge per contract | 1st / 2nd half |
+|---|---|---|
+| Quiet | +2.6¢ ±2.3 | +0.7 / +4.5 |
+| Middle | +1.6¢ ±2.2 | +0.2 / +2.9 |
+| Busy | +2.8¢ ±2.6 | +1.6 / +4.1 |
+
+By whole-day volume (hindsight) it's +2.8 / +2.4 / +1.9. There is no activity-based cap rule to be had. The overall backtest edge here is about +2.3¢, consistent with research.
+
+**2. By hour (Central):** the edge is thinnest around midday, when most volume trades. From 11:00 to 14:00 it is +0.2 to +1.6¢ on 6–9% of volume per hour; overnight and evening it is +4 to +6¢ on 1–3% of volume per hour. Every hour's band is ±3–5¢ and the halves disagree. It's a hint only; not acted on.
+
+**3. Capacity trend** (median contracts per city-day by month):
+- Most of the older cities traded 2–3× more in Dec–Apr than in summer and fall. For example, CHI went from about 210k (January) to 84k (October), and NY from 380k to 173k.
+- The 2026 "T" series are shrinking: BOS 65k → 17k, LV 50k → 18k, ATL 77k → 50k.
+- So capacity is seasonal, and winter is the larger market. The cap ladder has more room Dec–Mar if the edge holds; BOS, LV and PHIL are the thinnest markets.
