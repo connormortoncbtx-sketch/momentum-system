@@ -1,5 +1,5 @@
 {
- "since": "2026-11-04T14:17:12-05:00",
+ "since": "2026-11-04T17:30:39-05:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -39,7 +39,7 @@
    "event_type": "buyback_dividend",
    "summary": "Board authorizes $20M stock repurchase program effective post-acquisition of Southern Realty Trust.",
    "entry_date": "2026-10-14",
-   "entry": 6.4
+   "entry": 6.317
   },
   {
    "book": "short_bad_news",
@@ -779,7 +779,7 @@
    "event_type": "exec_departure",
    "summary": "Executive Vice President and Head of Retail Banking terminated; mutual separation agreement reached.",
    "entry_date": "2026-10-19",
-   "entry": 26.24
+   "entry": 26.02
   },
   {
    "book": "short_bad_news",
@@ -1911,7 +1911,7 @@
    "event_type": "acquisition",
    "summary": "Shareholder approval obtained for merger with SRT; ~8.5M shares issuance; closing expected November 5.",
    "entry_date": "2026-10-26",
-   "entry": 6.41
+   "entry": 6.327
   },
   {
    "book": "short_bad_news",
@@ -4089,6 +4089,216 @@
    "decided": "2026-11-04T15:01:31.205708-05:00",
    "event_type": "acquisition",
    "summary": "Amended SPAC merger agreement with OMG; $300M closing + $700M milestones at $10/share",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "MDCX",
+   "accession": "0001062993-26-005748",
+   "decided": "2026-11-05T03:08:22.829423-05:00",
+   "event_type": "strategic_review",
+   "summary": "Medicus announces non-binding LOI for SkinJect SPAC business combination; completion uncertain, expected H1 2027",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "SRI",
+   "accession": "0001043337-26-000091",
+   "decided": "2026-11-05T03:08:25.428381-05:00",
+   "event_type": "routine",
+   "summary": "Q3 2026 earnings announcement with non-GAAP reconciliations and special items.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "EVMN",
+   "accession": "0001193125-26-447608",
+   "decided": "2026-11-05T03:08:30.641283-05:00",
+   "event_type": "partnership",
+   "summary": "Exclusive VAV1 degrader license from Hinova; $20M upfront plus $30M equity raise",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "PODC",
+   "accession": "0001213900-26-116003",
+   "decided": "2026-11-05T03:08:39.430329-05:00",
+   "event_type": "debt_financing",
+   "summary": "Forbearance agreement on convertible debentures; $5.2M retained by lender; equity dilution.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "RLYB",
+   "accession": "0001193125-26-447550",
+   "decided": "2026-11-05T03:08:44.149502-05:00",
+   "event_type": "acquisition",
+   "summary": "Stockholders approved 2026 equity and ESPP plans contingent on Avenzo merger completion.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CAPL",
+   "accession": "0001193125-26-447495",
+   "decided": "2026-11-05T03:08:50.723356-05:00",
+   "event_type": "prelim_results_bad",
+   "summary": "Q3 2026 results miss: lower volumes, EBITDA down 6%, cash flow down 22% YoY.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ACR",
+   "accession": "0001193125-26-447348",
+   "decided": "2026-11-05T03:09:07.367336-05:00",
+   "event_type": "prelim_results_bad",
+   "summary": "Q3 2026: $56.3M net loss; internally managed post-merger; three business lines ahead.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "FC",
+   "accession": "0001193125-26-447347",
+   "decided": "2026-11-05T03:09:10.174858-05:00",
+   "event_type": "routine",
+   "summary": "FY2026 earnings within guidance; revenue down YoY, cash position weakened significantly.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "MBI",
+   "accession": "0001193125-26-447336",
+   "decided": "2026-11-05T03:09:12.705042-05:00",
+   "event_type": "prelim_results_bad",
+   "summary": "Q3 2026: $24M GAAP net loss; YTD loss $110M, driven by PREPA exposure.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "LODE",
+   "accession": "0001437749-26-034952",
+   "decided": "2026-11-05T03:09:15.261406-05:00",
+   "event_type": "buyback_dividend",
+   "summary": "Share buyback authorized (15M shares); mining assets sold for $30.2M gain; solar recycling ramp-up.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "TBI",
+   "accession": "0000768899-26-000039",
+   "decided": "2026-11-05T03:09:20.414169-05:00",
+   "event_type": "routine",
+   "summary": "Q3 2026 earnings release with roadshow presentation; forward-looking guidance included.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "PSBD",
+   "accession": "0001193125-26-447291",
+   "decided": "2026-11-05T03:09:33.328194-05:00",
+   "event_type": "routine",
+   "summary": "Q3 2026 earnings: NII $0.38/share, NAV $13.34, declaring $0.36 dividend plus supplemental.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "MNRO",
+   "accession": "0001193125-26-447246",
+   "decided": "2026-11-05T03:09:42.690254-05:00",
+   "event_type": "strategic_review",
+   "summary": "Rights Agreement expiration extended to Nov 2027; supports strategic alternatives review.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "PACB",
+   "accession": "0001299130-26-000133",
+   "decided": "2026-11-05T03:09:45.069803-05:00",
+   "event_type": "exec_departure",
+   "summary": "CFO Jim Gibson steps down; CEO assumes interim CFO role; permanent replacement search underway.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "BBSI",
+   "accession": "0001193125-26-447227",
+   "decided": "2026-11-05T03:09:47.945755-05:00",
+   "event_type": "prelim_results_good",
+   "summary": "Q3 2026: Revenue +5% to $334M, earnings declined YoY; dividend confirmed, $31M buyback remaining",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "NLOP",
+   "accession": "0001952976-26-000065",
+   "decided": "2026-11-05T03:09:52.711476-05:00",
+   "event_type": "routine",
+   "summary": "Q3 2026 supplemental financial disclosure; net loss, 68.9% occupancy, ongoing dispositions.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_win",
+   "symbol": "EBS",
+   "accession": "0001367644-26-000116",
+   "decided": "2026-11-05T03:09:54.537725-05:00",
+   "event_type": "contract_win",
+   "summary": "Emergent receives $22.3M BioThrax delivery order modification from U.S. Department of War.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_div",
+   "symbol": "EBS",
+   "accession": "0001367644-26-000116",
+   "decided": "2026-11-05T03:09:54.537725-05:00",
+   "event_type": "contract_win",
+   "summary": "Emergent receives $22.3M BioThrax delivery order modification from U.S. Department of War.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ANVS",
+   "accession": "0001104659-26-122665",
+   "decided": "2026-11-05T03:09:57.122607-05:00",
+   "event_type": "prelim_results_bad",
+   "summary": "Preliminary Q3 2026: $2.8M cash; no revenue reported; financials incomplete.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "LZ",
+   "accession": "0001286139-26-000035",
+   "decided": "2026-11-05T03:10:11.639410-05:00",
+   "event_type": "prelim_results_good",
+   "summary": "Q3 2026: Revenue $195.1M (+3% YoY), subscription growth strong (+11%), EBITDA guidance narrowed.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ADCT",
+   "accession": "0000950103-26-016945",
+   "decided": "2026-11-05T03:10:25.298008-05:00",
+   "event_type": "clinical_positive",
+   "summary": "ZYNLONTA Phase 1b/2 clinical trial data shows strong efficacy: 88.7% ORR, 75.3% complete response in lymphoma combination therapy.",
    "entry_date": null,
    "entry": null
   }
