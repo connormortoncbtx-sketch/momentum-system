@@ -62,7 +62,7 @@ def main():
         e = ev.setdefault(m["event"], dict(day=m["day"], series=m["series"], churn=0.0, surprise=np.nan, buckets={}))
         if len(t):
             e["churn"] += float(t.p.diff().abs().sum() * 100)
-            e["buckets"][m["ticker"]] = t.set_index("ts").p
+            s_ = t.set_index("ts").p; e["buckets"][m["ticker"]] = s_[~s_.index.duplicated(keep="last")]
             if m["R"]:
                 p12 = t[t.ts <= m["close"] - pd.Timedelta(hours=12)].p
                 e["surprise"] = float(p12.iloc[-1] * 100) if len(p12) else np.nan
