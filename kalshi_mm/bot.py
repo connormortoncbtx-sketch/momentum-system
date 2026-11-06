@@ -87,6 +87,27 @@ def sizing_desc():
     return f"{b} daily_loss={d}"
 
 
+def deposits_since(day, now=None):
+    """Net deposits made on market-day `day` (Central) so far, from DEPOSIT_HISTORY ("YYYY-MM-DD HH:MM=amount;...",
+    Central time). Nov 5, 2026: a $98 deposit at 10:00 counted as a $98 'gain' in the day's P&L and masked the daily
+    loss stop -- the account lost more than 15% that day without the stop firing. Deposits are now taken out."""
+    from zoneinfo import ZoneInfo
+    ct = ZoneInfo("America/Chicago")
+    now = now or dt.datetime.now(ct)
+    tot = 0.0
+    for part in (os.environ.get("DEPOSIT_HISTORY") or "").strip().strip('"').split(";"):
+        if "=" not in part:
+            continue
+        t, a = part.split("=", 1)
+        try:
+            when = dt.datetime.fromisoformat(t.strip()).replace(tzinfo=ct)
+            if when.date() == day and when <= now:
+                tot += float(a)
+        except ValueError:
+            continue
+    return tot
+
+
 def loss_limit(day_start_value):
     return DAILY_LOSS_PCT * day_start_value if DAILY_LOSS_PCT > 0 and day_start_value else DAILY_LOSS
 MIN_H, MAX_H = float(E("MIN_HOURS", "1")), float(E("MAX_HOURS", "48"))
@@ -612,7 +633,7 @@ class Bot:
             today = trading_day()
             if self.day != today:
                 self.day, self.day_start_value = today, day_baseline(today, value)
-            pnl_today = value - self.day_start_value
+            pnl_today = value - self.day_start_value - deposits_since(today)
             budget, max_loss = budget_for(liq), loss_limit(self.day_start_value)
             if time.time() - getattr(self, "_last_snap", 0) >= LOG_EVERY_S or pnl_today < -max_loss:
               self._last_snap = time.time()                # the stream makes cycles ~1s: log the account once a minute
