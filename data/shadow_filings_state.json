@@ -1,5 +1,5 @@
 {
- "since": "2026-11-05T15:12:59-05:00",
+ "since": "2026-11-05T17:30:07-05:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -829,7 +829,7 @@
    "event_type": "listing_deficiency",
    "summary": "Company voluntarily de-listing from NYSE effective December 2026 post-asset sale.",
    "entry_date": "2026-10-19",
-   "entry": 3.44
+   "entry": 0.5492
   },
   {
    "book": "short_bad_news",
@@ -1389,7 +1389,7 @@
    "event_type": "acquisition",
    "summary": "Completed Pacific West Bancorp acquisition for $35.3M; Q3 earnings miss with declining profitability.",
    "entry_date": "2026-10-22",
-   "entry": 42.13
+   "entry": 41.85
   },
   {
    "book": "short_bad_news",
@@ -1710,7 +1710,7 @@
    "event_type": "prelim_results_bad",
    "summary": "Q3 2026 earnings miss: net income $8.1M vs $10.9M prior year; EPS $0.30 vs $0.57.",
    "entry_date": "2026-10-23",
-   "entry": 25.82
+   "entry": 25.7
   },
   {
    "book": "short_bad_news",
@@ -3780,7 +3780,7 @@
    "event_type": "guidance_raise",
    "summary": "Q2 FY27 results beat expectations; guidance raised on strong Kito Crosby integration progress.",
    "entry_date": "2026-11-04",
-   "entry": 18.41
+   "entry": 18.33
   },
   {
    "book": "short_bad_news",
@@ -4620,6 +4620,366 @@
    "decided": "2026-11-05T15:18:46.774741-05:00",
    "event_type": "prelim_results_bad",
    "summary": "Q3 2026 revenue down 27% YoY despite improved loss metrics and new tenant openings.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "PPHC",
+   "accession": "0001628280-26-071180",
+   "decided": "2026-11-06T03:11:47.501388-05:00",
+   "event_type": "debt_financing",
+   "summary": "Refinancing $105M credit facility; intends $150M syndication; funds Reevemark acquisition",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "PUSA",
+   "accession": "0001493152-26-050269",
+   "decided": "2026-11-06T03:11:49.848927-05:00",
+   "event_type": "routine",
+   "summary": "Company reports $130M in executed purchase orders and $334M weighted pipeline update.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "XRN",
+   "accession": "0001628280-26-071172",
+   "decided": "2026-11-06T03:11:52.719574-05:00",
+   "event_type": "acquisition",
+   "summary": "Acquisition amendment for $173.2M senior housing property with limited operational history and high lease-up risk.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ANIP",
+   "accession": "0001104659-26-123446",
+   "decided": "2026-11-06T03:11:55.386248-05:00",
+   "event_type": "acquisition",
+   "summary": "Announced $560M acquisition of Swedish biotech Egetis via public offer; $676M bridge financing arranged.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "STRW",
+   "accession": "0001493152-26-050266",
+   "decided": "2026-11-06T03:12:04.021898-05:00",
+   "event_type": "routine",
+   "summary": "Q3 2026 results announced with two acquisitions totaling $25.4M; FFO sharply negative.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "PODC",
+   "accession": "0001213900-26-116430",
+   "decided": "2026-11-06T03:12:10.425648-05:00",
+   "event_type": "strategic_review",
+   "summary": "Record $31.5M H1 revenue, Board forms special committee for strategic review process.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "SUNS",
+   "accession": "0001628280-26-071144",
+   "decided": "2026-11-06T03:12:19.235670-05:00",
+   "event_type": "acquisition",
+   "summary": "Southern Realty Trust merger closed; 8.5M shares issued, 39% dilution with revised management terms.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "DNUT",
+   "accession": "0001857154-26-000057",
+   "decided": "2026-11-06T03:12:21.443688-05:00",
+   "event_type": "exec_appointment",
+   "summary": "CEO compensation increased: bonus 100% to 150%, RSUs $1M to $2.5M annually.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "KBDC",
+   "accession": "0001213900-26-116414",
+   "decided": "2026-11-06T03:12:30.611036-05:00",
+   "event_type": "routine",
+   "summary": "Q3 2026 earnings: NII $0.46/share, NAV down to $15.71, dividend maintained at $0.40.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "PCRX",
+   "accession": "0001628280-26-071129",
+   "decided": "2026-11-06T03:12:32.947702-05:00",
+   "event_type": "acquisition",
+   "summary": "Viatris tender offer for Pacira at $36.50/share; guidance withdrawn pending deal close.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "EGAN",
+   "accession": "0001066194-26-000017",
+   "decided": "2026-11-06T03:12:36.119375-05:00",
+   "event_type": "prelim_results_good",
+   "summary": "Q1 FY2027 beats guidance but profitability and cash flow deteriorate significantly; Gartner recognition positive",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "VSTM",
+   "accession": "0001104659-26-123386",
+   "decided": "2026-11-06T03:12:40.560745-05:00",
+   "event_type": "routine",
+   "summary": "Company posts updated corporate presentation on website; routine disclosure of oncology pipeline materials.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "KINS",
+   "accession": "0000033992-26-000041",
+   "decided": "2026-11-06T03:12:58.764780-05:00",
+   "event_type": "routine",
+   "summary": "Q3 2026 earnings announcement with conference call and investor presentation materials.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "MSDL",
+   "accession": "0001193125-26-449954",
+   "decided": "2026-11-06T03:13:01.680393-05:00",
+   "event_type": "routine",
+   "summary": "Q3 2026 results: NII $0.48/share, NAV $18.76, dividend declared plus fee reduction",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "AQST",
+   "accession": "0001398733-26-000077",
+   "decided": "2026-11-06T03:13:15.931157-05:00",
+   "event_type": "routine",
+   "summary": "Investor presentation on pipeline progress; Anaphylm resubmission pending FDA review with March 2027 PDUFA date.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "FEIM",
+   "accession": "0001185185-26-005208",
+   "decided": "2026-11-06T03:13:25.630025-05:00",
+   "event_type": "exec_departure",
+   "summary": "CFO Steven Bernstein retired effective Nov 1; engaged as consultant for $282.5k annually with vesting continuation.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "NNDM",
+   "accession": "0001193125-26-449867",
+   "decided": "2026-11-06T03:13:28.738651-05:00",
+   "event_type": "prelim_results_good",
+   "summary": "Q3 2026: Revenue +18.7% YoY to $31.9M, GM improved to 45.3%, but net loss widened. CEO appointment.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "LNN",
+   "accession": "0001193125-26-449864",
+   "decided": "2026-11-06T03:13:33.108117-05:00",
+   "event_type": "strategic_review",
+   "summary": "Activist investor Vision One settles dispute; nominating independent director, board declassification scheduled.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "FATE",
+   "accession": "0001193125-26-449840",
+   "decided": "2026-11-06T03:13:42.681701-05:00",
+   "event_type": "equity_financing",
+   "summary": "Company establishes $100M ATM offering with Leerink Partners, replaces prior Jefferies ATM agreement.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "LPTH",
+   "accession": "0001437749-26-035272",
+   "decided": "2026-11-06T03:13:45.548003-05:00",
+   "event_type": "divestiture",
+   "summary": "LightPath completes sale of China subsidiary to local management, eliminating China operations for NDAA compliance.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "INGN",
+   "accession": "0001294133-26-000040",
+   "decided": "2026-11-06T03:13:54.729951-05:00",
+   "event_type": "divestiture",
+   "summary": "Divested US oxygen rental business for ~$25M; CEO transition with internal COO promotion.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "FLGT",
+   "accession": "0001193125-26-449799",
+   "decided": "2026-11-06T03:13:57.801638-05:00",
+   "event_type": "prelim_results_bad",
+   "summary": "Q3 2026: $90.4M revenue (+8% YoY), but GAAP loss $13.2M, Non-GAAP loss $2.4M. Maintains guidance.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "MBC",
+   "accession": "0001941365-26-000084",
+   "decided": "2026-11-06T03:14:00.683858-05:00",
+   "event_type": "prelim_results_bad",
+   "summary": "Q3 2026: Net loss $(9.2)M, margin compression, weak legacy sales down 2.5% YoY",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "WLDN",
+   "accession": "0001104659-26-123327",
+   "decided": "2026-11-06T03:14:03.030630-05:00",
+   "event_type": "acquisition",
+   "summary": "Completed $285M Mantis acquisition funded with $250M new term loan; significant leverage increase.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "BDSX",
+   "accession": "0001193125-26-449792",
+   "decided": "2026-11-06T03:14:04.810439-05:00",
+   "event_type": "exec_departure",
+   "summary": "Chief Commercial Officer Kieran O'Kane departed effective immediately; eligible for severance.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ICFI",
+   "accession": "0001193125-26-449785",
+   "decided": "2026-11-06T03:14:12.849153-05:00",
+   "event_type": "prelim_results_good",
+   "summary": "Q3 revenue $470M (+1% YoY), EPS $1.98 (+19%), but commercial energy underperformed expectations.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "WGO",
+   "accession": "0001628280-26-071013",
+   "decided": "2026-11-06T03:14:19.324493-05:00",
+   "event_type": "exec_departure",
+   "summary": "Chief Legal Officer Stacy Bogart retiring December 31, 2026; successor to be named by year-end.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CYCU",
+   "accession": "0001493152-26-050228",
+   "decided": "2026-11-06T03:14:22.197816-05:00",
+   "event_type": "dilution_other",
+   "summary": "Series H preferred conversion agreements with two holders; significant dilution and apparent valuation distress.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "SOUN",
+   "accession": "0001840856-26-000025",
+   "decided": "2026-11-06T03:14:24.992170-05:00",
+   "event_type": "restructuring",
+   "summary": "27% workforce reduction; $18-22M restructuring charges; Q3 record revenue but large net loss.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "JYNT",
+   "accession": "0001612630-26-000077",
+   "decided": "2026-11-06T03:14:27.608141-05:00",
+   "event_type": "buyback_dividend",
+   "summary": "Q3 2026 earnings with modest revenue growth; Board authorizes additional $5M buyback authorization.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "VYGR",
+   "accession": "0001193125-26-449728",
+   "decided": "2026-11-06T03:14:35.515716-05:00",
+   "event_type": "prelim_results_bad",
+   "summary": "Q3 2026 results show declining collaboration revenue, extended cash runway into Q2 2028, clinical program delays.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CNDT",
+   "accession": "0001677703-26-000153",
+   "decided": "2026-11-06T03:14:38.348917-05:00",
+   "event_type": "routine",
+   "summary": "Q3 2026 earnings release with ongoing divestitures and cyber incident disclosures.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "PSEC",
+   "accession": "0001287032-26-000315",
+   "decided": "2026-11-06T03:14:41.090740-05:00",
+   "event_type": "debt_financing",
+   "summary": "Company issued $300M notes due 2031 at 8.95% to refinance existing debt and maintain liquidity.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "RILY",
+   "accession": "0001213900-26-116361",
+   "decided": "2026-11-06T03:14:43.773445-05:00",
+   "event_type": "divestiture",
+   "summary": "Divested Great American Holdings stake for $62.25M; used $51.7M to repay Oaktree debt; added $26.5M new term loan.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "BBOT",
+   "accession": "0001193125-26-449722",
+   "decided": "2026-11-06T03:14:45.844727-05:00",
+   "event_type": "exec_departure",
+   "summary": "Chief Medical and Development Officer resigning effective January 8, 2027, no disagreement cited.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "AGNT",
+   "accession": "0001104659-26-123299",
+   "decided": "2026-11-06T03:14:51.166074-05:00",
+   "event_type": "prelim_results_good",
+   "summary": "Q3 revenue +6% YoY to $1.4B; net loss $4.3M; strong balance sheet with $111M cash, no debt; dividend declared.",
    "entry_date": null,
    "entry": null
   }
