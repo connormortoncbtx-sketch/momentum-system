@@ -101,7 +101,7 @@ def deposits_since(day, now=None):
         t, a = part.split("=", 1)
         try:
             when = dt.datetime.fromisoformat(t.strip()).replace(tzinfo=ct)
-            if when.date() == day and when <= now:
+            if when.date().isoformat() == str(day) and when <= now:
                 tot += float(a)
         except ValueError:
             continue
