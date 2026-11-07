@@ -1,5 +1,5 @@
 {
- "since": "2026-11-06T14:34:23-05:00",
+ "since": "2026-11-06T17:30:10-05:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -5050,6 +5050,86 @@
    "decided": "2026-11-06T14:40:38.931121-05:00",
    "event_type": "routine",
    "summary": "Q3 2026 earnings report with declining NAV, increased portfolio stress, dividend maintained.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "RLYB",
+   "accession": "0001193125-26-452115",
+   "decided": "2026-11-07T02:29:06.673005-05:00",
+   "event_type": "regulatory_setback",
+   "summary": "Merger with Avenzo Therapeutics closing postponed; listing approvals not obtained.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "HURA",
+   "accession": "0001193125-26-452007",
+   "decided": "2026-11-07T02:29:09.149051-05:00",
+   "event_type": "debt_financing",
+   "summary": "Company drew $1.5M from existing $50M revolving credit facility; related-party lender.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "GOGO",
+   "accession": "0001193125-26-451967",
+   "decided": "2026-11-07T02:29:14.188784-05:00",
+   "event_type": "debt_financing",
+   "summary": "Debt refinancing extends $544M term loan maturity to 2030; substantial mandatory prepayments required.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "BCIC",
+   "accession": "0001193125-26-451956",
+   "decided": "2026-11-07T02:29:16.251679-05:00",
+   "event_type": "strategic_review",
+   "summary": "Company delays Q3 2026 earnings release to finalize unspecified strategic initiative terms.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ZBIO",
+   "accession": "0001104659-26-123885",
+   "decided": "2026-11-07T02:29:20.918786-05:00",
+   "event_type": "equity_financing",
+   "summary": "Filed new $200M at-the-market offering prospectus supplement; $153.2M already sold under prior program.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "NBBK",
+   "accession": "0001104659-26-123880",
+   "decided": "2026-11-07T02:29:26.040512-05:00",
+   "event_type": "debt_financing",
+   "summary": "Company raised $100M subordinated notes, 7.5% fixed, floating after 2031, for capital and liquidity.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "BWMN",
+   "accession": "0001140361-26-042465",
+   "decided": "2026-11-07T02:29:39.691015-05:00",
+   "event_type": "acquisition",
+   "summary": "Company acquired by Bernhard Capital Partners affiliate for $43/share; merger closes, delisting follows.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "PSIX",
+   "accession": "0001193125-26-451805",
+   "decided": "2026-11-07T02:29:43.308437-05:00",
+   "event_type": "exec_departure",
+   "summary": "CFO Xun Li resigns effective November 27, 2026 to pursue other opportunity.",
    "entry_date": null,
    "entry": null
   }
