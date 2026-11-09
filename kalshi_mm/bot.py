@@ -118,6 +118,9 @@ LOG_DIR = E("LOG_DIR", "kalshi_mm_logs")
 KILL_FILE = E("KILL_FILE", "KILL")
 NTFY = E("NTFY_CHANNEL") or ""                    # phone alerts; also the remote stop: any message
 STOP_TOPIC = f"{NTFY}-kmm-stop" if NTFY else ""   # containing "stop" on topic <NTFY_CHANNEL>-kmm-stop
+ACCOUNT_FLOOR = float(E("ACCOUNT_FLOOR", "0"))   # Nov 9, 2026 (Connor): if the bot's account value stays below this
+                                                 # for 5 minutes, cancel everything and stop for good (KILL file) --
+                                                 # the pilot's hard floor; 0 = off
 KILLED_EXIT = 3                                   # systemd does not restart on this code
 
 log = logging.getLogger("kmm")
@@ -648,6 +651,18 @@ class Bot:
                 log.warning("daily loss limit hit; pausing until midnight Central")
                 notify(f"Daily loss limit hit ({pnl_today:+.2f}); orders cancelled, paused until midnight Central", prio="high")
                 return "paused"
+            if ACCOUNT_FLOOR > 0 and value < ACCOUNT_FLOOR:
+                self._below_floor = getattr(self, "_below_floor", None) or time.time()
+                if time.time() - self._below_floor >= 300:
+                    self.cancel_all(f"account floor {value:.2f} < {ACCOUNT_FLOOR:.0f}")
+                    open(KILL_FILE, "w").write(f"account floor: value {value:.2f} below {ACCOUNT_FLOOR:.0f}\n")
+                    log.warning("account floor breached; stopped (kmm resume to restart)")
+                    notify(f"Account floor hit: bot value ${value:.2f} has been below ${ACCOUNT_FLOOR:.0f} for 5 min. "
+                           f"All orders cancelled and the bot is STOPPED. Open positions settle normally. "
+                           f"'kmm resume' restarts it.", prio="urgent")
+                    return "paused"
+            else:
+                self._below_floor = None
             if time.time() - getattr(self, "_last_fills", 0) > 10:
                 self._last_fills = time.time()
                 self.record_fills()
@@ -824,7 +839,7 @@ class Bot:
                 jlog("settlements", key=key, settlement=x)
 
     def run(self):
-        log.info(f"MODE={MODE} series={','.join(SERIES)} offset={OFFSET * 100:.0f}c size={SIZE}{' topup' if TOPUP else ''} cap={INV_CAP} event_cap={EVENT_CAP:.0f}{f' (new {sorted(NEW_SERIES)}: {EVENT_CAP_NEW:.0f})' if NEW_SERIES else ''} "
+        log.info(f"MODE={MODE} series={','.join(SERIES)} offset={OFFSET * 100:.0f}c size={SIZE}{' topup' if TOPUP else ''}{f' floor=${ACCOUNT_FLOOR:.0f}' if ACCOUNT_FLOOR else ''} cap={INV_CAP} event_cap={EVENT_CAP:.0f}{f' (new {sorted(NEW_SERIES)}: {EVENT_CAP_NEW:.0f})' if NEW_SERIES else ''} "
                  f"budget={sizing_desc()}")
         jlog("events", event="start", params=dict(series=SERIES, offset=OFFSET, size=SIZE, inv_cap=INV_CAP, event_cap=EVENT_CAP,
                                                    budget=BUDGET, budget_pct=BUDGET_PCT, budget_max=BUDGET_MAX,
