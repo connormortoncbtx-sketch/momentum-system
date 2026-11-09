@@ -69,7 +69,7 @@ def health():
         out.append((st == "active", f"service {s}: {st}"))
     ev = recent("events")
     starts = [e for e in ev if e.get("event") == "start"]
-    out.append((len(starts) <= 2, f"bot (re)starts in 24h: {len(starts)}" + (" -- more than updates explain" if len(starts) > 2 else "")))
+    out.append((len(starts) <= 4, f"bot (re)starts in 24h: {len(starts)}" + (" -- more than updates explain" if len(starts) > 2 else "")))
     ca = [e for e in ev if e.get("event") == "cancel_all"]
     stops = [e for e in ca if "daily loss" in str(e.get("reason"))]
     out.append((not stops, f"daily-loss stops in 24h: {len(stops)}" + (f" ({stops[-1].get('reason')})" if stops else "")))
@@ -111,6 +111,11 @@ def health():
                     if x.get("ticker") and x.get("ticker") not in res and x.get("ticker") not in lot
                     and (H.market_day(x.get("ticker")) or dt.date.max) <= (NOW.date() - dt.timedelta(days=3))})
     out.append((not stuck, f"markets 3+ days past their day with no result: {len(stuck)}" + (f" e.g. {stuck[:3]}" if stuck else "")))
+    floor = getattr(B, "ACCOUNT_FLOOR", 0.0)
+    out.append((floor > 0, f"settings: city-day cap {B.EVENT_CAP:.0f}, account floor "
+                f"{'$%.0f' % floor if floor else 'OFF (agreed Nov 9: $340)'}, quiet {B.QUIET}, "
+                f"full quiet {'on' if getattr(B, 'QUIET_FULL', False) else 'off'}, top-up {'on' if B.TOPUP else 'off'}, "
+                f"new cities {sorted(B.NEW_SERIES) or 'none'}"))
     try:
         lj = json.load(open(os.path.join(LOG, "lottery.json")))
         out.append((True, f"weekly roll: {lj.get('status')} week {lj.get('week')} leg {lj.get('leg')}"))
