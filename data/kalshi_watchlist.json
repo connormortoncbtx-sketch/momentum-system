@@ -2158,6 +2158,13 @@
     "med_spread_c": 5.0,
     "settled": 12,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 5,
+    "vol24h": 22.0,
+    "med_spread_c": 6.0,
+    "settled": 17,
+    "date": "2026-11-09"
    }
   ],
   "seeded": "launched since mid-Aug 2026 (cross-market scan)"
@@ -2707,6 +2714,13 @@
     "med_spread_c": 1.5,
     "settled": 2,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 2,
+    "vol24h": 145.01,
+    "med_spread_c": 2.5,
+    "settled": 2,
+    "date": "2026-11-09"
    }
   ],
   "seeded": "launched since mid-Aug 2026 (cross-market scan)"
@@ -2762,6 +2776,13 @@
     "med_spread_c": null,
     "settled": 14,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 0,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "settled": 14,
+    "date": "2026-11-09"
    }
   ],
   "seeded": "launched since mid-Aug 2026 (cross-market scan)"
@@ -2899,6 +2920,13 @@
     "med_spread_c": null,
     "settled": 3,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 0,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "settled": 3,
+    "date": "2026-11-09"
    }
   ],
   "seeded": "launched since mid-Aug 2026 (cross-market scan)"
@@ -2995,6 +3023,13 @@
     "med_spread_c": 14.0,
     "settled": 7,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 7,
+    "vol24h": 0.0,
+    "med_spread_c": 5.0,
+    "settled": 14,
+    "date": "2026-11-09"
    }
   ],
   "seeded": "launched since mid-Aug 2026 (cross-market scan)"
@@ -3019,6 +3054,13 @@
     "med_spread_c": 4.0,
     "settled": 2,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 37,
+    "vol24h": 8673.13,
+    "med_spread_c": 6.0,
+    "settled": 2,
+    "date": "2026-11-09"
    }
   ],
   "seeded": "launched since mid-Aug 2026 (cross-market scan)"
@@ -3078,8 +3120,29 @@
     "med_spread_c": 85.0,
     "settled": 18,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 18,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "settled": 54,
+    "date": "2026-11-09"
    }
-  ]
+  ],
+  "test": {
+   "date": "2026-11-09",
+   "windows": {
+    "6-48h": {
+     "markets": 30.0,
+     "fills": 9.0
+    },
+    "6h+": {
+     "markets": 30.0,
+     "fills": 9.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXUSDMXNAD": {
   "title": "USDMXN Daily",
@@ -3136,6 +3199,13 @@
     "med_spread_c": 28.0,
     "settled": 0,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 9,
+    "vol24h": 0.0,
+    "med_spread_c": 77.0,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3158,8 +3228,29 @@
     "med_spread_c": 80.5,
     "settled": 18,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 18,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "settled": 54,
+    "date": "2026-11-09"
    }
-  ]
+  ],
+  "test": {
+   "date": "2026-11-09",
+   "windows": {
+    "6-48h": {
+     "markets": 25.0,
+     "fills": 8.0
+    },
+    "6h+": {
+     "markets": 25.0,
+     "fills": 8.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXKEYSTONESNOW": {
   "title": "Keystone snowfall",
@@ -3180,6 +3271,13 @@
     "med_spread_c": 88.0,
     "settled": 0,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 9,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3202,6 +3300,13 @@
     "med_spread_c": 65.0,
     "settled": 0,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 9,
+    "vol24h": 0.0,
+    "med_spread_c": 40.0,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3224,8 +3329,29 @@
     "med_spread_c": 91.0,
     "settled": 18,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 18,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "settled": 54,
+    "date": "2026-11-09"
    }
-  ]
+  ],
+  "test": {
+   "date": "2026-11-09",
+   "windows": {
+    "6-48h": {
+     "markets": 18.0,
+     "fills": 0.0
+    },
+    "6h+": {
+     "markets": 18.0,
+     "fills": 0.0
+    }
+   },
+   "passes": false
+  }
  },
  "KXNORTHSTARSNOW": {
   "title": "Northstar snowfall",
@@ -3246,6 +3372,13 @@
     "med_spread_c": 56.0,
     "settled": 0,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 9,
+    "vol24h": 0.0,
+    "med_spread_c": 56.0,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3268,6 +3401,13 @@
     "med_spread_c": 94.0,
     "settled": 0,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 11,
+    "vol24h": 0.0,
+    "med_spread_c": 96.0,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3283,6 +3423,13 @@
     "vol24h": 0.0,
     "med_spread_c": 98.0,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": 98.0,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3298,6 +3445,13 @@
     "vol24h": 0.0,
     "med_spread_c": 8.0,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 3,
+    "vol24h": 0.0,
+    "med_spread_c": 7.0,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3313,6 +3467,13 @@
     "vol24h": 0.0,
     "med_spread_c": null,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 1,
+    "vol24h": 10.28,
+    "med_spread_c": 10.0,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3328,6 +3489,13 @@
     "vol24h": 0.0,
     "med_spread_c": 98.0,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": 98.0,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3343,6 +3511,13 @@
     "vol24h": 0.0,
     "med_spread_c": 8.0,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 3,
+    "vol24h": 0.0,
+    "med_spread_c": 7.0,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3358,8 +3533,19 @@
     "vol24h": 0.0,
     "med_spread_c": null,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 18,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "settled": 36,
+    "date": "2026-11-09"
    }
-  ]
+  ],
+  "test": {
+   "date": "2026-11-09",
+   "result": "no trade data"
+  }
  },
  "KXRAINDMIA": {
   "title": "Daily Rain - Miami",
@@ -3373,6 +3559,13 @@
     "vol24h": 0.0,
     "med_spread_c": 98.0,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": 98.0,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3388,6 +3581,13 @@
     "vol24h": 0.0,
     "med_spread_c": 8.0,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 4,
+    "vol24h": 0.0,
+    "med_spread_c": 7.0,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3403,6 +3603,13 @@
     "vol24h": 0.0,
     "med_spread_c": 98.0,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": 98.0,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3418,6 +3625,13 @@
     "vol24h": 0.0,
     "med_spread_c": 97.5,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 2,
+    "vol24h": 0.0,
+    "med_spread_c": 95.5,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3433,6 +3647,13 @@
     "vol24h": 0.0,
     "med_spread_c": 98.0,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": 98.0,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3448,6 +3669,13 @@
     "vol24h": 0.0,
     "med_spread_c": null,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3463,6 +3691,13 @@
     "vol24h": 0.0,
     "med_spread_c": null,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3478,6 +3713,13 @@
     "vol24h": 0.0,
     "med_spread_c": null,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": 4.0,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3493,6 +3735,13 @@
     "vol24h": 0.0,
     "med_spread_c": null,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 1,
+    "vol24h": 310.39,
+    "med_spread_c": 9.0,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3508,6 +3757,13 @@
     "vol24h": 0.0,
     "med_spread_c": 98.0,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 1,
+    "vol24h": 1.0,
+    "med_spread_c": 58.0,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3523,6 +3779,13 @@
     "vol24h": 0.0,
     "med_spread_c": null,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3538,6 +3801,13 @@
     "vol24h": 0.0,
     "med_spread_c": 98.0,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": 98.0,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3553,6 +3823,13 @@
     "vol24h": 0.0,
     "med_spread_c": 98.0,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": 98.0,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3568,6 +3845,13 @@
     "vol24h": 0.0,
     "med_spread_c": null,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": 99.0,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3583,6 +3867,13 @@
     "vol24h": 0.0,
     "med_spread_c": 98.0,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": 98.0,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3598,6 +3889,13 @@
     "vol24h": 0.0,
     "med_spread_c": 8.0,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 3,
+    "vol24h": 0.0,
+    "med_spread_c": 7.0,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3613,6 +3911,13 @@
     "vol24h": 0.0,
     "med_spread_c": 8.0,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 3,
+    "vol24h": 0.0,
+    "med_spread_c": 7.0,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3628,6 +3933,13 @@
     "vol24h": 0.0,
     "med_spread_c": null,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3643,6 +3955,13 @@
     "vol24h": 0.0,
     "med_spread_c": 8.0,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 3,
+    "vol24h": 0.0,
+    "med_spread_c": 7.0,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3658,8 +3977,39 @@
     "vol24h": 18880.149999999998,
     "med_spread_c": 11.5,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 0,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "settled": 48,
+    "date": "2026-11-09"
    }
-  ]
+  ],
+  "test": {
+   "date": "2026-11-09",
+   "windows": {
+    "6-48h": {
+     "markets": 48.0,
+     "fills": 97.0,
+     "fills_per_mkt": 2.021,
+     "edge_c": 1.624,
+     "per_market_c": 0.049,
+     "t": NaN,
+     "recent_c": 1.624
+    },
+    "6h+": {
+     "markets": 48.0,
+     "fills": 98.0,
+     "fills_per_mkt": 2.042,
+     "edge_c": 2.3,
+     "per_market_c": 1.067,
+     "t": NaN,
+     "recent_c": 2.3
+    }
+   },
+   "passes": false
+  }
  },
  "KXRAINDSFO": {
   "title": "Daily Rain - San Francisco",
@@ -3673,6 +4023,13 @@
     "vol24h": 0.0,
     "med_spread_c": 98.0,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": 98.0,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3688,6 +4045,13 @@
     "vol24h": 0.0,
     "med_spread_c": null,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 2,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3703,6 +4067,13 @@
     "vol24h": 0.0,
     "med_spread_c": null,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3718,6 +4089,13 @@
     "vol24h": 0.0,
     "med_spread_c": 97.0,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": 97.0,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3733,6 +4111,13 @@
     "vol24h": 0.0,
     "med_spread_c": 98.0,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": 98.0,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3748,6 +4133,13 @@
     "vol24h": 0.0,
     "med_spread_c": 8.0,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 6,
+    "vol24h": 336083.33,
+    "med_spread_c": 1.0,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3763,6 +4155,13 @@
     "vol24h": 0.0,
     "med_spread_c": 98.0,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": 98.0,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3778,6 +4177,13 @@
     "vol24h": 0.0,
     "med_spread_c": null,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": 94.0,
+    "settled": 0,
+    "date": "2026-11-09"
    }
   ]
  },
@@ -3793,6 +4199,373 @@
     "vol24h": 0.0,
     "med_spread_c": 8.0,
     "date": "2026-11-02"
+   },
+   {
+    "open_markets": 3,
+    "vol24h": 0.0,
+    "med_spread_c": 7.0,
+    "settled": 0,
+    "date": "2026-11-09"
+   }
+  ]
+ },
+ "KXGBPUSDEVENT": {
+  "title": "GBP/USD after economic events",
+  "category": "Financials",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-09",
+  "checks": [
+   {
+    "open_markets": 168,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "date": "2026-11-09"
+   }
+  ]
+ },
+ "KXBTCHIT90K": {
+  "title": "Bitcoin above $90,000 by a date",
+  "category": "Crypto",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-09",
+  "checks": [
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": 8.0,
+    "date": "2026-11-09"
+   }
+  ]
+ },
+ "KX30YRRATEEVENT": {
+  "title": "US 30Y Treasury yield after events",
+  "category": "Financials",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-09",
+  "checks": [
+   {
+    "open_markets": 816,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "date": "2026-11-09"
+   }
+  ]
+ },
+ "KXETHABOVE3000BY": {
+  "title": "Ethereum above $3,000 by a date",
+  "category": "Crypto",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-09",
+  "checks": [
+   {
+    "open_markets": 2,
+    "vol24h": 0.0,
+    "med_spread_c": 9.5,
+    "date": "2026-11-09"
+   }
+  ]
+ },
+ "KXARTWORKPRICE": {
+  "title": "Art auction prices",
+  "category": "Entertainment",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-09",
+  "checks": [
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": 98.0,
+    "date": "2026-11-09"
+   }
+  ]
+ },
+ "KXAUDUSDEVENT": {
+  "title": "AUD/USD after economic events",
+  "category": "Financials",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-09",
+  "checks": [
+   {
+    "open_markets": 147,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "date": "2026-11-09"
+   }
+  ]
+ },
+ "KXBEERARRAY": {
+  "title": "Light beer point of sale spend array",
+  "category": "Financials",
+  "frequency": "monthly",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-09",
+  "checks": [
+   {
+    "open_markets": 7,
+    "vol24h": 1.8900000000000001,
+    "med_spread_c": 98.0,
+    "date": "2026-11-09"
+   }
+  ]
+ },
+ "KXTEENARRAY": {
+  "title": "Teen apparel credit card spend array",
+  "category": "Financials",
+  "frequency": "monthly",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-09",
+  "checks": [
+   {
+    "open_markets": 7,
+    "vol24h": 0.0,
+    "med_spread_c": 98.0,
+    "date": "2026-11-09"
+   }
+  ]
+ },
+ "KXUSDMXNEVENT": {
+  "title": "USD/MXN after economic events",
+  "category": "Financials",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-09",
+  "checks": [
+   {
+    "open_markets": 147,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "date": "2026-11-09"
+   }
+  ]
+ },
+ "KXUSDJPYEVENT": {
+  "title": "USD/JPY after economic events",
+  "category": "Financials",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-09",
+  "checks": [
+   {
+    "open_markets": 168,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "date": "2026-11-09"
+   }
+  ]
+ },
+ "KXBTCHIT85K": {
+  "title": "Bitcoin above $85,000 by a date",
+  "category": "Crypto",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-09",
+  "checks": [
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": 9.0,
+    "date": "2026-11-09"
+   }
+  ]
+ },
+ "KXGASARRAY": {
+  "title": "Gas station credit card spend array",
+  "category": "Financials",
+  "frequency": "monthly",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-09",
+  "checks": [
+   {
+    "open_markets": 7,
+    "vol24h": 0.0,
+    "med_spread_c": 98.0,
+    "date": "2026-11-09"
+   }
+  ]
+ },
+ "KXCOFFEEARRAY": {
+  "title": "Coffee chain foot traffic array",
+  "category": "Financials",
+  "frequency": "monthly",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-09",
+  "checks": [
+   {
+    "open_markets": 7,
+    "vol24h": 0.0,
+    "med_spread_c": 98.0,
+    "date": "2026-11-09"
+   }
+  ]
+ },
+ "KXUSDCADEVENT": {
+  "title": "USD/CAD after economic events",
+  "category": "Financials",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-09",
+  "checks": [
+   {
+    "open_markets": 126,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "date": "2026-11-09"
+   }
+  ]
+ },
+ "KXSOLABOVEBY": {
+  "title": "Solana above a threshold by a date",
+  "category": "Crypto",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-09",
+  "checks": [
+   {
+    "open_markets": 6,
+    "vol24h": 0.0,
+    "med_spread_c": 10.0,
+    "date": "2026-11-09"
+   }
+  ]
+ },
+ "KXADAMINM": {
+  "title": "Cardano price low by month-end",
+  "category": "Crypto",
+  "frequency": "monthly",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-09",
+  "checks": [
+   {
+    "open_markets": 4,
+    "vol24h": 0.0,
+    "med_spread_c": 10.0,
+    "date": "2026-11-09"
+   }
+  ]
+ },
+ "KXBTCHIT95K": {
+  "title": "Bitcoin above $95,000 by a date",
+  "category": "Crypto",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-09",
+  "checks": [
+   {
+    "open_markets": 1,
+    "vol24h": 0.0,
+    "med_spread_c": 9.0,
+    "date": "2026-11-09"
+   }
+  ]
+ },
+ "KXADAMAXM": {
+  "title": "Cardano price high by month-end",
+  "category": "Crypto",
+  "frequency": "monthly",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-09",
+  "checks": [
+   {
+    "open_markets": 3,
+    "vol24h": 0.0,
+    "med_spread_c": 10.0,
+    "date": "2026-11-09"
+   }
+  ]
+ },
+ "KX2YRRATEEVENT": {
+  "title": "US 2Y Treasury yield after events",
+  "category": "Financials",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-09",
+  "checks": [
+   {
+    "open_markets": 816,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "date": "2026-11-09"
+   }
+  ]
+ },
+ "KXEURUSDEVENT": {
+  "title": "EUR/USD after economic events",
+  "category": "Financials",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-09",
+  "checks": [
+   {
+    "open_markets": 105,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "date": "2026-11-09"
+   }
+  ]
+ },
+ "KXETHABOVE2750BY": {
+  "title": "Ethereum above $2,750 by a date",
+  "category": "Crypto",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-09",
+  "checks": [
+   {
+    "open_markets": 2,
+    "vol24h": 6.73,
+    "med_spread_c": 9.5,
+    "date": "2026-11-09"
+   }
+  ]
+ },
+ "KXETHABOVE2500BY": {
+  "title": "Ethereum above $2,500 by a date",
+  "category": "Crypto",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-09",
+  "checks": [
+   {
+    "open_markets": 2,
+    "vol24h": 17.25,
+    "med_spread_c": 9.5,
+    "date": "2026-11-09"
+   }
+  ]
+ },
+ "KX10YRRATEEVENT": {
+  "title": "US 10Y Treasury yield after events",
+  "category": "Financials",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-09",
+  "checks": [
+   {
+    "open_markets": 816,
+    "vol24h": 0.0,
+    "med_spread_c": null,
+    "date": "2026-11-09"
+   }
+  ]
+ },
+ "KX5YRRATEEVENT": {
+  "title": "US 5Y Treasury yield after events",
+  "category": "Financials",
+  "frequency": "custom",
+  "fee_type": "quadratic",
+  "first_seen": "2026-11-09",
+  "checks": [
+   {
+    "open_markets": 714,
+    "vol24h": 0.36,
+    "med_spread_c": 90.0,
+    "date": "2026-11-09"
    }
   ]
  }
