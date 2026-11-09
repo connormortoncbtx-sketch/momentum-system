@@ -2921,3 +2921,24 @@ By whole-day volume (hindsight) it's +2.8 / +2.4 / +1.9. There is no activity-ba
 - Most of the older cities traded 2–3× more in Dec–Apr than in summer and fall. For example, CHI went from about 210k (January) to 84k (October), and NY from 380k to 173k.
 - The 2026 "T" series are shrinking: BOS 65k → 17k, LV 50k → 18k, ATL 77k → 50k.
 - So capacity is seasonal, and winter is the larger market. The cap ladder has more room Dec–Mar if the edge holds; BOS, LV and PHIL are the thinnest markets.
+
+## Kalshi post-mortem: Oct 27 – Nov 6 clean test (written Nov 9, 2026)
+**Timeline:** Oct 27–30 strong, with two all-win days and the account peaking near $400. From Oct 31 – Nov 3, losses mostly came from the quiet-window leak. The leak was fixed Nov 4 (QUIET_FULL; afterwards only 5 contracts filled in :51–:59). Nov 5 was a large loss, including the $98-deposit bug that masked the daily stop; that bug is fixed. The bot was stopped Nov 5 at 21:00 CT and its positions settled by Nov 6.
+
+**Post-fix, Nov 4–6 (`kmm calibrate 2026-11-04`, same 81 markets):** real −8.42¢ per contract against backtest −8.36¢. Paired by city-day: −4.3¢ ±8.5 (n.s.). **The bot executed the strategy faithfully; the losses were the strategy's.**
+
+**Public-tape backtest by market day:** Nov 4 −2.9¢, **Nov 5 −17.3¢** (the worst day in the sample: forecasts busted in NY, CHI and LAX), Nov 6 −0.8¢, then Nov 7 +7.7¢ and Nov 8 +6.2¢ while the bot was off.
+
+**Final clean-test scorecard (11 market days, 120 city-days):**
+- Per city-day: +3.9¢ ±6.0 by day.
+- Per contract: −0.8¢ ±4.4 by day.
+- **Shrunk per contract: +0.8¢** (51% live).
+- Current-logic history: shrunk +1.7¢.
+
+**Under the frozen rule:** shrunk < +1¢ means STEP BACK one rung (30 → 20; the bot was already at 15 when stopped). The per-city-day band is not entirely below zero, so the rule does not say pause.
+
+**Lessons:**
+1. Buying favourites is short volatility. Bust days like Nov 5 are part of the strategy and must be counted in its edge.
+2. Live per-contract edge over 11 days is about 0–1¢, the low end of or below the research's +2–3¢.
+3. The cap clips the heavy days, and the backtest says those are its best days.
+4. Two process bugs cost real money (the leak and the deposit/stop interaction); both are fixed.
