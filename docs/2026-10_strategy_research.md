@@ -2942,3 +2942,30 @@ By whole-day volume (hindsight) it's +2.8 / +2.4 / +1.9. There is no activity-ba
 2. Live per-contract edge over 11 days is about 0–1¢, the low end of or below the research's +2–3¢.
 3. The cap clips the heavy days, and the backtest says those are its best days.
 4. Two process bugs cost real money (the leak and the deposit/stop interaction); both are fixed.
+
+## Fair-value Phase 2: hourly NBM vs the Kalshi price (Nov 10, 2026, `research/kalshi/fairvalue.py`)
+
+Question: is the hourly gridded NBM (Phase 1 archive, every run, mean + ensemble sd of the daytime max) a sharper or
+additional source of truth than the market, and can it tell the bot which favourites not to buy?
+Setup: 539k market-hours with a two-sided book (spread ≤ 10c), 12–36h before the window end, 10 series, Oct 2024 – Oct
+2026; latest NBM run public by then (run + 75 min); Y = round(X), X ~ N(mean + station bias, (k·sd)² + c²); fitted on
+DEV (< 2025-10-01), judged on HOLDOUT (369 market days); CIs by market-day bootstrap.
+
+| | DEV log-loss | HOLDOUT log-loss |
+|---|---|---|
+| market mid | 0.421 | **0.367** |
+| NBM model | 0.418 | 0.427 (worse by +0.059, CI +0.053..+0.066) |
+| blend (fit on DEV) | 0.396 | 0.373 (worse than the market by +0.006) |
+
+- A year ago the model was as sharp as the market and a blend beat it (the information was there). From Oct 2025 the
+  market got much sharper (log-loss 0.42 → 0.37) while the NBM stayed put. Even fitting the model on the holdout itself
+  (cheating) only gets 0.424. Every quarter since 2025Q4 the market beats it by ~0.05.
+- Favourite filter: favourites at ≥ 60c earn +1.1c at the mid; where the model disagrees by > 5 pts, +0.8c — no
+  useful separation.
+- Taker on model-vs-book gaps after fees: −2.3c (5 pts) / −2.6c (10 pts) per contract.
+
+**Verdict: no edge from NBM. The market now prices in far more than the free hourly blend** (likely HRRR/RAP runs,
+live observations and private models). This is also consistent with our favourite-side edge shrinking over time. Free
+forecast data has now been tested four ways (Oct 8 text NBM, Oct 22 run lag, Nov 10 hourly NBM, sniper) with the
+same answer. The only free input not yet tried is same-day live observations (ASOS 1-minute / 5-minute) — that is the
+sniper's territory, and it lost on speed.
