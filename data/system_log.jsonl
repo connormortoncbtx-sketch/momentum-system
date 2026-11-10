@@ -3420,3 +3420,4 @@
 {"timestamp": "2026-11-10T20:46:06.691246+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Skipped: not entry day (expected monday)", "metrics": {}, "errors": []}
 {"timestamp": "2026-11-10T21:11:21.817420+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=place_stops", "metrics": {}, "errors": []}
 {"timestamp": "2026-11-10T21:11:22.354519+00:00", "workflow": "alpaca_trader", "status": "error", "message": "place_stops: 0 placed, 0 adopted, 8 skipped, 2 failed", "metrics": {"placed": 0, "adopted": 0, "skipped": 8, "failed": 2}, "errors": []}
+{"timestamp": "2026-11-10T21:17:34.983933+00:00", "workflow": "shadow_stack", "status": "success", "message": "Shadow stack: NAV 1x 95.20, 2x 89.97, 3x 84.80 | v2 1x 96.72, volt 96.23", "metrics": {"1x": 95.1958119161562, "2x": 89.97279812404453, "3x": 84.80475055369402}, "errors": []}
