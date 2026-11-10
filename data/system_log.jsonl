@@ -3418,3 +3418,5 @@
 {"timestamp": "2026-11-10T20:01:20.696539+00:00", "workflow": "shadow_filings", "status": "success", "message": "Shadow filings: 29 judged-eligible, new long 2, new short 13, open trades 562, diversified-book NAV 97.26", "metrics": {}, "errors": []}
 {"timestamp": "2026-11-10T20:46:06.689921+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=entry", "metrics": {}, "errors": []}
 {"timestamp": "2026-11-10T20:46:06.691246+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Skipped: not entry day (expected monday)", "metrics": {}, "errors": []}
+{"timestamp": "2026-11-10T21:11:21.817420+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=place_stops", "metrics": {}, "errors": []}
+{"timestamp": "2026-11-10T21:11:22.354519+00:00", "workflow": "alpaca_trader", "status": "error", "message": "place_stops: 0 placed, 0 adopted, 8 skipped, 2 failed", "metrics": {"placed": 0, "adopted": 0, "skipped": 8, "failed": 2}, "errors": []}
