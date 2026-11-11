@@ -1,5 +1,5 @@
 {
- "since": "2026-11-10T14:12:26-05:00",
+ "since": "2026-11-10T17:30:46-05:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -5628,6 +5628,266 @@
    "decided": "2026-11-10T15:00:41.121874-05:00",
    "event_type": "acquisition",
    "summary": "Jacobs Private Equity acquires company for $1B via preferred equity; massive shareholder dilution",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "SEV",
+   "accession": "0001493152-26-051042",
+   "decided": "2026-11-11T02:57:25.454219-05:00",
+   "event_type": "equity_financing",
+   "summary": "Registered direct offering: 3.4M shares at $1.75 + concurrent warrants; $5.5M net proceeds.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "NHP",
+   "accession": "0001140361-26-043079",
+   "decided": "2026-11-11T02:57:28.038367-05:00",
+   "event_type": "equity_financing",
+   "summary": "Company establishes $300M ATM equity offering program with forward sale provisions",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "IRHO",
+   "accession": "0001213900-26-118137",
+   "decided": "2026-11-11T02:57:31.217374-05:00",
+   "event_type": "acquisition",
+   "summary": "SPAC merger with Electra Vehicles progressing; $5M bridge financing raised, S-4 amended.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "RLYB",
+   "accession": "0001193125-26-455762",
+   "decided": "2026-11-11T02:57:36.093549-05:00",
+   "event_type": "acquisition",
+   "summary": "Company executing 1-for-2 reverse split ahead of Avenzo Therapeutics merger completion.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CRMD",
+   "accession": "0001213900-26-118109",
+   "decided": "2026-11-11T02:57:39.111459-05:00",
+   "event_type": "acquisition",
+   "summary": "Definitive asset purchase agreement to acquire substantially all Heron Therapeutics assets; adds four FDA-approved commercial brands.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "FWDI",
+   "accession": "0001683168-26-008510",
+   "decided": "2026-11-11T02:57:43.812650-05:00",
+   "event_type": "equity_financing",
+   "summary": "Added Barclays to $4B ATM equity offering; grew SOL holdings 2.7%; secured $50M credit facility.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "NMAD",
+   "accession": "0001493152-26-051024",
+   "decided": "2026-11-11T02:57:46.666388-05:00",
+   "event_type": "exec_departure",
+   "summary": "CEO resigned; $600K severance plus 1.5M RSUs granted. New Executive Chairman appointed.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "KULR",
+   "accession": "0001104659-26-125320",
+   "decided": "2026-11-11T02:57:52.050506-05:00",
+   "event_type": "litigation",
+   "summary": "Company filed Delaware Section 205 validation petition for defective corporate acts, raising fundamental governance and capitalization concerns.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "RENT",
+   "accession": "0000950103-26-017271",
+   "decided": "2026-11-11T02:57:59.533922-05:00",
+   "event_type": "listing_deficiency",
+   "summary": "Failed Nasdaq MVPHS requirement; 180-day cure period or delisting risk looms.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "AVX",
+   "accession": "0001493152-26-050999",
+   "decided": "2026-11-11T02:58:01.953062-05:00",
+   "event_type": "buyback_dividend",
+   "summary": "Eliminated $970K convertible debt; repurchased 710K shares at $5.46/share in October.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "BYND",
+   "accession": "0001655210-26-000080",
+   "decided": "2026-11-11T02:58:06.693794-05:00",
+   "event_type": "exec_departure",
+   "summary": "SVP Sales Drew Lufkin resigning effective November 20, 2026 to pursue other opportunity.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "TRON",
+   "accession": "0001493152-26-050984",
+   "decided": "2026-11-11T02:58:12.154388-05:00",
+   "event_type": "prelim_results_good",
+   "summary": "Q3 2026 net income $39.4M (203% YoY), digital assets $257.8M, staking income 4x YoY.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "QUIK",
+   "accession": "0001437749-26-036186",
+   "decided": "2026-11-11T02:58:17.808588-05:00",
+   "event_type": "prelim_results_good",
+   "summary": "Q3 revenue $5.1M up 153% YoY; net loss improved; eFPGA design win announced.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "KEEL",
+   "accession": "0001812477-26-000045",
+   "decided": "2026-11-11T02:58:28.828807-05:00",
+   "event_type": "exec_departure",
+   "summary": "EVP, General Counsel and Corporate Secretary Rachel Silverstein ceased serving effective November 4, 2026.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "NHP",
+   "accession": "0001140361-26-043036",
+   "decided": "2026-11-11T02:58:33.798333-05:00",
+   "event_type": "strategic_review",
+   "summary": "Company divesting 40 OMFs for ~$531M; acquiring 24+ SHOP communities; significant portfolio restructuring.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "GRWG",
+   "accession": "0001604868-26-000024",
+   "decided": "2026-11-11T02:58:42.480834-05:00",
+   "event_type": "restructuring",
+   "summary": "Strategic restructuring with store closures, workforce reductions, and narrowed FY2026 guidance.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "KLXE",
+   "accession": "0001738827-26-000078",
+   "decided": "2026-11-11T02:58:45.216713-05:00",
+   "event_type": "routine",
+   "summary": "Q3 2026 investor presentation filed; routine earnings disclosure with no material news.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "STIM",
+   "accession": "0001193125-26-455457",
+   "decided": "2026-11-11T02:58:47.754438-05:00",
+   "event_type": "debt_financing",
+   "summary": "Sixth credit amendment requiring $15M prepayment by Nov 30 or automatic termination.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "OPFI",
+   "accession": "0001818502-26-000103",
+   "decided": "2026-11-11T02:58:50.321972-05:00",
+   "event_type": "routine",
+   "summary": "Company files investor presentation dated November 2026 for disclosure purposes.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "KLXE",
+   "accession": "0001738827-26-000076",
+   "decided": "2026-11-11T02:58:55.479733-05:00",
+   "event_type": "acquisition",
+   "summary": "Wolf Pack Rentals asset acquisition ($16.7M) closed June 2026; pro forma financials filed November.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "PACB",
+   "accession": "0001104659-26-125166",
+   "decided": "2026-11-11T02:58:59.932257-05:00",
+   "event_type": "equity_financing",
+   "summary": "Company establishes $100M at-the-market equity offering program with Allen & Company.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "PRME",
+   "accession": "0001628280-26-072713",
+   "decided": "2026-11-11T02:59:02.616434-05:00",
+   "event_type": "prelim_results_good",
+   "summary": "Company reports $61.2M cash position as of Q3 2026; preliminary estimates pending final close.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "BHR",
+   "accession": "0001104659-26-125156",
+   "decided": "2026-11-11T02:59:08.172387-05:00",
+   "event_type": "strategic_review",
+   "summary": "Braemar completes transition to self-managed REIT after strategic review, terminates advisor agreement with Ashford.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "STXS",
+   "accession": "0001493152-26-050957",
+   "decided": "2026-11-11T02:59:11.382979-05:00",
+   "event_type": "debt_financing",
+   "summary": "Company raises $12M convertible debt from board-affiliated investors at 10% interest, convertible at $1.21/share premium pricing.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "BGS",
+   "accession": "0001104659-26-125151",
+   "decided": "2026-11-11T02:59:17.488990-05:00",
+   "event_type": "prelim_results_good",
+   "summary": "Q3 2026 earnings: base business net sales +5.0%, adjusted EBITDA +16.2%, guidance raised for full year.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "NCMI",
+   "accession": "0001193125-26-455387",
+   "decided": "2026-11-11T02:59:23.677691-05:00",
+   "event_type": "exec_departure",
+   "summary": "CEO Thomas Lesinski retiring December 31, 2026; $3M severance; board searches replacement.",
    "entry_date": null,
    "entry": null
   }
