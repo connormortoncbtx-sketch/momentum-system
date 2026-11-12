@@ -13,16 +13,6 @@
   },
   {
    "book": "short_bad_news",
-   "symbol": "QUMS",
-   "accession": "0001829126-26-011072",
-   "decided": "2026-10-14T02:25:29.322488-04:00",
-   "event_type": "acquisition",
-   "summary": "SPAC merger agreement: $600M pre-money valuation acquisition of Fortune Favor Technology by parent company.",
-   "entry_date": "2026-10-14",
-   "entry": 10.38
-  },
-  {
-   "book": "short_bad_news",
    "symbol": "DAKT",
    "accession": "0001628280-26-065837",
    "decided": "2026-10-14T13:35:03.096233-04:00",
