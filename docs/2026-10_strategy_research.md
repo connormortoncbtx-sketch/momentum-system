@@ -2969,3 +2969,34 @@ live observations and private models). This is also consistent with our favourit
 forecast data has now been tested four ways (Oct 8 text NBM, Oct 22 run lag, Nov 10 hourly NBM, sniper) with the
 same answer. The only free input not yet tried is same-day live observations (ASOS 1-minute / 5-minute) — that is the
 sniper's territory, and it lost on speed.
+
+## Kalshi bot retired (Nov 12, 2026)
+
+Connor's call after the fair-value Phase 2 result: shut it down and withdraw. Scheduled daily check, Dec 15 deadline
+task and the Kalshi new-series watch workflow disabled. Lessons: the favourite-side edge was real in the backtest but
+small (+0.7–0.8¢ shrunk per contract live), short volatility (bust days dominated), and shrinking as the market got
+sharper; every free information source we tested was already priced in.
+
+## Should the momentum books reach into smaller / thinner stocks? (Nov 12, 2026, `research/universe_floor.py`)
+
+Question (Connor): the best stretch came when very small stocks got in; with the live account in the hundreds, price
+impact is nil, so loosen the universe and maybe go back to the weekly pick-10?
+Facts first: the live pipeline's floor has been the same since its first commit (Mar 27, 2026): price ≥ $5, ≥ 500k
+shares/day, ≥ $300M market cap. The live stack's CONTRACT sleeve already reaches down to $30M caps / $1 / $300k a day.
+In the live log, the best weeks (Apr 24 +11%, May 15 +14%) had median pick prices of $55 and $100; the weeks with
+sub-$5 picks (Apr 17, May 1) were −3% and +1%.
+Test: 2017 – Sep 2026 weekly panel, top-10 equal weight, live momentum proxy and 12-1 momentum, weekly pick-10 /
+weekly with top-30 buffer / monthly with buffer; per-name half-spread costs by dollar volume and price (tiny orders,
+so spread only), 2x sensitivity; small-cap disappearances −30% (0% sensitivity). Dev 2017–23, holdout 2024–26.
+
+- The names a looser floor ADDS (≥ $1 and ≥ $250k/day but below $5 / $2M) are a disaster as a momentum book:
+  −20% to −45% CAGR in every design, in dev and holdout, at 1x costs and with 0% delisting losses. Even with ZERO
+  costs, top-10 momentum within them returns +2.7%/yr (weekly) / −1.9% (monthly) against +9.4% for simply holding the
+  whole slice — momentum points the wrong way in small, cheap stocks (lottery-ticket reversal).
+- Loosening the whole universe: the old pick-10 gets worse at every step (dev CAGR $5/$2M +0.2% → $1/$250k −26%).
+  For other books a looser floor sometimes wins the holdout and loses dev (or vice versa) — noise, no consistent gain.
+- Spring 2026 (Mar–Jun), old pick-10: $5/$2M +5.1%, small slice −18.6%.
+- Old weekly pick-10 on today's universe: +66% over the last 52 weeks, but +0.2%/yr 2017–23 and −62% max drawdown
+  — a hot regime, not a reliable design. Monthly with a buffer is the better shape (live proxy holdout +27.8%,
+  Sharpe 0.85; dev +5.3%).
+**Verdict: do not loosen the universe; do not switch the live account back to the weekly pick-10.**
