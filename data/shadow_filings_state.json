@@ -1,5 +1,5 @@
 {
- "since": "2026-11-10T17:30:46-05:00",
+ "since": "2026-11-12T15:08:54-05:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -13,146 +13,6 @@
   },
   {
    "book": "short_bad_news",
-   "symbol": "DAKT",
-   "accession": "0001628280-26-065837",
-   "decided": "2026-10-14T13:35:03.096233-04:00",
-   "event_type": "restructuring",
-   "summary": "Manufacturing network optimization: Ireland facility closure, $13.5M charge, exit customized transportation business.",
-   "entry_date": "2026-10-15",
-   "entry": 18.06
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "TOP",
-   "accession": "0001213900-26-109242",
-   "decided": "2026-10-14T13:35:09.006474-04:00",
-   "event_type": "restructuring",
-   "summary": "U.S. headquarters established in Houston; board restructured from 5 to 7 directors with new appointments.",
-   "entry_date": "2026-10-15",
-   "entry": 14.96
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "ALEC",
-   "accession": "0001193125-26-421080",
-   "decided": "2026-10-14T13:35:11.588533-04:00",
-   "event_type": "dilution_other",
-   "summary": "Board approved stock option repricing to $1.87 exercise price for 4.05M shares",
-   "entry_date": "2026-10-15",
-   "entry": 1.92
-  },
-  {
-   "book": "long_contract_win",
-   "symbol": "RARE",
-   "accession": "0001193125-26-421079",
-   "decided": "2026-10-14T13:35:13.419461-04:00",
-   "event_type": "contract_win",
-   "summary": "Company sells Rare Pediatric Disease Priority Review Voucher for $203M cash",
-   "entry_date": "2026-10-15",
-   "entry": 14.87
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "SKYX",
-   "accession": "0001493152-26-046938",
-   "decided": "2026-10-14T13:35:17.126322-04:00",
-   "event_type": "acquisition",
-   "summary": "Acquisition of Deako completed; 25M shares issued plus $12.5M debt obligation incurred.",
-   "entry_date": "2026-10-15",
-   "entry": 1.04
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "ONMD",
-   "accession": "0001493152-26-046931",
-   "decided": "2026-10-14T13:35:34.934425-04:00",
-   "event_type": "listing_deficiency",
-   "summary": "Company regains Nasdaq compliance after bid price fell below $1.00 minimum; deficiency resolved.",
-   "entry_date": "2026-10-15",
-   "entry": 4.63
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "FFAI",
-   "accession": "0001213900-26-109222",
-   "decided": "2026-10-14T13:35:40.480421-04:00",
-   "event_type": "divestiture",
-   "summary": "Company divests robotics business to FFR for $200M via stock consideration, requires FFR stockholder approval.",
-   "entry_date": "2026-10-15",
-   "entry": 0.9086
-  },
-  {
-   "book": "long_contract_win",
-   "symbol": "ETON",
-   "accession": "0001437749-26-032600",
-   "decided": "2026-10-14T13:35:44.946641-04:00",
-   "event_type": "contract_win",
-   "summary": "Exclusive U.S. license agreement for LIBERVANT seizure treatment; $10M upfront plus $47.5M milestones.",
-   "entry_date": "2026-10-15",
-   "entry": 53.275
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "TRON",
-   "accession": "0001493152-26-047064",
-   "decided": "2026-10-15T02:06:13.414799-04:00",
-   "event_type": "equity_financing",
-   "summary": "Company establishes at-the-market equity offering agreement with Clear Street LLC, enabling ongoing dilutive share sales.",
-   "entry_date": "2026-10-15",
-   "entry": 1.18
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "VSTM",
-   "accession": "0001104659-26-115880",
-   "decided": "2026-10-15T02:06:16.262172-04:00",
-   "event_type": "equity_financing",
-   "summary": "Equity offering of ~$235M net (31.2M shares + warrants); significant dilution for small-revenue company.",
-   "entry_date": "2026-10-15",
-   "entry": 8.04
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "DSGR",
-   "accession": "0001193125-26-421808",
-   "decided": "2026-10-15T02:06:19.374898-04:00",
-   "event_type": "acquisition",
-   "summary": "Lawson subsidiary acquiring GradeEight for ~$145M while company pursuing go-private transaction",
-   "entry_date": "2026-10-15",
-   "entry": 35.05
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "VISN",
-   "accession": "0001193125-26-421807",
-   "decided": "2026-10-15T02:06:22.305069-04:00",
-   "event_type": "buyback_dividend",
-   "summary": "Board approves $1.50/share special cash distribution funded by recent asset sale proceeds.",
-   "entry_date": "2026-10-15",
-   "entry": 4.373
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "ORC",
-   "accession": "0001437749-26-032635",
-   "decided": "2026-10-15T02:06:25.640358-04:00",
-   "event_type": "prelim_results_bad",
-   "summary": "REIT reports Q3 estimated loss of $0.90/share; heavy RMBS losses; maintains monthly dividend.",
-   "entry_date": "2026-10-15",
-   "entry": 5.018
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "USGO",
-   "accession": "0001437749-26-032627",
-   "decided": "2026-10-15T02:06:35.275073-04:00",
-   "event_type": "routine",
-   "summary": "Routine disclosure of unaudited Q3 2026 interim financials via parent company 6-K filing.",
-   "entry_date": "2026-10-15",
-   "entry": 5.64
-  },
-  {
-   "book": "short_bad_news",
    "symbol": "NATH",
    "accession": "0001104659-26-115866",
    "decided": "2026-10-15T02:06:37.737470-04:00",
@@ -160,66 +20,6 @@
    "summary": "Nathan's Famous facing stockholder lawsuits and demand letters over Smithfield merger proxy disclosures.",
    "entry_date": "2026-10-15",
    "entry": 101.915
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "IIPR",
-   "accession": "0001104659-26-115864",
-   "decided": "2026-10-15T02:06:40.460452-04:00",
-   "event_type": "equity_financing",
-   "summary": "Company issues $50M Series B preferred stock with 9.25% dividend; dilutive to common equity.",
-   "entry_date": "2026-10-15",
-   "entry": 51.97
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "CMTL",
-   "accession": "0000023197-26-000113",
-   "decided": "2026-10-15T02:06:43.486983-04:00",
-   "event_type": "exec_departure",
-   "summary": "CFO Michael Bondi departing after S&S business sale to Gilat; Richard Nyren appointed as replacement.",
-   "entry_date": "2026-10-15",
-   "entry": 1.32
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "IVR",
-   "accession": "0001437071-26-000076",
-   "decided": "2026-10-15T02:06:46.303474-04:00",
-   "event_type": "routine",
-   "summary": "October dividend announced; preliminary September financial update with $8.0B portfolio.",
-   "entry_date": "2026-10-15",
-   "entry": 5.567
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "MOVE",
-   "accession": "0001213900-26-109462",
-   "decided": "2026-10-15T02:06:50.922488-04:00",
-   "event_type": "equity_financing",
-   "summary": "Company establishes at-the-market equity offering facility for working capital needs.",
-   "entry_date": "2026-10-15",
-   "entry": 8.2
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "GDOT",
-   "accession": "0001386278-26-000048",
-   "decided": "2026-10-15T02:06:57.767097-04:00",
-   "event_type": "exec_departure",
-   "summary": "General Counsel Amy Pugh resigns effective November 2, 2026 for another opportunity.",
-   "entry_date": "2026-10-15",
-   "entry": 12.46
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "YEXT",
-   "accession": "0001628280-26-065872",
-   "decided": "2026-10-15T02:07:00.915088-04:00",
-   "event_type": "exec_appointment",
-   "summary": "CEO granted 11M stock options with steep performance hurdles; extreme dilution if achieved.",
-   "entry_date": "2026-10-15",
-   "entry": 7.0
   },
   {
    "book": "short_bad_news",
@@ -2400,17 +2200,6 @@
    "summary": "Definitive agreement retains significant customer portion for two years; revenue expected to grow versus 2025.",
    "entry_date": "2026-10-29",
    "entry": 17.65
-  },
-  {
-   "book": "long_contract_div",
-   "symbol": "FWRD",
-   "accession": "0001628280-26-067736",
-   "decided": "2026-10-28T14:30:04.952640-04:00",
-   "event_type": "contract_win",
-   "summary": "Definitive agreement retains significant customer portion for two years; revenue expected to grow versus 2025.",
-   "entry_date": "2026-10-29",
-   "entry": 17.65,
-   "vol60": 0.6583076318305344
   },
   {
    "book": "short_bad_news",
@@ -5731,19 +5520,209 @@
    "summary": "CEO Thomas Lesinski retiring December 31, 2026; $3M severance; board searches replacement.",
    "entry_date": "2026-11-11",
    "entry": 1.6
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "UPWK",
+   "accession": "0001627475-26-000058",
+   "decided": "2026-11-12T15:24:22.290413-05:00",
+   "event_type": "restructuring",
+   "summary": "37% workforce reduction; $27-37M restructuring charges; expansion of prior May plan.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_win",
+   "symbol": "LEU",
+   "accession": "0001628280-26-073175",
+   "decided": "2026-11-12T15:24:26.545725-05:00",
+   "event_type": "contract_win",
+   "summary": "Centrus signed multi-year HALEU supply contract with Oklo; deliveries begin 2029; prepayments secured.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_div",
+   "symbol": "LEU",
+   "accession": "0001628280-26-073175",
+   "decided": "2026-11-12T15:24:26.545725-05:00",
+   "event_type": "contract_win",
+   "summary": "Centrus signed multi-year HALEU supply contract with Oklo; deliveries begin 2029; prepayments secured.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "NNDM",
+   "accession": "0001193125-26-457157",
+   "decided": "2026-11-12T15:24:31.254598-05:00",
+   "event_type": "contract_loss",
+   "summary": "Termination of $42.5M sale of MarkForged subsidiary to Stratasys due to regulatory delays",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "TGEN",
+   "accession": "0001537435-26-000095",
+   "decided": "2026-11-12T15:24:34.619122-05:00",
+   "event_type": "prelim_results_good",
+   "summary": "Q3 2026 revenue +9.6% YoY; service segment +13.2%; operating loss narrows 25.4% but company unprofitable",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "BCIC",
+   "accession": "0001193125-26-457103",
+   "decided": "2026-11-12T15:24:48.786501-05:00",
+   "event_type": "acquisition",
+   "summary": "Company acquiring Investcorp Credit Management BDC in stock-and-cash merger transaction.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "STIM",
+   "accession": "0001193125-26-457099",
+   "decided": "2026-11-12T15:24:54.241220-05:00",
+   "event_type": "equity_financing",
+   "summary": "Equity offering of 18.75M shares at $1.60/share; $27.7M net proceeds for debt repayment and operations.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "PRME",
+   "accession": "0001628280-26-073131",
+   "decided": "2026-11-12T15:25:08.606480-05:00",
+   "event_type": "equity_financing",
+   "summary": "Biotech equity offering: $125M net proceeds, 41M shares dilution, funds Wilson disease R&D.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "VOR",
+   "accession": "0001193125-26-456955",
+   "decided": "2026-11-12T15:25:26.648831-05:00",
+   "event_type": "partnership",
+   "summary": "Amended license agreement adds RC298 product; $10M upfront, 2.3M warrant shares at $0.0001",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ABSI",
+   "accession": "0001672688-26-000150",
+   "decided": "2026-11-12T15:25:32.657889-05:00",
+   "event_type": "prelim_results_good",
+   "summary": "Q3 2026 results announced; ABS-201 Ph1/2a interim POC readout expected December 2026 for hair loss.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "HYPD",
+   "accession": "0001104659-26-125794",
+   "decided": "2026-11-12T15:25:48.547217-05:00",
+   "event_type": "prelim_results_good",
+   "summary": "Q3 record net income $39.6M, 127% revenue growth, breakeven core ops achieved",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_win",
+   "symbol": "FRMI",
+   "accession": "0001213900-26-118351",
+   "decided": "2026-11-12T15:25:52.227588-05:00",
+   "event_type": "contract_win",
+   "summary": "Investment-grade hyperscaler commits $200M+ for 600 MW Project Matador development",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_div",
+   "symbol": "FRMI",
+   "accession": "0001213900-26-118351",
+   "decided": "2026-11-12T15:25:52.227588-05:00",
+   "event_type": "contract_win",
+   "summary": "Investment-grade hyperscaler commits $200M+ for 600 MW Project Matador development",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "LAC",
+   "accession": "0001193125-26-456875",
+   "decided": "2026-11-12T15:25:55.282753-05:00",
+   "event_type": "prelim_results_good",
+   "summary": "Q3 2026 results: Thacker Pass Phase 1 on track, capex guidance $3.83B, construction progressing.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "TE",
+   "accession": "0001213900-26-118327",
+   "decided": "2026-11-12T15:26:00.755869-05:00",
+   "event_type": "prelim_results_good",
+   "summary": "1.6GW new solar contracts signed; 2027 capacity nearly sold; Q3 loss reflects inventory build strategy.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "NUAI",
+   "accession": "0001213900-26-118324",
+   "decided": "2026-11-12T15:26:03.905958-05:00",
+   "event_type": "prelim_results_good",
+   "summary": "207 MW firm power contract with Luminant for TCDC Phase 1; $64M PIPE financing completed; lease negotiations ongoing.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "APC",
+   "accession": "0001193125-26-456748",
+   "decided": "2026-11-12T15:26:08.996733-05:00",
+   "event_type": "acquisition",
+   "summary": "Company completes $230M U.S. Petroleum Partners acquisition; escrow shares contingent on 2027 EBITDA.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ENGN",
+   "accession": "0001193125-26-456703",
+   "decided": "2026-11-12T15:26:14.577259-05:00",
+   "event_type": "clinical_positive",
+   "summary": "Phase 2 LEGEND trial Cohort 1 results announced; FDA alignment on BLA components achieved.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "IMXI",
+   "accession": "0001140361-26-043232",
+   "decided": "2026-11-12T15:26:17.276456-05:00",
+   "event_type": "contract_loss",
+   "summary": "Western Union terminated agreed merger via outside date despite regulatory approval received.",
+   "entry_date": null,
+   "entry": null
   }
  ],
  "div": {
-  "nav": 98.24042351311701,
+  "nav": 94.54818476314318,
   "closed": [
    {
-    "symbol": "MBOT",
-    "entry_date": "2026-10-28",
-    "exit_date": "2026-11-11",
-    "vol60": 0.5494765901338683
+    "symbol": "FWRD",
+    "entry_date": "2026-10-29",
+    "exit_date": "2026-11-12",
+    "vol60": 0.6583076318305344
    }
   ],
-  "last_date": "2026-11-11",
+  "last_date": "2026-11-12",
   "history": {
    "2026-10-15": 100.3592,
    "2026-10-16": 98.6604,
@@ -5764,7 +5743,8 @@
    "2026-11-06": 99.7217,
    "2026-11-09": 103.0385,
    "2026-11-10": 97.2612,
-   "2026-11-11": 98.2404
+   "2026-11-11": 98.2404,
+   "2026-11-12": 94.5482
   }
  }
 }
