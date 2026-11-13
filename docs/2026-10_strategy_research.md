@@ -3000,3 +3000,21 @@ so spread only), 2x sensitivity; small-cap disappearances −30% (0% sensitivity
   — a hot regime, not a reliable design. Monthly with a buffer is the better shape (live proxy holdout +27.8%,
   Sharpe 0.85; dev +5.3%).
 **Verdict: do not loosen the universe; do not switch the live account back to the weekly pick-10.**
+
+## Selection lab: can documented fixes pick better stocks? (Nov 13, 2026, `research/selection_lab.py`)
+
+Prompt (Connor, after 4 live weeks of the new stack trailing the old pick-10): "we need to make it so we are picking
+the right stocks." Tested on the $5 / $2M universe, top-10, spread costs, 2017-23 dev / 2024-Sep 2026 holdout; bar =
+beat BOTH incumbents (old pick-10 proxy and 12-1) on Sharpe in dev AND holdout.
+- Residual momentum (beta-stripped, vol-scaled; Blitz et al.): best holdout of anything (weekly resid12 Sharpe 1.00,
+  +30%/yr) but weak dev (0.35 vs 0.60). Monthly resid6 is the most even (0.61 / 0.53 vs 12-1's 0.67 / 0.43). Lead, not a
+  winner.
+- Horizon switching (use whichever signal's book did best over the last 13/26/52 weeks): worse than either incumbent
+  in the holdout (−6% to −15%/yr). Chasing last year's winner does not work at the stock-signal level.
+- Crash guard (cash after negative 2-year markets in high vol): 25 weeks triggered (2020, 2023); cut dev returns,
+  no holdout effect. Rejected.
+- Ensemble of 8 signals: middling in both periods.
+- Every top-10 price-momentum book swings ±30-50% year to year; with 10 names out of ~2,600, picking is dominated by
+  noise. **Price-momentum variants are exhausted as a source of better picks.** The only stock picker that has held up
+  in dev, holdout and live is the information-based one (CONTRACT_h: 0.85 / 0.97, live sleeve +1.8% while the others
+  fell). Next lead: more information-based pickers from 8-K events (filings data has item codes back to 2016).
