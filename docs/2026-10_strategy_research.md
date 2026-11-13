@@ -3044,3 +3044,29 @@ QQQ, IWM 2016-26 and the Fama-French daily market back to 1963.
 - Textbook result: turn-of-month and pre-holiday were strong 1963-2009 (t +4.4 and +4.2) and faded after publication
   (2010+: t +0.5 and +1.1; SPY/QQQ/IWM 2016-26 TOM t −0.5 to +0.2). The Monday effect flipped sign.
 - No timing rule beats buy-and-hold in any recent period (in the market only ~20% of days). **Rejected.**
+
+## Data checks and 8-K timing (Nov 13, 2026)
+
+**Stock splits.** All 13 big-name splits checked (NVDA, AVGO, CMG, WMT, LRCX, SMCI, AAPL, TSLA, GOOGL, AMZN, ORLY, FAST,
+IBKR) are adjusted correctly in `close` and `d1_close` (the prices the simulators use); price filters use `raw_close`.
+But 408 weeks in the $5 / $2M universe show a >= 3x move with no adjustment, ~118 within 3% of a whole split ratio --
+a mix of real squeezes (KOD, VEEE) and missed splits, mostly in small names and leveraged ETPs (e.g. OIG $0.38 -> $11.66,
+PHOE −90%). backtest.py's |r| < 150% clip removes the reverse-split ones; the newer simulators (universe_floor,
+selection_lab, merger_arb) clip at 300% and can keep a phantom +200% / −66% / −90%. Rare against ~1.3M name-weeks, but
+it can hit a 10-name book; to be filtered in the delisted-data rebuild (cross-check against a vendor split calendar).
+
+**Are 8-Ks "too late"? (`research/eightk_timing.py`).** 6,593 8-Ks of 48 large caps with 5-minute bars, 2017-2026;
+excess move vs SPY in the 3 days before the SEC acceptance time vs the 3 days after:
+- Earnings (2.02): 65% of the move comes after acceptance -- the 8-K goes out with the release (mostly after the close),
+  so it is not late, but the reaction is at the next open, which a filing feed cannot beat.
+- Every other item (1.01, 5.02, 7.01, 8.01, 5.07): 49-50% before / 50% after, and pre/post uncorrelated -- exactly what
+  ordinary volatility gives with no news. For large caps these 8-Ks carry no price information: either already
+  press-released or immaterial. Filed during market hours: 56% before (news out first, filing after).
+- Small caps differ (LLM study, Oct 11): the filing is often the only publication; good news gaps at the first open
+  and fades, bad news and contract wins drift. That is where the 8-K edge lives.
+- Not yet squeezed: mid caps ($2-10B) were never LLM-read (the reader covered $30M-$2B); intraday entry on
+  market-hours small-cap filings (needs small-cap intraday data); both need the delisted data first for an honest
+  2024-26 test.
+
+**Data source chosen:** EODHD -- delisted tickers in every package (26,000+ US delisted, mostly from 2000), listed via
+`exchange-symbol-list/US?delisted=1`; EOD plan $19.99/month with 100,000 calls/day (one month is enough to pull it).
