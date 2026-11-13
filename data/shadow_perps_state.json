@@ -1,16 +1,16 @@
 {
- "updated": "2026-11-12T09:56:47+00:00",
+ "updated": "2026-11-13T09:42:55+00:00",
  "start": "2026-10-27T00:00:00+00:00",
- "settlements": 49,
- "days": 16.21,
+ "settlements": 52,
+ "days": 17.21,
  "notional": 10000.0,
  "capital": 12000.0,
- "funding_usd": 69.51,
+ "funding_usd": 72.66,
  "basis_usd": 0.0,
- "tbill_usd": 20.25,
- "carry_ann_pct": 13.04,
- "total_ann_pct": 13.04,
- "excess_ann_pct": 9.24,
- "share_positive": 0.735,
- "last_rate": 0.0001997952983017
+ "tbill_usd": 21.5,
+ "carry_ann_pct": 12.84,
+ "total_ann_pct": 12.84,
+ "excess_ann_pct": 9.04,
+ "share_positive": 0.731,
+ "last_rate": 0.0
 }
