@@ -1,5 +1,5 @@
 {
- "since": "2026-11-12T15:08:54-05:00",
+ "since": "2026-11-12T17:30:24-05:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -1809,7 +1809,7 @@
    "event_type": "debt_financing",
    "summary": "Maine Natural subsidiary issued $40M senior unsecured notes due 2031 to refinance existing debt.",
    "entry_date": "2026-10-27",
-   "entry": 54.8
+   "entry": 54.33
   },
   {
    "book": "short_bad_news",
@@ -2581,7 +2581,7 @@
    "event_type": "exec_departure",
    "summary": "CFO Stefan Chkautovich resigned effective November 7, 2026; President Matthew Funke assumes principal financial officer role.",
    "entry_date": "2026-10-30",
-   "entry": 71.84
+   "entry": 71.57
   },
   {
    "book": "short_bad_news",
@@ -3525,7 +3525,7 @@
    "event_type": "routine",
    "summary": "Q3 2026 earnings announced: $0.09 EPS, FFO $0.54/share, occupancy 90.1%, dividend maintained.",
    "entry_date": "2026-11-04",
-   "entry": 13.78
+   "entry": 13.47
   },
   {
    "book": "short_bad_news",
@@ -3735,7 +3735,7 @@
    "event_type": "acquisition",
    "summary": "Stockholders approved 2026 equity and ESPP plans contingent on Avenzo merger completion.",
    "entry_date": "2026-11-05",
-   "entry": 15.71
+   "entry": 1.757
   },
   {
    "book": "short_bad_news",
@@ -3926,7 +3926,7 @@
    "event_type": "prelim_results_good",
    "summary": "Q3 2026 results: $0.25 NII/share, deleveraging completed, net debt-to-equity improved to 1.30x",
    "entry_date": "2026-11-06",
-   "entry": 6.52
+   "entry": 6.414
   },
   {
    "book": "short_bad_news",
@@ -4667,7 +4667,7 @@
    "event_type": "regulatory_setback",
    "summary": "Merger with Avenzo Therapeutics closing postponed; listing approvals not obtained.",
    "entry_date": "2026-11-09",
-   "entry": 15.53
+   "entry": 1.737
   },
   {
    "book": "short_bad_news",
@@ -5299,7 +5299,7 @@
    "event_type": "acquisition",
    "summary": "Company executing 1-for-2 reverse split ahead of Avenzo Therapeutics merger completion.",
    "entry_date": "2026-11-11",
-   "entry": 15.86
+   "entry": 1.773
   },
   {
    "book": "short_bad_news",
@@ -5708,6 +5708,166 @@
    "decided": "2026-11-12T15:26:17.276456-05:00",
    "event_type": "contract_loss",
    "summary": "Western Union terminated agreed merger via outside date despite regulatory approval received.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "MVIS",
+   "accession": "0001493152-26-051502",
+   "decided": "2026-11-13T03:23:08.759533-05:00",
+   "event_type": "restructuring",
+   "summary": "Company terminates $12.8M in Redmond office/lab leases; convertible notes down 80% YTD.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "SWRD",
+   "accession": "0001663577-26-000339",
+   "decided": "2026-11-13T03:23:13.793468-05:00",
+   "event_type": "debt_financing",
+   "summary": "Third extension of $1.6M promissory note maturity to January 2027; related-party debt structure with CEO/Chairman involvement.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "GRML",
+   "accession": "0001213900-26-119002",
+   "decided": "2026-11-13T03:23:18.443462-05:00",
+   "event_type": "strategic_review",
+   "summary": "Company invests C$1.4M in Battery Mineral Resources; issues 1.1M shares to AnorTech for 25M AnorTech shares.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ASTE",
+   "accession": "0001104659-26-126300",
+   "decided": "2026-11-13T03:23:21.501920-05:00",
+   "event_type": "divestiture",
+   "summary": "Astec divesting Roadtec and Carlson Paving to Komatsu for $75M cash.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "LOB",
+   "accession": "0001462120-26-000081",
+   "decided": "2026-11-13T03:23:24.331153-05:00",
+   "event_type": "equity_financing",
+   "summary": "Completed $100M Series B perpetual preferred stock offering; net proceeds $96.25M.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "NAKA",
+   "accession": "0001493152-26-051437",
+   "decided": "2026-11-13T03:23:29.191494-05:00",
+   "event_type": "debt_financing",
+   "summary": "Extended maturity of $60M USDT loan tranche from Dec 2026 to Dec 2027; derivatives collateral included",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "PEPG",
+   "accession": "0001193125-26-458597",
+   "decided": "2026-11-13T03:23:33.799512-05:00",
+   "event_type": "equity_financing",
+   "summary": "Clinical-stage biotech raises $125M equity offering; substantial shareholder dilution expected.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "SPCE",
+   "accession": "0001193125-26-458580",
+   "decided": "2026-11-13T03:23:37.014641-05:00",
+   "event_type": "equity_financing",
+   "summary": "Announced $250M ATM offering and convertible debt-to-equity exchanges; significant dilution.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CADL",
+   "accession": "0001193125-26-458522",
+   "decided": "2026-11-13T03:23:43.640509-05:00",
+   "event_type": "equity_financing",
+   "summary": "Company establishes new $50M at-the-market equity offering via Jefferies as sales agent.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CVGI",
+   "accession": "0001628280-26-073427",
+   "decided": "2026-11-13T03:23:46.336691-05:00",
+   "event_type": "exec_appointment",
+   "summary": "CEO appointment with $1.6M inducement equity grants and 2.2M share dilution.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "VATE",
+   "accession": "0001006837-26-000128",
+   "decided": "2026-11-13T03:23:48.640646-05:00",
+   "event_type": "divestiture",
+   "summary": "Company completes DBM Global sale to IES for $378M cash to reduce debt obligations.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "PCRX",
+   "accession": "0001140361-26-043437",
+   "decided": "2026-11-13T03:23:51.029112-05:00",
+   "event_type": "litigation",
+   "summary": "Appeals court partially reversed royalty dispute win; owes royalties on 200-liter EXPAREL process.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ARI",
+   "accession": "0001193125-26-458415",
+   "decided": "2026-11-13T03:23:59.582974-05:00",
+   "event_type": "divestiture",
+   "summary": "Apollo Commercial Real Estate Finance completed liquidation; transferred assets to trust, deregistered from SEC.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "LFMD",
+   "accession": "0001493152-26-051397",
+   "decided": "2026-11-13T03:24:02.654466-05:00",
+   "event_type": "debt_financing",
+   "summary": "Company secured $12.5M venture debt with warrants; steep covenants and rates suggest financial pressure.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "FULC",
+   "accession": "0001193125-26-458387",
+   "decided": "2026-11-13T03:24:10.708044-05:00",
+   "event_type": "divestiture",
+   "summary": "Sale of early-stage HbF assets for $7M contingent on merger completion with Slate.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "STIM",
+   "accession": "0001193125-26-458367",
+   "decided": "2026-11-13T03:24:13.447135-05:00",
+   "event_type": "equity_financing",
+   "summary": "Company raised $27.7M via equity offering at $1.60/share, using proceeds to pay down $65M debt facility.",
    "entry_date": null,
    "entry": null
   }
