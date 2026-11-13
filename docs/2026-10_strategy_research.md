@@ -3070,3 +3070,10 @@ excess move vs SPY in the 3 days before the SEC acceptance time vs the 3 days af
 
 **Data source chosen:** EODHD -- delisted tickers in every package (26,000+ US delisted, mostly from 2000), listed via
 `exchange-symbol-list/US?delisted=1`; EOD plan $19.99/month with 100,000 calls/day (one month is enough to pull it).
+
+**Free fix for the delisting hole (probe `research/probes/alpaca_delisted.py`, Nov 13).** Alpaca still serves daily
+bars for tickers it has dropped from its asset list, if asked by ticker (e.g. AATC, AEAE, ATEK, BCLI, BPTH, CARV --
+bars up to their last trading day). The panel missed them only because it fetched the asset list. So prices are free;
+what is missing is a complete LIST of 2023-26 delisted tickers. The SEC route is noisy (of 1,021 tickers with a
+Form 25 / 15-12 filing, 692 still trade -- warrants, units, notes, share classes). Plan: get the list from EODHD's
+delisted symbol list (one call; try the free account first), pull bars from Alpaca, rebuild 2023-26.
