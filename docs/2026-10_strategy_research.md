@@ -3018,3 +3018,29 @@ beat BOTH incumbents (old pick-10 proxy and 12-1) on Sharpe in dev AND holdout.
   noise. **Price-momentum variants are exhausted as a source of better picks.** The only stock picker that has held up
   in dev, holdout and live is the information-based one (CONTRACT_h: 0.85 / 0.97, live sleeve +1.8% while the others
   fell). Next lead: more information-based pickers from 8-K events (filings data has item codes back to 2016).
+
+## New strategy families, Nov 13, 2026 (Connor: "in any regime there are winners -- find them")
+
+Note first: the 8-K item scan (Oct 11) and winners-first study (Oct 11) already answered the obvious versions: no 8-K
+item predicts outperformance, and before their run the biggest winners look like the biggest losers (volatile, cheap,
+beaten down; ~3/4 with no filing catalyst). So the hunt is for MECHANISMS (forced/slow/overpaying counterparties) in
+families never tested here.
+
+**Merger arbitrage (`research/merger_arb.py`).** Targets from PREM14A / DEFM14A / SC TO-T / SC TO-C / SC 14D9 on the
+target's CIK, entered the Monday after the filing week, held to completion (stops trading) or 52 weeks.
+- All 1,346 events: +5.0%/yr dev, +9.3% holdout, beta 0.62 -- most "events" are not cash targets (acquirers' proxies,
+  stock deals), so this is mostly market exposure.
+- Cash-deal signature (rose >= 15% in 8 weeks, then < 2%/week moves: priced just under an offer; all ex ante): dev
+  2017-23 +10.6%/yr, Sharpe 0.58, **beta 0.15**, 87% of deals completed, median 10 weeks. But only ~2-3 deals open at a
+  time (max DD −35% from concentration), and the holdout is unreadable: only 4% of 2024-26 deals show a completion.
+- **Data hole found:** the weekly panel has only 13-23 names per year that stop trading in 2023-2026, against 126-514 a
+  year in 2018-2022 (US delistings run several hundred a year). Alpaca dropped most companies delisted after ~2022.
+  So the 2024-26 HOLDOUT of every stock backtest here is close to survivor-only: it flatters long books, small caps most,
+  and breaks anything that depends on exits (merger arb). Earlier notes said survivorship mainly hit 2017-20; it is
+  worst in the holdout. Fix needs a delisted-inclusive price source (paid EOD vendors carry them).
+
+**Calendar effects (`research/calendar_effects.py`).** Turn of month, pre-holiday, mid-month, opex week, Mon/Fri; SPY,
+QQQ, IWM 2016-26 and the Fama-French daily market back to 1963.
+- Textbook result: turn-of-month and pre-holiday were strong 1963-2009 (t +4.4 and +4.2) and faded after publication
+  (2010+: t +0.5 and +1.1; SPY/QQQ/IWM 2016-26 TOM t −0.5 to +0.2). The Monday effect flipped sign.
+- No timing rule beats buy-and-hold in any recent period (in the market only ~20% of days). **Rejected.**
