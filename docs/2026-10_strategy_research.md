@@ -3142,6 +3142,8 @@ holds, propose a paper shadow "12-1 with FIP filter" beside the live SLOW sleeve
    behind it, Probability of Backtest Overfitting via combinatorially symmetric cross-validation where a grid was
    searched, and the t > 3 multiple-testing hurdle (Harvey & Liu 2015).
 3. Correlations between the edges that pass; combine with equal risk weights.
+5. Pick-10 + CNN veto: compare with vs without Phase 2 (sell half at activation + trail) vs a plain hard stop only
+   (Nov 14: the veto now blocks the collapsing names the stops were protecting against).
 4. Adaptation is allowed only as a rule tested walk-forward (re-estimated each period on past data only, scored on
    the next): slow, shrunk toward equal weights, with edges retired only on strong evidence. Fast re-weighting toward
    what worked recently already failed here (horizon switching, Nov 13; weekly weight rewrites, frozen in Oct).
