@@ -3200,3 +3200,19 @@ and a quoted bid-ask spread of 74% of mid (Alpaca's free indicative feed, Friday
 true NBBO, but the middle-decile reference shows the same picture at 88%). The writer's gain is capped at the premium,
 ~1.5% of the stock a month, before crossing a spread that wide; a capped bear-call spread collects even less; put-call
 parity passes the borrow cost into the call price; squeezes remain. **Rejected without needing paid option history.**
+
+**CNN veto, full 2022-23 coverage (Nov 14, second CNN run: every 2022-23 sample predicted, models saved to
+results/chart_cnn_seed*.pt).** Sharpe without -> with the bottom-10% veto:
+| book | 2022-23 | 2024-26 |
+|---|---|---|
+| old weekly pick-10 proxy | −0.28 -> −0.39 | 0.46 -> 0.84 |
+| proxy monthly top 10 / buffer 30 | 0.48 -> 0.44 | 0.58 -> 0.84 |
+| 12-1 momentum top 30 | 0.43 -> **0.67** | 0.36 -> **0.52** |
+| 12-1 within FIP-steady half | 0.55 -> **0.70** | 1.04 -> **1.06** |
+The veto improves the 12-1 books in BOTH periods (FIP 12-1 + veto: +19.4% / +42.5% a year, DD −27% / −38%); for the
+pick-10 proxy it helps only 2024-26 -- not consistent. Contract wins: still no effect.
+
+**Delisted fill (`research/fetch_delisted.py`, Nov 14).** EODHD free tier returned the delisted US list (60,355 rows;
+key in the EODHP_API_KEY secret). 22,329 common-stock tickers not current on Alpaca and not already held; Alpaca has
+daily bars for 5,736 of them. Their trading ended: 2022 728, 2023 1,098, 2024 777, 2025 695, 2026 444 (the panel had
+13-23 a year). Merging into the weekly panel (adjusted + raw closes) via `research/rebuild_delisted.py`.
