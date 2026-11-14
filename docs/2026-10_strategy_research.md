@@ -3099,3 +3099,15 @@ while within the top 2X; 2019 - Sep 2026; spread costs.
   0.67 / 0.85 vs 0.68 / 1.43 and max DD −41% -- more return only from more risk (SPY at the same volatility earns more).
   Results improve steadily as X grows toward the market (Sharpe 0.29 at 5 stocks -> 0.47 at 100 in 2019-22): the
   selection itself subtracts value. **Rejected across the grid.**
+
+## Lead-lag clustering (Nov 13, 2026, `research/leadlag.py`) -- "more sophisticated methods", step 1
+
+Peers from the data: every 13 weeks, from the prior 104 weeks of market-residual returns -- each stock's 10 / 25 most
+correlated stocks (kNN) and 100 k-means clusters. Signals: peers' last-week / 4-week return (PEER), and peers minus the
+stock's own return (GAP = laggard of a moving group); control: own reversal. 2018-23 / 2024-Sep 2026, $5 / $2M.
+- No peer lead-lag: peers' recent return has a slightly NEGATIVE rank IC with next week's return in both periods
+  (t −0.4 to −1.4).
+- The laggard gap has dev IC t +1.8 to +2.2 (1-week) but holdout t +0.1 to +0.3 -- and it is mostly own short-term
+  reversal (control OWNREV1: dev t +1.7, holdout +0.3).
+- Weekly top-10/30 books after spread costs: nothing consistent; best on both periods KM100_GAP4 top-10 +12.7% / +8.8%,
+  Sharpe 0.49 / 0.40 -- below the incumbents (12-1 monthly 0.67 / 0.43) and SPY. **Rejected.**
