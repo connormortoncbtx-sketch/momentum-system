@@ -14,7 +14,7 @@ Split: train 2017-2021, validation 2022-2023 (early stopping only), TEST 2024 - 
 Scoring on TEST: weekly rank IC of P(beat) with the next week's excess return; top / bottom decile; top-10 / top-50
 weekly long books after spread costs vs the same universe's 4-week momentum, a 1-week reversal baseline, and SPY.
 The 2024+ test still lacks most delisted stocks (fix pending) -- read it with that caveat.
-Env: SEEDS (2), MAX_TRAIN (300000 images), EPOCHS (8), LIMIT (smoke test: symbols).
+Env: SEEDS (2), MAX_TRAIN (150000 images; ~200 images/s on a 4-core runner), EPOCHS (6), LIMIT (smoke test: symbols).
 """
 import glob
 import os
@@ -28,10 +28,10 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 RD = os.environ.get("RESEARCH_DATA", "research_data")
 SEEDS = int(os.environ.get("SEEDS") or 2)
-MAX_TRAIN = int(os.environ.get("MAX_TRAIN") or 300000)
-EPOCHS = int(os.environ.get("EPOCHS") or 8)
+MAX_TRAIN = int(os.environ.get("MAX_TRAIN") or 150000)
+EPOCHS = int(os.environ.get("EPOCHS") or 6)
 LIMIT = int(os.environ.get("LIMIT") or 0)
-KEEP_TRAIN = float(os.environ.get("KEEP_TRAIN") or 0.55)   # share of 2017-21 samples imaged (memory)
+KEEP_TRAIN = float(os.environ.get("KEEP_TRAIN") or 0.3)   # share of 2017-21 samples imaged (memory)
 KEEP_VAL = float(os.environ.get("KEEP_VAL") or 0.2)
 H, W, D = 64, 60, 20
 PH, VH = 51, 12                   # price area rows, volume area rows (1 blank row between)
@@ -181,7 +181,9 @@ def book(M, col, n):
         cost = half_spread_bps(top.price.to_numpy(), top.dv20.to_numpy()).mean() / 1e4 * (len(cur - prev) + len(prev - cur)) / n
         res[wk] = top.fwd.mean() - cost
         prev = cur
-    r = pd.Series(res)
+    r = pd.Series(res, dtype=float)
+    if len(r) < 10:
+        return dict(CAGR=np.nan, Sharpe=np.nan, maxDD=np.nan, weeks=len(r))
     eq = (1 + r).cumprod(); yrs = len(r) / 52
     return dict(CAGR=(eq.iloc[-1] ** (1 / yrs) - 1) * 100, Sharpe=r.mean() / r.std() * np.sqrt(52),
                 maxDD=(eq / eq.cummax() - 1).min() * 100, weeks=len(r))
