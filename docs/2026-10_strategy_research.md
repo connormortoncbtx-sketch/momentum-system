@@ -3216,3 +3216,16 @@ pick-10 proxy it helps only 2024-26 -- not consistent. Contract wins: still no e
 key in the EODHP_API_KEY secret). 22,329 common-stock tickers not current on Alpaca and not already held; Alpaca has
 daily bars for 5,736 of them. Their trading ended: 2022 728, 2023 1,098, 2024 777, 2025 695, 2026 444 (the panel had
 13-23 a year). Merging into the weekly panel (adjusted + raw closes) via `research/rebuild_delisted.py`.
+
+**Rerun on the delisted-inclusive panel (Nov 14; 20,125 symbols; 779 / 719 / 454 stocks stop trading in 2024 / 2025 /
+2026).** CNN veto books, Sharpe (CAGR):
+| book | 2022-23 none -> veto | 2024-26 none -> veto |
+|---|---|---|
+| old weekly pick-10 proxy | −0.29 -> −0.46 | **0.19 (+0.3%)** -> 0.45 (+10.0%) |
+| proxy monthly top 10 / buf 30 | 0.24 -> 0.10 | 0.67 -> 1.00 |
+| 12-1 top 30 | 0.63 -> 0.70 | 0.37 -> 0.42 |
+| 12-1 within FIP-steady half | 0.63 -> 0.69 | **1.13 (+46.7%)** -> 1.06 |
+- The survivor-only panel flattered the old pick-10 most: 2024-26 falls from +10.6%/yr (Sharpe 0.46) to +0.3% (0.19).
+- FIP-steady 12-1 holds up on honest data in both periods (0.63 / 1.13) -- the strongest stock book we have.
+- The veto is inconsistent here, but this CNN never saw the delisted names (its daily data was survivor-only), so it
+  cannot veto the very collapses now in the universe. Rerunning the CNN with the delisted daily bars included.

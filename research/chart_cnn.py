@@ -44,7 +44,7 @@ def half_spread_bps(price, adv):
 
 
 def load():
-    D_ = pd.concat([pd.read_parquet(f) for f in sorted(glob.glob(f"{RD}/daily/ohlcv_*.parquet"))], ignore_index=True)
+    D_ = pd.concat([pd.read_parquet(f) for f in sorted(glob.glob(f"{RD}/daily/*ohlcv_*.parquet"))], ignore_index=True)
     D_ = D_.dropna(subset=["open", "high", "low", "close"])
     D_ = D_[(D_.close > 0) & (D_.high >= D_.low)]
     try:

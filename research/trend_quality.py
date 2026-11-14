@@ -32,7 +32,7 @@ pd.set_option("display.width", 220); pd.set_option("display.max_rows", 200)
 
 
 def main():
-    D = pd.concat([pd.read_parquet(f, columns=["symbol", "date", "close", "volume"]) for f in sorted(glob.glob(f"{RD}/daily/ohlcv_*.parquet"))])
+    D = pd.concat([pd.read_parquet(f, columns=["symbol", "date", "close", "volume"]) for f in sorted(glob.glob(f"{RD}/daily/*ohlcv_*.parquet"))])
     try:
         import backtest as B
         p = B.load_panel(RD)

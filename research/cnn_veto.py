@@ -52,7 +52,7 @@ def main():
     proxy = (0.35 * rk(f["rs_live"]) + 0.25 * rk(f["trend"]) + 0.20 * rk(f["hi52"])) / 0.80
     m12 = f["m12_1"].where(m)
     # FIP on daily bars, sampled at the panel's weeks
-    D = pd.concat([pd.read_parquet(x, columns=["symbol", "date", "close"]) for x in sorted(glob.glob(f"{RD}/daily/ohlcv_*.parquet"))])
+    D = pd.concat([pd.read_parquet(x, columns=["symbol", "date", "close"]) for x in sorted(glob.glob(f"{RD}/daily/*ohlcv_*.parquet"))])
     C = D.pivot_table(index="date", columns="symbol", values="close").astype("float32"); del D
     r = C.pct_change(fill_method=None).where(lambda x: x.abs() < 0.7)
     s = np.sign(r)
