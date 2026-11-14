@@ -32,7 +32,7 @@ MAX_TRAIN = int(os.environ.get("MAX_TRAIN") or 150000)
 EPOCHS = int(os.environ.get("EPOCHS") or 6)
 LIMIT = int(os.environ.get("LIMIT") or 0)
 KEEP_TRAIN = float(os.environ.get("KEEP_TRAIN") or 0.3)   # share of 2017-21 samples imaged (memory)
-KEEP_VAL = float(os.environ.get("KEEP_VAL") or 0.2)
+KEEP_VAL = float(os.environ.get("KEEP_VAL") or 1.0)   # all 2022-23 samples get an (out-of-sample) prediction
 H, W, D = 64, 60, 20
 PH, VH = 51, 12                   # price area rows, volume area rows (1 blank row between)
 TRAIN_END, VAL_END = pd.Timestamp("2022-01-01"), pd.Timestamp("2024-01-01")
@@ -210,6 +210,10 @@ def main():
         vai = np.sort(rng.choice(vai, 60000, replace=False))
     y = M.y.to_numpy()
     models = [train(X[tri], y[tri], X[vai], y[vai], s) for s in range(SEEDS)]
+    import torch
+    os.makedirs(f"{RD}/results", exist_ok=True)
+    for s_, m_ in enumerate(models):
+        torch.save(m_.state_dict(), f"{RD}/results/chart_cnn_seed{s_}.pt")      # tiny (~100k params), for live scoring
     M["cnn"] = predict(models, X)
     M["mom4"] = M.r20; M["rev1"] = -M.r5
     rows = []
