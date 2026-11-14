@@ -3190,3 +3190,11 @@ abnormal over 20 days vs +2.8% for the rest, 44 events). The FIP filter already 
   that recovered. Today's flags carry hindsight in both directions, so the true number is unknowable without
   historical borrow data. Also, samples with a 5-day move beyond ±150% were dropped when the CNN was built, so the
   biggest squeezes are still missing. **Verdict: not a usable short strategy; keep the CNN as a veto.**
+
+**Writing calls on the CNN's bottom decile (`research/probes/cnn_calls.py`, Nov 14).** Options exist more often than
+expected: 85% of the latest bottom-decile names (341 of 400) list calls 14-60 days out. But the ~10% out-of-the-money
+call near 30 days has median open interest 33, a live bid on only 235 of 341, a median bid of 1.5% of the stock price,
+and a quoted bid-ask spread of 74% of mid (Alpaca's free indicative feed, Friday's last quote; likely wider than the
+true NBBO, but the middle-decile reference shows the same picture at 88%). The writer's gain is capped at the premium,
+~1.5% of the stock a month, before crossing a spread that wide; a capped bear-call spread collects even less; put-call
+parity passes the borrow cost into the call price; squeezes remain. **Rejected without needing paid option history.**
