@@ -1,47 +1,5 @@
 {
-  "week_open_value": 61698.02,
-  "positions": {
-    "INSW": {
-      "shares": 61,
-      "entry_price_est": 98.02,
-      "hard_stop_pct": 7.0,
-      "activation_pct": 3.3,
-      "trail_pct": 3.0,
-      "alpha_score": 1.0,
-      "weekly_vol": 6.03,
-      "composite_rank": 2,
-      "is_fallback": false,
-      "phase": 2,
-      "high_water_mark": 101.37,
-      "order_id": "49849f44-9e2c-4cb3-a07e-5b1fa7685293",
-      "hard_stop_order_id": null,
-      "hard_stop_price": null,
-      "entry_price_actual": 96.81,
-      "trail_order_id": "58a2ef29-d48a-49b2-bee8-ff19049e3f49",
-      "trail_qty": 16,
-      "upgrade_in_progress": false,
-      "reconciled_at": "2026-11-11T20:01:45.532570"
-    },
-    "CBLL": {
-      "shares": 226,
-      "entry_price_est": 26.59,
-      "hard_stop_pct": 7.0,
-      "activation_pct": 5.0,
-      "trail_pct": 3.4,
-      "alpha_score": 0.9419649999999998,
-      "weekly_vol": 6.87,
-      "composite_rank": 7,
-      "is_fallback": false,
-      "phase": 2,
-      "high_water_mark": 27.645,
-      "order_id": "3a434100-9930-4b60-a269-f12f3e86cf79",
-      "trail_order_id": "bac0dd75-6c5c-4f6a-b8e1-aad9e7eea76c",
-      "trail_qty": 57,
-      "hard_stop_order_id": null,
-      "hard_stop_price": null,
-      "upgrade_in_progress": false,
-      "reconciled_at": "2026-11-11T20:01:45.513871"
-    }
-  },
-  "entry_date": "2026-11-09"
+  "week_open_value": null,
+  "positions": {},
+  "entry_date": null
 }
