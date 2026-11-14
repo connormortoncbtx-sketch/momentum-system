@@ -3111,3 +3111,26 @@ stock's own return (GAP = laggard of a moving group); control: own reversal. 201
   reversal (control OWNREV1: dev t +1.7, holdout +0.3).
 - Weekly top-10/30 books after spread costs: nothing consistent; best on both periods KM100_GAP4 top-10 +12.7% / +8.8%,
   Sharpe 0.49 / 0.40 -- below the incumbents (12-1 monthly 0.67 / 0.43) and SPY. **Rejected.**
+
+## Trend quality among momentum stocks (Nov 13, 2026, `research/trend_quality.py`) -- step 3
+
+Daily bars (new `research/fetch_daily.py`: 11,375 symbols, 2016-Nov 2026). Among the top 20% by 12-1 momentum, five
+trend-quality measures; best vs worst third by next-4-week excess return (t from non-overlapping periods), and
+momentum books restricted to the better-quality half (top 10/30, every 4 weeks, 2x buffer, spread costs).
+FIP (frog in the pan, Da-Gurun-Warachka 2014) was named in advance as the published candidate.
+
+| measure | best-worst 4w, 2017-23 | 2024-26 |
+|---|---|---|
+| FIP (many small steady gains) | +0.43% (t 1.2) | +0.96% (t 1.1) |
+| R2 smoothness | +0.09% (0.4) | +0.33% (0.9) |
+| VR5 persistence (Hurst-type) | −0.04% (−0.1) | −0.80% (−2.3) |
+| VOLCLU calming volatility | 0.00% (0.2) | +0.44% (1.7) |
+| DD126 shallow drawdown | −0.32% (−0.2) | +0.81% (0.9) |
+
+Books: plain 12-1 top-30 +14.2% / −13.5% (Sharpe 0.53 / −0.09; this daily-built universe is broader than the weekly
+panel's, so plain 12-1 is weaker here than in selection_lab). **12-1 within the steadier FIP half, top-30: +15.8% /
++18.1%, Sharpe 0.58 / 0.61, max DD −49% / −43%.** Top-10: +16.4% / +13.0%. DD126 half top-30: 0.63 / 0.63 but its
+sort is inconsistent across periods. VR5 (fractal persistence) is the wrong way round in the holdout.
+Verdict: **FIP is a lead** -- published, same sign in both periods, big improvement as a filter on the SLOW sleeve's
+12-1 pick -- but each period alone is t ~1.1, and the holdout is survivor-only. Re-test on the delisted rebuild; if it
+holds, propose a paper shadow "12-1 with FIP filter" beside the live SLOW sleeve for the Jan 5 review.
