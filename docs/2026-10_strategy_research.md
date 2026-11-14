@@ -3145,3 +3145,25 @@ holds, propose a paper shadow "12-1 with FIP filter" beside the live SLOW sleeve
 4. Adaptation is allowed only as a rule tested walk-forward (re-estimated each period on past data only, scored on
    the next): slow, shrunk toward equal weights, with edges retired only on strong evidence. Fast re-weighting toward
    what worked recently already failed here (horizon switching, Nov 13; weekly weight rewrites, frozen in Oct).
+
+## Chart-image CNN (Nov 14, 2026, `research/chart_cnn.py`) -- step 2: a real signal, on the losing side
+
+Jiang-Kelly-Xiu 20-day chart images (64x60, OHLC bars + 20-day MA + volume), 2-model ensemble of a 3-block CNN,
+trained on 2017-21 (186k images), early-stopped on 2022-23 (52k), tested on 2024 - Nov 2026 (416k images, 148 weeks,
+never seen in training). Label: beat the median stock over the next 5 trading days from Monday's close.
+Universe: daily bars, price >= $5, 20-day $ volume >= $2M (98% clean operating companies, checked).
+
+| | rank IC (t) | top decile vs median | bottom decile vs median |
+|---|---|---|---|
+| validation 2022-23 | 0.023 (t 3.0) | +14 bp/wk | −55 bp/wk |
+| TEST 2024-26 | 0.023 (t 4.4) | +10 bp/wk | −102 bp/wk |
+
+- The strongest statistical result of the whole program: same IC in both unseen periods, clears the t > 3 multiple-testing
+  hurdle in each. Baselines on the same samples (4-week momentum, 1-week reversal): IC ~0 / slightly negative.
+- But almost all of it is the BOTTOM decile: the 10% of charts the model dislikes lose 0.5-1.0% a week against the median
+  (−25% to −40% a year); deciles 2-10 are flat (+0 to +17 bp). Frequent bottom names: ELAB, SPRC, BDRX, FFAI, MLGO,
+  KITT, HOLO, MNTS -- serially diluting microcaps in slow collapses. The model has learned the death-spiral shape.
+- As a long book it is weak: top-10 −10.6% / +12.3%, top-50 −4.7% / +2.0% a year (weekly turnover after costs).
+- The test lacks most delisted stocks, which are exactly bottom-decile types -> the bottom-decile loss is likely
+  UNDERSTATED. Next: use it as a VETO on other books (contract wins, FIP momentum, old pick-10 proxy), 2022-26 where the
+  predictions are out of sample; re-check after the delisted rebuild.
