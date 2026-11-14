@@ -1,5 +1,5 @@
 {
- "since": "2026-11-13T14:45:08-05:00",
+ "since": "2026-11-13T17:28:39-05:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -5716,6 +5716,206 @@
    "decided": "2026-11-13T15:00:30.023900-05:00",
    "event_type": "strategic_review",
    "summary": "Company responds to activist investor open letter from Empower Brands Holdings/Spectrum Brands/Oaktree Capital",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "MG",
+   "accession": "0001140361-26-043833",
+   "decided": "2026-11-14T02:47:07.143403-05:00",
+   "event_type": "acquisition",
+   "summary": "H.I.G. acquisition litigation filed; stockholders claim proxy disclosures deficient; deal proceeding.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "DDD",
+   "accession": "0001193125-26-461027",
+   "decided": "2026-11-14T02:47:09.599175-05:00",
+   "event_type": "debt_financing",
+   "summary": "Refinanced $85M convertible debt, issued 13.5M shares plus $20M cash to holders",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CING",
+   "accession": "0001493152-26-051841",
+   "decided": "2026-11-14T02:47:13.620194-05:00",
+   "event_type": "regulatory_approval",
+   "summary": "CTx-1301 NDA resubmission expected Dec 2026-Jan 2027; manufacturing work substantially complete.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "DOUG",
+   "accession": "0001878897-26-000055",
+   "decided": "2026-11-14T02:47:16.084521-05:00",
+   "event_type": "exec_departure",
+   "summary": "CFO and General Counsel retired/departed same day; replacements named from internal staff.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ARAY",
+   "accession": "0001437749-26-036943",
+   "decided": "2026-11-14T02:47:21.278113-05:00",
+   "event_type": "equity_financing",
+   "summary": "Company issued $55M Series A Preferred Stock; $40M debt converted to equity; reverse split 1-for-40.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CTGO",
+   "accession": "0001104659-26-127202",
+   "decided": "2026-11-14T02:47:23.480361-05:00",
+   "event_type": "equity_financing",
+   "summary": "Company established $75M ATM equity offering facility with 9 underwriters; dilution risk for shareholders.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "RILY",
+   "accession": "0001213900-26-119839",
+   "decided": "2026-11-14T02:47:30.005657-05:00",
+   "event_type": "exec_departure",
+   "summary": "Chief Accounting Officer position eliminated; officer reassigned to tax role.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "APMD",
+   "accession": "0001193125-26-460864",
+   "decided": "2026-11-14T02:47:34.833661-05:00",
+   "event_type": "restatement",
+   "summary": "Restatement of Q2 2026 financials; $85.4M gain misclassified between operating segments.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "TBLA",
+   "accession": "0001140361-26-043788",
+   "decided": "2026-11-14T02:47:36.507326-05:00",
+   "event_type": "exec_departure",
+   "summary": "Board director Monica Mijaleski resigned effective immediately, citing no disputes.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "AIRT",
+   "accession": "0000353184-26-000108",
+   "decided": "2026-11-14T02:47:47.412453-05:00",
+   "event_type": "routine",
+   "summary": "Updated investor presentation filed; routine quarterly disclosure with forward-looking risk factors.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "RCEL",
+   "accession": "0001193125-26-460809",
+   "decided": "2026-11-14T02:47:51.604908-05:00",
+   "event_type": "dilution_other",
+   "summary": "Two warrant exercises by lenders dilute shareholders by ~268k shares; cashless structure signals weak capital position.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "MMTX",
+   "accession": "0001493152-26-051747",
+   "decided": "2026-11-14T02:47:58.076619-05:00",
+   "event_type": "acquisition",
+   "summary": "Business Combination Agreement amended; lock-ups removed, outside date extended to April 2027.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "BOC",
+   "accession": "0001437749-26-036897",
+   "decided": "2026-11-14T02:48:00.596686-05:00",
+   "event_type": "buyback_dividend",
+   "summary": "Share repurchase program increased from $30M to $85M; Q3 results mixed with modest revenue growth but continued losses.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "BOW",
+   "accession": "0001628280-26-073860",
+   "decided": "2026-11-14T02:48:02.741367-05:00",
+   "event_type": "acquisition",
+   "summary": "Stockholders approve merger with American Family Mutual Insurance Company; CFO to depart April 2027.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ETD",
+   "accession": "0001437749-26-036869",
+   "decided": "2026-11-14T02:48:15.520612-05:00",
+   "event_type": "exec_departure",
+   "summary": "CEO M. Farooq Kathwari resigned immediately; interim CEO Stefanie Ward appointed for 6 months.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "NXXT",
+   "accession": "0001493152-26-051712",
+   "decided": "2026-11-14T02:48:17.838268-05:00",
+   "event_type": "listing_deficiency",
+   "summary": "Nasdaq trading suspended; company delisted and moved to OTC Markets; failed listing standards.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "SEV",
+   "accession": "0001493152-26-051711",
+   "decided": "2026-11-14T02:48:22.755593-05:00",
+   "event_type": "prelim_results_bad",
+   "summary": "Q3 2026 net loss $14M; $9.2M cash; needs $90M to reach 500 units/month production",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ACFN",
+   "accession": "0001493152-26-051707",
+   "decided": "2026-11-14T02:48:24.865667-05:00",
+   "event_type": "auditor_change",
+   "summary": "Auditor changed from CBIZ to M&K CPAS; prior material control weaknesses remediated.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "TNXP",
+   "accession": "0001493152-26-051693",
+   "decided": "2026-11-14T02:48:27.202741-05:00",
+   "event_type": "litigation",
+   "summary": "Filed patent infringement lawsuit against Dr. Reddy's ANDA for TONMYA generic; 30-month FDA approval stay triggered.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "FXNC",
+   "accession": "0001437749-26-036861",
+   "decided": "2026-11-14T02:48:29.430284-05:00",
+   "event_type": "exec_appointment",
+   "summary": "CEO Scott Harvard awarded $2.4M supplemental retirement benefit, payable on any non-cause separation.",
    "entry_date": null,
    "entry": null
   }
