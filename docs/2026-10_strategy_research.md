@@ -3180,3 +3180,13 @@ Universe: daily bars, price >= $5, 20-day $ volume >= $2M (98% clean operating c
 veto barely applied there (pick-10 −0.28 -> −0.33; proxy monthly 0.48 -> 0.54; 12-1 0.43 -> 0.49). Rerunning the CNN
 with every 2022-23 sample predicted and the models saved. Contract wins: no effect (bottom-decile filers +1.5%
 abnormal over 20 days vs +2.8% for the rest, 44 events). The FIP filter already avoids most of what the CNN vetoes.
+
+**Shorting the CNN's bottom decile (`research/probes/cnn_short.py`, Nov 14).** 2024-26, weekly, spread costs:
+- All bottom-decile names (~276/week): +42% a year at 0% borrow, +29% at 10%, +5% at 30% (Sharpe 1.67 / 1.23 / 0.35).
+- Only names Alpaca flags easy-to-borrow TODAY (75% of name-weeks): **−23% a year at 0% borrow** (Sharpe −1.17, DD −55%).
+  Small-account version (20 lowest-scored ETB names): −3% at 0% borrow, DD −50%, worst week −17%.
+- Reading: the short profit sits in names that later collapsed, delisted or became hard to borrow -- the ones you could
+  not have shorted cheaply, if at all; names still listed and easy to borrow today are, by selection, the survivors
+  that recovered. Today's flags carry hindsight in both directions, so the true number is unknowable without
+  historical borrow data. Also, samples with a 5-day move beyond ±150% were dropped when the CNN was built, so the
+  biggest squeezes are still missing. **Verdict: not a usable short strategy; keep the CNN as a veto.**
