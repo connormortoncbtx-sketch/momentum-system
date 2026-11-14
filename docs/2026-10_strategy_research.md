@@ -3134,3 +3134,14 @@ sort is inconsistent across periods. VR5 (fractal persistence) is the wrong way 
 Verdict: **FIP is a lead** -- published, same sign in both periods, big improvement as a filter on the SLOW sleeve's
 12-1 pick -- but each period alone is t ~1.1, and the holdout is survivor-only. Re-test on the delisted rebuild; if it
 holds, propose a paper shadow "12-1 with FIP filter" beside the live SLOW sleeve for the Jan 5 review.
+
+## Plan for the Jan 5, 2026 review: combining edges (agreed Nov 13)
+
+1. Rebuild 2023-26 with delisted stocks (EODHD list + Alpaca bars) and re-score every surviving edge on it.
+2. Overfitting toolkit for every candidate: Deflated Sharpe Ratio (Bailey & López de Prado 2014) counting the trials
+   behind it, Probability of Backtest Overfitting via combinatorially symmetric cross-validation where a grid was
+   searched, and the t > 3 multiple-testing hurdle (Harvey & Liu 2015).
+3. Correlations between the edges that pass; combine with equal risk weights.
+4. Adaptation is allowed only as a rule tested walk-forward (re-estimated each period on past data only, scored on
+   the next): slow, shrunk toward equal weights, with edges retired only on strong evidence. Fast re-weighting toward
+   what worked recently already failed here (horizon switching, Nov 13; weekly weight rewrites, frozen in Oct).
