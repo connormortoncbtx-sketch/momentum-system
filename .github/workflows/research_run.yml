@@ -43,7 +43,7 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
           ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
-          EODHD_API_KEY: ${{ secrets.EODHD_API_KEY }}
+          EODHD_API_KEY: ${{ secrets.EODHP_API_KEY }}   # secret was saved as EODHP_API_KEY
           RESEARCH_DATA: research_data
           LIMIT: ${{ inputs.limit }}
         run: python "research/${{ inputs.script }}.py"
