@@ -3077,3 +3077,18 @@ bars up to their last trading day). The panel missed them only because it fetche
 what is missing is a complete LIST of 2023-26 delisted tickers. The SEC route is noisy (of 1,021 tickers with a
 Form 25 / 15-12 filing, 692 still trade -- warrants, units, notes, share classes). Plan: get the list from EODHD's
 delisted symbol list (one call; try the free account first), pull bars from Alpaca, rebuild 2023-26.
+
+## Growth + yield index (Nov 13, 2026, `research/growth_yield_index.py`)
+
+Idea (Connor): hold the X stocks that most consistently beat the S&P 500 on BOTH price growth and dividend yield over
+rolling windows; prune those that stop. Dividend yield from the drift of adjusted/raw close (SPY ~1.1%, KO 2.6%, T 3.5%
+over the last 52 weeks); universe price >= $5, ADV >= $5M, 3+ years listed; top 20/30/50, rebalanced quarterly, kept
+while within the top 2X; 2019 - Sep 2026; spread costs.
+- CONSIST3y (share of nine rolling 52-week windows beating SPY on both): +10.8%/yr, Sharpe 0.57, max DD −40%, beta 1.1
+  (X=30). BOTH156 (beat on both over 3 years): +10.2%, 0.53. SPY: **+17.1%, Sharpe 0.96**. Every variant and size
+  trails SPY in 2019-22 and 2023-26; ahead only in 2024-25. Yield-only: +3.1%. Growth-only: +15.3% with −59% DD.
+- Why: beating on both is mostly a sector/cycle state, not a lasting trait -- today's list is banks and financials
+  (BCS, NWG, BNY, MS, STT, C, GS, HSBC...) after their 2025-26 run; the same screen held cyclicals into 2022 (−20%).
+  It ends up a leveraged sector bet with beta > 1 and worse drawdowns than the index. Only 14 of 2,552 stocks beat
+  SPY on both in all nine windows.
+- The survivorship hole flatters 2023-26 here, so the true gap is likely wider. **Rejected.**
