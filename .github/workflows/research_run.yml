@@ -25,7 +25,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: research-run-${{ inputs.script }}
+  group: research-run-${{ inputs.script }}-${{ inputs.seed }}
   cancel-in-progress: false
 
 jobs:
