@@ -8,7 +8,8 @@ Pool: the live ETFTREND sleeve's 41 ETFs + ~45 more (countries, industries, bond
 bars from Alpaca 2016 -> today (split/dividend adjusted).
 Images (research/chart_images.py format): I20 = the last 20 trading days; I60 = the last 60 days drawn as 20 3-day
 bars (open of the first day, high/low over the 3 days, close of the last, summed volume, 20-bar MA).
-Label: beat the pool's median ETF over the next 20 trading days.
+Label: beat the pool's median ETF over the next HORIZON trading days (20 default; 5 = next week, judged on a WEEKLY
+rebalance of the same sleeve -- Connor, Nov 14; passed through research_run's `seed` input).
 Split: train 2016-2021 (every trading day), early stopping on 2022-23, TEST 2024+; 2 seeds averaged per variant.
 Evaluation on the sleeve's own 41 ETFs at each month-end, held one month, with the sleeve's sizing (10% vol target per
 ETF, x4/N, capped at 1x), 2 bp per side:
@@ -38,6 +39,8 @@ EXTRA = ['MDY', 'EWZ', 'EWG', 'EWU', 'EWC', 'EWA', 'EWT', 'EWY', 'INDA', 'EWW', 
 TRAIN_END, VAL_END = pd.Timestamp("2022-01-01"), pd.Timestamp("2024-01-01")
 SEEDS = int(os.environ.get("SEEDS") or 2)
 EPOCHS = int(os.environ.get("EPOCHS") or 6)
+HORIZON = int(os.environ.get("HORIZON") or os.environ.get("SEED") or 20)   # trading days ahead in the label (5 = weekly); research_run passes it via the seed input
+REB = "W-FRI" if HORIZON <= 5 else "ME"                                     # weekly or month-end rebalance to match
 
 
 def fetch():
@@ -76,7 +79,7 @@ def build(D):
             b = CI.draw(oo[-20:], hh[-20:], ll[-20:], cc[-20:], ma3[-20:], vv[-20:])
             if a is None or b is None:
                 continue
-            fwd = c[k + 20] / c[k] - 1 if k + 20 < len(c) else np.nan
+            fwd = c[k + HORIZON] / c[k] - 1 if k + HORIZON < len(c) else np.nan
             I20.append(a); I60.append(b)
             rows.append((s, pd.Timestamp(dt_[k]), fwd))
     M = pd.DataFrame(rows, columns=["symbol", "date", "fwd20"])
@@ -118,7 +121,8 @@ def fit_predict(X, M, seed):
 def sleeve_book(px, sig_fn, label):
     """monthly book on the 41 sleeve ETFs with the live sizing; sig_fn(month_end_date) -> 0/1 Series."""
     ret = px.pct_change(); vol = ret.rolling(60, min_periods=40).std() * np.sqrt(252)
-    me = [px.index[px.index <= m][-1] for m in px.resample("ME").last().index if (px.index <= m).any()]
+    me = [px.index[px.index <= m][-1] for m in px.resample(REB).last().index if (px.index <= m).any()]
+    me = sorted(set(me))
     out, prev = {}, pd.Series(dtype=float)
     for d0, d1 in zip(me[:-1], me[1:]):
         sig = sig_fn(d0).reindex(px.columns).fillna(0)
@@ -137,8 +141,9 @@ def stats(r):
     r = r.dropna()
     if len(r) < 6:
         return dict(CAGR=np.nan, Sharpe=np.nan, maxDD=np.nan)
-    eq = (1 + r).cumprod(); yrs = len(r) / 12
-    return dict(CAGR=(eq.iloc[-1] ** (1 / yrs) - 1) * 100, Sharpe=r.mean() / r.std() * np.sqrt(12),
+    ppy = 52 if REB == "W-FRI" else 12
+    eq = (1 + r).cumprod(); yrs = len(r) / ppy
+    return dict(CAGR=(eq.iloc[-1] ** (1 / yrs) - 1) * 100, Sharpe=r.mean() / r.std() * np.sqrt(ppy),
                 maxDD=(eq / eq.cummax() - 1).min() * 100)
 
 
@@ -172,7 +177,7 @@ def main():
             rows.append(dict(period=lab, book=k, **stats(x[k])))
     T = pd.DataFrame(rows)
     # month-end rank IC on the sleeve ETFs
-    me = [px.index[px.index <= m][-1] for m in px.resample("ME").last().index if (px.index <= m).any()]
+    me = sorted(set(px.index[px.index <= m][-1] for m in px.resample(REB).last().index if (px.index <= m).any()))
     fwd = pd.DataFrame({d0: px.loc[d1] / px.loc[d0] - 1 for d0, d1 in zip(me[:-1], me[1:])}).T
     ics = []
     for n, s in (("I20", sc["I20"]), ("I60", sc["I60"]), ("63d trend", (px / px.shift(63) - 1))):
@@ -181,13 +186,13 @@ def main():
             x = ic[(ic.index >= a) & (ic.index < b)].dropna()
             ics.append(dict(score=n, period=lab, months=len(x), IC=x.mean(), t=x.mean() / x.std() * np.sqrt(len(x)) if len(x) > 2 else np.nan))
     os.makedirs(f"{RD}/results", exist_ok=True)
-    T.to_csv(f"{RD}/results/etf_chart_cnn.csv", index=False)
-    M.drop(columns=["y"]).to_parquet(f"{RD}/results/etf_chart_cnn_scores.parquet", index=False)
+    T.to_csv(f"{RD}/results/etf_chart_cnn_h{HORIZON}.csv", index=False)
+    M.drop(columns=["y"]).to_parquet(f"{RD}/results/etf_chart_cnn_h{HORIZON}_scores.parquet", index=False)
     pd.set_option("display.width", 200)
     print("\nSLEEVE BOOKS (41 ETFs, live sizing, monthly):\n" + T.round(2).to_string(index=False))
     print("\nMONTH-END RANK IC with the next month's return (41 sleeve ETFs):\n" + pd.DataFrame(ics).round(3).to_string(index=False))
     t = T[T.period == "2024+ TEST"].set_index("book")
-    print("::notice::ETF chart CNN 2024+ Sharpe: " + "; ".join(f"{k} {v:.2f}" for k, v in t.Sharpe.items()))
+    print(f"::notice::ETF chart CNN (label {HORIZON}d, rebalance {REB}) 2024+ Sharpe: " + "; ".join(f"{k} {v:.2f}" for k, v in t.Sharpe.items()))
 
 
 if __name__ == "__main__":
