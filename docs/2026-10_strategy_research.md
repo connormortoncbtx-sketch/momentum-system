@@ -3092,3 +3092,10 @@ while within the top 2X; 2019 - Sep 2026; spread costs.
   It ends up a leveraged sector bet with beta > 1 and worse drawdowns than the index. Only 14 of 2,552 stocks beat
   SPY on both in all nine windows.
 - The survivorship hole flatters 2023-26 here, so the true gap is likely wider. **Rejected.**
+- **Grid (`research/growth_yield_grid.py`, same day, Connor: "experiment with X and window sizes"):** 256 variants --
+  X 5-100, window 13-156 weeks, consistency span 0-104 weeks, monthly or quarterly rebalance. None beats SPY's Sharpe in
+  either period (SPY 0.68 / 1.43). On raw return 4% beat SPY in 2019-22, 27% in 2023-26, 2% in both. Best picked on
+  2019-22 (2-year window, latest only, 5 stocks, quarterly): +18.2% / +25.0% vs SPY +12.9% / +21.8%, but Sharpe
+  0.67 / 0.85 vs 0.68 / 1.43 and max DD −41% -- more return only from more risk (SPY at the same volatility earns more).
+  Results improve steadily as X grows toward the market (Sharpe 0.29 at 5 stocks -> 0.47 at 100 in 2019-22): the
+  selection itself subtracts value. **Rejected across the grid.**
