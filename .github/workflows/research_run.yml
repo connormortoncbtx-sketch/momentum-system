@@ -16,6 +16,10 @@ on:
         description: 'Optional extra pip packages (e.g. torch)'
         required: false
         default: ''
+      seed:
+        description: 'Optional SEED env (e.g. for parallel model runs)'
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -46,6 +50,7 @@ jobs:
           EODHD_API_KEY: ${{ secrets.EODHP_API_KEY }}   # secret was saved as EODHP_API_KEY
           RESEARCH_DATA: research_data
           LIMIT: ${{ inputs.limit }}
+          SEED: ${{ inputs.seed }}
         run: python "research/${{ inputs.script }}.py"
       - name: Push to research-data branch
         if: always()
