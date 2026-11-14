@@ -3229,3 +3229,19 @@ daily bars for 5,736 of them. Their trading ended: 2022 728, 2023 1,098, 2024 77
 - FIP-steady 12-1 holds up on honest data in both periods (0.63 / 1.13) -- the strongest stock book we have.
 - The veto is inconsistent here, but this CNN never saw the delisted names (its daily data was survivor-only), so it
   cannot veto the very collapses now in the universe. Rerunning the CNN with the delisted daily bars included.
+
+**CNN retrained WITH the delisted stocks (Nov 14, third run; 10,948 symbols, test 447k images).**
+IC 0.013 (t 2.1) in 2022-23, 0.020 (t 3.9) in 2024-26; top-bottom decile 52 / 96 bp/wk; top decile still only +14 bp
+vs median -- the winner side stays weak (top-10 +6% / −11%, top-50 −11% / +0.5%). Veto on the honest panel, Sharpe:
+| book | 2022-23 none -> veto10 | 2024-26 none -> veto10 | max DD 2024-26 |
+|---|---|---|---|
+| old weekly pick-10 proxy | −0.29 -> −0.46 | 0.19 -> 0.47 | −50% -> −37% |
+| proxy monthly top 10 / buf 30 | 0.24 -> 0.29 | 0.67 -> 0.80 | −34% -> −34% |
+| 12-1 top 30 | 0.63 -> 0.71 | 0.37 -> 0.45 | −45% -> −42% |
+| **12-1 within FIP-steady half** | **0.63 -> 0.72** | **1.13 -> 1.21** | **−44% -> −36%** |
+The veto now improves 3 of 4 books in BOTH periods (all but the weekly pick-10). Best combination so far:
+**FIP-steady 12-1 momentum + CNN bottom-10% veto: +20.4% / +52.6% a year, Sharpe 0.72 / 1.21.**
+Trend quality rerun on the delisted-inclusive daily set: FIP best-minus-worst +0.65% / +0.93% per 4 weeks (t 1.7 / 1.2,
+slightly stronger than survivor-only); FIP top-30 book +17.5% / +21.1% (Sharpe 0.61 / 0.68) vs plain 12-1 +6.8% /
+−12.4%. Contract wins: still no veto effect. Next: paper shadow of FIP 12-1 + veto for the Jan 5 review (with the
+DSR / PBO overfitting checks); CNN v2 (all training samples, daily samples, collapse-target head) as an overnight run.
