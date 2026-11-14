@@ -3245,3 +3245,13 @@ Trend quality rerun on the delisted-inclusive daily set: FIP best-minus-worst +0
 slightly stronger than survivor-only); FIP top-30 book +17.5% / +21.1% (Sharpe 0.61 / 0.68) vs plain 12-1 +6.8% /
 −12.4%. Contract wins: still no veto effect. Next: paper shadow of FIP 12-1 + veto for the Jan 5 review (with the
 DSR / PBO overfitting checks); CNN v2 (all training samples, daily samples, collapse-target head) as an overnight run.
+
+## Shadow #9 and CNN v2 launched (Nov 14, Connor: "Do it")
+
+- **Shadow #9 (no orders), `automation/shadow_fip_veto.py`,** in the Monday shadow workflow: FIP-steady 12-1 momentum
+  + CNN bottom-10% veto, top 30, rebalanced every 4th entry week, kept while eligible and within the top 60.
+  CNN weights frozen in `models/cnn_v1/` (the delisted-aware run); live scoring uses `research/chart_images.py` and
+  reproduces the research scores exactly (corr 1.000 on Jun 6, 2025). First entry Nov 9: 30 names bought, 30 of the
+  steady half vetoed. Judged at the Jan 5 review with DSR / PBO checks.
+- **CNN v2, `research/chart_cnn2.py`:** daily training samples 2017-21 (~600k), a second "collapse" head (bottom 10%
+  over the next 20 days), one seed per run, two seeds training in parallel; predictions for every Friday 2022+.
