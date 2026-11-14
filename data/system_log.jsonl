@@ -3503,3 +3503,4 @@
 {"timestamp": "2026-11-14T09:27:52.399791+00:00", "workflow": "weekly_pipeline", "status": "info", "message": "Starting Stage 06: Report generator", "metrics": {}, "errors": []}
 {"timestamp": "2026-11-14T09:27:52.859101+00:00", "workflow": "weekly_pipeline", "status": "success", "message": "Stage 06: Report generator complete", "metrics": {"stage": "06", "elapsed_sec": 0.5}, "errors": []}
 {"timestamp": "2026-11-14T09:27:52.860039+00:00", "workflow": "weekly_pipeline", "status": "success", "message": "Pipeline complete (49.4 min)", "metrics": {"elapsed_min": 49.4, "stages_run": 6}, "errors": []}
+{"timestamp": "2026-11-14T20:56:06.571455+00:00", "workflow": "shadow_fipveto", "status": "success", "message": "Shadow FIP+veto 2026-11-09: nav 99.8 | SPY 100.0 | rebalanced: bought 30, sold 0, vetoed 30", "metrics": {"shadow_nav": 99.85, "spy_index": 100.0}, "errors": []}
