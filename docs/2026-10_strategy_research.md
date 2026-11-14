@@ -3167,3 +3167,16 @@ Universe: daily bars, price >= $5, 20-day $ volume >= $2M (98% clean operating c
 - The test lacks most delisted stocks, which are exactly bottom-decile types -> the bottom-decile loss is likely
   UNDERSTATED. Next: use it as a VETO on other books (contract wins, FIP momentum, old pick-10 proxy), 2022-26 where the
   predictions are out of sample; re-check after the delisted rebuild.
+
+**CNN as a veto (`research/cnn_veto.py`, Nov 14, first pass).** Pickers run 2022+ with stocks in the CNN's bottom
+10% / 20% barred that week. 2024-26 (full prediction coverage, out of sample):
+| book | Sharpe none | bottom-10% veto | bottom-20% veto | CAGR none -> 10% veto |
+|---|---|---|---|---|
+| old weekly pick-10 proxy | 0.46 | 0.83 | 1.05 | +10.6% -> +27.5% |
+| proxy monthly, top 10 / buffer 30 | 0.58 | 0.86 | 0.90 | +16.9% -> +31.3% |
+| 12-1 momentum, top 30 | 0.36 | 0.50 | 0.44 | +6.3% -> +13.3% |
+| 12-1 within the FIP-steady half | 1.04 | 1.09 | 1.01 | +42.6% -> +44.5% |
+2022-23 is not yet a fair read: the first CNN run predicted only a 20% sample of 2022-23 (validation thinning), so the
+veto barely applied there (pick-10 −0.28 -> −0.33; proxy monthly 0.48 -> 0.54; 12-1 0.43 -> 0.49). Rerunning the CNN
+with every 2022-23 sample predicted and the models saved. Contract wins: no effect (bottom-decile filers +1.5%
+abnormal over 20 days vs +2.8% for the rest, 44 events). The FIP filter already avoids most of what the CNN vetoes.
