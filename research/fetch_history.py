@@ -39,6 +39,21 @@ EXCHANGES = {"NYSE", "NASDAQ", "AMEX", "ARCA", "BATS"}
 BATCH = 200
 
 
+def eodhd_symbols(out):
+    """Delisted common stocks from the EODHD list that Alpaca has daily bars for (written by fetch_delisted.py)."""
+    import glob as _g
+    L = pd.read_csv(out / "delisted" / "eodhd_us_delisted.csv")
+    have = set()
+    for f in _g.glob(str(out / "daily" / "delisted_ohlcv_*.parquet")):
+        have |= set(pd.read_parquet(f, columns=["symbol"]).symbol.unique())
+    L["symbol"] = L.Code.astype(str).str.upper().str.strip()
+    L = L[(L.Type == "Common Stock") & L.symbol.isin(have)].drop_duplicates("symbol")
+    df = pd.DataFrame({"symbol": L.symbol, "name": L.Name.fillna(""), "exchange": L.Exchange.astype(str),
+                       "status": "delisted_eodhd"})
+    log.info(f"EODHD delisted symbols with Alpaca bars: {len(df):,}")
+    return df
+
+
 def list_symbols(status_filter="all"):
     from alpaca.trading.client import TradingClient
     from alpaca.trading.requests import GetAssetsRequest
@@ -157,13 +172,14 @@ def main():
     ap.add_argument("--limit", type=int, default=0, help="debug: only first N symbols")
     ap.add_argument("--raw", action="store_true",
                     help="fetch UNADJUSTED closes and merge raw_close/raw_d1_close into existing --out files")
-    ap.add_argument("--status", default="all", choices=["all", "inactive"],
-                    help="inactive = fetch delisted names only and MERGE into existing --out files")
+    ap.add_argument("--status", default="all", choices=["all", "inactive", "eodhd"],
+                    help="inactive = fetch delisted names only and MERGE into existing --out files; eodhd = the "
+                         "EODHD delisted list (research/fetch_delisted.py) restricted to tickers Alpaca has bars for, merged")
     a = ap.parse_args()
 
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
-    assets = list_symbols(a.status)
+    assets = list_symbols(a.status) if a.status != "eodhd" else eodhd_symbols(out)
     syms = assets.symbol.tolist()
     if a.status == "all":
         for must in ("SPY", "IWM", "QQQ"):
@@ -179,9 +195,18 @@ def main():
     if a.raw:
         if not len(panel):
             raise SystemExit("raw fetch returned nothing")
+        got = set(panel.symbol)
         for path in sorted(out.glob("weekly_*.parquet")):
-            base = pd.read_parquet(path).drop(columns=["raw_d1_close", "raw_close"], errors="ignore")
-            base = base.merge(panel, on=["symbol", "week"], how="left")
+            base = pd.read_parquet(path)
+            if a.status != "all" and "raw_close" in base:
+                # partial refresh: replace raw closes only for the symbols just fetched
+                keep = base[~base.symbol.isin(got)]
+                upd = base[base.symbol.isin(got)].drop(columns=["raw_d1_close", "raw_close"], errors="ignore")
+                upd = upd.merge(panel, on=["symbol", "week"], how="left")
+                base = pd.concat([keep, upd], ignore_index=True)
+            else:
+                base = base.drop(columns=["raw_d1_close", "raw_close"], errors="ignore")
+                base = base.merge(panel, on=["symbol", "week"], how="left")
             base.to_parquet(path, index=False, compression="zstd")
             log.info(f"  merged raw closes into {path.name}: "
                      f"{base.raw_close.notna().mean() * 100:.1f}% coverage")
@@ -193,14 +218,14 @@ def main():
              f"in {(time.time() - t0) / 60:.1f} min")
 
     assets["has_data"] = assets.symbol.isin(set(panel.symbol))
-    if a.status == "inactive" and (out / "assets.parquet").exists():
+    if a.status in ("inactive", "eodhd") and (out / "assets.parquet").exists():
         old_assets = pd.read_parquet(out / "assets.parquet")
         old_assets = old_assets[~old_assets.symbol.isin(assets.symbol)]
         assets = pd.concat([old_assets, assets], ignore_index=True)
     assets.to_parquet(out / "assets.parquet", index=False)
     for yr, chunk in panel.groupby(panel.week.dt.year):
         path = out / f"weekly_{yr}.parquet"
-        if a.status == "inactive" and path.exists():
+        if a.status in ("inactive", "eodhd") and path.exists():
             prev = pd.read_parquet(path)
             prev = prev[~prev.symbol.isin(set(chunk.symbol))]
             chunk = pd.concat([prev, chunk], ignore_index=True)
