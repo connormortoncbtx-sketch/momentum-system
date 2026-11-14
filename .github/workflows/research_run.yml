@@ -12,6 +12,10 @@ on:
         description: 'Optional LIMIT env for a smoke test'
         required: false
         default: ''
+      pip:
+        description: 'Optional extra pip packages (e.g. torch)'
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -30,7 +34,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install
-        run: pip install "pandas>=2.0" pyarrow alpaca-py anthropic scipy pygrib
+        run: pip install "pandas>=2.0" pyarrow alpaca-py anthropic scipy pygrib scikit-learn ${{ inputs.pip }}
       - name: Load research-data branch
         run: git clone -q --depth 1 -b research-data "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" research_data
       - name: Run
