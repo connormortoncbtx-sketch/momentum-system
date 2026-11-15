@@ -62,10 +62,10 @@ def main():
                 form = line[:12].strip()
                 if form not in FORMS:
                     continue
-                parts = re.split(r"\s{2,}", line.strip())
-                if len(parts) < 5:
+                m = re.match(r"^(.*?)\s+(\d+)\s+(\d{4}-\d{2}-\d{2})\s+(\S+)\s*$", line[12:])
+                if not m:
                     continue
-                rows.append(dict(form=parts[0], name=parts[1], cik=int(parts[2]), date=pd.Timestamp(parts[3])))
+                rows.append(dict(form=form, name=m.group(1).strip(), cik=int(m.group(2)), date=pd.Timestamp(m.group(3))))
             print(f"  {y}Q{q}: {len(rows):,} rows so far", flush=True)
     E = pd.DataFrame(rows).drop_duplicates()
     print(f"merger-form rows: {len(E):,}; companies {E.cik.nunique():,}", flush=True)
