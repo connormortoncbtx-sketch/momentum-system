@@ -1,0 +1,14 @@
+{
+ "nav": {
+  "noon_natural": 100000.0,
+  "noon_mid": 100000.0,
+  "2pm_natural": 100000.0,
+  "2pm_mid": 100000.0,
+  "3pm_natural": 100000.0,
+  "3pm_mid": 100000.0,
+  "trio_natural": 100000.0,
+  "trio_mid": 100000.0
+ },
+ "open": {},
+ "done_days": []
+}
