@@ -3360,3 +3360,28 @@ Sharpe 0.76 / 0.48 (2018-23), 0.65 / 0.72 (2024-26), but correlated with FIPV at
 0.69-0.80 -- the same long-stock bet. Adding them LOWERS the combined Sharpe (2018-23 1.14 -> 0.97; 2024-26 2.92 ->
 2.18). Not independent edges. The stock books are largely one bet; genuinely new edges must come from outside
 long-equity exposure (option premium, market-hedged books once margin is available, other asset classes).
+
+## Option-premium variants, classic TA, three-sector tilt (Nov 15, 2026, `research/quick_trio.py`)
+
+**Condor / spread variants** (SPY+QQQ, quotes, stop at 2x credit; return on risk per trade; vs the 2pm k=1 condor):
+- Same-day premium sold at other times is only partly correlated with the 2pm trade: noon put spread (k=1) corr 0.28-0.29,
+  Sharpe 1.06 / 1.00 (2018-23 / 2024-26); 3pm condor (k=1) corr 0.45-0.49, Sharpe 2.83 / 2.86; 3pm call spreads corr
+  ~0.3, Sharpe 2.0 / 2.7. 10am entries lose in 2018-23.
+- Equal-risk trio (2pm condor + 3pm condor + noon put spread): daily Sharpe 1.25 -> **2.30** (2018-23), 3.25 -> 3.33
+  (2024-26). On the 2pm condor's worst 5% of days the 3pm condor loses −37% of risk and the noon put −14% on average
+  (2pm −88%) -- real diversification -- but the trio's worst single day is still ~−100% of daily risk (all three can
+  max out on the same crash day), so daily risk must be sized for a total loss.
+- Caveat: the live 3pm paper account (k=0.5) is at −2.7% per trade over 13 days against a large positive backtest
+  (1.6 SE below); the 2pm matches its backtest (+2.5%/trade live vs +2.55% 2018-23). Candidate for Jan 5: an
+  option-premium sleeve of 2-3 entry times, paper first.
+
+**Classic technical analysis** (SPY, QQQ, IWM; long or cash): buy-and-hold has the best CAGR almost everywhere. The
+200-day moving-average filter matches or slightly beats buy-and-hold's Sharpe (SPY 0.84 vs 0.78; 1.31 vs 1.25) with
+much smaller drawdowns (SPY −20% vs −34%) at lower return -- a risk reducer, not alpha. Golden cross, MACD and Bollinger
+dips trail. RSI(2) dip-buying works only in 2024-26 (Sharpe 1.1-1.2, but 0.2-0.4 in 2016-23). Nothing new beyond what
+the CNN and trend tests found.
+
+**XLK + XLY + XLV tilt:** equal-weight basket Sharpe 0.94 vs SPY 0.86 (2016-23) but 1.27 vs 1.60 (2024-26); CAGR
++15.3% vs +13.2%, then +16.4% vs +19.6%. All of the long-run edge is technology (XLK +22-26%/yr); health care and
+consumer discretionary trailed SPY in both periods (XLV +2% in 2023-24). The "three sectors win" chart is hindsight on
+tech's decade (it fell ~80% in 2000-02). **No edge.**
