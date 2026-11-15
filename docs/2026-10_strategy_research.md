@@ -3544,3 +3544,12 @@ holdout 2024–26. **Trial count for the Jan 5 deflated-Sharpe check: about 8 id
 - Lazy-prices veto as a shadow on the stock book — the only genuinely new, independent stock signal found in this whole research cycle.
 - Intraday-12-1 ranking as a Jan 5 candidate alongside "plain 12-1 + CNN veto".
 - Fed-day skip in the shadow #11 skip books: cheap, sign-consistent, but the evidence is weak outside 2022–23.
+
+**Approved Nov 15 (Connor: yes to 1 and 2):**
+- **Shadow #12** `automation/shadow_lazy_veto.py` (in the Shadow Portfolios workflow, after #10): shadow #10's exact book
+  plus the lazy-prices veto (bottom 20% of the universe's 10-K similarity, 10-K accepted in the past 365 days). Rebalance
+  weeks aligned with #10, so the #12 − #10 gap is the veto's effect. 10-K similarities: `data/lazy_prices_sims.csv`
+  (seeded from research data through Oct 9, then updated each run from EDGAR's daily form index).
+- **Shadow #11 Fed-day books** `{2pm,3pm,trio}_skipfed_*`: the range-skip books plus no condor on FOMC decision days
+  (`FED_DAYS` in shadow_premium.py, federalreserve.gov calendar through Dec 2027 — extend before then). The range-only
+  skip books are unchanged, so both versions are measured side by side.

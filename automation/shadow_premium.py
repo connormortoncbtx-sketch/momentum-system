@@ -22,6 +22,9 @@ SKIP BOOKS (approved Nov 15, research/condor_skip_nn.py): for the two condor slo
           mean daily range (2pm 1.4x, 3pm 1.5x ~ the widest 10% of days) -> 2pm_skip_*, 3pm_skip_*, trio_skip_*
           (noon put unchanged). Backtest 2020-23 / 2024-26 Sharpe 2pm 1.00 -> 1.11 / 3.15 -> 3.83, 3pm 2.56 -> 2.96 /
           2.97 -> 4.21. range_ratio is logged on every entry.
+FED-DAY BOOKS (approved Nov 15, research/novel_eval.py #2): the skip books plus no condor on FOMC decision days
+          -> 2pm_skipfed_*, 3pm_skipfed_*, trio_skipfed_* (noon put unchanged). Evidence is weak: Fed-day condors lost
+          ~9%/trade in 2022-26 (t ~ -1.9) but only ~3 points worse than other days in 2018-21 (t ~ -0.5).
 State: data/shadow_premium_state.json   Ledger: data/shadow_premium_ledger.jsonl (one row per settled day)
 """
 import datetime as dt
@@ -46,8 +49,12 @@ SLOTS = {"noon": ("put", dt.time(11, 58), dt.time(12, 40)),
          "3pm": ("condor", dt.time(14, 58), dt.time(15, 30))}
 PRICES = ("natural", "mid")
 SKIP_CUT = {"2pm": 1.4, "3pm": 1.5}
+# FOMC decision days (federalreserve.gov calendar; 2027 tentative). Extend before Dec 2027.
+FED_DAYS = {"2026-12-09", "2027-01-27", "2027-03-17", "2027-04-28", "2027-06-09", "2027-07-28", "2027-09-15",
+            "2027-10-27", "2027-12-08"}
 NAVS = ([f"{s}_{p}" for s in SLOTS for p in PRICES] + [f"trio_{p}" for p in PRICES]
-        + [f"{s}_skip_{p}" for s in SKIP_CUT for p in PRICES] + [f"trio_skip_{p}" for p in PRICES])
+        + [f"{s}_skip_{p}" for s in SKIP_CUT for p in PRICES] + [f"trio_skip_{p}" for p in PRICES]
+        + [f"{s}_skipfed_{p}" for s in SKIP_CUT for p in PRICES] + [f"trio_skipfed_{p}" for p in PRICES])
 
 
 def range_ratio(sc, und, now):
@@ -157,6 +164,12 @@ def main():
                     nav[f"{slot}_skip_{p}"] *= 1 + RISK * skip_r[slot]
             if skip_r:
                 nav[f"trio_skip_{p}"] *= 1 + RISK / len(SLOTS) * sum(skip_r.values())
+            fed_r = {k: (0.0 if (key in FED_DAYS and k in SKIP_CUT) else v) for k, v in skip_r.items()}
+            for slot in SKIP_CUT:                                        # Fed-day books: skip books + no condor on FOMC days
+                if slot in fed_r:
+                    nav[f"{slot}_skipfed_{p}"] *= 1 + RISK * fed_r[slot]
+            if fed_r:
+                nav[f"trio_skipfed_{p}"] *= 1 + RISK / len(SLOTS) * sum(fed_r.values())
         rows.append({"date": key, "slots": res, "nav": {b: round(nav[b], 2) for b in NAVS}})
         st["done_days"].append(key)
         del st["open"][key]

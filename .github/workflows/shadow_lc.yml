@@ -3,7 +3,7 @@ name: Shadow Portfolios (no orders)
 # Side-by-side shadows (no orders): #1 large-cap monthly momentum, #2 contrarian
 # regime switch, #3 macro + volatility-sized momentum exposure, #4 slow 12-1
 # momentum held while in the top 100 (spike-filtered), #5 live picks with vs
-# without the earnings-week exclusion, #10 FIP-steady 12-1 momentum + chart-CNN veto. Uses the
+# without the earnings-week exclusion, #10 FIP-steady 12-1 momentum + chart-CNN veto, #12 = #10 + lazy-prices 10-K veto. Uses the
 # entry day's official close fetched after the fact, so GitHub cron drift is
 # harmless; the script is idempotent per entry date (extra runs are no-ops).
 on:
@@ -88,11 +88,19 @@ jobs:
           pip install -q torch --index-url https://download.pytorch.org/whl/cpu
           python automation/shadow_fip_veto.py
 
+      - name: Update shadow FIP + CNN + lazy-prices veto (#12)
+        continue-on-error: true
+        env:
+          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+        run: python automation/shadow_lazy_veto.py
+
       - name: Commit ledger
         run: |
           git config user.name  "momentum-bot"
           git config user.email "momentum-bot@users.noreply.github.com"
-          for f in data/shadow_lc_state.json data/shadow_lc_ledger.jsonl data/shadow_regime_state.json data/shadow_regime_ledger.jsonl data/shadow_macro_state.json data/shadow_macro_ledger.jsonl data/shadow_slow_state.json data/shadow_slow_ledger.jsonl data/shadow_earnings_state.json data/shadow_earnings_ledger.jsonl data/shadow_fipveto_state.json data/shadow_fipveto_ledger.jsonl data/system_log.jsonl; do if [ -e "$f" ]; then git add "$f"; fi; done
+          for f in data/shadow_lc_state.json data/shadow_lc_ledger.jsonl data/shadow_regime_state.json data/shadow_regime_ledger.jsonl data/shadow_macro_state.json data/shadow_macro_ledger.jsonl data/shadow_slow_state.json data/shadow_slow_ledger.jsonl data/shadow_earnings_state.json data/shadow_earnings_ledger.jsonl data/shadow_fipveto_state.json data/shadow_fipveto_ledger.jsonl data/shadow_lazy_state.json data/shadow_lazy_ledger.jsonl data/lazy_prices_sims.csv data/lazy_prices_meta.json data/system_log.jsonl; do if [ -e "$f" ]; then git add "$f"; fi; done
           git diff --cached --quiet && exit 0
           git commit -q -m "shadows: $(date +%Y-%m-%d) update"
           for attempt in 1 2 3 4 5; do
