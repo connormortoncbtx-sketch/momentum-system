@@ -85,7 +85,11 @@ def main():
     for name, (sc, n, k, buf) in books.items():
         for veto in (None, 0.1, 0.2):
             s_ = sc if veto is None else sc.where(~(cn <= veto))
-            rr = U.sim(s_.loc[sel], m.loc[sel], wr.loc[sel], cost.loc[sel], small.loc[sel], n=n, k=k, buffer=buf)
+            if os.environ.get("EXIT_WEEKLY") and veto is not None:
+                wr_ = wr.where(~(cn.shift(0) <= veto), 0.0)   # a flagged holding is sold at that week's entry -> 0 return
+                rr = U.sim(s_.loc[sel], m.loc[sel], wr_.loc[sel], cost.loc[sel], small.loc[sel], n=n, k=k, buffer=buf)
+            else:
+                rr = U.sim(s_.loc[sel], m.loc[sel], wr.loc[sel], cost.loc[sel], small.loc[sel], n=n, k=k, buffer=buf)
             SER[f"{name}|{'none' if veto is None else int(veto * 100)}"] = rr
             a, b = U.st(rr[rr.index < SPLIT]), U.st(rr[rr.index >= SPLIT])
             rows.append(dict(book=name, veto="none" if veto is None else f"CNN bottom {int(veto * 100)}%",
@@ -117,7 +121,8 @@ def main():
                                            win_20d=("ab_20", lambda x: (x > 0).mean())).round(3).to_string())
     os.makedirs(f"{RD}/results", exist_ok=True)
     R.to_csv(f"{RD}/results/cnn_veto.csv", index=False)
-    pd.DataFrame(SER).to_parquet(f"{RD}/results/cnn_veto_series_v{os.environ.get('CNN_VERSION') or '1'}.parquet")
+    tag = "_exit" if os.environ.get("EXIT_WEEKLY") else ""
+    pd.DataFrame(SER).to_parquet(f"{RD}/results/cnn_veto_series_v{os.environ.get('CNN_VERSION') or '1'}{tag}.parquet")
     v = R[R.veto != "CNN bottom 20%"].pivot(index="book", columns="veto", values=["Sharpe_2022_23", "Sharpe_2024_26"])
     print("::notice::CNN veto (Sharpe none -> bottom-10% veto, 2022-23 | 2024-26): " + "; ".join(
         f"{b} {v.loc[b, ('Sharpe_2022_23', 'none')]:.2f}->{v.loc[b, ('Sharpe_2022_23', 'CNN bottom 10%')]:.2f} | "

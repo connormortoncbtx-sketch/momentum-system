@@ -3313,3 +3313,17 @@ equal risk; ETF_TREND = live rule.
   S 0.66 -> ~18%/yr at ~33% volatility. Reg T margin (2x) and weekly data hiding the condor's gap-day tails cap this
   further. Honest planning range for the true combined Sharpe: ~0.7-1.3, i.e. ~20-90%/yr if levered to half-Kelly
   AFTER live verification, with deep drawdowns.
+
+## Drawdown protection on the new books (Nov 15, 2026, `research/drawdown_overlays.py`, `cnn_veto.py EXIT_WEEKLY=1`)
+
+Connor: can the CNN protect gains / cut the big drawdowns? Tested on FIP-steady 12-1 + CNN v2 veto:
+- **CNN weekly exit** (sell a holding as soon as the collapse head flags it, cash until the next rebalance), 2022+:
+  Sharpe 0.71 / 1.20 and max DD −27% / −39% at a 10% flag, vs the plain veto 0.74 / 1.14 -- no material change. The
+  veto at purchase already does the job; collapses mostly come from names that looked fine a week earlier.
+- **Volatility targeting** (8- or 13-week, 0.5-2x, average ~1.2-1.3x): FIPV 2017-23 Sharpe 0.65 -> 0.55-0.57 and DD
+  −42% -> −49 to −52% (worse); 2024-26 1.16 -> 1.20-1.30. On the equal-risk combination: 1.28 -> 1.20-1.26 (2018-23),
+  3.44 -> 3.08-3.19 (2024-26). Not consistent -- unlike the Oct 17 stack, these books' volatility does not cluster
+  enough before their losses.
+- **Diversification is the protection that works:** the equal-risk combination's max drawdown is −22% in 2018-23
+  (FIPV alone −42%) with Sharpe 1.28 vs 0.65; worst 13 weeks −20% vs −36%. Same story as Oct 17: drawdowns are not
+  predictable from these signals; combining independent edges is what cuts them.
