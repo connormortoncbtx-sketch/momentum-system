@@ -3494,3 +3494,31 @@ FIPV + CONDOR at equal risk, realistic spread:
 **Read:** the condor family is the part least likely to be luck. Size it first once live fills confirm it. The stock book should earn its weight from live results.
 
 **Jan 5:** rerun `split_audit.py` and `overfit_checks.py` with the fresh panel, append the shadow #10/#11 live weeks, and read this table first.
+
+## Condor skip-day models: neural net vs simple rule (Nov 15, 2026, `research/condor_skip_nn.py`)
+
+Connor: point the CNN-style approach at the condor.
+- **Setup:** noon put spread, 2pm condor and 3pm condor (k = 1, held to close), real-quote outcomes on SPY and QQQ, about 3,000 trades per slot from 2018–26.
+- **Inputs:** only what's known at entry: the 5-minute path up to entry, the gap, prior ranges, VIX and VIX9D prior closes, and the weekday.
+- **Method:** walk-forward by year, 2020–26 tested. Skip the riskiest 10% / 20% of days, with the cut-off taken from earlier predictions only.
+- **Pre-registered pass bar:** raise the Sharpe in 2020–23 AND 2024–26, for the 2pm AND 3pm condors, AND beat the heuristic.
+
+| Sharpe (2% risk/day) | 2pm 2020–23 | 2pm 2024–26 | 3pm 2020–23 | 3pm 2024–26 |
+|---|---|---|---|---|
+| no skip | 1.00 | 3.15 | 2.56 | 2.97 |
+| **H: skip top 10% range-so-far** | **1.11** | **3.83** | **2.96** | **4.21** |
+| H: skip top 20% | 1.33 | 3.32 | 3.12 | 4.25 |
+| GBM skip 10% | 1.09 | 3.27 | 2.40 | 3.19 |
+| NN (1D CNN) skip 10% | 0.85 | 2.98 | 2.29 | 3.18 |
+
+- **The neural net and the GBM fail.** Their year-by-year rank correlation with outcomes is unstable (−0.06 to +0.24), and they lower the Sharpe in at least one required cell. About 3,000 days is too little for them to learn more than the obvious.
+- **The simple pre-registered rule passes every cell.** Skip when today's high–low range so far is in the top 10% relative to the 20-day mean daily range. The cut-off is about **1.4x by 2pm, 1.5x by 3pm**.
+  - The 3pm Sharpe improves in **7 of 7 years**, the 2pm in 6 of 7, on both SPY and QQQ.
+  - Skipped trades average −0.1% to −9% return on risk vs +5–8% for kept trades. The skip removes about 1/3 of all max-loss trades in 2024–26 (27 of 75 at 2pm, 21 of 52 at 3pm) and keeps 100–118% of the P&L.
+  - Return by range-so-far decile is flat until the top decile (2pm −1.6%, 3pm −6.2% vs about +6% elsewhere). The max-loss rate there is 13–15% vs about 4–5%.
+- **Mechanism:** intraday volatility clustering. Wide-range days keep moving into the close by more than the 2–3pm straddle prices. This doesn't contradict the Oct 23 pre-open finding: there, the danger was priced in at 10:00; here, the move has already happened by 2–3pm.
+- **Caveats:**
+  - It's one rule among 6 model × skip combinations, so mild multiple testing.
+  - It doesn't help the noon put.
+  - It needs live confirmation.
+- **Proposed:** shadow #11 logs range-so-far / 20-day range at entry and keeps a skip-book alongside each condor slot.
