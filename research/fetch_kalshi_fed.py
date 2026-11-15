@@ -50,54 +50,66 @@ def probe():
 def main():
     if os.environ.get("MODE") == "probe" or os.environ.get("LIMIT") == "probe":
         return probe()
-    S = get("/series").get("series", [])
-    fed = [s for s in S if "fed" in (s.get("title", "") + s.get("ticker", "")).lower()
-           and any(w in s.get("title", "").lower() for w in ("decision", "rate", "fomc", "hike", "cut"))]
-    print(f"series total {len(S)}; Fed-rate candidates: {[(s['ticker'], s['title']) for s in fed][:20]}", flush=True)
-    rows = []
-    for s in fed:
-        cur, mk = None, []
+    # KXFED: "Fed funds upper bound above X% after this meeting" ladders, one event per meeting (live + archived)
+    mk = []
+    for path, q in (("/historical/markets", dict(series_ticker="KXFED", limit=1000)),
+                    ("/markets", dict(series_ticker="KXFED", status="settled", limit=1000))):
+        cur = None
         while True:
-            q = dict(series_ticker=s["ticker"], status="settled", limit=1000)
-            if cur:
-                q["cursor"] = cur
-            j = get("/markets", **q)
-            mk += j.get("markets", [])
+            j = get(path, **(dict(q, cursor=cur) if cur else q))
+            mk += [dict(m, _hist=path.startswith("/historical")) for m in j.get("markets", [])]
             cur = j.get("cursor")
             if not cur:
                 break
-        print(f"  {s['ticker']}: {len(mk)} settled markets", flush=True)
-        by_ev = {}
-        for m in mk:
-            by_ev.setdefault(m["event_ticker"], []).append(m)
-        for ev, ms in by_ev.items():
-            close = pd.Timestamp(max(m["close_time"] for m in ms)).tz_convert(ET)
-            day = close.date()
-            t13 = dt.datetime.combine(day, dt.time(13, 0), ET)
-            px = []
-            for m in ms:
-                c = get(f"/series/{s['ticker']}/markets/{m['ticker']}/candlesticks",
-                        start_ts=int((t13 - dt.timedelta(hours=6)).timestamp()), end_ts=int(t13.timestamp()), period_interval=60)
-                cs = c.get("candlesticks", [])
-                p = None
-                for x in cs:
-                    pr = x.get("price", {}) or {}
-                    v = pr.get("close") or pr.get("previous") or (x.get("yes_bid", {}) or {}).get("close")
-                    if v is not None:
-                        p = float(v) / 100
-                px.append((m["ticker"], p, m.get("result")))
-            ps = [p for _, p, _ in px if p is not None and p > 0]
-            if len(ps) < 2:
-                continue
-            tot = sum(ps)
-            w = [p / tot for p in ps]
-            rows.append(dict(series=s["ticker"], event=ev, date=day, n_markets=len(ms), priced=len(ps),
-                             max_prob=max(ps), sum_prob=tot, entropy=-sum(x * math.log(x) for x in w if x > 0)))
-    D = pd.DataFrame(rows).sort_values("date")
+    mk = list({m["ticker"]: m for m in mk}.values())
+    print(f"KXFED markets: {len(mk)}", flush=True)
+    by_ev = {}
+    for m in mk:
+        by_ev.setdefault(m["event_ticker"], []).append(m)
+    rows = []
+    for ev, ms in sorted(by_ev.items()):
+        close = pd.Timestamp(max(m["close_time"] for m in ms)).tz_convert(ET)
+        day = close.date()
+        t13 = dt.datetime.combine(day, dt.time(13, 0), ET)
+        lad = []
+        for m in ms:
+            k = m.get("floor_strike")
+            if k is None:
+                try:
+                    k = float(m["ticker"].rsplit("-T", 1)[1])
+                except Exception:
+                    continue
+            q = dict(start_ts=int((t13 - dt.timedelta(hours=8)).timestamp()), end_ts=int(t13.timestamp()), period_interval=60)
+            c = get(f"/historical/markets/{m['ticker']}/candlesticks", **q) if m["_hist"] else {}
+            if not c.get("candlesticks"):
+                c = get(f"/series/KXFED/markets/{m['ticker']}/candlesticks", **q)
+            p = None
+            for x in c.get("candlesticks", []):
+                pr = x.get("price", {}) or {}
+                v = pr.get("close") if pr.get("close") is not None else pr.get("previous")
+                if v is None:
+                    yb, ya = (x.get("yes_bid", {}) or {}).get("close"), (x.get("yes_ask", {}) or {}).get("close")
+                    v = (yb + ya) / 2 if yb is not None and ya is not None else None
+                if v is not None:
+                    p = float(v) / (100 if float(v) > 1 else 1)
+            if p is not None:
+                lad.append((float(k), p))
+        if len(lad) < 2:
+            continue
+        lad.sort()
+        ks, ps = [k for k, _ in lad], [min(max(p, 0), 1) for _, p in lad]
+        ps = list(pd.Series(ps)[::-1].cummax()[::-1])               # P(above k) must fall with k
+        bins = [1 - ps[0]] + [ps[i] - ps[i + 1] for i in range(len(ps) - 1)] + [ps[-1]]
+        bins = [max(b, 0) for b in bins]
+        tot = sum(bins) or 1
+        w = [b / tot for b in bins]
+        rows.append(dict(event=ev, date=day, strikes=len(lad), max_prob=max(w),
+                         entropy=-sum(x * math.log(x) for x in w if x > 0)))
+        print(f"  {day}: {len(lad)} strikes, favourite {max(w):.2f}", flush=True)
+    D = pd.DataFrame(rows).sort_values("date") if rows else pd.DataFrame(columns=["event", "date", "max_prob", "entropy"])
     os.makedirs(f"{RD}/results", exist_ok=True)
     D.to_csv(f"{RD}/results/kalshi_fed_events.csv", index=False)
-    print(f"::notice::Kalshi Fed events: {len(D)} ({D.date.min() if len(D) else '-'}..{D.date.max() if len(D) else '-'}); "
-          f"series {D.series.value_counts().to_dict() if len(D) else {}}")
+    print(f"::notice::Kalshi Fed meetings: {len(D)}" + (f" ({D.date.min()}..{D.date.max()}); median favourite {D.max_prob.median():.2f}" if len(D) else ""))
 
 
 if __name__ == "__main__":
