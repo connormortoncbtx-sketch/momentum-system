@@ -35,7 +35,21 @@ def get(path, **q):
     return {}
 
 
+def probe():
+    for path, q in (("/markets", dict(series_ticker="KXFED", limit=1000)), ("/markets", dict(series_ticker="FED", limit=1000)),
+                    ("/markets", dict(series_ticker="KXFED", status="closed", limit=1000)),
+                    ("/events", dict(series_ticker="KXFED", limit=200)), ("/events", dict(series_ticker="FED", limit=200)),
+                    ("/historical/markets", dict(series_ticker="KXFED", limit=1000)), ("/historical/markets", dict(series_ticker="FED", limit=1000)),
+                    ("/historical/events", dict(series_ticker="FED", limit=200))):
+        j = get(path, **q)
+        items = j.get("markets") or j.get("events") or []
+        dates = sorted(str(x.get("close_time") or x.get("strike_date") or x.get("event_ticker"))[:10] for x in items)
+        print(f"probe {path} {q}: keys {list(j)[:5]} n {len(items)} cursor {bool(j.get('cursor'))} range {dates[:1]}..{dates[-1:]}", flush=True)
+
+
 def main():
+    if os.environ.get("MODE") == "probe" or os.environ.get("LIMIT") == "probe":
+        return probe()
     S = get("/series").get("series", [])
     fed = [s for s in S if "fed" in (s.get("title", "") + s.get("ticker", "")).lower()
            and any(w in s.get("title", "").lower() for w in ("decision", "rate", "fomc", "hike", "cut"))]

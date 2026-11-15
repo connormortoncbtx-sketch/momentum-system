@@ -47,7 +47,7 @@ def big_names():
 
 def main():
     names = big_names()
-    pat = re.compile(r"\b(" + "|".join(sorted(map(re.escape, names), key=len, reverse=True)) + r")\b")
+    pat = re.compile(r"\b(" + "|".join(sorted(map(re.escape, names), key=len, reverse=True)) + r")\b", re.I)
     files = sorted(glob.glob(f"{RD}/sec/filings_20*.parquet")) + [f"{RD}/sec/filings_delisted.parquet"]
     F = pd.concat((pd.read_parquet(f, columns=["cik", "tickers", "form", "filing_date", "primary_doc", "accession", "accepted_et"])
                    for f in files if os.path.exists(f)), ignore_index=True)
@@ -61,14 +61,18 @@ def main():
         raw = T.get(f"https://www.sec.gov/Archives/edgar/data/{int(r.cik)}/{r.accession.replace('-', '')}/{r.primary_doc}")
         if raw is None:
             return []
-        t = T.text_of(raw)
+        raw = re.sub(r"(?is)<(script|style).*?</\1>", " ", raw)
+        t = re.sub(r"\s+", " ", T.html.unescape(T.TAG.sub(" ", raw)))          # original case kept
         own = set(str(r.tickers).split(","))
         hits = []
         for m in SENT.finditer(t):
             s = m.group(0)
             if not CTX.search(s):
                 continue
-            for nm in set(pat.findall(s)):
+            for hit in set(pat.findall(s)):
+                nm = hit.lower()
+                if " " not in nm and (not hit[0].isupper() or re.search(r"\b" + re.escape(nm) + r"\b", t)):
+                    continue      # one-word name: must be capitalised here and never used as an ordinary word
                 sym = names[nm]
                 if sym in own:
                     continue
