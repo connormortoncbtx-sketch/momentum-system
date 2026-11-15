@@ -3246,9 +3246,9 @@ slightly stronger than survivor-only); FIP top-30 book +17.5% / +21.1% (Sharpe 0
 −12.4%. Contract wins: still no veto effect. Next: paper shadow of FIP 12-1 + veto for the Jan 5 review (with the
 DSR / PBO overfitting checks); CNN v2 (all training samples, daily samples, collapse-target head) as an overnight run.
 
-## Shadow #9 and CNN v2 launched (Nov 14, Connor: "Do it")
+## Shadow #10 and CNN v2 launched (Nov 14, Connor: "Do it")
 
-- **Shadow #9 (no orders), `automation/shadow_fip_veto.py`,** in the Monday shadow workflow: FIP-steady 12-1 momentum
+- **Shadow #10 (no orders; numbered #9 at first, but #9 is the 10am condor shadow), `automation/shadow_fip_veto.py`,** in the Monday shadow workflow: FIP-steady 12-1 momentum
   + CNN bottom-10% veto, top 30, rebalanced every 4th entry week, kept while eligible and within the top 60.
   CNN weights frozen in `models/cnn_v1/` (the delisted-aware run); live scoring uses `research/chart_images.py` and
   reproduces the research scores exactly (corr 1.000 on Jun 6, 2025). First entry Nov 9: 30 names bought, 30 of the
@@ -3385,3 +3385,9 @@ the CNN and trend tests found.
 +15.3% vs +13.2%, then +16.4% vs +19.6%. All of the long-run edge is technology (XLK +22-26%/yr); health care and
 consumer discretionary trailed SPY in both periods (XLV +2% in 2023-24). The "three sectors win" chart is hindsight on
 tech's decade (it fell ~80% in 2000-02). **No edge.**
+
+**Shadow #11 (no orders), `automation/shadow_premium.py` + `.github/workflows/shadow_premium.yml` (Nov 15):** the
+option-premium trio -- noon put spread, 2pm condor, 3pm condor on SPY + QQQ, one implied move out, held to the close,
+natural and mid pricing from live quotes; per-slot books at 2% risk a day and a TRIO book with the same 2% split across
+the three. Runs at 12:05 / 14:05 / 15:05 ET (crons cover EST and EDT) and settles the next morning. Judged on Jan 5
+alongside the 2pm and 3pm paper accounts.

@@ -1,0 +1,52 @@
+name: Shadow Premium Trio (#11, no orders)
+
+# Same-day premium at three times of day on SPY + QQQ (noon put spread, 2pm condor, 3pm condor), from live quotes,
+# settled at the official close. The script only enters a slot inside its window (11:58-12:40, 13:58-14:40,
+# 14:58-15:30 ET) and is idempotent, so the crons below cover both EST and EDT; each run first settles earlier days.
+on:
+  schedule:
+    - cron: '5 16,17,18,19,20 * * 1-5'   # 12:05/14:05/15:05 ET under EDT (16/18/19 UTC) and EST (17/19/20 UTC)
+    - cron: '35 13 * * 1-5'              # morning settle of the previous day
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: shadow-premium
+  cancel-in-progress: false
+
+jobs:
+  premium:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Shadow premium trio
+        env:
+          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+          NTFY_CHANNEL: ${{ secrets.NTFY_CHANNEL }}
+        run: python automation/shadow_premium.py
+      - name: Commit ledger
+        run: |
+          git config user.name  "momentum-bot"
+          git config user.email "momentum-bot@users.noreply.github.com"
+          for f in data/shadow_premium_state.json data/shadow_premium_ledger.jsonl data/system_log.jsonl; do if [ -e "$f" ]; then git add "$f"; fi; done
+          git diff --cached --quiet && exit 0
+          git commit -q -m "shadow premium trio: $(date +%Y-%m-%d) update"
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push; then break; fi
+            git rebase --abort 2>/dev/null || true
+            git pull origin main --no-rebase --strategy=recursive -X theirs --no-edit 2>/dev/null || true
+            [ $attempt -eq 5 ] && exit 1
+            sleep $((RANDOM % 5 + 2))
+          done

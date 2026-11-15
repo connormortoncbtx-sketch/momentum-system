@@ -1,7 +1,7 @@
 """
 automation/shadow_fip_veto.py
 =============================
-Shadow #9 (no orders), approved Nov 14, 2026: steady-gains 12-1 momentum with the chart-CNN veto -- the best stock
+Shadow #10 (no orders), approved Nov 14, 2026: steady-gains 12-1 momentum with the chart-CNN veto -- the best stock
 book from the Nov 13-14 research (docs/2026-10_strategy_research.md: "Trend quality among momentum stocks",
 "CNN as a veto", reruns on the delisted-inclusive panel).
 

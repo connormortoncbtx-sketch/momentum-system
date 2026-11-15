@@ -3,7 +3,7 @@ name: Shadow Portfolios (no orders)
 # Side-by-side shadows (no orders): #1 large-cap monthly momentum, #2 contrarian
 # regime switch, #3 macro + volatility-sized momentum exposure, #4 slow 12-1
 # momentum held while in the top 100 (spike-filtered), #5 live picks with vs
-# without the earnings-week exclusion, #9 FIP-steady 12-1 momentum + chart-CNN veto. Uses the
+# without the earnings-week exclusion, #10 FIP-steady 12-1 momentum + chart-CNN veto. Uses the
 # entry day's official close fetched after the fact, so GitHub cron drift is
 # harmless; the script is idempotent per entry date (extra runs are no-ops).
 on:
@@ -78,7 +78,7 @@ jobs:
           ALPACA_PAPER: ${{ secrets.ALPACA_PAPER || 'true' }}
         run: python automation/shadow_earnings_hold.py
 
-      - name: Update shadow FIP-steady momentum + CNN veto (#9)
+      - name: Update shadow FIP-steady momentum + CNN veto (#10)
         continue-on-error: true
         env:
           ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
