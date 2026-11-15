@@ -3431,3 +3431,66 @@ Equal-risk combination Sharpe:
 - **Still the only strong independent edge: the condor.**
 
 **For Jan 5:** in the equal-risk sizing, weight streams by Sharpe (not equally) and keep the non-stock trend and crypto sleeves at about half the weight of FIPV and the condor.
+
+## Jan 5 prep: split audit and overfitting checks (Nov 15, 2026)
+
+**Missed splits (`research/split_audit.py`).**
+- Method: scan 23M daily bars for an overnight gap within 4% of a split ratio, where dollar volume holds (0.5–2x over the next 10 sessions) and the new level holds.
+- Hits: 507 such gaps; 86 of them fall in the $5 / $2M universe.
+- About half are real data errors:
+  - spin-offs the vendor never adjusted (AA/Arconic, DLPH/Aptiv, MTW, TRN/Arcosa, SNX/Concentrix, ZWS, ENOV/ESAB, BEP);
+  - true splits (SLGN 2:1);
+  - ADR ratio changes (IX, AZN);
+  - ticker-change duplicates (ADMP=DMK, LRMR=ZFGN, DFTX=MNMD, RPHM=OKUR).
+- The rest are real crashes, mostly biotech trial failures (SVRA, QURE, FULC, STMP) and March 2020.
+- Volume cannot tell these apart, so "fixing" all of them would delete real losses. Instead, `backtest.load_panel` rescales them only under `SPLIT_FIX=1`, as a sensitivity bracket.
+- **Result: immaterial.** FIP 12-1 + CNN v2 veto, Sharpe as-is vs fixed:
+
+| Veto | 2022–23 | 2024–26 |
+|---|---|---|
+| none | 0.63 vs 0.63 | 1.13 vs 1.13 |
+| 10% | 0.74 vs 0.74 | 1.14 vs 1.13 |
+| 20% | 0.85 vs 0.85 | 1.15 vs 1.17 |
+
+The default stays as-is, the conservative choice.
+
+**Overfitting (`research/overfit_checks.py`; output `results/overfit_checks.csv`).**
+
+*Probability of backtest overfitting (PBO)* across all 352 saved option-premium variants. This measures how often the in-sample best variant lands below median out of sample:
+
+| Window | PBO | Winner's Sharpe in sample | Winner's Sharpe out of sample |
+|---|---|---|---|
+| 2018–26 | 0.04 | 3.3 | 2.1 |
+| 2018–23 | 0.10 | 3.5 | 1.9 |
+| 2024–26 | 0.34 | 4.8 | 2.2 |
+
+- Selection within the option family generalises.
+- Expect about a 1/3 haircut from the backtested best to reality.
+
+*Deflated Sharpe (DSR)* is the probability the true Sharpe is above 0 after N tries; ≥0.95 is the usual bar.
+
+| Book | N | 2018–26 | 2024–26 |
+|---|---|---|---|
+| 3pm condor | 360 | 0.91 | 0.91 |
+| 3pm condor | 7,560 (every grid cell; highly correlated, so too harsh) | 0.51 | 0.70 |
+| trio | 360 | 0.78 | 0.97 |
+| 2pm condor | 360 | 0.32 | 0.94 (strong only since 2024) |
+| noon put | any | ≤0.09 (on its own it's luck-level; it belongs only as a diversifier) | |
+
+For the stock book (FIPV) the result depends on how widely the tried variants' Sharpes spread:
+- **Narrow grid spread (0.15/yr):** DSR 0.62–0.92.
+- **Realistic spread (0.4/yr, since the variants tried ranged from Sharpe 0 to 1.2):** 2018–23 0.05–0.24; 2024–26 0.41–0.67; 2018–26 0.07–0.36.
+
+**On its own, the stock book does not clear the luck bar.** Its edge is plausible but unproven.
+
+FIPV + CONDOR at equal risk, realistic spread:
+
+| N | 2018–23 | 2018–26 | 2024–26 |
+|---|---|---|---|
+| 50 | 0.76 | 0.98 | ≥0.98 |
+| 200 | 0.61 | 0.95 | ≥0.98 |
+| 1,000 | 0.44 | 0.86 | ≥0.98 |
+
+**Read:** the condor family is the part least likely to be luck. Size it first once live fills confirm it. The stock book should earn its weight from live results.
+
+**Jan 5:** rerun `split_audit.py` and `overfit_checks.py` with the fresh panel, append the shadow #10/#11 live weeks, and read this table first.

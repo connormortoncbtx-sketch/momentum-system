@@ -26,6 +26,7 @@ Known limitations (state them with every result):
 from __future__ import annotations
 
 import glob
+import os
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -76,12 +77,44 @@ def load_panel(data_dir: str, last_complete_week: str | None = None) -> Panel:
         cols.append("raw_close")
     wide = {c: long.pivot(index="week", columns="symbol", values=c).sort_index() for c in cols}
     weeks, symbols = wide["close"].index, wide["close"].columns
+    if os.environ.get("SPLIT_FIX") == "1":
+        _apply_split_fix(data_dir, long, wide)
     p = Panel(weeks=weeks, symbols=symbols)
     for c in cols:
         p.m[c] = wide[c].reindex(index=weeks, columns=symbols).to_numpy(dtype="float64")
     names = assets.reindex(symbols)["name"].fillna("").astype(str)
     p.is_fund = np.array([is_fund_name(n) for n in names])
     return p
+
+
+def _apply_split_fix(data_dir, long, wide):
+    """SPLIT_FIX=1: treat every gap in results/split_events.csv (research/split_audit.py) as a corporate action the
+    vendor missed -- scale the symbol's earlier adjusted prices by the ratio, so the phantom week return disappears.
+    Some flagged gaps are REAL crashes (biotech trial failures, Mar 2020), so this is the optimistic bracket of a
+    sensitivity test, not a default."""
+    path = Path(data_dir) / "results" / "split_events.csv"
+    if not path.exists():
+        print(f"SPLIT_FIX: {path} missing -- run research/split_audit.py", flush=True)
+        return
+    ev = pd.read_csv(path, parse_dates=["date"])
+    first = long.pivot(index="week", columns="symbol", values="first_date").sort_index() if "first_date" in long else None
+    price_cols = [c for c in ("d1_open", "d1_close", "d2_open", "close", "low_after_d1", "high") if c in wide]
+    n = 0
+    for e in ev.itertuples():
+        if e.symbol not in wide["close"].columns:
+            continue
+        wks = wide["close"].index
+        i = wks.searchsorted(e.date)                        # week whose Friday label is >= the event date
+        if i >= len(wks):
+            continue
+        for c in price_cols:
+            wide[c].iloc[:i, wide[c].columns.get_loc(e.symbol)] *= e.ratio
+        fd = first.at[wks[i], e.symbol] if first is not None and e.symbol in first.columns else pd.NaT
+        if pd.notna(fd) and e.date > pd.Timestamp(fd):       # event mid-week: day-1 prices were pre-event
+            for c in ("d1_open", "d1_close") + (("d2_open",) if (e.date - pd.Timestamp(fd)).days > 1 else ()):
+                wide[c].iat[i, wide[c].columns.get_loc(e.symbol)] *= e.ratio
+        n += 1
+    print(f"SPLIT_FIX: rescaled {n} flagged gaps", flush=True)
 
 
 # ── FEATURES (all as of Friday close, week t) ─────────────────────────────────
