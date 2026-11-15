@@ -32,7 +32,7 @@ import numpy as np
 import pandas as pd
 
 RD = os.environ.get("RESEARCH_DATA", "research_data")
-BASE = "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/"
+BASE = os.environ.get("FRENCH_BASE", "http://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/")
 FILES = {"mom_m": "10_Portfolios_Prior_12_2_CSV.zip", "mom_d": "10_Portfolios_Prior_12_2_Daily_CSV.zip",
          "ff_m": "F-F_Research_Data_Factors_CSV.zip", "ff_d": "F-F_Research_Data_Factors_daily_CSV.zip"}
 
