@@ -3341,3 +3341,22 @@ Cash-deal signature book (rose >= 15% in 8 weeks, then < 2%/week moves), net of 
 when the spread has already compressed. **Rejected as built**; an announcement-day entry (8-K 1.01 / DEFA14A on the
 target) is the only variant left worth a look.
 Combination without merger arb (FIPV, CONDOR, ETF_EQ), 2018-23: combined Sharpe 1.27 (0.63 with means halved).
+
+## CORRECTION + earnings drift / insider buying in the combination (Nov 15, 2026)
+
+**Correction to "First combined estimate" and "Drawdown protection on the new books":** the stock books (FIPV, MERGER)
+are indexed by formation week but CONDOR / ETF_EQ / CONTRACT by the calendar week the return is earned. Combined
+without shifting, they were one week out of line, which hid their correlation. Aligned (`combo_estimate.py` now shifts
+formation-indexed books by a week):
+- FIPV vs ETF_EQ correlation is +0.41 (2018-23) / +0.51 (2024-26), not −0.1; FIPV vs CONTRACT +0.34. Only the CONDOR
+  is close to independent of everything (−0.08 to +0.21).
+- Equal-risk FIPV + CONDOR + ETF_EQ, 2018-23: Sharpe **1.14** (0.57 with means halved), not 1.27-1.33. FIPV + CONDOR
+  alone: 1.25 -- the ETF hold adds little once aligned. 2024-26 (with CONTRACT): 2.92 (1.46 halved).
+- Drawdown overlay rerun: the combination's 2017/18-23 max drawdown is −34% (Sharpe 0.93), not −22%; FIPV alone −42%
+  (0.65). Diversification still helps, by less than first reported; vol targeting still no consistent help.
+
+**PEAD and INSIDER** (pre-registered books from `research/extra_books.py`, rebuilt on the delisted-inclusive panel):
+Sharpe 0.76 / 0.48 (2018-23), 0.65 / 0.72 (2024-26), but correlated with FIPV at 0.65-0.85 and with each other at
+0.69-0.80 -- the same long-stock bet. Adding them LOWERS the combined Sharpe (2018-23 1.14 -> 0.97; 2024-26 2.92 ->
+2.18). Not independent edges. The stock books are largely one bet; genuinely new edges must come from outside
+long-equity exposure (option premium, market-hedged books once margin is available, other asset classes).

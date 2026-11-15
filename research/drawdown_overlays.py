@@ -32,7 +32,7 @@ def main():
     S = {}
     S["FIPV"] = pd.read_parquet(f"{RD}/results/cnn_veto_series_v2.parquet")["FIP_M12_1|10"].dropna()
     C = pd.read_csv(f"{RD}/results/combo_streams_weekly.csv", index_col=0, parse_dates=True)
-    cols = [c for c in ("FIPV", "CONDOR", "ETF_EQ", "MERGER", "CONTRACT") if c in C]
+    cols = [c for c in ("FIPV", "CONDOR", "ETF_EQ", "CONTRACT") if c in C]
     Z = C[cols].loc["2018-01-01":]
     z = Z / Z.std()                                    # equal risk per stream (full-sample vol; a mild look-ahead, shown as such)
     S["COMBO (equal risk, avail. streams)"] = (z.mean(axis=1) * Z.std().mean()).dropna()

@@ -84,13 +84,21 @@ def main():
     S["CONTRACT"] = weekly(c)
     S["CONDOR"] = condor()
     mg = pd.read_csv(f"{RD}/results/merger_arb_weekly_pinned.csv", index_col=0, parse_dates=True).merger_arb
-    S["MERGER"] = mg[mg.index < "2024-01-01"]
+    S["MERGER"] = mg
+    xb = pd.read_csv(f"{RD}/results/extra_books.csv", index_col=0, parse_dates=True)     # research/extra_books.py
+    S["PEAD"], S["INSIDER"] = xb["PEAD"], xb["INSIDER"]
+    # stock books are indexed by FORMATION week (return earned Monday t+1 -> Monday t+2): move them to the week the
+    # return is earned, so they line up with the calendar-week CONDOR / ETF / CONTRACT streams
+    for k in ("FIPV", "MERGER", "PEAD", "INSIDER"):
+        S[k] = S[k].copy(); S[k].index = pd.to_datetime(S[k].index) + pd.Timedelta(days=7)
     S.update(etf_books())
     for k in S:
         S[k].index = pd.to_datetime(S[k].index).to_period("W-FRI").to_timestamp(how="end").normalize()
     D = pd.DataFrame(S)
     windows = {"A 2024-02..2026-08": (["FIPV", "CONTRACT", "CONDOR", "ETF_EQ"], "2024-02-01", "2026-08-31"),
-               "B 2018..2023": (["FIPV", "CONDOR", "MERGER", "ETF_EQ"], "2018-01-01", "2023-12-31")}
+               "A+ with PEAD, INSIDER": (["FIPV", "CONTRACT", "CONDOR", "ETF_EQ", "PEAD", "INSIDER"], "2024-02-01", "2026-08-31"),
+               "B 2018..2023": (["FIPV", "CONDOR", "ETF_EQ"], "2018-01-01", "2023-12-31"),
+               "B+ with PEAD, INSIDER": (["FIPV", "CONDOR", "ETF_EQ", "PEAD", "INSIDER"], "2018-01-01", "2023-12-31")}
     rows = []
     for name, (cols, a, b) in windows.items():
         W = D.loc[a:b, cols + ["ETF_TREND"]].dropna(subset=cols)
