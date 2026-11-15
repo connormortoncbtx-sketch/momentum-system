@@ -130,6 +130,7 @@ def main():
     os.makedirs(f"{RD}/results", exist_ok=True)
     tag = "_pinned" if PINNED else "_all"
     D.to_csv(f"{RD}/results/merger_arb_deals{tag}.csv", index=False)
+    P.rename("merger_arb").to_frame().assign(open_deals=N).to_csv(f"{RD}/results/merger_arb_weekly{tag}.csv")
     R.to_csv(f"{RD}/results/merger_arb{tag}.csv", index=False)
     print("::notice::merger arb: " + "; ".join(f"{r.period} CAGR {r.CAGR:+.1f}% Sharpe {r.Sharpe:.2f} beta {r.beta_IWM:.2f}"
                                                for r in R.itertuples()))

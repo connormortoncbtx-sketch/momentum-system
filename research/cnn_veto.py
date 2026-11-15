@@ -28,7 +28,7 @@ import backtest as B  # noqa: E402
 import universe_floor as U  # noqa: E402
 
 RD = os.environ.get("RESEARCH_DATA", "research_data")
-START, SPLIT = pd.Timestamp("2022-01-01"), pd.Timestamp("2024-01-01")
+START, SPLIT = pd.Timestamp(os.environ.get("VETO_START") or "2022-01-01"), pd.Timestamp("2024-01-01")   # before 2022 the CNN has no out-of-sample scores, so the veto cannot bite
 pd.set_option("display.width", 220); pd.set_option("display.max_rows", 200)
 
 
@@ -79,11 +79,14 @@ def main():
     sel = p.weeks >= START
     books = {"OLD_PICK10": (proxy, 10, 1, None), "PROXY_M30": (proxy, 10, 4, 30),
              "M12_1": (m12, 30, 4, 60), "FIP_M12_1": (fipm, 30, 4, 60)}
-    rows = []
+    if os.environ.get("ONLY_FIP"):
+        books = {"FIP_M12_1": books["FIP_M12_1"]}
+    rows, SER = [], {}
     for name, (sc, n, k, buf) in books.items():
         for veto in (None, 0.1, 0.2):
             s_ = sc if veto is None else sc.where(~(cn <= veto))
             rr = U.sim(s_.loc[sel], m.loc[sel], wr.loc[sel], cost.loc[sel], small.loc[sel], n=n, k=k, buffer=buf)
+            SER[f"{name}|{'none' if veto is None else int(veto * 100)}"] = rr
             a, b = U.st(rr[rr.index < SPLIT]), U.st(rr[rr.index >= SPLIT])
             rows.append(dict(book=name, veto="none" if veto is None else f"CNN bottom {int(veto * 100)}%",
                              CAGR_2022_23=a["CAGR"], Sharpe_2022_23=a["Sharpe"], DD_2022_23=a["maxDD"],
@@ -114,6 +117,7 @@ def main():
                                            win_20d=("ab_20", lambda x: (x > 0).mean())).round(3).to_string())
     os.makedirs(f"{RD}/results", exist_ok=True)
     R.to_csv(f"{RD}/results/cnn_veto.csv", index=False)
+    pd.DataFrame(SER).to_parquet(f"{RD}/results/cnn_veto_series_v{os.environ.get('CNN_VERSION') or '1'}.parquet")
     v = R[R.veto != "CNN bottom 20%"].pivot(index="book", columns="veto", values=["Sharpe_2022_23", "Sharpe_2024_26"])
     print("::notice::CNN veto (Sharpe none -> bottom-10% veto, 2022-23 | 2024-26): " + "; ".join(
         f"{b} {v.loc[b, ('Sharpe_2022_23', 'none')]:.2f}->{v.loc[b, ('Sharpe_2022_23', 'CNN bottom 10%')]:.2f} | "

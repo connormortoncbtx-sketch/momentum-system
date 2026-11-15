@@ -3291,3 +3291,25 @@ veto −1.50 / 0.41. I60 "beats" weekly TREND in both periods only because weekl
 holding all 41. **Rejected at both horizons.** Again EQUAL beats the trend rule -- for the Jan 5 review: test the ETF
 sleeve as an equal-risk hold vs the 63-day trend switch over the full 2016-26 history before drawing anything from 58
 months.
+
+## First combined estimate (Nov 15, 2026, `research/combo_estimate.py`)
+
+Merger arb rerun on the delisted panel: 2024-26 still unreadable -- the SEC filing set only covers companies that still
+have tickers, so 2024-26 targets are missing (27 deals, 7% "completed"). Needs a rebuild from EDGAR's full form index
+(PREM14A / DEFM14A / SC 14D9 by CIK, mapped to delisted tickers by name). Used on 2017-23 only below.
+
+Weekly streams: FIPV = FIP-steady 12-1 top 30 + CNN v2 veto (veto active from 2022); CONTRACT = contract-win book
+(2024+); CONDOR = 2pm SPY+QQQ condor, 2% of the account at risk a day; MERGER (2017-23); ETF_EQ = 41 sleeve ETFs at
+equal risk; ETF_TREND = live rule.
+| window | stream Sharpes | weekly correlations | equal-risk combined Sharpe | means halved |
+|---|---|---|---|---|
+| A 2024-02..2026-08 (106 wk) | FIPV 0.86, CONTRACT 1.34, CONDOR 3.10, ETF_EQ 1.98 | −0.10..+0.37 (CONTRACT-ETF_EQ highest) | 3.38 | 1.69 |
+| B 2018..2023 (268 wk) | FIPV 0.60, CONDOR 1.01, MERGER 0.55, ETF_EQ 0.53 | −0.13..+0.21 | 1.33 | 0.66 |
+- The edges really are close to independent (|correlation| mostly < 0.15) -- stacking works as the maths says.
+- Window A is a short, unusually good stretch (condor Sharpe 3.1; backtest condor RoR ~4.7%/trade vs ~2.5% live paper)
+  -- treat 3.4 as fantasy. Window B covers a fuller mix of markets (2018 vol shock, 2020 crash, 2022 bear): **combined
+  backtest Sharpe 1.33, 0.66 after halving every edge.**
+- What half-Kelly sizing would allow (log growth 0.75 x S^2/2): S 1.33 -> ~94%/yr (~0.26%/day) at ~66% volatility;
+  S 0.66 -> ~18%/yr at ~33% volatility. Reg T margin (2x) and weekly data hiding the condor's gap-day tails cap this
+  further. Honest planning range for the true combined Sharpe: ~0.7-1.3, i.e. ~20-90%/yr if levered to half-Kelly
+  AFTER live verification, with deep drawdowns.
