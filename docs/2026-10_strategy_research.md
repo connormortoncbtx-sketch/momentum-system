@@ -3282,3 +3282,12 @@ also ~0 (−0.03). Books on the 41 sleeve ETFs, Sharpe 2022-23 / 2024+: live TRE
 1.68; CNN I20 top half −0.20 / 1.38; CNN I60 top half −0.09 / 1.43; TREND + I20 veto 0.22 / 1.10; TREND + I60 veto
 −0.63 / 1.12. No CNN variant is a credible improvement (I60's margins are tiny with zero IC). Side finding worth the
 Jan 5 review: holding all 41 at the same sizing beat the live trend rule in both periods (58 months -- thin).
+
+**ETF chart CNN, 5-day label, weekly rebalance (same script, HORIZON=5; Connor: "beat the median ETF over the next
+week?").** No skill either: weekly rank IC −0.025 to +0.010 (|t| <= 1.1) for I20 and I60, both periods. Weekly books,
+Sharpe 2022-23 / 2024+: TREND (live rule run weekly) −1.15 / 1.04 (weekly whipsaw in 2022-23, −12% a year); EQUAL
+0.01 / 1.56; CNN I20 top half −0.21 / 0.97; CNN I60 top half −0.22 / 1.12; TREND + I20 veto −1.03 / 0.86; TREND + I60
+veto −1.50 / 0.41. I60 "beats" weekly TREND in both periods only because weekly trend is so bad; it trails simply
+holding all 41. **Rejected at both horizons.** Again EQUAL beats the trend rule -- for the Jan 5 review: test the ETF
+sleeve as an equal-risk hold vs the 63-day trend switch over the full 2016-26 history before drawing anything from 58
+months.
