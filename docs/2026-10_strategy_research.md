@@ -3553,3 +3553,27 @@ holdout 2024–26. **Trial count for the Jan 5 deflated-Sharpe check: about 8 id
 - **Shadow #11 Fed-day books** `{2pm,3pm,trio}_skipfed_*`: the range-skip books plus no condor on FOMC decision days
   (`FED_DAYS` in shadow_premium.py, federalreserve.gov calendar through Dec 2027 — extend before then). The range-only
   skip books are unchanged, so both versions are measured side by side.
+
+## "So bad they're good" — losers and over-hot winners (Nov 15, 2026, `research/loser_rebound.py`)
+
+Connor's observation: low-scored names often did great, and top-scored names often looked priced out. Pre-registered
+monthly tests ($5 / $2M universe, delisted included). Results: `results/loser_rebound.csv`.
+
+| 12-1 decile, next month | Mean | Median | P(≥ +20%) | P(≤ −20%) |
+|---|---|---|---|---|
+| Bottom (worst), 2018-23 / 2024-26 | −0.6% / −2.8% | −2.2% / −2.8% | 13% / 12% | 16% / 19% |
+| Middle (5th) | +0.6% / +0.9% | +0.6% / +0.5% | 4% / 3% | 3% / 2% |
+| Top (best) | +0.8% / +0.7% | −0.3% / −0.6% | 11% / 13% | 9% / 12% |
+
+- **The observation is real, but it is volatility, not edge.** The worst-scored names are 3x as likely as a typical stock to
+  jump 20%+ in a month, and even more likely to drop 20%. On average they lose. Drop the best 5% of their outcomes and
+  the mean falls from −1.3% to −5.0% a month. Picking the jumpers in advance does not work: before the run, big winners
+  and big losers look alike ("Before the run", Oct).
+- **Long-term reversal (3-year losers): FAIL.** Excess return vs universe −16bp (t −0.2) and −305bp (t −4.9).
+- **1-month losers: FAIL** (−31bp t −0.6; −247bp t −5.5), consistent with the dead large-cap reversal.
+- **Over-hot winners:** within the top decile, last month's biggest spikers do not lag the rest (t −0.4 / +0.9). The top
+  decile's median is negative and its tails are fat both ways. In 2024-26 the top decile also earned less than deciles
+  6–9; in 2018-23 it earned the most. Not consistent. The FIP "steady gains" filter already targets this.
+- **Loser rebound after a market crash (Daniel–Moskowitz):** +210bp/month over the universe in the 4 stress months
+  (index ≥ 15% below its 12-month high), −200bp otherwise (t −4.0). Too few months to trade. It is mainly a risk for the
+  momentum book: momentum crashes when beaten-down losers snap back.
