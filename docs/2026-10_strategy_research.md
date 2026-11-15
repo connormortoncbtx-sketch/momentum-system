@@ -3255,3 +3255,30 @@ DSR / PBO overfitting checks); CNN v2 (all training samples, daily samples, coll
   steady half vetoed. Judged at the Jan 5 review with DSR / PBO checks.
 - **CNN v2, `research/chart_cnn2.py`:** daily training samples 2017-21 (~600k), a second "collapse" head (bottom 10%
   over the next 20 days), one seed per run, two seeds training in parallel; predictions for every Friday 2022+.
+
+## CNN v2 and the ETF chart CNN (Nov 14-15, 2026)
+
+**Stock CNN v2** (`research/chart_cnn2.py`; ~694k daily training charts 2017-21, two heads, 2 seeds, delisted
+included). Clearly better than v1 on every read, both out-of-sample periods:
+- up head IC 0.021-0.026 (t 3.6-4.0) in 2022-23 and 0.027-0.030 (t 5.2-5.7) in 2024+ (v1: 0.013 / 0.020)
+- collapse head: its top 10% trail the rest by −2.5% to −2.7% over the next 20 days in 2022-23 and −4.6% in 2024+;
+  22-28% of them actually land in the bottom 10% (base rate 10%)
+Veto on the v2 collapse head (seeds averaged), honest panel, Sharpe none -> veto 10% -> veto 20%:
+| book | 2022-23 | 2024-26 |
+|---|---|---|
+| old weekly pick-10 proxy | −0.29 -> −0.17 -> −0.16 | 0.19 -> 0.61 -> 0.71 |
+| proxy monthly top 10 / buf 30 | 0.24 -> 0.23 -> 0.28 | 0.67 -> 1.01 -> 1.10 |
+| 12-1 top 30 | 0.63 -> 0.64 -> 0.75 | 0.37 -> 0.68 -> 0.73 |
+| 12-1 within FIP-steady half | 0.63 -> 0.74 -> 0.85 | 1.13 -> 1.14 -> 1.15 |
+v1 (bottom-10% veto) for comparison: −0.46 / 0.47; 0.29 / 0.80; 0.71 / 0.45; 0.72 / 1.21. v2 is more consistent: at
+10% it improves or holds every book in both periods; the 20% veto improves all four in both (but 20% was chosen after
+seeing results -- counts as an extra trial in the overfitting check). FIP 12-1 + v2 20% veto: +25.8% / +48.1%,
+Sharpe 0.85 / 1.15. Contract wins: do NOT veto -- in 2024-26 the CNN's high-risk filers did better (+4.8% vs +2.3%
+abnormal over 20 days, 81 events). Shadow #9 stays frozen on v1; v1 vs v2 decided at the Jan 5 review.
+
+**ETF chart CNN, 20-day label, monthly** (`research/etf_chart_cnn.py`, 86 ETFs pooled, I20 and I60 images): no skill.
+Month-end rank IC −0.03 to +0.01 (|t| < 0.9) in both periods -- and the live 63-day trend score's cross-sectional IC is
+also ~0 (−0.03). Books on the 41 sleeve ETFs, Sharpe 2022-23 / 2024+: live TREND −0.17 / 1.31; EQUAL (all 41) 0.03 /
+1.68; CNN I20 top half −0.20 / 1.38; CNN I60 top half −0.09 / 1.43; TREND + I20 veto 0.22 / 1.10; TREND + I60 veto
+−0.63 / 1.12. No CNN variant is a credible improvement (I60's margins are tiny with zero IC). Side finding worth the
+Jan 5 review: holding all 41 at the same sizing beat the live trend rule in both periods (58 months -- thin).

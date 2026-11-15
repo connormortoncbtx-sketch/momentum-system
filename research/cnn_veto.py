@@ -37,7 +37,14 @@ def wk(x):
 
 
 def main():
-    P = pd.read_parquet(f"{RD}/results/chart_cnn_preds.parquet")
+    if os.environ.get("CNN_VERSION") == "2":
+        # v2 (chart_cnn2.py): average the seeds' collapse probability; low "cnn" = most likely to collapse
+        Ps = [pd.read_parquet(f) for f in sorted(glob.glob(f"{RD}/results/chart_cnn2_preds_seed*.parquet"))]
+        P = Ps[0][["symbol", "week"]].copy()
+        P["cnn"] = -np.mean([x.p_crash.to_numpy() for x in Ps], axis=0)
+        print(f"CNN v2: {len(Ps)} seeds averaged, veto on the collapse head", flush=True)
+    else:
+        P = pd.read_parquet(f"{RD}/results/chart_cnn_preds.parquet")
     P = P[P.week >= START].copy()
     P["pct"] = P.groupby("week").cnn.rank(pct=True)
     P["wk"] = wk(P.week)
