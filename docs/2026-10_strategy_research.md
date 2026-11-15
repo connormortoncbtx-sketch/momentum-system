@@ -3391,3 +3391,43 @@ option-premium trio -- noon put spread, 2pm condor, 3pm condor on SPY + QQQ, one
 natural and mid pricing from live quotes; per-slot books at 2% risk a day and a TRIO book with the same 2% split across
 the three. Runs at 12:05 / 14:05 / 15:05 ET (crons cover EST and EDT) and settles the next morning. Judged on Jan 5
 alongside the 2pm and 3pm paper accounts.
+
+## Other independent edges (Nov 15, 2026) — research/indep_edges.py
+Question: is there anything besides the condor that is close to uncorrelated with the FIP stock book? Three candidates, weekly, Friday-labelled (checked against SPY at lags −1/0/+1: no lead or lag).
+
+**1. Treasury auction cycle (Lou, Yan & Zhang 2013).** 705 coupon auctions of 5y+ notes and bonds, 2015–26 (Treasury Fiscal Data API). The direction is right — bonds slip before auctions and recover after — but the effect is not significant:
+
+| | pre-5d excess vs SHY | t | post-5d | t |
+|---|---|---|---|---|
+| IEF 2016–23 | −4.6 bp | −1.4 | +2.7 bp | 0.8 |
+| IEF 2024–26 | −8.1 bp | −1.9 | +5.0 bp | 1.1 |
+| TLT 2016–23 | −7.0 bp | −0.8 | +5.0 bp | 0.6 |
+| TLT 2024–26 | −20.6 bp | −1.9 | +5.8 bp | 0.5 |
+
+Rules, excess over SHY: TLT only in the 5 days after auctions, Sharpe −0.14 / +0.14. TLT except in the 5 days before, +0.24 / +0.72 (+1.8% / +4.5% a year). Added to FIPV+CONDOR it lowers the Sharpe in every window. **Rejected** as an edge. At most it's a timing rule for when to hold long bonds.
+
+**2. Crypto trend (the live crypto sleeve)** and **3. non-stock trend** (the ETF sleeve's rule on bond, gold, commodity and currency ETFs only):
+
+| Window | FIPV | CONDOR | CRYPTO | NONSTOCK_TREND | corr with FIPV (crypto / non-stock) | corr with CONDOR (crypto / non-stock) |
+|---|---|---|---|---|---|---|
+| 2018–23 | 0.61 | 1.09 | 0.33 | 0.66 | 0.05 / 0.14 | −0.06 / 0.00 |
+| 2021-07..2023 | 0.27 | 1.76 | 0.53 | 0.34 | 0.09 / 0.05 | −0.10 / −0.21 |
+| 2024–26 | 1.15 | 3.10 | 0.60 | 1.36 | −0.01 / 0.10 | 0.15 / 0.13 |
+
+Equal-risk combination Sharpe:
+
+| Combination | 2018–23 | 2021-07..2023 | 2024–26 |
+|---|---|---|---|
+| FIPV+CONDOR | 1.25 | 1.47 | 2.80 |
+| + non-stock trend | 1.37 | 1.53 | 2.74 |
+| + crypto | 1.33 | 1.70 | 2.57 |
+| + both + auction | 1.20 | 1.20 | 2.30 |
+
+**Read:**
+- Both trend streams are genuinely near-uncorrelated with the stock book and the condor.
+- They add about +0.1 Sharpe in the weak-stock years (2018–23, 2022). They subtract slightly when the condor is very strong (2024–26) at equal risk.
+- The right weight is smaller than equal: about their Sharpe relative to the others.
+- **Neither is new.** Both are already sleeves in the live stack. So this confirms the existing sleeves earn their place as diversifiers. It doesn't find a new edge.
+- **Still the only strong independent edge: the condor.**
+
+**For Jan 5:** in the equal-risk sizing, weight streams by Sharpe (not equally) and keep the non-stock trend and crypto sleeves at about half the weight of FIPV and the condor.
