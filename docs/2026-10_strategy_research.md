@@ -3521,4 +3521,4 @@ Connor: point the CNN-style approach at the condor.
   - It's one rule among 6 model × skip combinations, so mild multiple testing.
   - It doesn't help the noon put.
   - It needs live confirmation.
-- **Proposed:** shadow #11 logs range-so-far / 20-day range at entry and keeps a skip-book alongside each condor slot.
+- **Added Nov 15 (approved):** shadow #11 logs range-so-far / 20-day range at entry and keeps skip-books (2pm_skip, 3pm_skip, trio_skip; cut-offs 1.4x / 1.5x) alongside the unchanged books.
