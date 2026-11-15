@@ -99,7 +99,10 @@ def update_cache(today):
         if day.weekday() < 5:
             filings = daily_10ks(day)
             if filings is None and (today - day).days <= 7:
-                break                                         # not published / unreachable: retry next run
+                later = [day + dt.timedelta(days=k) for k in range(1, (today - day).days)]
+                if not any(d.weekday() < 5 and daily_10ks(d) is not None for d in later):
+                    break                                     # not published / unreachable: retry next run
+                # a later index exists -> EDGAR holiday (e.g. Veterans Day): skip this day
             for cik, acc in filings or []:
                 if acc in known:
                     continue
