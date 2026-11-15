@@ -7,7 +7,13 @@
   "3pm_natural": 100000.0,
   "3pm_mid": 100000.0,
   "trio_natural": 100000.0,
-  "trio_mid": 100000.0
+  "trio_mid": 100000.0,
+  "2pm_skip_natural": 100000.0,
+  "2pm_skip_mid": 100000.0,
+  "3pm_skip_natural": 100000.0,
+  "3pm_skip_mid": 100000.0,
+  "trio_skip_natural": 100000.0,
+  "trio_skip_mid": 100000.0
  },
  "open": {},
  "done_days": []
