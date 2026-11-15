@@ -3522,3 +3522,25 @@ Connor: point the CNN-style approach at the condor.
   - It doesn't help the noon put.
   - It needs live confirmation.
 - **Added Nov 15 (approved):** shadow #11 logs range-so-far / 20-day range at entry and keeps skip-books (2pm_skip, 3pm_skip, trio_skip; cut-offs 1.4x / 1.5x) alongside the unchanged books.
+
+## Novel edges batch (Nov 15, 2026) — "test everything"
+
+Eight unorthodox ideas, each with its pass bar written into the script before the data were looked at. Periods: dev 2018–23,
+holdout 2024–26. **Trial count for the Jan 5 deflated-Sharpe check: about 8 ideas, 2–4 variants each (~25 trials).**
+
+| # | Idea | Script | Verdict |
+|---|---|---|---|
+| 3 | Lazy prices: 10-K text barely changed year over year (Cohen–Malloy–Nguyen) | `fetch_10k_sim.py`, `novel_eval.py` | **PASS.** Q5−Q1 95bp/mo (t 3.6) and 129bp (t 2.8). Vetoing the bottom quintile ("changers") lifts the 12-1 book Sharpe 0.35→0.37 and 0.31→0.36. Independent: corr with size 0.02, with FIPV −0.09; holds in small/mid/large. Most of it is the short side: Q1 −62bp/−90bp vs universe (t −3.8/−3.2). Risk-factor-section version fails (t 2.0/1.6). |
+| 5 | Overnight vs intraday 12-1 momentum | `novel_stock_signals.py` | **PASS, but a refinement of 12-1, not a new edge.** Intraday-only 12-1 top decile Sharpe 0.61/0.49 vs plain 12-1 0.46/0.31; overnight-only 12-1 is negative. Candidate replacement ranking for the stock book on Jan 5. |
+| 2 | Fed days and Kalshi odds for the condor | `fetch_kalshi_fed.py`, `novel_eval.py` | **Reported only (no pass bar possible at n≈55).** 2022-03+: Fed-day condors average −9%/trade vs +6–7% other days, max-loss 25–30%, t≈−1.9. Kalshi odds add nothing. Out-of-sample check on 2018–Feb 2022 with the public FOMC calendar: same sign but weak (2pm −1.0% vs +2.5%, 3pm +0.3% vs +3.1%, t≈−0.5). So mostly a 2022–23 hiking-cycle effect; a skip costs ~8 days a year. |
+| 7 | Supply chain: customers' last-month return predicts suppliers (Cohen–Frazzini) | `fetch_customers.py`, `novel_eval.py` | Pending (full 10-K customer extraction running). |
+| 4 | Same-calendar-month seasonality (Heston–Sadka) | `novel_stock_signals.py` | Fail: spread t −0.5 / +1.3. |
+| 6 | SPY/QQQ intraday momentum (Gao et al.) | `intraday_momentum.py` | Fail: worked 2017–23 (slope t 2.3/3.9), gone in 2024–26; net Sharpe −1.1 to −2.2 after 3bp. |
+| 8 | Wikipedia attention spikes | `fetch_wiki.py`, `novel_eval.py` | Fail: t 2.0 then 0.2; the veto hurts the 12-1 book in 2024–26 (0.31→0.19). |
+| 1 | Dealer gamma (GEX) as a condor filter | `dealer_gamma.py` | Blocked: needs ThetaData open interest (subscription lapsed). Lesson: archive broadly before any paid data source lapses. |
+| — | Treasury auction cycle | `indep_edges.py` | Fail (see "Other independent edges"). |
+
+**What to carry forward (all need Connor's approval; nothing live changed):**
+- Lazy-prices veto as a shadow on the stock book — the only genuinely new, independent stock signal found in this whole research cycle.
+- Intraday-12-1 ranking as a Jan 5 candidate alongside "plain 12-1 + CNN veto".
+- Fed-day skip in the shadow #11 skip books: cheap, sign-consistent, but the evidence is weak outside 2022–23.
