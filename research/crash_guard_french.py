@@ -41,9 +41,22 @@ def fetch(key):
     os.makedirs(f"{RD}/french", exist_ok=True)
     path = f"{RD}/french/{FILES[key]}"
     if not os.path.exists(path):
-        req = urllib.request.Request(BASE + FILES[key], headers={"User-Agent": "Mozilla/5.0 momentum-research"})
-        with urllib.request.urlopen(req, timeout=120) as r, open(path, "wb") as f:
-            f.write(r.read())
+        import time
+        for k in range(6):
+            try:
+                req = urllib.request.Request(BASE + FILES[key], headers={
+                    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+                    "Accept": "*/*"})
+                with urllib.request.urlopen(req, timeout=120) as r:
+                    data = r.read()
+                break
+            except Exception as e:
+                print(f"fetch {FILES[key]} attempt {k + 1}: {e}", flush=True)
+                time.sleep(10 * (k + 1))
+        else:
+            raise RuntimeError(f"could not fetch {FILES[key]}")
+        with open(path, "wb") as f:
+            f.write(data)
     z = zipfile.ZipFile(path)
     return z.read(z.namelist()[0]).decode("latin-1")
 
