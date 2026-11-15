@@ -3327,3 +3327,17 @@ Connor: can the CNN protect gains / cut the big drawdowns? Tested on FIP-steady 
 - **Diversification is the protection that works:** the equal-risk combination's max drawdown is −22% in 2018-23
   (FIPV alone −42%) with Sharpe 1.28 vs 0.65; worst 13 weeks −20% vs −36%. Same story as Oct 17: drawdowns are not
   predictable from these signals; combining independent edges is what cuts them.
+
+## Merger arbitrage on a complete deal list (Nov 15, 2026, `research/fetch_merger_index.py` + `merger_arb.py`)
+
+EDGAR full-index 2016-2026: 8,252 merger-form filings (PREM14A, DEFM14A, SC 14D9, SC TO-T/C) from 3,681 companies;
+2,093 mapped to tickers -- 1,286 of them delisted, matched by name to the EODHD list and accepted only if the ticker
+was trading in the weeks BEFORE the filing (no look at the outcome). 2024-26 now has ~180 mapped targets a year, and
+80% of the cash-deal-signature deals show the stock stopping trading (completion), vs 7% before.
+Cash-deal signature book (rose >= 15% in 8 weeks, then < 2%/week moves), net of spreads:
+2017-23 +6.4%/yr, Sharpe 0.38, beta 0.40; **2024-26 −2.2%/yr, Sharpe −0.17** (13 deals open on average). Per deal: median
++1.0-1.2% over ~8-9 weeks, mean ~0 -- the breaks (4.5-4.8% of deals lose >20%) eat the spread. The earlier +10.6%
+(2017-23) came from a thin, survivor-skewed event set. Entering at the proxy filing is weeks after the announcement,
+when the spread has already compressed. **Rejected as built**; an announcement-day entry (8-K 1.01 / DEFA14A on the
+target) is the only variant left worth a look.
+Combination without merger arb (FIPV, CONDOR, ETF_EQ), 2018-23: combined Sharpe 1.27 (0.63 with means halved).

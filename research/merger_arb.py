@@ -35,6 +35,17 @@ pd.set_option("display.width", 200)
 
 
 def events(symbols):
+    if os.environ.get("EVENTS", "index") == "index" and os.path.exists(f"{RD}/sec/merger_index_events.csv"):
+        # EDGAR full-index merger filings mapped to tickers incl. delisted ones (fetch_merger_index.py, Nov 15)
+        F = pd.read_csv(f"{RD}/sec/merger_index_events.csv", parse_dates=["date"]).rename(columns={"date": "filing_date"})
+        F = F[F.ticker.isin(symbols)].sort_values("filing_date")
+        out, last = [], {}
+        for r in F.itertuples():
+            prev = last.get(r.cik); last[r.cik] = r.filing_date
+            if prev is not None and (r.filing_date - prev).days < 365:
+                continue
+            out.append((r.ticker, r.filing_date, r.form))
+        return pd.DataFrame(out, columns=["ticker", "date", "form"]).drop_duplicates(["ticker", "date"])
     cols = ["cik", "tickers", "form", "filing_date"]
     F = pd.concat([pd.read_parquet(f, columns=cols) for f in sorted(glob.glob(f"{RD}/sec/filings_20*.parquet"))]
                   + [pd.read_parquet(f"{RD}/sec/filings_delisted.parquet", columns=cols)], ignore_index=True)
