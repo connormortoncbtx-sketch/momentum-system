@@ -3577,3 +3577,21 @@ monthly tests ($5 / $2M universe, delisted included). Results: `results/loser_re
 - **Loser rebound after a market crash (Daniel–Moskowitz):** +210bp/month over the universe in the 4 stress months
   (index ≥ 15% below its 12-month high), −200bp otherwise (t −4.0). Too few months to trade. It is mainly a risk for the
   momentum book: momentum crashes when beaten-down losers snap back.
+
+## Momentum crash protection on 100 years of French data (Nov 16, 2026)
+
+`research/crash_guard_french.py`, pre-registered. Data: Ken French 10 momentum portfolios and FF factors, 1926-07..2026-09 (Connor attached the zips; the library blocks cloud downloads). Trigger = 24-month market return < 0 AND 126-day market vol in its top third (known at t−1): 119 of 1,200 months, only 4 since 2017.
+
+PASS needed: long-only top decile, value- AND equal-weighted, Sharpe up AND max drawdown smaller in BOTH 1937–79 and 1980–2026.
+
+| Long-only top decile | VW 1937–79 Sharpe / maxDD | VW 1980–2026 | EW 1937–79 | EW 1980–2026 | Verdict |
+|---|---|---|---|---|---|
+| Base | 0.90 / −60% | 0.80 / −51% | 0.94 / −64% | 0.81 / −59% | |
+| R1 cash when triggered | 0.91 / −57% | 0.79 / −43% | 0.93 / −58% | 0.77 / −42% | **Fail** (Sharpe flat/down) |
+| R2 half cash | 0.92 / −56% | 0.80 / −45% | 0.95 / −59% | 0.80 / −46% | **Fail** |
+| R3 Daniel–Moskowitz dynamic | 1.09 / −44% | 0.95 / −22% | 1.10 / −44% | 0.79 / −46% | **Fail** (EW 1980+ Sharpe down) |
+
+- The guards cut drawdowns but not risk-adjusted return for a long-only book. Momentum crashes come from the **short leg** (losers snapping back after a bear market): on the long-short reference the guards help a lot (VW 1980+ Sharpe 0.57 → 0.79 R1, → 1.29 R3). We can't short, so that benefit isn't ours. Consistent with the Nov 15 loser-rebound finding (test C).
+- R3's value-weighted improvement is mostly de-risking (avg weight 0.4–0.6 since 1980; VW CAGR 16.2% → 12.6%, 2017–26 20.3% → 8.9%) and it needs up to 2× leverage. Our book is closer to equal-weight, where it fails. Same conclusion as the earlier vol-targeting rejection.
+- No R3-capped-at-1× variant was run; that would be a post-hoc trial.
+- **No change to any book.** Trial count +3.
