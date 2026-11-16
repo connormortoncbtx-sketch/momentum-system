@@ -1,37 +1,5 @@
 [
   {
-    "run_label": "sunday_night",
-    "timestamp": "2026-09-07T01:45:43.295729",
-    "regime": "trending_mixed",
-    "top_5": [
-      {
-        "symbol": "MFC",
-        "alpha_score": 0.022864,
-        "alpha_rank": 5
-      },
-      {
-        "symbol": "CVBF",
-        "alpha_score": 0.012623000000000004,
-        "alpha_rank": 28
-      },
-      {
-        "symbol": "PFE",
-        "alpha_score": 0.015903499999999997,
-        "alpha_rank": 21
-      },
-      {
-        "symbol": "IBN",
-        "alpha_score": 0.008544999999999999,
-        "alpha_rank": 135
-      },
-      {
-        "symbol": "BAX",
-        "alpha_score": 0.011554000000000002,
-        "alpha_rank": 36
-      }
-    ]
-  },
-  {
     "run_label": "manual_refresh",
     "timestamp": "2026-09-07T06:03:53.455743",
     "regime": "trending_mixed",
@@ -636,6 +604,38 @@
         "symbol": "QMCO",
         "alpha_score": 0.808047,
         "alpha_rank": 24
+      }
+    ]
+  },
+  {
+    "run_label": "manual_refresh",
+    "timestamp": "2026-11-16T03:38:55.716803",
+    "regime": "choppy_neutral",
+    "top_5": [
+      {
+        "symbol": "CAPR",
+        "alpha_score": 0.801317,
+        "alpha_rank": 7
+      },
+      {
+        "symbol": "RCEL",
+        "alpha_score": 0.824492,
+        "alpha_rank": 3
+      },
+      {
+        "symbol": "FMC",
+        "alpha_score": 0.876308,
+        "alpha_rank": 1
+      },
+      {
+        "symbol": "TKNO",
+        "alpha_score": 0.7820809999999999,
+        "alpha_rank": 15
+      },
+      {
+        "symbol": "CAI",
+        "alpha_score": 0.772243,
+        "alpha_rank": 23
       }
     ]
   }
