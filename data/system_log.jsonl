@@ -3516,3 +3516,5 @@
 {"timestamp": "2026-11-16T19:56:45.231385+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Skipped: manual_refresh already ran today (2026-11-16)", "metrics": {}, "errors": []}
 {"timestamp": "2026-11-16T20:45:56.800028+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Starting weekend refresh (manual_refresh)", "metrics": {}, "errors": []}
 {"timestamp": "2026-11-16T20:45:56.801659+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Skipped: manual_refresh already ran today (2026-11-16)", "metrics": {}, "errors": []}
+{"timestamp": "2026-11-16T21:11:18.167109+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=place_stops", "metrics": {}, "errors": []}
+{"timestamp": "2026-11-16T21:11:18.731403+00:00", "workflow": "alpaca_trader", "status": "error", "message": "State has no positions but Alpaca holds 10 -- NO STOPS PLACED. Positions are unprotected.", "metrics": {"symbols": ["AMPL", "CAI", "CAPR", "ECO", "EGO", "FMC", "IBTA", "RCEL", "SLS", "TKNO"]}, "errors": []}
