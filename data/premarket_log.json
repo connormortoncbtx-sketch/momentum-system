@@ -562,6 +562,163 @@
           "pm_volume": 0
         }
       }
+    },
+    {
+      "check_num": 5,
+      "check_name": "8:00",
+      "timestamp": "14:01:35",
+      "prices": {
+        "ECO": {
+          "premarket_price": 87.7,
+          "prior_close": 88.82,
+          "gap_pct": -0.0127,
+          "pm_volume": 0
+        },
+        "FMC": {
+          "premarket_price": 5.07,
+          "prior_close": 5.21,
+          "gap_pct": -0.0269,
+          "pm_volume": 0
+        },
+        "SLS": {
+          "premarket_price": 7.8,
+          "prior_close": 7.86,
+          "gap_pct": -0.0076,
+          "pm_volume": 0
+        },
+        "CAPR": {
+          "premarket_price": 9.42,
+          "prior_close": 9.53,
+          "gap_pct": -0.0115,
+          "pm_volume": 0
+        },
+        "TKNO": {
+          "premarket_price": 8.15,
+          "prior_close": 8.21,
+          "gap_pct": -0.0073,
+          "pm_volume": 0
+        },
+        "EGO": {
+          "premarket_price": 31.06,
+          "prior_close": 31.58,
+          "gap_pct": -0.0165,
+          "pm_volume": 0
+        },
+        "CAI": {
+          "premarket_price": 22.75,
+          "prior_close": 23.04,
+          "gap_pct": -0.0126,
+          "pm_volume": 0
+        },
+        "AMPL": {
+          "premarket_price": 17.15,
+          "prior_close": 17.34,
+          "gap_pct": -0.011,
+          "pm_volume": 0
+        },
+        "DOCS": {
+          "premarket_price": 33.34,
+          "prior_close": 33.34,
+          "gap_pct": -0.0,
+          "pm_volume": 0
+        },
+        "NEWP": {
+          "premarket_price": 4.92,
+          "prior_close": 5.06,
+          "gap_pct": -0.0277,
+          "pm_volume": 0
+        },
+        "DNA": {
+          "premarket_price": 9.44,
+          "prior_close": 9.61,
+          "gap_pct": -0.0179,
+          "pm_volume": 0
+        },
+        "BIOA": {
+          "premarket_price": 5.58,
+          "prior_close": 5.55,
+          "gap_pct": 0.0054,
+          "pm_volume": 0
+        },
+        "FSM": {
+          "premarket_price": 8.91,
+          "prior_close": 9.03,
+          "gap_pct": -0.0133,
+          "pm_volume": 0
+        },
+        "BFLY": {
+          "premarket_price": 5.96,
+          "prior_close": 6.08,
+          "gap_pct": -0.0197,
+          "pm_volume": 0
+        },
+        "TWST": {
+          "premarket_price": 106.5,
+          "prior_close": 111.6,
+          "gap_pct": -0.0457,
+          "pm_volume": 0
+        },
+        "TXG": {
+          "premarket_price": 56.0,
+          "prior_close": 58.19,
+          "gap_pct": -0.0376,
+          "pm_volume": 0
+        },
+        "IOVA": {
+          "premarket_price": 7.66,
+          "prior_close": 7.76,
+          "gap_pct": -0.0129,
+          "pm_volume": 0
+        },
+        "MP": {
+          "premarket_price": 37.61,
+          "prior_close": 38.76,
+          "gap_pct": -0.0297,
+          "pm_volume": 0
+        },
+        "HBM": {
+          "premarket_price": 20.65,
+          "prior_close": 21.38,
+          "gap_pct": -0.0341,
+          "pm_volume": 0
+        },
+        "HMY": {
+          "premarket_price": 15.14,
+          "prior_close": 15.09,
+          "gap_pct": 0.0033,
+          "pm_volume": 0
+        },
+        "STLN": {
+          "premarket_price": 3.51,
+          "prior_close": 3.5,
+          "gap_pct": 0.0029,
+          "pm_volume": 0
+        },
+        "IAG": {
+          "premarket_price": 17.05,
+          "prior_close": 17.32,
+          "gap_pct": -0.0156,
+          "pm_volume": 0
+        },
+        "HNGE": {
+          "premarket_price": 113.0,
+          "prior_close": 115.39,
+          "gap_pct": -0.0207,
+          "pm_volume": 0
+        },
+        "ZVRA": {
+          "premarket_price": 9.15,
+          "prior_close": 9.08,
+          "gap_pct": 0.0077,
+          "pm_volume": 0
+        },
+        "RMIX": {
+          "premarket_price": 5.19,
+          "prior_close": 5.08,
+          "gap_pct": 0.0226,
+          "pm_volume": 0
+        }
+      }
     }
   ]
 }
