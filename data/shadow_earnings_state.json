@@ -1,34 +1,34 @@
 {
- "nav_a": 89.99462279071778,
- "nav_b": 89.99462279071778,
+ "nav_a": 88.61606442796165,
+ "nav_b": 88.61606442796165,
  "open": {
-  "entry": "2026-11-09",
+  "entry": "2026-11-16",
   "a": [
+   "ECO",
+   "RCEL",
+   "FMC",
+   "SLS",
+   "IBTA",
+   "CAPR",
    "TKNO",
-   "INSW",
-   "XMTR",
-   "CYRX",
-   "ESTC",
-   "HNGE",
-   "CBLL",
-   "YEXT",
-   "S",
-   "KOD"
+   "EGO",
+   "CAI",
+   "AMPL"
   ],
   "b": [
+   "ECO",
+   "RCEL",
+   "FMC",
+   "SLS",
+   "CAPR",
+   "IBTA",
    "TKNO",
-   "INSW",
-   "XMTR",
-   "CYRX",
-   "ESTC",
-   "HNGE",
-   "CBLL",
-   "YEXT",
-   "S",
-   "KOD"
+   "EGO",
+   "CAI",
+   "AMPL"
   ],
   "earn_names": [],
   "dropped": []
  },
- "last_entry": "2026-11-09"
+ "last_entry": "2026-11-16"
 }
