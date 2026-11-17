@@ -109,6 +109,121 @@
           "pm_volume": 0
         }
       }
+    },
+    {
+      "check_num": 2,
+      "check_name": "6:30",
+      "timestamp": "12:31:31",
+      "prices": {
+        "ECO": {
+          "premarket_price": 86.04,
+          "prior_close": 84.83,
+          "gap_pct": 0.0143,
+          "pm_volume": 0
+        },
+        "FMC": {
+          "premarket_price": 5.25,
+          "prior_close": 5.23,
+          "gap_pct": 0.0038,
+          "pm_volume": 0
+        },
+        "SLS": {
+          "premarket_price": 8.0,
+          "prior_close": 7.47,
+          "gap_pct": 0.071,
+          "pm_volume": 0
+        },
+        "CAPR": {
+          "premarket_price": 8.15,
+          "prior_close": 8.3,
+          "gap_pct": -0.0181,
+          "pm_volume": 0
+        },
+        "EGO": {
+          "premarket_price": 30.4,
+          "prior_close": 30.11,
+          "gap_pct": 0.0096,
+          "pm_volume": 0
+        },
+        "CAI": {
+          "premarket_price": 22.47,
+          "prior_close": 21.0,
+          "gap_pct": 0.07,
+          "pm_volume": 0
+        },
+        "DOCS": {
+          "premarket_price": 32.5,
+          "prior_close": 32.77,
+          "gap_pct": -0.0082,
+          "pm_volume": 0
+        },
+        "DNA": {
+          "premarket_price": 8.57,
+          "prior_close": 8.5,
+          "gap_pct": 0.0082,
+          "pm_volume": 0
+        },
+        "BIOA": {
+          "premarket_price": 5.11,
+          "prior_close": 5.22,
+          "gap_pct": -0.0211,
+          "pm_volume": 0
+        },
+        "BFLY": {
+          "premarket_price": 5.78,
+          "prior_close": 5.71,
+          "gap_pct": 0.0131,
+          "pm_volume": 0
+        },
+        "TWST": {
+          "premarket_price": 106.65,
+          "prior_close": 105.04,
+          "gap_pct": 0.0153,
+          "pm_volume": 0
+        },
+        "IOVA": {
+          "premarket_price": 7.54,
+          "prior_close": 7.55,
+          "gap_pct": -0.0013,
+          "pm_volume": 0
+        },
+        "MP": {
+          "premarket_price": 36.91,
+          "prior_close": 36.09,
+          "gap_pct": 0.0226,
+          "pm_volume": 0
+        },
+        "HBM": {
+          "premarket_price": 19.66,
+          "prior_close": 19.55,
+          "gap_pct": 0.0059,
+          "pm_volume": 0
+        },
+        "HMY": {
+          "premarket_price": 15.0,
+          "prior_close": 14.65,
+          "gap_pct": 0.0239,
+          "pm_volume": 0
+        },
+        "STLN": {
+          "premarket_price": 3.56,
+          "prior_close": 3.54,
+          "gap_pct": 0.0056,
+          "pm_volume": 0
+        },
+        "IAG": {
+          "premarket_price": 17.14,
+          "prior_close": 16.93,
+          "gap_pct": 0.0124,
+          "pm_volume": 0
+        },
+        "HNGE": {
+          "premarket_price": 121.3,
+          "prior_close": 121.29,
+          "gap_pct": 0.0001,
+          "pm_volume": 0
+        }
+      }
     }
   ]
 }
