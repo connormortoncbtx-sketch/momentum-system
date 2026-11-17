@@ -3539,3 +3539,4 @@
 {"timestamp": "2026-11-17T20:46:48.925452+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Skipped: not entry day (expected monday)", "metrics": {}, "errors": []}
 {"timestamp": "2026-11-17T21:11:20.817444+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=place_stops", "metrics": {}, "errors": []}
 {"timestamp": "2026-11-17T21:11:21.184831+00:00", "workflow": "alpaca_trader", "status": "error", "message": "State has no positions but Alpaca holds 10 -- NO STOPS PLACED. Positions are unprotected.", "metrics": {"symbols": ["AMPL", "CAI", "CAPR", "ECO", "EGO", "FMC", "IBTA", "RCEL", "SLS", "TKNO"]}, "errors": []}
+{"timestamp": "2026-11-17T21:19:02.897794+00:00", "workflow": "shadow_filings", "status": "success", "message": "Shadow filings: 31 judged-eligible, new long 1, new short 14, open trades 592, diversified-book NAV 88.14", "metrics": {}, "errors": []}
