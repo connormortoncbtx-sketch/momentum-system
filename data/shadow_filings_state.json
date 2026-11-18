@@ -1,5 +1,5 @@
 {
- "since": "2026-11-17T16:16:42-05:00",
+ "since": "2026-11-17T17:29:47-05:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -629,7 +629,7 @@
    "event_type": "routine",
    "summary": "Company clarifies unauthorized officer guidance; delays formal 2027 guidance to Q3 earnings.",
    "entry_date": "2026-10-23",
-   "entry": 2.49
+   "entry": 2.149
   },
   {
    "book": "short_bad_news",
@@ -1539,7 +1539,7 @@
    "event_type": "buyback_dividend",
    "summary": "Company declares warrant dividend: 1 warrant per 4 common shares, record date Nov 13, 2026.",
    "entry_date": "2026-10-29",
-   "entry": 3.44
+   "entry": 2.969
   },
   {
    "book": "short_bad_news",
@@ -1639,7 +1639,7 @@
    "event_type": "prelim_results_good",
    "summary": "Q3 2026: Net income up 5.3%, EPS up 13.4%, record revenue $178.8M, but credit metrics deteriorate.",
    "entry_date": "2026-10-29",
-   "entry": 36.0
+   "entry": 35.69
   },
   {
    "book": "short_bad_news",
@@ -2669,7 +2669,7 @@
    "event_type": "exec_departure",
    "summary": "Chief Legal Officer departed effective October 30, 2026; signed by interim CEO.",
    "entry_date": "2026-11-04",
-   "entry": 2.92
+   "entry": 2.52
   },
   {
    "book": "short_bad_news",
@@ -3250,7 +3250,7 @@
    "event_type": "restructuring",
    "summary": "Cost reduction plan with 220 job cuts, $8.5M annual savings; $19M Korea capacity expansion for drone/defense batteries.",
    "entry_date": "2026-11-06",
-   "entry": 2.495
+   "entry": 2.154
   },
   {
    "book": "short_bad_news",
@@ -4925,7 +4925,7 @@
    "event_type": "acquisition",
    "summary": "Company completes $230M U.S. Petroleum Partners acquisition; escrow shares contingent on 2027 EBITDA.",
    "entry_date": "2026-11-13",
-   "entry": 14.73
+   "entry": 14.22
   },
   {
    "book": "short_bad_news",
@@ -5926,6 +5926,96 @@
    "decided": "2026-11-17T16:18:58.824130-05:00",
    "event_type": "clinical_positive",
    "summary": "NEO100 Phase 2a confirms additional response; ORR increases to 12.5% (3/24 patients).",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "GRDX",
+   "accession": "0001104659-26-129167",
+   "decided": "2026-11-18T03:46:29.310475-05:00",
+   "event_type": "acquisition",
+   "summary": "Company acquires Pronghorn Resources via share exchange; massive dilution with complex preferred stock conversion mechanics.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "RES",
+   "accession": "0001104659-26-129162",
+   "decided": "2026-11-18T03:46:33.039675-05:00",
+   "event_type": "exec_departure",
+   "summary": "Executive Chairman Richard Hubbell retiring Dec 31, 2026; new CEO appointment contingent.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_win",
+   "symbol": "DUOT",
+   "accession": "0001079973-26-001549",
+   "decided": "2026-11-18T03:46:43.889466-05:00",
+   "event_type": "contract_win",
+   "summary": "Signed $400M 10-year colocation agreement; Q3 revenue +103%; reaffirms $50M+ 2026 guidance.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_div",
+   "symbol": "DUOT",
+   "accession": "0001079973-26-001549",
+   "decided": "2026-11-18T03:46:43.889466-05:00",
+   "event_type": "contract_win",
+   "summary": "Signed $400M 10-year colocation agreement; Q3 revenue +103%; reaffirms $50M+ 2026 guidance.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "HUBG",
+   "accession": "0001193125-26-465632",
+   "decided": "2026-11-18T03:46:48.504680-05:00",
+   "event_type": "listing_deficiency",
+   "summary": "Nasdaq delisting notice; company granted stay pending compliance plan completion by December 31, 2026.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "UWMC",
+   "accession": "0001783398-26-000145",
+   "decided": "2026-11-18T03:46:54.701176-05:00",
+   "event_type": "equity_financing",
+   "summary": "Completed $400M rights offering via backstop agreement; massive dilution with warrants issued.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "DJT",
+   "accession": "0001437749-26-037406",
+   "decided": "2026-11-18T03:46:57.404997-05:00",
+   "event_type": "buyback_dividend",
+   "summary": "Company repurchases $100M convertible notes at discount; debt reduction strategy acknowledged.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "EVMN",
+   "accession": "0001193125-26-465600",
+   "decided": "2026-11-18T03:46:59.837977-05:00",
+   "event_type": "exec_appointment",
+   "summary": "Retention awards and option repricing for three executives; signals distress.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "LZB",
+   "accession": "0000057131-26-000042",
+   "decided": "2026-11-18T03:47:04.485491-05:00",
+   "event_type": "prelim_results_bad",
+   "summary": "Q2 earnings missed expectations; weak October, margin compression, cautious Q3 guidance.",
    "entry_date": null,
    "entry": null
   }
