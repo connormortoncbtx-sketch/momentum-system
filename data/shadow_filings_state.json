@@ -1,5 +1,5 @@
 {
- "since": "2026-11-18T15:49:51-05:00",
+ "since": "2026-11-18T17:28:14-05:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -969,7 +969,7 @@
    "event_type": "exec_departure",
    "summary": "Lead Independent Director Walter Wilkinson resigned effective immediately; successor appointed.",
    "entry_date": "2026-10-27",
-   "entry": 14.73
+   "entry": 14.65
   },
   {
    "book": "short_bad_news",
@@ -979,7 +979,7 @@
    "event_type": "exec_departure",
    "summary": "Lead Independent Director Walter Wilkinson resigns; board reduced to seven members.",
    "entry_date": "2026-10-27",
-   "entry": 18.46
+   "entry": 18.31
   },
   {
    "book": "short_bad_news",
@@ -999,7 +999,7 @@
    "event_type": "exec_departure",
    "summary": "Lead Independent Director Walter Wilkinson resigned immediately after 12 years; replaced by George Stelljes.",
    "entry_date": "2026-10-27",
-   "entry": 8.86
+   "entry": 8.795
   },
   {
    "book": "short_bad_news",
@@ -1009,7 +1009,7 @@
    "event_type": "exec_departure",
    "summary": "Lead Independent Director Walter Wilkinson resigned effective immediately after 12 years of service.",
    "entry_date": "2026-10-27",
-   "entry": 12.06
+   "entry": 11.94
   },
   {
    "book": "short_bad_news",
@@ -5968,6 +5968,126 @@
    "decided": "2026-11-18T15:53:03.867761-05:00",
    "event_type": "exec_departure",
    "summary": "CEO Kurt Bitting departed; David Bradley appointed interim CEO with $1.1M salary, $2M RSU grant.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CHRN",
+   "accession": "0001493152-26-053103",
+   "decided": "2026-11-19T04:01:03.991904-05:00",
+   "event_type": "equity_financing",
+   "summary": "Closed $153M common stock financing plus convertible notes and warrants; complex deal structure.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CLPT",
+   "accession": "0001193125-26-467272",
+   "decided": "2026-11-19T04:01:06.707970-05:00",
+   "event_type": "equity_financing",
+   "summary": "Company expands ATM offering from $50M to $150M, tripling equity financing capacity.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "WVE",
+   "accession": "0001193125-26-467263",
+   "decided": "2026-11-19T04:01:08.829843-05:00",
+   "event_type": "dilution_other",
+   "summary": "Stockholders approved 11M share increase to 2021 Equity Incentive Plan; routine annual meeting.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "HURA",
+   "accession": "0001193125-26-467254",
+   "decided": "2026-11-19T04:01:11.257883-05:00",
+   "event_type": "debt_financing",
+   "summary": "Biotech company draws $1.3M on $50M revolving credit from related-party lender.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "PPIH",
+   "accession": "0001437749-26-037575",
+   "decided": "2026-11-19T04:01:13.949155-05:00",
+   "event_type": "partnership",
+   "summary": "Completed 51% equity stake acquisition in India IFBE coating JV with Welspun; $65M Q3 orders announced.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "IMDX",
+   "accession": "0001493152-26-053091",
+   "decided": "2026-11-19T04:01:17.347031-05:00",
+   "event_type": "equity_financing",
+   "summary": "Company raises $15M via equity offering with significant shareholder dilution.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ENVX",
+   "accession": "0001213900-26-121870",
+   "decided": "2026-11-19T04:01:20.969123-05:00",
+   "event_type": "buyback_dividend",
+   "summary": "Warrant distribution announced; one warrant per four shares at $3.00 exercise price.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "TE",
+   "accession": "0001213900-26-121846",
+   "decided": "2026-11-19T04:01:25.989100-05:00",
+   "event_type": "dilution_other",
+   "summary": "CFO promoted to President; 18.9M share resale registration for Evervolt IP purchase filed.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "NEWT",
+   "accession": "0001628280-26-074823",
+   "decided": "2026-11-19T04:01:31.732167-05:00",
+   "event_type": "debt_financing",
+   "summary": "Company closed $5M private placement of 8.125% senior notes due 2029.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "FLGT",
+   "accession": "0001193125-26-467142",
+   "decided": "2026-11-19T04:01:34.254635-05:00",
+   "event_type": "strategic_review",
+   "summary": "10.5-year lease for 44.6k sq ft MA facility at $1.6M annualized rent, suggesting major expansion.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "YELP",
+   "accession": "0001345016-26-000077",
+   "decided": "2026-11-19T04:01:36.383648-05:00",
+   "event_type": "restructuring",
+   "summary": "5% workforce reduction with $14-16M charges; reinvesting savings into AI offerings.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "PHAT",
+   "accession": "0001193125-26-467065",
+   "decided": "2026-11-19T04:01:46.264944-05:00",
+   "event_type": "exec_departure",
+   "summary": "VP Finance and principal accounting officer Robert Breedlove resigns effective December 4, 2026.",
    "entry_date": null,
    "entry": null
   }
