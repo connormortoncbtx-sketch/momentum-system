@@ -68,3 +68,6 @@
 {"t": "2026-11-18T13:00:00+00:00", "rate": 0.0, "funding_usd": 0.0, "basis_usd": 0.0, "mark": null, "spot": 64011.0155}
 {"t": "2026-11-18T21:00:00+00:00", "rate": 0.0001067721772499, "funding_usd": 1.067721772499, "basis_usd": 0.0, "mark": null, "spot": 62535.3}
 {"t": "2026-11-19T05:00:00+00:00", "rate": 0.0, "funding_usd": 0.0, "basis_usd": 0.0, "mark": null, "spot": 63514.2}
+{"t": "2026-11-19T13:00:00+00:00", "rate": 0.0, "funding_usd": 0.0, "basis_usd": 0.0, "mark": null, "spot": 63815.075}
+{"t": "2026-11-19T21:00:00+00:00", "rate": 0.0, "funding_usd": 0.0, "basis_usd": 0.0, "mark": null, "spot": 62051.7495}
+{"t": "2026-11-20T05:00:00+00:00", "rate": 0.0, "funding_usd": 0.0, "basis_usd": 0.0, "mark": null, "spot": 61450.523}
