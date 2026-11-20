@@ -3560,3 +3560,4 @@
 {"timestamp": "2026-11-20T01:27:51.874572+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Skipped: not exit day (expected friday)", "metrics": {}, "errors": []}
 {"timestamp": "2026-11-20T01:55:24.787423+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=exit", "metrics": {}, "errors": []}
 {"timestamp": "2026-11-20T01:55:24.789352+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Skipped: not exit day (expected friday)", "metrics": {}, "errors": []}
+{"timestamp": "2026-11-20T08:50:26.812702+00:00", "workflow": "shadow_filings", "status": "success", "message": "Shadow filings: 38 judged-eligible, new long 0, new short 17, open trades 609, diversified-book NAV 81.82", "metrics": {}, "errors": []}

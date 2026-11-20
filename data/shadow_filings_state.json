@@ -1,5 +1,5 @@
 {
- "since": "2026-11-19T15:54:30-05:00",
+ "since": "2026-11-19T17:31:07-05:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -2669,7 +2669,7 @@
    "event_type": "prelim_results_good",
    "summary": "Q3 2026: Revenue +5% to $334M, earnings declined YoY; dividend confirmed, $31M buyback remaining",
    "entry_date": "2026-11-05",
-   "entry": 34.75
+   "entry": 34.66
   },
   {
    "book": "short_bad_news",
@@ -3070,7 +3070,7 @@
    "event_type": "acquisition",
    "summary": "Acquisition amendment for $173.2M senior housing property with limited operational history and high lease-up risk.",
    "entry_date": "2026-11-06",
-   "entry": 29.34
+   "entry": 29.16
   },
   {
    "book": "short_bad_news",
@@ -3400,7 +3400,7 @@
    "event_type": "prelim_results_good",
    "summary": "Q3 revenue +6% YoY to $1.4B; net loss $4.3M; strong balance sheet with $111M cash, no debt; dividend declared.",
    "entry_date": "2026-11-06",
-   "entry": 3.61
+   "entry": 3.538
   },
   {
    "book": "short_bad_news",
@@ -3590,7 +3590,7 @@
    "event_type": "exec_departure",
    "summary": "Founder/CEO Glenn Sanford separated from employment; retains board seat and revenue share rights.",
    "entry_date": "2026-11-10",
-   "entry": 3.12
+   "entry": 3.058
   },
   {
    "book": "short_bad_news",
@@ -4944,7 +4944,7 @@
    "event_type": "exec_departure",
    "summary": "CEO M. Farooq Kathwari resigned immediately; interim CEO Stefanie Ward appointed for 6 months.",
    "entry_date": "2026-11-16",
-   "entry": 17.5
+   "entry": 17.27
   },
   {
    "book": "short_bad_news",
@@ -5927,6 +5927,176 @@
    "decided": "2026-11-19T15:57:20.946945-05:00",
    "event_type": "regulatory_setback",
    "summary": "Cybersecurity incidents in Japan exposed 1.6M+ customer records and 20K employee records; impact unquantified.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "GRNT",
+   "accession": "0001928446-26-000070",
+   "decided": "2026-11-20T03:48:58.641691-05:00",
+   "event_type": "dilution_other",
+   "summary": "Grey Rock affiliates plan to distribute 14M Granite Ridge shares to fund LPs, reducing Grey Rock stake to ~30%.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "CAL",
+   "accession": "0001104659-26-130237",
+   "decided": "2026-11-20T03:49:01.247402-05:00",
+   "event_type": "prelim_results_bad",
+   "summary": "Q3 preliminary results miss guidance; Famous Footwear underperforms; planned leadership transition announced.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "SWRD",
+   "accession": "0001663577-26-000356",
+   "decided": "2026-11-20T03:49:04.298016-05:00",
+   "event_type": "dilution_other",
+   "summary": "7M Series D convertible preferred shares issued; $1.364M promissory note created for late payments.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "EARN",
+   "accession": "0001628280-26-075131",
+   "decided": "2026-11-20T03:49:06.948603-05:00",
+   "event_type": "prelim_results_good",
+   "summary": "Q2 results: $3.7M GAAP income, $0.17 NII/share, positive returns despite peer losses.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "BSET",
+   "accession": "0001437749-26-037751",
+   "decided": "2026-11-20T03:49:13.611048-05:00",
+   "event_type": "exec_departure",
+   "summary": "CEO Rob Spilman retiring Jan 31, 2027; EVP Sales/Marketing Anthony Chivari succeeds Feb 1, 2027.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "FWDI",
+   "accession": "0001683168-26-008965",
+   "decided": "2026-11-20T03:49:18.717058-05:00",
+   "event_type": "debt_financing",
+   "summary": "Company raises $50M asset-backed crypto loan against staked SOL collateral; aggressive LTV terms.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "MCB",
+   "accession": "0001104659-26-130188",
+   "decided": "2026-11-20T03:49:24.826518-05:00",
+   "event_type": "exec_departure",
+   "summary": "Executive Vice President and COO Dixiana Berrios terminated employment effective November 16, 2026.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "INGN",
+   "accession": "0001294133-26-000047",
+   "decided": "2026-11-20T03:49:28.954117-05:00",
+   "event_type": "exec_departure",
+   "summary": "Kevin R.M. Smith resigned as director and officer; separation agreement provides severance and prorated bonus.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "NBR",
+   "accession": "0001104659-26-130175",
+   "decided": "2026-11-20T03:49:37.291134-05:00",
+   "event_type": "debt_financing",
+   "summary": "Seventh Amendment to receivables purchase agreement; facility reduced to $200M, term extended to 2029.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "EFSI",
+   "accession": "0001193125-26-468653",
+   "decided": "2026-11-20T03:49:41.715494-05:00",
+   "event_type": "acquisition",
+   "summary": "Shareholder approval obtained for John Marshall Bancorp merger; closes Q1 2027 pending regulatory sign-off.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "BRBR",
+   "accession": "0001628280-26-075091",
+   "decided": "2026-11-20T03:49:43.593259-05:00",
+   "event_type": "exec_departure",
+   "summary": "Board Chairman Robert Vitale on medical leave; David Finkelstein appointed Interim Chairperson.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "MITT",
+   "accession": "0001628280-26-075080",
+   "decided": "2026-11-20T03:49:51.008439-05:00",
+   "event_type": "routine",
+   "summary": "REIT provides October estimates: book value $9.20-$9.30/share, $7.5B portfolio, $84.6M liquidity.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "MNR",
+   "accession": "0001213900-26-122245",
+   "decided": "2026-11-20T03:49:57.975846-05:00",
+   "event_type": "debt_financing",
+   "summary": "Company secures $385M second lien term loan; refinances first lien debt, extends maturity to 2030.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "MSBI",
+   "accession": "0001104659-26-130130",
+   "decided": "2026-11-20T03:50:02.215759-05:00",
+   "event_type": "restructuring",
+   "summary": "Strategic branch optimization: sale of 6 branches with $156.3M deposits, plus 2 branch combinations.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ORMP",
+   "accession": "0001213900-26-122239",
+   "decided": "2026-11-20T03:50:10.657481-05:00",
+   "event_type": "litigation",
+   "summary": "Stockholder class action settled; company paid $125K in attorney fees, amended bylaws to moot claims.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "HYPD",
+   "accession": "0001104659-26-130118",
+   "decided": "2026-11-20T03:50:15.072905-05:00",
+   "event_type": "exec_departure",
+   "summary": "CFO David Knox resigns; Chief Accountant Andrew Sparling becomes interim CFO December 15.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "PSIX",
+   "accession": "0001193125-26-468525",
+   "decided": "2026-11-20T03:50:19.141892-05:00",
+   "event_type": "exec_departure",
+   "summary": "CFO resignation effective Nov 27; interim replacement from consulting firm at $40k/week.",
    "entry_date": null,
    "entry": null
   }
