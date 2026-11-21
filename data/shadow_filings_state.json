@@ -1,5 +1,5 @@
 {
- "since": "2026-11-20T14:41:21-05:00",
+ "since": "2026-11-20T17:20:22-05:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -5946,6 +5946,76 @@
    "decided": "2026-11-20T15:42:56.294569-05:00",
    "event_type": "auditor_change",
    "summary": "Post-merger auditor changes; both prior firms cited going concern doubts.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "FMAC",
+   "accession": "0001493152-26-053536",
+   "decided": "2026-11-21T03:30:13.643441-05:00",
+   "event_type": "exec_departure",
+   "summary": "CFO Steven Markscheid resigned; CEO Si Yu Li appointed interim CFO effective immediately.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "GRML",
+   "accession": "0001213900-26-122744",
+   "decided": "2026-11-21T03:30:16.239872-05:00",
+   "event_type": "buyback_dividend",
+   "summary": "Company repurchasing 7,045 shares Series C Preferred Stock for $8.99M from 10 holders.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "SNTI",
+   "accession": "0001628280-26-075306",
+   "decided": "2026-11-21T03:30:18.390397-05:00",
+   "event_type": "auditor_change",
+   "summary": "Auditor change from KPMG to KNAV; going concern issues persist from prior audit reports.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "NRGV",
+   "accession": "0001828536-26-000123",
+   "decided": "2026-11-21T03:30:27.537574-05:00",
+   "event_type": "debt_financing",
+   "summary": "Sosa battery storage project financing: $78M bridge loan and $79.6M equity commitment",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "BHR",
+   "accession": "0001574085-26-000191",
+   "decided": "2026-11-21T03:30:33.901949-05:00",
+   "event_type": "strategic_review",
+   "summary": "Board reconstitution completed; Ashford advisory agreement terminated; governance transition finalized.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "DEC",
+   "accession": "0001140361-26-045091",
+   "decided": "2026-11-21T03:30:36.555293-05:00",
+   "event_type": "acquisition",
+   "summary": "Completed $1.8B Birch Permian acquisition funded via $1.455B ABS securities issuance.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ADNT",
+   "accession": "0001670541-26-000145",
+   "decided": "2026-11-21T03:30:38.606810-05:00",
+   "event_type": "exec_departure",
+   "summary": "CFO Mark Oswald departed; Peter Carlin assumed role November 16, 2026.",
    "entry_date": null,
    "entry": null
   }
