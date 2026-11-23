@@ -3611,3 +3611,5 @@
 {"timestamp": "2026-11-21T09:14:13.474590+00:00", "workflow": "weekly_pipeline", "status": "info", "message": "Skipped: upcoming week is not a normal trading week", "metrics": {}, "errors": []}
 {"timestamp": "2026-11-23T04:10:06.925362+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Starting weekend refresh (manual_refresh)", "metrics": {}, "errors": []}
 {"timestamp": "2026-11-23T04:26:41.071824+00:00", "workflow": "weekend_refresh", "status": "success", "message": "Refresh complete (manual_refresh)", "metrics": {"run_label": "manual_refresh", "symbols": 2497, "regime": "choppy_neutral", "top_pick": "CAPR", "top_score": 0.9613}, "errors": []}
+{"timestamp": "2026-11-23T08:35:41.394902+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Starting weekend refresh (manual_refresh)", "metrics": {}, "errors": []}
+{"timestamp": "2026-11-23T08:35:41.397339+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Skipped: not a normal trading week", "metrics": {}, "errors": []}
