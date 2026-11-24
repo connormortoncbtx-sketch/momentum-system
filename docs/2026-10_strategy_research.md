@@ -3595,3 +3595,22 @@ PASS needed: long-only top decile, value- AND equal-weighted, Sharpe up AND max 
 - R3's value-weighted improvement is mostly de-risking (avg weight 0.4–0.6 since 1980; VW CAGR 16.2% → 12.6%, 2017–26 20.3% → 8.9%) and it needs up to 2× leverage. Our book is closer to equal-weight, where it fails. Same conclusion as the earlier vol-targeting rejection.
 - No R3-capped-at-1× variant was run; that would be a post-hoc trial.
 - **No change to any book.** Trial count +3.
+
+## Contract-led pick-10 (Nov 24, 2026, `research/contract_pick10.py`)
+
+Connor: "pick 10 based around contract wins, with the remaining [slots] filled in by the old pick 10." 10 slots × 10%, daily simulation. Contract slots = the live CONTRACT sleeve's event set (all contract wins + dev-adopted filters: drop low rel_value and US-federal-government counterparties; 1,207 events 2017 – Sep 2026), first open after the 8-K, held 10 sessions, 25 bps/side. Remaining slots = the old pick-10 research proxy (selection_lab `live_proxy`), formed Friday, bought Monday close, spread costs. Contract judgements end 2026-09-24.
+
+| Book | Dev 2017–23 CAGR / Sharpe / maxDD | Holdout 2024–Sep 26 | Last 52 wk (to Sep 26) | May–Sep 2026 |
+|---|---|---|---|---|
+| **Combo** (contract + pick-10 fill) | 9.5% / 0.45 / −46% | 30.0% / 0.85 / −35% | +25% / 0.72 | −20% |
+| Pick-10 proxy alone | −0.4% / 0.14 / −65% | 9.1% / 0.42 / −55% | +64% / 1.33 | −6% |
+| Contract alone, 10 slots, rest cash | 14.3% / 0.69 / −27% | 29.6% / 0.99 / −27% | +15% / 0.57 | −24% |
+| Contract sleeve as live (1/vol, 25% cap, fully invested) | 27.7% / 0.92 / −40% | 50.1% / 1.23 / −32% | +26% / 0.74 | −44% |
+| IWM | 7.3% / 0.41 / −41% | 13.9% / 0.73 / −28% | +16% / 0.89 | +1% |
+
+- Average contract names open: ~5 (dev), ~6 (holdout), ~8 (May–Sep 2026); the rest of the combo is pick-10 fill.
+- The combo beats the pick-10 proxy in both periods but trails contract-alone on Sharpe and drawdown in both: the fill adds volatility, not return (holdout CAGR 30.0% vs 29.6%).
+- "1–2 names carry the week" is present in every one of these books: in weeks up > 2%, the top two names alone made the whole gain in 12–42% of weeks; the other 8 names' median week is −1.3% to −1.9%. It is a property of concentrated small-cap books, not what separates the winners.
+- May–Sep 2026 every stock book lost while IWM was flat, the contract sleeve most. The recent drought is not specific to the pick-10 scorer.
+- Years (combo / pick-10 / contract-alone / IWM): 2022 −19 / −15 / −3 / −21; 2023 +33 / −13 / +62 / +17; 2024 −2 / −12 / +6 / +11; 2025 +76 / +21 / +69 / +13.
+- Caveats: pick-10 is the research proxy, not the full live scorer; 2023–26 price data drops most delisted names (flatters holdout); 2026-10/11 not covered.
