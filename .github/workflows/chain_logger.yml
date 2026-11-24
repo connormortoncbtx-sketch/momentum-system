@@ -1,0 +1,55 @@
+name: Chain logger (same-day SPY/QQQ/XSP option premium, derived values) + shadow #11 on time
+
+# Started by live_stack.yml (the dispatcher's 09:15 CT trigger) because GitHub cron runs hours late. One long job:
+# a chain snapshot every 15 minutes 10:00-15:45 ET, and shadow #11 at 12:05 / 14:05 / 15:05 ET. No orders.
+on:
+  workflow_call:
+  workflow_dispatch:
+    inputs:
+      once:
+        description: "single snapshot now (test)"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: chain-logger
+  cancel-in-progress: false
+
+jobs:
+  log:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Log the chain (and run shadow #11 in its windows)
+        env:
+          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+          NTFY_CHANNEL: ${{ secrets.NTFY_CHANNEL }}
+        run: python automation/chain_logger.py ${{ inputs.once && '--once' || '' }}
+      - name: Commit
+        if: always()
+        run: |
+          git config user.name  "momentum-bot"
+          git config user.email "momentum-bot@users.noreply.github.com"
+          git add data/chain_log 2>/dev/null || true
+          for f in data/shadow_premium_state.json data/shadow_premium_ledger.jsonl data/system_log.jsonl; do [ -e "$f" ] && git add "$f"; done
+          git diff --cached --quiet && exit 0
+          git commit -q -m "chain log: $(date +%Y-%m-%d)"
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push; then break; fi
+            git rebase --abort 2>/dev/null || true
+            [ $attempt -eq 5 ] && exit 1
+            sleep $((RANDOM % 5 + 2))
+          done

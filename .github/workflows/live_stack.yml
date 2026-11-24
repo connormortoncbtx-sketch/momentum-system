@@ -18,6 +18,10 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  chain:
+    if: github.event_name == 'workflow_dispatch' || github.event.schedule == '25 15 * * 1-5'
+    uses: ./.github/workflows/chain_logger.yml
+    secrets: inherit
   live:
     runs-on: ubuntu-latest
     timeout-minutes: 20
