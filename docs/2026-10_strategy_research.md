@@ -3614,3 +3614,12 @@ Connor: "pick 10 based around contract wins, with the remaining [slots] filled i
 - May–Sep 2026 every stock book lost while IWM was flat, the contract sleeve most. The recent drought is not specific to the pick-10 scorer.
 - Years (combo / pick-10 / contract-alone / IWM): 2022 −19 / −15 / −3 / −21; 2023 +33 / −13 / +62 / +17; 2024 −2 / −12 / +6 / +11; 2025 +76 / +21 / +69 / +13.
 - Caveats: pick-10 is the research proxy, not the full live scorer; 2023–26 price data drops most delisted names (flatters holdout); 2026-10/11 not covered.
+
+## Volatility trades on flagged movers, re-examined (Nov 24, 2026)
+
+Connor: trade the predicted movers' volatility (condor or its inverse) instead of direction. Data: `options/straddles.parquet` (`research/options_straddles.py`): 1,045 model picks + 1,520 random controls with listed options, Jan 2024 – Oct 2026, nearest 5–40-day expiry ATM straddle at Friday VWAP, held to expiry (median 7 days). 54% of model picks have no listed options. New cuts chosen on Jan 2024 – Apr 2025, confirmed on May 2025 – Oct 2026 (≈8 extra trials).
+- Long straddle (buy vol): model −5.3% per trade, control −6.4%; median −24%. Realized move ≈ 0.7× implied in every subset.
+- Short straddle (sell vol), before costs: model +5.3%, control +6.4% — the generic volatility premium; the model adds nothing. Breakeven bid-ask cost ≈ 5–7% of premium; small-cap option spreads are typically wider. 8–9% of trades lose more than the whole premium; worst −708%.
+- Best first-half cuts (no earnings inside the option's life; richest implied vol) shrank to control level in the second half (short +2.7% / +5.0% / +7.3% before costs).
+- Earnings-inside straddles: long roughly breakeven (+0.7% / +2.3%), not an edge.
+- **Rejected.** The tradeable form of selling volatility is the index condor (penny-wide SPY/QQQ spreads), already in paper testing.
