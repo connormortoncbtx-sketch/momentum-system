@@ -1,34 +1,34 @@
 {
- "nav_a": 88.61606442796165,
- "nav_b": 88.61606442796165,
+ "nav_a": 88.25754563960243,
+ "nav_b": 88.25754563960243,
  "open": {
-  "entry": "2026-11-16",
+  "entry": "2026-11-23",
   "a": [
-   "ECO",
-   "RCEL",
-   "FMC",
-   "SLS",
+   "HELE",
+   "AMPL",
    "IBTA",
-   "CAPR",
+   "ECO",
    "TKNO",
-   "EGO",
+   "RCEL",
    "CAI",
-   "AMPL"
+   "DNA",
+   "DOCS",
+   "NEWP"
   ],
   "b": [
-   "ECO",
-   "RCEL",
-   "FMC",
-   "SLS",
-   "CAPR",
+   "HELE",
+   "AMPL",
    "IBTA",
+   "ECO",
    "TKNO",
-   "EGO",
+   "RCEL",
    "CAI",
-   "AMPL"
+   "DNA",
+   "DOCS",
+   "NEWP"
   ],
   "earn_names": [],
   "dropped": []
  },
- "last_entry": "2026-11-16"
+ "last_entry": "2026-11-23"
 }
