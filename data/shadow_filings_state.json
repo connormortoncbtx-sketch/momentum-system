@@ -1,5 +1,5 @@
 {
- "since": "2026-11-23T17:29:14-05:00",
+ "since": "2026-11-24T06:16:17-05:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -1139,7 +1139,7 @@
    "event_type": "prelim_results_bad",
    "summary": "Q3 2026 earnings miss: $0.92 loss per share, 16% book value decline, negative 11.6% return.",
    "entry_date": "2026-10-30",
-   "entry": 5.47
+   "entry": 5.35
   },
   {
    "book": "short_bad_news",
@@ -5746,8 +5746,8 @@
    "decided": "2026-11-21T03:30:13.643441-05:00",
    "event_type": "exec_departure",
    "summary": "CFO Steven Markscheid resigned; CEO Si Yu Li appointed interim CFO effective immediately.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-23",
+   "entry": 10.16
   },
   {
    "book": "short_bad_news",
@@ -6026,6 +6026,46 @@
    "decided": "2026-11-23T19:20:17.350598-05:00",
    "event_type": "clinical_negative",
    "summary": "FDA rejected Deramiocel BLA for DMD despite meeting trial endpoints; major setback for lead program.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "INSP",
+   "accession": "0001104659-26-131325",
+   "decided": "2026-11-24T06:18:13.679721-05:00",
+   "event_type": "litigation",
+   "summary": "Unified Patent Court default judgment against company in Nyxoah patent case; injunction on Inspire IV pending.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "DMAC",
+   "accession": "0001437749-26-038127",
+   "decided": "2026-11-24T06:18:16.465302-05:00",
+   "event_type": "clinical_positive",
+   "summary": "Phase 2 topline results: DM199 prolonged pregnancies in FGR; 9/10 exceeded historical median delivery time; well tolerated.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "DRVN",
+   "accession": "0001628280-26-075574",
+   "decided": "2026-11-24T06:18:22.645453-05:00",
+   "event_type": "listing_deficiency",
+   "summary": "Nasdaq delisting notice due to delayed Q3 2026 10-Q filing; internal review ongoing",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "VENU",
+   "accession": "0001493152-26-053843",
+   "decided": "2026-11-24T06:18:25.209966-05:00",
+   "event_type": "debt_financing",
+   "summary": "Company raises $12.5M additional convertible debt; cumulative $22.5M due July 2027.",
    "entry_date": null,
    "entry": null
   }
