@@ -3624,3 +3624,4 @@
 {"timestamp": "2026-11-23T21:49:59.853560+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Skipped: not a normal trading week", "metrics": {}, "errors": []}
 {"timestamp": "2026-11-23T22:21:35.377898+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Starting weekend refresh (manual_refresh)", "metrics": {}, "errors": []}
 {"timestamp": "2026-11-23T22:21:35.379810+00:00", "workflow": "weekend_refresh", "status": "info", "message": "Skipped: not a normal trading week", "metrics": {}, "errors": []}
+{"timestamp": "2026-11-24T00:20:22.924249+00:00", "workflow": "shadow_filings", "status": "success", "message": "Shadow filings: 45 judged-eligible, new long 0, new short 22, open trades 602, diversified-book NAV 82.88", "metrics": {}, "errors": []}
