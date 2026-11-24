@@ -1,0 +1,17 @@
+name: Live options probe (capabilities only, no dollar amounts)
+on:
+  workflow_dispatch:
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: pip install requests
+      - name: Probe
+        env:
+          KL: ${{ secrets.ALPACA_LIVE_KEY }}
+          SL: ${{ secrets.ALPACA_LIVE_SECRET }}
+        run: python automation/probes/live_options_probe.py
