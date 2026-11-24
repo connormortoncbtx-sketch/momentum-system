@@ -54,3 +54,43 @@ jobs:
             [ $attempt -eq 5 ] && exit 1
             sleep $((RANDOM % 5 + 2))
           done
+
+  # REAL-MONEY XSP condor (automation/live_condor.py, Connor Nov 24, 2026): same 14:00 ET trigger as the paper account.
+  # Places orders only when the repo VARIABLE CONDOR_LIVE is "yes" ("probe" = one unfillable test order; else dry run).
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    concurrency:
+      group: live-condor
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Live XSP condor (14:00 ET entry, hold to cash settlement)
+        env:
+          ALPACA_LIVE_KEY: ${{ secrets.ALPACA_LIVE_KEY }}
+          ALPACA_LIVE_SECRET: ${{ secrets.ALPACA_LIVE_SECRET }}
+          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+          NTFY_CHANNEL: ${{ secrets.NTFY_CHANNEL }}
+          CONDOR_LIVE: ${{ vars.CONDOR_LIVE }}
+          CONDOR_CONTRACTS: ${{ vars.CONDOR_CONTRACTS }}
+        run: python automation/live_condor.py
+      - name: Commit ledger (ratios only)
+        if: always()
+        run: |
+          git config user.name  "momentum-bot"
+          git config user.email "momentum-bot@users.noreply.github.com"
+          [ -e data/live_condor_ledger.jsonl ] && git add data/live_condor_ledger.jsonl
+          git diff --cached --quiet && exit 0
+          git commit -q -m "live condor: $(date +%Y-%m-%d) ledger"
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push; then break; fi
+            git rebase --abort 2>/dev/null || true
+            [ $attempt -eq 5 ] && exit 1
+            sleep $((RANDOM % 5 + 2))
+          done

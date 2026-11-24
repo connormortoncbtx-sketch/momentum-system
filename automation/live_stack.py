@@ -67,6 +67,10 @@ CRYPTO_VIA = (os.environ.get("CRYPTO_VIA") or "etf").strip().lower()
 CRYPTO_ETF = {"BTC/USD": ["IBIT", "FBTC"], "ETH/USD": ["ETHA", "FETH"], "SOL/USD": ["BSOL", "FSOL", "GSOL"],
               "XRP/USD": ["XRP", "GXRP", "XRPZ"]}
 CONDOR_MAXLOSS_SPY2, CONDOR_RISK = 170.0, 0.04   # SPY $2-wide condor, ~max loss per contract; risk per day at ~$4-5k
+# Live XSP condor (automation/live_condor.py, Connor Nov 24, 2026): while CONDOR_LIVE is yes/probe/dry, keep $100 of
+# cash per contract (a $1-wide condor's max loss) out of the stock/SGOV targets, and never touch option positions.
+CONDOR_ON = (os.environ.get("CONDOR_LIVE") or "").strip().lower() in ("yes", "probe", "dry")
+CONDOR_RESERVE = 100.0 * max(1, int(os.environ.get("CONDOR_CONTRACTS") or 1)) if CONDOR_ON else 0.0
 
 
 # ------------------------------------------------------------------ sleeve targets (fractions of the sleeve)
@@ -298,8 +302,8 @@ def main():
               f"({', '.join(sorted(coin_etf.values()))} available); the rest of the sleeve stays in cash")
         if not market_open:
             print("::notice::market closed and no direct crypto -- nothing to trade"); return
-    tgt, info = targets(equity, tier, sleeves, lev_vt, mult, coin_etf)
-    pos = tc.get_all_positions()
+    tgt, info = targets(max(equity - CONDOR_RESERVE, 0.0), tier, sleeves, lev_vt, mult, coin_etf)
+    pos = [p for p in tc.get_all_positions() if "option" not in str(p.asset_class).lower()]   # the condor's legs
     norm = lambda p: (p.symbol[:-3] + "/USD") if "crypto" in str(p.asset_class).lower() and "/" not in p.symbol else p.symbol
     cur = {norm(p): float(p.market_value) for p in pos}
     px = prices(sorted(set(tgt) | set(cur)))
@@ -323,9 +327,8 @@ def main():
             results.append((sym, side, kind, amt, submit(tc, sym, side, kind, amt, market_open)))
         except Exception as e:
             results.append((sym, side, kind, amt, f"error: {str(e)[:120]}"))
-    condor_n = math.floor(CONDOR_RISK * equity / CONDOR_MAXLOSS_SPY2)
-    condor = ("gated (approve after the January review)" if os.environ.get("CONDOR_LIVE", "no") != "yes" else "approved -- not built yet") \
-        + (f"; eligible for {condor_n} SPY $2-wide contract(s)/day at 4% risk" if condor_n >= 1 else "; not yet eligible (~$4,250 for 1 contract)")
+    condor = (f"XSP condor mode '{os.environ.get('CONDOR_LIVE')}', cash reserved for it" if CONDOR_ON
+              else "gated (CONDOR_LIVE not set)")
     # public log: no dollars, no positions
     print(f"::notice::idle cash -> {CASH_ETF}: {'yes' if info.get('idle') else 'nothing idle'}")
     print(f"::notice::live stack ({mode}): tier {tier}, leverage {info['lev']:.2f}x (vol target {info['lev_vt']:.2f}), "
