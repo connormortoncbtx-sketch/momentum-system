@@ -3630,4 +3630,5 @@ Connor chose to run the 2pm condor with real money ahead of the Jan 5 review: 1 
 - 14:00–14:30 ET entry, shorts 1 implied move out (ATM straddle mid; spot by put-call parity), $1 wings, held to settlement; skip when SPY's range so far ≥ 1.4× its 20-day mean range or natural credit < $0.05; limit from mid toward the live natural in $0.01 steps.
 - Sizing: one contract ≈ 30% of the account at risk; growth-optimal stake on 2018–23 backtest ≈ 37% (2 contracts would exceed it). $1 wings are untested in the backtest (the candidate used SPY $5 wings).
 - `live_stack.py` keeps $100/contract in cash while CONDOR_LIVE is yes/probe/dry and ignores option positions.
+- Floor rule (Connor, Nov 24): no condor while account equity < $180 (CONDOR_FLOOR); phone alert, resume automatically above it. Connor will add regular deposits if the trial shows promise.
 - Switch: repo variable CONDOR_LIVE (`dry` → `yes`), CONDOR_CONTRACTS = 1. Public ledger `data/live_condor_ledger.jsonl` holds ratios only.

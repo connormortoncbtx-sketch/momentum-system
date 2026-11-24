@@ -47,6 +47,8 @@ UND, PROXY = "XSP", "SPY"
 K_MOVE, WING = 1.0, 1.0
 ENTRY_FROM, ENTRY_TO = dt.time(13, 58), dt.time(14, 30)
 RANGE_CUT, MIN_NAT = 1.4, 0.05
+# Floor rule (Connor, Nov 24): below this account equity one contract is far above the ~30% stake -> pause and ask.
+FLOOR = float(os.environ.get("CONDOR_FLOOR") or 180)
 STEP, WAIT_S, MAX_STEPS = 0.01, 45, 12
 
 
@@ -275,6 +277,13 @@ def main():
                                for l in LEDGER.read_text().splitlines() if l.strip()):
         print("::notice::live condor: already handled today"); return
     row = {"date": now.date().isoformat(), "mode": mode}   # no quantity: public repo
+    eq = float(api("GET", "/v2/account").get("equity") or 0)
+    if eq < FLOOR:
+        row["status"] = "paused: account below the floor"
+        _finish(row)
+        notify_alert("Live XSP condor", f"PAUSED {row['date']}: account ${eq:,.2f} is below the ${FLOOR:,.0f} floor -- "
+                     "no condor until it is back above (add funds, or decide to stop). Nothing was traded.")
+        print("::notice::live condor: paused -- account below the floor rule"); return
     rr = range_ratio(now.date())
     row["range_ratio"] = round(rr, 3) if rr is not None else None
     try:
