@@ -3638,3 +3638,5 @@
 {"timestamp": "2026-11-24T07:05:20.803713+00:00", "workflow": "shadow_fipveto", "status": "success", "message": "Shadow FIP+veto 2026-11-23: nav 92.1 | SPY 96.0 | held", "metrics": {"shadow_nav": 92.1332, "spy_index": 95.9612}, "errors": []}
 {"timestamp": "2026-11-24T07:06:59.306437+00:00", "workflow": "shadow_lazy", "status": "success", "message": "Shadow FIP+CNN+lazy 2026-11-23: nav 91.9 | SPY 96.0 | held", "metrics": {"shadow_nav": 91.9126, "spy_index": 95.9612}, "errors": []}
 {"timestamp": "2026-11-24T11:18:29.130239+00:00", "workflow": "shadow_filings", "status": "success", "message": "Shadow filings: 6 judged-eligible, new long 0, new short 4, open trades 606, diversified-book NAV 82.88", "metrics": {}, "errors": []}
+{"timestamp": "2026-11-24T12:01:36.536250+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Starting premarket monitor", "metrics": {}, "errors": []}
+{"timestamp": "2026-11-24T12:01:36.540074+00:00", "workflow": "premarket_monitor", "status": "info", "message": "Skipped: not a normal trading week", "metrics": {}, "errors": []}
