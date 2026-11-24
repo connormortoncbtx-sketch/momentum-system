@@ -3632,3 +3632,9 @@ Connor chose to run the 2pm condor with real money ahead of the Jan 5 review: 1 
 - `live_stack.py` keeps $100/contract in cash while CONDOR_LIVE is yes/probe/dry and ignores option positions.
 - Floor rule (Connor, Nov 24): no condor while account equity < $180 (CONDOR_FLOOR); phone alert, resume automatically above it. Connor will add regular deposits if the trial shows promise.
 - Switch: repo variable CONDOR_LIVE (`dry` → `yes`), CONDOR_CONTRACTS = 1. Public ledger `data/live_condor_ledger.jsonl` holds ratios only.
+
+## Own same-day option data via Alpaca (Nov 24, 2026, `automation/chain_logger.py`)
+Connor chose to collect data instead of a ThetaData month. Every 15 min 10:00–15:45 ET, SPY/QQQ/XSP same-day chains → derived values only in `data/chain_log/YYYY-MM-DD.csv.gz`: spot (XSP via put-call parity), ATM straddle mid/natural, and for k ∈ {0.5, 0.75, 1, 1.25, 1.5} × wings {$1, $2, $5}: condor / put spread / call spread credits at natural and mid, strikes, leg bid-ask as a share of the condor credit. Settlement computed later from closes. Started by the dispatcher's 09:15 CT live-stack trigger (one long job).
+- **Found:** shadow #11 recorded nothing Nov 15–24 — its GitHub crons fired 4–8 h late (after the close). The logger now runs it at 12:05 / 14:05 / 15:05 ET.
+- Feed: only Alpaca's free *indicative* option feed is available (no OPRA): good for credit levels, approximate for exact spreads; live fills measure real costs.
+- Enables (pre-register before looking, ~2–3 months of data): thin-credit skip, $1 vs $2/$5 wings, k grid, entry time, XSP vs SPY pricing.
