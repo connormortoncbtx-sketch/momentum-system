@@ -103,40 +103,6 @@
       "hard_stop_price": 14.89,
       "entry_price_actual": 16.6
     },
-    "CAI": {
-      "shares": 319,
-      "entry_price_est": 19.12,
-      "hard_stop_pct": 10.0,
-      "activation_pct": 10.8,
-      "trail_pct": 8.3,
-      "alpha_score": 1.0,
-      "weekly_vol": 16.64,
-      "composite_rank": 7,
-      "is_fallback": false,
-      "phase": 1,
-      "high_water_mark": 19.12,
-      "order_id": "2cb8c93a-ba5b-40f4-820c-ae623b224db2",
-      "hard_stop_order_id": "b4090868-a821-4e6b-acc4-7999dcc62e27",
-      "hard_stop_price": 17.18,
-      "entry_price_actual": 19.093041
-    },
-    "DNA": {
-      "shares": 785,
-      "entry_price_est": 7.76,
-      "hard_stop_pct": 10.0,
-      "activation_pct": 10.2,
-      "trail_pct": 7.2,
-      "alpha_score": 1.0,
-      "weekly_vol": 14.4,
-      "composite_rank": 8,
-      "is_fallback": false,
-      "phase": 1,
-      "high_water_mark": 7.76,
-      "order_id": "d155a912-e534-4a0b-a7a0-8b25e60c246d",
-      "hard_stop_order_id": "f929b364-dec4-44d3-88d3-25969c12d607",
-      "hard_stop_price": 6.99,
-      "entry_price_actual": 7.77
-    },
     "DOCS": {
       "shares": 206,
       "entry_price_est": 29.48,
@@ -153,23 +119,6 @@
       "hard_stop_order_id": "555827c3-4c39-420c-b53d-3a8852ebf095",
       "hard_stop_price": 27.43,
       "entry_price_actual": 29.5
-    },
-    "NEWP": {
-      "shares": 1403,
-      "entry_price_est": 4.34,
-      "hard_stop_pct": 10.0,
-      "activation_pct": 9.1,
-      "trail_pct": 6.7,
-      "alpha_score": 1.0,
-      "weekly_vol": 13.43,
-      "composite_rank": 10,
-      "is_fallback": false,
-      "phase": 1,
-      "high_water_mark": 4.34,
-      "order_id": "96b6f0ff-5e85-407c-adb7-8a95afd0b1b8",
-      "hard_stop_order_id": "e11bea95-78a1-4d5d-9a16-58240f162113",
-      "hard_stop_price": 3.91,
-      "entry_price_actual": 4.35
     }
   },
   "entry_date": "2026-11-23"
