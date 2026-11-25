@@ -1,5 +1,5 @@
 {
- "since": "2026-11-24T17:30:36-05:00",
+ "since": "2026-11-25T16:54:20-05:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -103,156 +103,6 @@
   },
   {
    "book": "short_bad_news",
-   "symbol": "BWIN",
-   "accession": "0001781755-26-000062",
-   "decided": "2026-10-27T14:14:23.425653-04:00",
-   "event_type": "prelim_results_good",
-   "summary": "Q3 2026 preliminary earnings released; results unaudited pending 10-Q filing.",
-   "entry_date": "2026-10-28",
-   "entry": 31.9
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "AIAI",
-   "accession": "0001493152-26-048643",
-   "decided": "2026-10-27T14:14:28.330829-04:00",
-   "event_type": "partnership",
-   "summary": "War Tech Consortium partnership with M42 for defense tech acquisitions; $125M projected 2027 revenue.",
-   "entry_date": "2026-10-28",
-   "entry": 1.69
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "EARN",
-   "accession": "0001628280-26-067429",
-   "decided": "2026-10-27T14:14:30.671829-04:00",
-   "event_type": "equity_financing",
-   "summary": "Fund established $125M ATM equity distribution agreement with four underwriting agents.",
-   "entry_date": "2026-10-28",
-   "entry": 3.658
-  },
-  {
-   "book": "long_contract_win",
-   "symbol": "MBOT",
-   "accession": "0001493152-26-048640",
-   "decided": "2026-10-27T14:14:32.717495-04:00",
-   "event_type": "contract_win",
-   "summary": "First Office-Based Lab customer signed 12-month LIBERTY device supply order; West Coast expansion.",
-   "entry_date": "2026-10-28",
-   "entry": 1.11
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "ARTV",
-   "accession": "0001193125-26-432806",
-   "decided": "2026-10-27T14:14:38.251785-04:00",
-   "event_type": "strategic_review",
-   "summary": "Company halting AlloNK development, cutting 94% workforce, exploring strategic alternatives to maximize shareholder value.",
-   "entry_date": "2026-10-28",
-   "entry": 4.35
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "PEW",
-   "accession": "0001193125-26-432788",
-   "decided": "2026-10-27T14:14:40.968831-04:00",
-   "event_type": "acquisition",
-   "summary": "Company acquired Camfour LLC, firearms/ammunition distributor, for $34M cash; regulatory approval needed.",
-   "entry_date": "2026-10-28",
-   "entry": 1.99
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "IMSR",
-   "accession": "0002019804-26-000030",
-   "decided": "2026-10-27T14:14:50.315408-04:00",
-   "event_type": "buyback_dividend",
-   "summary": "Terrestrial Energy authorizes $25M share repurchase program; expiration October 2027.",
-   "entry_date": "2026-10-28",
-   "entry": 2.95
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "ZURA",
-   "accession": "0001855644-26-000012",
-   "decided": "2026-10-27T14:14:55.704849-04:00",
-   "event_type": "routine",
-   "summary": "Q3 2026 earnings release and updated corporate presentation; clinical-stage biotech company.",
-   "entry_date": "2026-10-28",
-   "entry": 4.23
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "MFIC",
-   "accession": "0001193125-26-432622",
-   "decided": "2026-10-27T14:15:02.786179-04:00",
-   "event_type": "acquisition",
-   "summary": "Merger agreement with Ares Capital Corporation at $10.88 per share; $1.21 cash plus ARCC stock.",
-   "entry_date": "2026-10-28",
-   "entry": 10.25
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "ACRS",
-   "accession": "0001104659-26-118952",
-   "decided": "2026-10-27T14:15:08.095765-04:00",
-   "event_type": "clinical_positive",
-   "summary": "Phase 1b POC positive for ATI-052 bispecific antibody in atopic dermatitis and asthma",
-   "entry_date": "2026-10-28",
-   "entry": 3.7
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "HYMC",
-   "accession": "0001493152-26-048626",
-   "decided": "2026-10-27T14:15:10.584088-04:00",
-   "event_type": "routine",
-   "summary": "Q3 results, CFO transition to advisory role, two executive departures, four new directors appointed.",
-   "entry_date": "2026-10-28",
-   "entry": 16.9
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "ACRS",
-   "accession": "0001104659-26-119231",
-   "decided": "2026-10-28T03:01:23.111778-04:00",
-   "event_type": "equity_financing",
-   "summary": "Company raises $46.7M via equity offering with significant dilution and pre-funded warrants.",
-   "entry_date": "2026-10-28",
-   "entry": 3.7
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "SPRO",
-   "accession": "0001193125-26-434452",
-   "decided": "2026-10-28T03:01:25.668191-04:00",
-   "event_type": "exec_departure",
-   "summary": "COO Timothy Keutzer retiring December 31, 2026 after 11 years; consulting through February 2027.",
-   "entry_date": "2026-10-28",
-   "entry": 1.18
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "HCTI",
-   "accession": "0001213900-26-112972",
-   "decided": "2026-10-28T03:01:28.892665-04:00",
-   "event_type": "listing_deficiency",
-   "summary": "1:20 reverse stock split executed to address Nasdaq delisting determination; hearing scheduled November 5.",
-   "entry_date": "2026-10-28",
-   "entry": 6.74
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "OCFC",
-   "accession": "0001004702-26-000122",
-   "decided": "2026-10-28T03:01:35.707470-04:00",
-   "event_type": "prelim_results_good",
-   "summary": "Q3 earnings miss with YoY decline; core conversion complete; regular dividend $0.20/share.",
-   "entry_date": "2026-10-28",
-   "entry": 16.98
-  },
-  {
-   "book": "short_bad_news",
    "symbol": "BWMN",
    "accession": "0001140361-26-040909",
    "decided": "2026-10-28T03:01:38.572801-04:00",
@@ -260,96 +110,6 @@
    "summary": "Acquisition by BCP-affiliated Prive Parent ongoing; two stockholder lawsuits filed alleging proxy disclosure deficiencies.",
    "entry_date": "2026-10-28",
    "entry": 42.9
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "MPB",
-   "accession": "0000879635-26-000060",
-   "decided": "2026-10-28T03:01:43.085316-04:00",
-   "event_type": "exec_departure",
-   "summary": "COO Dana Stewart resigning from Mid Penn Bank subsidiary effective October 30, 2026.",
-   "entry_date": "2026-10-28",
-   "entry": 34.0
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "AIAI",
-   "accession": "0001493152-26-048718",
-   "decided": "2026-10-28T03:01:48.216034-04:00",
-   "event_type": "exec_departure",
-   "summary": "Director Eric Affeldt resigned October 21, 2026; no dispute cited.",
-   "entry_date": "2026-10-28",
-   "entry": 1.69
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "NKLR",
-   "accession": "0001140361-26-040902",
-   "decided": "2026-10-28T03:01:51.011048-04:00",
-   "event_type": "auditor_change",
-   "summary": "MaloneBailey re-engaged as auditor for FY2026 after prior January 2026 termination.",
-   "entry_date": "2026-10-28",
-   "entry": 2.15
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "CNXU",
-   "accession": "0001062993-26-005569",
-   "decided": "2026-10-28T03:01:56.885919-04:00",
-   "event_type": "dilution_other",
-   "summary": "Warrant inducement program approved; potential 20% dilution requires stockholder approval.",
-   "entry_date": "2026-10-28",
-   "entry": 2.92
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "NBHC",
-   "accession": "0001104659-26-119174",
-   "decided": "2026-10-28T03:02:00.029945-04:00",
-   "event_type": "prelim_results_bad",
-   "summary": "Q3 2026 net loss $8.8M; $40.6M provision expense on commercial credits",
-   "entry_date": "2026-10-28",
-   "entry": 38.6
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "VC",
-   "accession": "0001111335-26-000056",
-   "decided": "2026-10-28T03:02:10.156143-04:00",
-   "event_type": "exec_departure",
-   "summary": "CFO Jerome Rouquet departing November 30; Colleen Myers appointed interim CFO pending permanent successor search.",
-   "entry_date": "2026-10-28",
-   "entry": 70.62
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "DSGR",
-   "accession": "0001193125-26-434245",
-   "decided": "2026-10-28T03:02:18.634016-04:00",
-   "event_type": "acquisition",
-   "summary": "Subsidiary acquired GradeEight for $145M debt-funded; pending CEO-led going-private merger.",
-   "entry_date": "2026-10-28",
-   "entry": 35.05
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "IIPR",
-   "accession": "0001104659-26-119155",
-   "decided": "2026-10-28T03:02:25.549167-04:00",
-   "event_type": "debt_financing",
-   "summary": "Loan agreement maturity extended 3 months to January 2027; $62.5M outstanding.",
-   "entry_date": "2026-10-28",
-   "entry": 53.01
-  },
-  {
-   "book": "short_bad_news",
-   "symbol": "TZOO",
-   "accession": "0001133311-26-000019",
-   "decided": "2026-10-28T03:02:33.659741-04:00",
-   "event_type": "prelim_results_bad",
-   "summary": "Q3 2026: Revenue +3% to $22.9M but operating loss $2.6M; Club Members +65% but profitability declined",
-   "entry_date": "2026-10-28",
-   "entry": 4.98
   },
   {
    "book": "short_bad_news",
@@ -3222,17 +2982,6 @@
    "entry": 3.07
   },
   {
-   "book": "long_contract_div",
-   "symbol": "SPAI",
-   "accession": "0001493152-26-050883",
-   "decided": "2026-11-10T14:59:37.007813-05:00",
-   "event_type": "contract_win",
-   "summary": "U.S. Army prime contract award of $2.5M for AI threat detection on Anduril Ghost-X drone platform.",
-   "entry_date": "2026-11-11",
-   "entry": 3.07,
-   "vol60": 0.8471743315301268
-  },
-  {
    "book": "short_bad_news",
    "symbol": "RXT",
    "accession": "0001810019-26-000117",
@@ -3341,17 +3090,6 @@
    "summary": "Supply amendment with HD Construction Equipment for $121.9M in natural gas engines 2027-2028.",
    "entry_date": "2026-11-11",
    "entry": 38.58
-  },
-  {
-   "book": "long_contract_div",
-   "symbol": "PSIX",
-   "accession": "0001193125-26-454122",
-   "decided": "2026-11-10T15:00:33.670999-05:00",
-   "event_type": "contract_win",
-   "summary": "Supply amendment with HD Construction Equipment for $121.9M in natural gas engines 2027-2028.",
-   "entry_date": "2026-11-11",
-   "entry": 38.58,
-   "vol60": 0.9223574116515738
   },
   {
    "book": "short_bad_news",
@@ -5786,8 +5524,8 @@
    "decided": "2026-11-24T17:44:11.742434-05:00",
    "event_type": "restatement",
    "summary": "Major restatement of 2024-2025 financials; deconsolidation errors, related-party receivables uncollectible.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-25",
+   "entry": 0.8122
   },
   {
    "book": "short_bad_news",
@@ -5796,8 +5534,8 @@
    "decided": "2026-11-24T17:44:22.319700-05:00",
    "event_type": "acquisition",
    "summary": "Company acquires Pronghorn Resources via share exchange; massive dilution with contingent conversions pending stockholder/Nasdaq approval.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-25",
+   "entry": 3.65
   },
   {
    "book": "short_bad_news",
@@ -5806,8 +5544,8 @@
    "decided": "2026-11-24T17:44:26.806210-05:00",
    "event_type": "buyback_dividend",
    "summary": "Board approved $20M buyback program and 2027 dividend policy of $0.12/share annually.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-25",
+   "entry": 1.52
   },
   {
    "book": "short_bad_news",
@@ -5816,8 +5554,8 @@
    "decided": "2026-11-24T17:44:30.776255-05:00",
    "event_type": "exec_departure",
    "summary": "Class III director Raymond Lane passed away unexpectedly; board reduced to eight members.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-25",
+   "entry": 3.66
   },
   {
    "book": "short_bad_news",
@@ -5826,8 +5564,8 @@
    "decided": "2026-11-24T17:44:35.081880-05:00",
    "event_type": "listing_deficiency",
    "summary": "Nasdaq delisting determination for failure to file quarterly reports; trading suspension Nov 30 unless appeal succeeds.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-25",
+   "entry": 0.8122
   },
   {
    "book": "short_bad_news",
@@ -5836,8 +5574,8 @@
    "decided": "2026-11-24T17:44:43.244502-05:00",
    "event_type": "acquisition",
    "summary": "Company acquired by KnowledgeWorks Global for $3.25/share cash; Board recommends approval.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-25",
+   "entry": 3.14
   },
   {
    "book": "short_bad_news",
@@ -5846,8 +5584,8 @@
    "decided": "2026-11-24T17:44:49.303465-05:00",
    "event_type": "acquisition",
    "summary": "Completed $325M cash acquisition of Level AI, an AI platform for customer experience applications.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-25",
+   "entry": 23.95
   },
   {
    "book": "long_contract_win",
@@ -5856,8 +5594,8 @@
    "decided": "2026-11-24T17:44:51.455843-05:00",
    "event_type": "contract_win",
    "summary": "Completed SBA 7(a) loan securitization, sold $32.6M unguaranteed balances, received $22.9M proceeds.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-25",
+   "entry": 13.91
   },
   {
    "book": "long_contract_div",
@@ -5866,8 +5604,9 @@
    "decided": "2026-11-24T17:44:51.455843-05:00",
    "event_type": "contract_win",
    "summary": "Completed SBA 7(a) loan securitization, sold $32.6M unguaranteed balances, received $22.9M proceeds.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-25",
+   "entry": 13.91,
+   "vol60": 0.5038630772779839
   },
   {
    "book": "short_bad_news",
@@ -5876,8 +5615,8 @@
    "decided": "2026-11-24T17:44:55.642963-05:00",
    "event_type": "strategic_review",
    "summary": "UHS selling ARMC to Piedmont Healthcare; company's leased property at risk pending substitution decision.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-25",
+   "entry": 38.76
   },
   {
    "book": "short_bad_news",
@@ -5886,8 +5625,8 @@
    "decided": "2026-11-24T17:44:58.428124-05:00",
    "event_type": "equity_financing",
    "summary": "Clinical-stage biotech raises $86M via secondary offering; 10.75M shares dilution.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-25",
+   "entry": 8.93
   },
   {
    "book": "short_bad_news",
@@ -5896,8 +5635,8 @@
    "decided": "2026-11-24T17:45:01.049871-05:00",
    "event_type": "dilution_other",
    "summary": "Shareholders approved 13.9M share incentive pool increase; executive one-time equity grants.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-25",
+   "entry": 3.21
   },
   {
    "book": "short_bad_news",
@@ -5906,8 +5645,8 @@
    "decided": "2026-11-24T17:45:11.678925-05:00",
    "event_type": "exec_departure",
    "summary": "Executive Vice President John M. McKenna departing; 2,300 shares accelerated vesting over two years.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-25",
+   "entry": 95.8
   },
   {
    "book": "short_bad_news",
@@ -5916,8 +5655,8 @@
    "decided": "2026-11-24T17:45:18.174944-05:00",
    "event_type": "debt_financing",
    "summary": "Company refinanced existing debt with $75M revolving credit facility from CIBC Bank USA.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-25",
+   "entry": 2.925
   },
   {
    "book": "short_bad_news",
@@ -5926,8 +5665,8 @@
    "decided": "2026-11-24T17:45:27.158342-05:00",
    "event_type": "acquisition",
    "summary": "Meridian Holdings signs LOI to acquire majority stakes in three Central Africa betting operators.",
-   "entry_date": null,
-   "entry": null
+   "entry_date": "2026-11-25",
+   "entry": 4.18
   },
   {
    "book": "short_bad_news",
@@ -5936,14 +5675,157 @@
    "decided": "2026-11-24T17:45:31.558213-05:00",
    "event_type": "debt_financing",
    "summary": "Settlement of $918k debt obligation via warrant issuance; material dilution to shareholders.",
+   "entry_date": "2026-11-25",
+   "entry": 8.18
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "ACRV",
+   "accession": "0001193125-26-478591",
+   "decided": "2026-11-25T16:57:46.751821-05:00",
+   "event_type": "exec_departure",
+   "summary": "CFO Adam Levy departing December 16, 2026; VP Finance promoted to CFO role.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "NSLR",
+   "accession": "0001493152-26-054227",
+   "decided": "2026-11-25T16:58:00.714183-05:00",
+   "event_type": "equity_financing",
+   "summary": "Amended ATM offering program with $150M authorization, $87.9M remaining available.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "HUBG",
+   "accession": "0001193125-26-478483",
+   "decided": "2026-11-25T16:58:07.568000-05:00",
+   "event_type": "debt_financing",
+   "summary": "Fourth amendment to credit facility extending financial reporting deadlines and relaxing leverage covenants through July 2027.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "INDP",
+   "accession": "0001493152-26-054210",
+   "decided": "2026-11-25T16:58:10.325823-05:00",
+   "event_type": "debt_financing",
+   "summary": "Company raises $5M in convertible debt with immediate dilution and optional follow-on financing.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "RWAY",
+   "accession": "0001193125-26-478466",
+   "decided": "2026-11-25T16:58:12.438730-05:00",
+   "event_type": "debt_financing",
+   "summary": "Company redeems $40.25M of 7.50% notes due 2027 on December 29, 2026.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "TNDM",
+   "accession": "0001438133-26-000172",
+   "decided": "2026-11-25T16:58:18.697011-05:00",
+   "event_type": "exec_departure",
+   "summary": "CEO John Sheridan departed, replaced by Jeannette Bankes; consulting agreement through mid-2028.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "GEVO",
+   "accession": "0001628280-26-075883",
+   "decided": "2026-11-25T16:58:26.274138-05:00",
+   "event_type": "exec_departure",
+   "summary": "Chief Customer, Marketing and Brand Officer Andrew Shafer retiring effective December 1, 2026.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "DFIN",
+   "accession": "0001193125-26-476825",
+   "decided": "2026-11-25T16:58:31.903229-05:00",
+   "event_type": "exec_departure",
+   "summary": "Two executives lose officer status; Clay exits Dec 31, Johnson demoted to President Key Accounts.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "COOK",
+   "accession": "0001628280-26-075861",
+   "decided": "2026-11-25T16:58:34.323510-05:00",
+   "event_type": "exec_departure",
+   "summary": "CFO Joey Hord resigns effective February 2027; company reiterates FY2026 guidance",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "GSHD",
+   "accession": "0001726978-26-000079",
+   "decided": "2026-11-25T16:58:37.144129-05:00",
+   "event_type": "listing_deficiency",
+   "summary": "Nasdaq delisting notice for late 10-Q; accounting restatement issues identified.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "UPWK",
+   "accession": "0001627475-26-000068",
+   "decided": "2026-11-25T16:58:39.680379-05:00",
+   "event_type": "exec_appointment",
+   "summary": "CFO Gessert resigns January 1, 2027; CBO Sanborn appointed as replacement with $1M RSU award.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_win",
+   "symbol": "IAUX",
+   "accession": "0001193125-26-476364",
+   "decided": "2026-11-25T16:58:46.718179-05:00",
+   "event_type": "contract_win",
+   "summary": "Company achieves production mining startup at Archimedes underground gold project on schedule.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "long_contract_div",
+   "symbol": "IAUX",
+   "accession": "0001193125-26-476364",
+   "decided": "2026-11-25T16:58:46.718179-05:00",
+   "event_type": "contract_win",
+   "summary": "Company achieves production mining startup at Archimedes underground gold project on schedule.",
    "entry_date": null,
    "entry": null
   }
  ],
  "div": {
-  "nav": 78.53607953837125,
-  "closed": [],
-  "last_date": "2026-11-24",
+  "nav": 79.08329928518135,
+  "closed": [
+   {
+    "symbol": "SPAI",
+    "entry_date": "2026-11-11",
+    "exit_date": "2026-11-25",
+    "vol60": 0.8471743315301268
+   },
+   {
+    "symbol": "PSIX",
+    "entry_date": "2026-11-11",
+    "exit_date": "2026-11-25",
+    "vol60": 0.9223574116515738
+   }
+  ],
+  "last_date": "2026-11-25",
   "history": {
    "2026-10-15": 100.3592,
    "2026-10-16": 98.6604,
@@ -5973,7 +5855,8 @@
    "2026-11-19": 81.824,
    "2026-11-20": 76.3469,
    "2026-11-23": 82.8764,
-   "2026-11-24": 78.5361
+   "2026-11-24": 78.5361,
+   "2026-11-25": 79.0833
   }
  }
 }
