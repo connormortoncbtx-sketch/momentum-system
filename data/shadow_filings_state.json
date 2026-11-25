@@ -2319,7 +2319,7 @@
    "event_type": "prelim_results_bad",
    "summary": "Q3 2026 results show net loss, declining NII, asset shrinkage; $200M buyback announced.",
    "entry_date": "2026-11-06",
-   "entry": 1.39
+   "entry": 1.356
   },
   {
    "book": "short_bad_news",
@@ -2659,7 +2659,7 @@
    "event_type": "debt_financing",
    "summary": "Company issued $300M notes due 2031 at 8.95% to refinance existing debt and maintain liquidity.",
    "entry_date": "2026-11-06",
-   "entry": 1.39
+   "entry": 1.356
   },
   {
    "book": "short_bad_news",
