@@ -13,7 +13,10 @@ Trade (the 2pm afternoon condor of docs/2026-10_strategy_research.md, small-acco
   skip        when SPY's high-low range so far today >= 1.4x its 20-day mean daily range (pre-registered Nov 15 rule,
               top ~10% of days by 2pm: kept 100-118% of the P&L, removed ~1/3 of max-loss trades)
               and when the natural credit is < $0.05 (nothing to sell)
-  size        CONDOR_CONTRACTS (default 1; ~$85-95 max loss each); skipped if options buying power can't cover it
+  size        CONDOR_STAKE_PCT (e.g. 30): contracts = floor(pct x equity / today's max loss per contract), at least 1,
+              at most CONDOR_MAX (default 5; a ceiling while the live record is short); skipped if the max loss per
+              contract is outside 40-98% of the width (bad quotes). Without CONDOR_STAKE_PCT: CONDOR_CONTRACTS (default 1).
+              Skipped if options buying power can't cover it.
   order       one 4-leg limit at the mid credit, stepping $0.01 toward the live natural every 45 s, never past natural
 
 Modes (GitHub variable CONDOR_LIVE): "yes" places the order; "probe" places an UNFILLABLE order (credit $0.95 on a $1
@@ -244,7 +247,8 @@ def reconcile(today, notify):
         other = [a for a in acts if a.get("activity_type") != "FILL"]
         credit = sum((1 if a.get("side", "").startswith("sell") else -1) * float(a["price"]) * float(a["qty"]) * 100 for a in fills)
         settle = sum(float(a.get("net_amount") or 0) for a in other)
-        risk = WING * 100 * max(1, int(os.environ.get("CONDOR_CONTRACTS") or 1)) - credit
+        q = max(float(a.get("qty") or 1) for a in fills)
+        risk = WING * 100 * q - credit
         if not fills or risk <= 0:
             continue
         ror = round((credit + settle) / risk, 4)
@@ -286,19 +290,31 @@ def main():
         print("::notice::live condor: paused -- account below the floor rule"); return
     rr = range_ratio(now.date())
     row["range_ratio"] = round(rr, 3) if rr is not None else None
+    sizing_note = ""
     try:
         e = price_condor(now.date())
     except Exception as ex:
         row["status"] = f"error: {str(ex)[:160]}"
         _finish(row); notify_alert("Live XSP condor", f"{mode}: could not price today's condor: {ex}"); return
     row.update(credit_frac_natural=round(e["natural"] / WING, 3), credit_frac_mid=round(e["mid"] / WING, 3), feed=e["feed"])
+    pct = float(os.environ.get("CONDOR_STAKE_PCT") or 0) / 100
+    ml = (WING - e["natural"]) * 100                      # max loss per contract at the natural credit
+    bad_ml = not (0.40 * WING * 100 <= ml <= 0.98 * WING * 100)
+    if pct > 0 and not bad_ml:
+        cap = max(1, int(os.environ.get("CONDOR_MAX") or 5))
+        want = max(1, int(pct * eq // ml))
+        qty = min(want, cap)
+        sizing_note = (f"; stake {pct * 100:.0f}% of ${eq:,.0f} / ${ml:,.0f} max loss = {want} contract(s)"
+                       + (f", CAPPED at {cap} (raise CONDOR_MAX to go higher)" if want > cap else ""))
     plan = (f"XSP {e['spot']:.2f}, implied move {e['move']:.2f}; sell {e['ps']:g}/{e['cs']:g}, buy {e['ps'] - WING:g}/"
             f"{e['cs'] + WING:g} x{qty}; credit natural {e['natural']:.2f} / mid {e['mid']:.2f}; max loss ~${(WING - e['natural']) * 100 * qty:,.0f}; "
-            f"SPY range so far {('%.2f' % rr) if rr is not None else 'n/a'}x its 20-day mean (skip >= {RANGE_CUT})")
+            f"SPY range so far {('%.2f' % rr) if rr is not None else 'n/a'}x its 20-day mean (skip >= {RANGE_CUT})" + sizing_note)
     acct = api("GET", "/v2/account")
     obp = float(acct.get("options_buying_power") or 0)
     need = (WING - max(e["natural"], 0)) * 100 * qty
-    if rr is not None and rr >= RANGE_CUT:
+    if bad_ml:
+        row["status"] = "skipped: max loss per contract looks wrong (bad quotes?)"
+    elif rr is not None and rr >= RANGE_CUT:
         row["status"] = "skipped: high range day"
     elif e["natural"] < MIN_NAT:
         row["status"] = "skipped: credit too small"

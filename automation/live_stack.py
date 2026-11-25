@@ -70,7 +70,13 @@ CONDOR_MAXLOSS_SPY2, CONDOR_RISK = 170.0, 0.04   # SPY $2-wide condor, ~max loss
 # Live XSP condor (automation/live_condor.py, Connor Nov 24, 2026): while CONDOR_LIVE is yes/probe/dry, keep $100 of
 # cash per contract (a $1-wide condor's max loss) out of the stock/SGOV targets, and never touch option positions.
 CONDOR_ON = (os.environ.get("CONDOR_LIVE") or "").strip().lower() in ("yes", "probe", "dry")
-CONDOR_RESERVE = 100.0 * max(1, int(os.environ.get("CONDOR_CONTRACTS") or 1)) if CONDOR_ON else 0.0
+def condor_reserve(equity):
+    """Cash kept for the condor: CONDOR_STAKE_PCT of equity (capped at CONDOR_MAX x $100), else $100 per contract."""
+    if not CONDOR_ON:
+        return 0.0
+    pct = float(os.environ.get("CONDOR_STAKE_PCT") or 0) / 100
+    cap = 100.0 * max(1, int(os.environ.get("CONDOR_MAX") or 5))
+    return min(max(pct * equity, 100.0), cap) if pct > 0 else 100.0 * max(1, int(os.environ.get("CONDOR_CONTRACTS") or 1))
 
 
 # ------------------------------------------------------------------ sleeve targets (fractions of the sleeve)
@@ -302,7 +308,7 @@ def main():
               f"({', '.join(sorted(coin_etf.values()))} available); the rest of the sleeve stays in cash")
         if not market_open:
             print("::notice::market closed and no direct crypto -- nothing to trade"); return
-    tgt, info = targets(max(equity - CONDOR_RESERVE, 0.0), tier, sleeves, lev_vt, mult, coin_etf)
+    tgt, info = targets(max(equity - condor_reserve(equity), 0.0), tier, sleeves, lev_vt, mult, coin_etf)
     pos = [p for p in tc.get_all_positions() if "option" not in str(p.asset_class).lower()]   # the condor's legs
     norm = lambda p: (p.symbol[:-3] + "/USD") if "crypto" in str(p.asset_class).lower() and "/" not in p.symbol else p.symbol
     cur = {norm(p): float(p.market_value) for p in pos}

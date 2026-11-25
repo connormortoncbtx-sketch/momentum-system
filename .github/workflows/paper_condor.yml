@@ -79,6 +79,8 @@ jobs:
           NTFY_CHANNEL: ${{ secrets.NTFY_CHANNEL }}
           CONDOR_LIVE: ${{ vars.CONDOR_LIVE }}
           CONDOR_CONTRACTS: ${{ vars.CONDOR_CONTRACTS }}
+          CONDOR_STAKE_PCT: ${{ vars.CONDOR_STAKE_PCT }}
+          CONDOR_MAX: ${{ vars.CONDOR_MAX }}
         run: python automation/live_condor.py
       - name: Commit ledger (ratios only)
         if: always()

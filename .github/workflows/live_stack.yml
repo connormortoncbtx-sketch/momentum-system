@@ -45,6 +45,8 @@ jobs:
           LIVE_STACK_MODE: ${{ vars.LIVE_STACK_MODE }}
           CONDOR_LIVE: ${{ vars.CONDOR_LIVE }}
           CONDOR_CONTRACTS: ${{ vars.CONDOR_CONTRACTS }}
+          CONDOR_STAKE_PCT: ${{ vars.CONDOR_STAKE_PCT }}
+          CONDOR_MAX: ${{ vars.CONDOR_MAX }}
           LEV_CAP: ${{ vars.LEV_CAP || '2.0' }}
         run: python automation/live_stack.py
       - name: Commit tier state (no dollar amounts)
