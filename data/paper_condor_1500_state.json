@@ -12216,7 +12216,8 @@
     }
    ],
    "equity_before": 106422.89,
-   "version": "p15: 15:00 k0.5 SPY $2 / QQQ 0.4% hold"
+   "version": "p15: 15:00 k0.5 SPY $2 / QQQ 0.4% hold",
+   "reconciled": true
   }
  }
 }
