@@ -25390,7 +25390,8 @@
     }
    ],
    "equity_before": 105150.3,
-   "version": "p14: 14:00 k1 SPY $5 / QQQ 0.8% stop 3x"
+   "version": "p14: 14:00 k1 SPY $5 / QQQ 0.8% stop 3x",
+   "reconciled": true
   }
  }
 }
