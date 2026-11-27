@@ -169,7 +169,7 @@
    "event_type": "debt_financing",
    "summary": "Credit facility refinancing for pending Huntsman merger; $2.5B replacement financing with leverage covenant stepping down from 5.5x to 4.0x",
    "entry_date": "2026-10-29",
-   "entry": 16.51
+   "entry": 16.31
   },
   {
    "book": "short_bad_news",
@@ -4021,7 +4021,7 @@
    "event_type": "exec_appointment",
    "summary": "CEO Scott Harvard awarded $2.4M supplemental retirement benefit, payable on any non-cause separation.",
    "entry_date": "2026-11-16",
-   "entry": 29.73
+   "entry": 29.54
   },
   {
    "book": "short_bad_news",
@@ -4484,7 +4484,7 @@
    "event_type": "acquisition",
    "summary": "Huntsman merger closing imminent; executive leadership restructured with retention packages ahead of Q1 2027 close.",
    "entry_date": "2026-11-18",
-   "entry": 16.49
+   "entry": 16.29
   },
   {
    "book": "short_bad_news",
@@ -4965,7 +4965,7 @@
    "event_type": "dilution_other",
    "summary": "Grey Rock affiliates plan to distribute 14M Granite Ridge shares to fund LPs, reducing Grey Rock stake to ~30%.",
    "entry_date": "2026-11-20",
-   "entry": 5.54
+   "entry": 5.433
   },
   {
    "book": "short_bad_news",
