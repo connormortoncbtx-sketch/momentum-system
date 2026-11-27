@@ -21,7 +21,84 @@
   "trio_skipfed_natural": 100127.00000000001,
   "trio_skipfed_mid": 100130.8
  },
- "open": {},
+ "open": {
+  "2026-11-27": {
+   "noon": {
+    "SPY": {
+     "und": "SPY",
+     "struct": "put",
+     "entered_at": "2026-11-27T12:05:00-05:00",
+     "spot": 725.96,
+     "quote_feed": "indicative",
+     "implied_move": 1.97,
+     "width": 5,
+     "put_strikes": [
+      724,
+      719
+     ],
+     "call_strikes": null,
+     "legs": {
+      "short_put": "SPY261127P00724000",
+      "long_put": "SPY261127P00719000"
+     },
+     "quotes": {
+      "short_put": {
+       "bid": 0.34,
+       "ask": 0.35,
+       "t": "2026-11-27T17:05:01.674648+00:00"
+      },
+      "long_put": {
+       "bid": 0.01,
+       "ask": 0.05,
+       "t": "2026-11-27T17:05:01.446912+00:00"
+      }
+     },
+     "credit": {
+      "natural": 0.29,
+      "mid": 0.315
+     },
+     "range_ratio": 0.629
+    },
+    "QQQ": {
+     "und": "QQQ",
+     "struct": "put",
+     "entered_at": "2026-11-27T12:05:00-05:00",
+     "spot": 645.81,
+     "quote_feed": "indicative",
+     "implied_move": 2.35,
+     "width": 5,
+     "put_strikes": [
+      643,
+      638
+     ],
+     "call_strikes": null,
+     "legs": {
+      "short_put": "QQQ261127P00643000",
+      "long_put": "QQQ261127P00638000"
+     },
+     "quotes": {
+      "short_put": {
+       "bid": 0.39,
+       "ask": 0.4,
+       "t": "2026-11-27T17:05:02.969529+00:00"
+      },
+      "long_put": {
+       "bid": 0.04,
+       "ask": 0.09,
+       "t": "2026-11-27T17:05:02.688420+00:00"
+      }
+     },
+     "credit": {
+      "natural": 0.3,
+      "mid": 0.33
+     },
+     "range_ratio": 0.687
+    }
+   },
+   "2pm": {},
+   "3pm": {}
+  }
+ },
  "done_days": [
   "2026-11-25"
  ]
