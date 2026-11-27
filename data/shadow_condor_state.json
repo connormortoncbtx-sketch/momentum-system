@@ -10,7 +10,112 @@
   "combo_mid": 97673.74735235496,
   "combo_vwap1c": 99636.31286255816
  },
- "open": {},
+ "open": {
+  "2026-11-27": {
+   "SPY": {
+    "und": "SPY",
+    "date": "2026-11-27",
+    "entered_at": "2026-11-27T10:01:20-05:00",
+    "spot": 720.64,
+    "spot_feed": "iex",
+    "quote_feed": "indicative",
+    "implied_move": 4.61,
+    "width": 5,
+    "put_strikes": [
+     716,
+     711
+    ],
+    "call_strikes": [
+     725,
+     730
+    ],
+    "legs": {
+     "short_put": "SPY261127P00716000",
+     "long_put": "SPY261127P00711000",
+     "short_call": "SPY261127C00725000",
+     "long_call": "SPY261127C00730000"
+    },
+    "quotes": {
+     "short_put": {
+      "bid": 0.85,
+      "ask": 0.86,
+      "t": "2026-11-27T15:01:22.435745+00:00"
+     },
+     "long_put": {
+      "bid": 0.28,
+      "ask": 0.29,
+      "t": "2026-11-27T15:01:22.204729+00:00"
+     },
+     "short_call": {
+      "bid": 0.71,
+      "ask": 0.73,
+      "t": "2026-11-27T15:01:21.536317+00:00"
+     },
+     "long_call": {
+      "bid": 0.14,
+      "ask": 0.19,
+      "t": "2026-11-27T15:01:22.267930+00:00"
+     }
+    },
+    "credit": {
+     "natural": 1.08,
+     "mid": 1.125
+    },
+    "leg_spread_avg": 0.0225
+   },
+   "QQQ": {
+    "und": "QQQ",
+    "date": "2026-11-27",
+    "entered_at": "2026-11-27T10:01:20-05:00",
+    "spot": 637.92,
+    "spot_feed": "iex",
+    "quote_feed": "indicative",
+    "implied_move": 5.54,
+    "width": 5,
+    "put_strikes": [
+     632,
+     627
+    ],
+    "call_strikes": [
+     643,
+     648
+    ],
+    "legs": {
+     "short_put": "QQQ261127P00632000",
+     "long_put": "QQQ261127P00627000",
+     "short_call": "QQQ261127C00643000",
+     "long_call": "QQQ261127C00648000"
+    },
+    "quotes": {
+     "short_put": {
+      "bid": 0.92,
+      "ask": 0.93,
+      "t": "2026-11-27T15:01:22.502290+00:00"
+     },
+     "long_put": {
+      "bid": 0.38,
+      "ask": 0.39,
+      "t": "2026-11-27T15:01:22.530820+00:00"
+     },
+     "short_call": {
+      "bid": 0.8,
+      "ask": 0.82,
+      "t": "2026-11-27T15:01:22.226346+00:00"
+     },
+     "long_call": {
+      "bid": 0.18,
+      "ask": 0.19,
+      "t": "2026-11-27T15:01:22.104146+00:00"
+     }
+    },
+    "credit": {
+     "natural": 1.14,
+     "mid": 1.165
+    },
+    "leg_spread_avg": 0.0125
+   }
+  }
+ },
  "done_days": [
   "2026-10-20",
   "2026-10-21",
