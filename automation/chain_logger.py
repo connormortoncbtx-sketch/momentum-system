@@ -228,6 +228,8 @@ def main():
             print(f"shadow #11 at {when:%H:%M}: exit {r.returncode}; " + " | ".join(
                 l for l in (r.stdout + r.stderr).splitlines() if "::" in l or "ERROR" in l)[-400:])
             continue
+        if not market_open():                                   # early close (e.g. the day after Thanksgiving)
+            print(f"{when:%H:%M} market closed -- stopping"); break
         rows, notes = snapshot(dt.datetime.now(ET))
         save(rows, now.date())
         done += 1; total += len(rows)
