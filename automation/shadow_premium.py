@@ -49,9 +49,8 @@ SLOTS = {"noon": ("put", dt.time(11, 58), dt.time(12, 40)),
          "3pm": ("condor", dt.time(14, 58), dt.time(15, 30))}
 PRICES = ("natural", "mid")
 SKIP_CUT = {"2pm": 1.4, "3pm": 1.5}
-# FOMC decision days (federalreserve.gov calendar; 2027 tentative). Extend before Dec 2027.
-FED_DAYS = {"2026-12-09", "2027-01-27", "2027-03-17", "2027-04-28", "2027-06-09", "2027-07-28", "2027-09-15",
-            "2027-10-27", "2027-12-08"}
+# FOMC decision days from automation/fed_calendar.py (revised Nov 12, 2026: no Oct 2027 decision, Dec 2027 -> Nov 17).
+from automation.fed_calendar import DECISION_DAYS as FED_DAYS  # noqa: E402
 NAVS = ([f"{s}_{p}" for s in SLOTS for p in PRICES] + [f"trio_{p}" for p in PRICES]
         + [f"{s}_skip_{p}" for s in SKIP_CUT for p in PRICES] + [f"trio_skip_{p}" for p in PRICES]
         + [f"{s}_skipfed_{p}" for s in SKIP_CUT for p in PRICES] + [f"trio_skipfed_{p}" for p in PRICES])

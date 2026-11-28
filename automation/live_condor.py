@@ -10,7 +10,9 @@ Trade (the 2pm afternoon condor of docs/2026-10_strategy_research.md, small-acco
   entry       14:00-14:30 ET, same-day expiry (XSP has daily expiries), held to expiry (no stop: hold ~= stop in the
               backtest, and a cash-settled hold avoids paying the spread twice)
   strikes     shorts 1 implied move out (ATM straddle mid at entry), long wings $1 further out
-  skip        when SPY's high-low range so far today >= 1.4x its 20-day mean daily range (pre-registered Nov 15 rule,
+  skip        on scheduled 2pm-ET Fed releases (FOMC decision and minutes days, automation/fed_calendar.py; Connor,
+              Nov 28: rare days whose downside dwarfs the upside -- an insurance rule, weak backtest evidence)
+              when SPY's high-low range so far today >= 1.4x its 20-day mean daily range (pre-registered Nov 15 rule,
               top ~10% of days by 2pm: kept 100-118% of the P&L, removed ~1/3 of max-loss trades)
               and when the natural credit is < $0.05 (nothing to sell)
   size        CONDOR_STAKE_PCT (e.g. 30): contracts = floor(pct x equity / today's max loss per contract), at least 1,
@@ -281,6 +283,14 @@ def main():
                                for l in LEDGER.read_text().splitlines() if l.strip()):
         print("::notice::live condor: already handled today"); return
     row = {"date": now.date().isoformat(), "mode": mode}   # no quantity: public repo
+    from automation.fed_calendar import fed_event, LAST_KNOWN
+    ev = fed_event(now.date())
+    if ev:
+        row["status"] = f"skipped: {ev} day"
+        _finish(row); notify_success("Live XSP condor", f"{mode.upper()} {row['date']}: skipped -- {ev} at 2pm ET")
+        print(f"::notice::live condor: skipped ({ev} day)"); return
+    if now.date().isoformat() > LAST_KNOWN:
+        notify_alert("Live XSP condor", "Fed calendar in automation/fed_calendar.py has run out -- extend it")
     eq = float(api("GET", "/v2/account").get("equity") or 0)
     if eq < FLOOR:
         row["status"] = "paused: account below the floor"

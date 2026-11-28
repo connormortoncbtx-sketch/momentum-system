@@ -15,6 +15,8 @@ quotes are not redistributed):
 Settlement (the 4pm close vs the strikes) is computed later in research from daily closes, so nothing is kept open.
 It also starts shadow #11 (automation/shadow_premium.py) inside its noon / 2pm / 3pm windows, which its own cron misses.
 Output: data/chain_log/YYYY-MM-DD.csv.gz (one row per underlying x time x k x wing).
+Open interest (Nov 28): once a day, each same-day contract's open interest (OCC, as of the prior close) ->
+data/chain_log/oi_YYYY-MM-DD.csv.gz (und, type, strike, open_interest) -- the input for a dealer-gamma estimate.
 Keys: ALPACA_API_KEY / ALPACA_SECRET_KEY (data; paper key is enough). `--once` takes a single snapshot now (testing).
 """
 import csv
@@ -154,6 +156,33 @@ def save(rows, day):
         fh.write(old + buf.getvalue())
 
 
+def save_oi(day):
+    """Open interest of today's expiries (public OCC data via Alpaca's contracts endpoint)."""
+    rows = []
+    for und in UNDS:
+        tok = None
+        while True:
+            q = dict(underlying_symbols=und, expiration_date=day.isoformat(), limit=1000)
+            if tok:
+                q["page_token"] = tok
+            try:
+                js = get(TRADE, "/v2/options/contracts", **q)
+            except Exception as e:
+                print(f"open interest {und}: {str(e)[:120]}"); break
+            for c in js.get("option_contracts") or []:
+                if c.get("open_interest") not in (None, ""):
+                    rows.append(dict(und=und, type=c["type"][0].upper(), strike=float(c["strike_price"]),
+                                     open_interest=int(float(c["open_interest"])), oi_date=c.get("open_interest_date")))
+            tok = js.get("next_page_token")
+            if not tok:
+                break
+    if rows and "--once" not in sys.argv:
+        OUT.mkdir(parents=True, exist_ok=True)
+        with gzip.open(OUT / f"oi_{day.isoformat()}.csv.gz", "wt") as fh:
+            w = csv.DictWriter(fh, fieldnames=list(rows[0])); w.writeheader(); w.writerows(rows)
+    return rows
+
+
 def market_open():
     try:
         return bool(get(TRADE, "/v2/clock").get("is_open"))
@@ -172,7 +201,9 @@ def main():
             while day.weekday() >= 5:
                 day += dt.timedelta(days=1)
         rows, notes = snapshot(now, day)
-        print("::notice::chain logger test: " + "; ".join(notes))
+        oi = save_oi(day)
+        print("::notice::chain logger test: " + "; ".join(notes) + f"; open interest rows {len(oi)} "
+              f"(non-zero {sum(1 for r in oi if r['open_interest'] > 0)})")
         if rows:
             r = [x for x in rows if x["k"] == 1.0 and x["wing"] == 1]
             print("::notice::k=1, $1 wings: " + "; ".join(f"{x['und']} condor nat {x['condor_nat']} mid {x['condor_mid']} "
@@ -186,6 +217,8 @@ def main():
     shadow = [dt.datetime.combine(now.date(), t, ET) for t in SHADOW_AT]
     events = sorted([(m, "snap") for m in marks] + [(s, "shadow") for s in shadow])
     done, total = 0, 0
+    oi = save_oi(now.date())
+    print(f"open interest: {len(oi)} contracts", flush=True)
     for when, kind in events:
         if dt.datetime.now(ET) > when + dt.timedelta(minutes=10):
             continue                                            # started late: skip what has passed
