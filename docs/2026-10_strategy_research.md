@@ -3642,3 +3642,11 @@ Connor chose to collect data instead of a ThetaData month. Every 15 min 10:00–
 - Fed-day skip (Connor, Nov 28): the live condor skips FOMC decision days and FOMC-minutes days (both 2:00 pm ET releases, at entry). ~15 days/yr. Insurance rule, not a tested edge (decision-day evidence weak; minutes untested). Calendar in `automation/fed_calendar.py` (revised Nov 12, 2026 schedule: no Oct 2027 decision; Dec 2027 → Nov 17); shadow #11 skipfed books now use it too.
 - Open interest (Nov 28): chain logger saves each same-day contract's open interest daily (`oi_*.csv.gz`) for a dealer-gamma skip test.
 - First chain data (Nov 25, 2pm, k=1, $1 wings): SPY natural/mid credit 0.30/0.34, XSP 0.23/0.30; XSP leg spreads ~2× SPY's share of the credit on the indicative feed. Live fills will show the real gap.
+
+## Jan 5, 2027 review — addendum (written Nov 28, 2026)
+Also review at Jan 5 (beyond the original review list):
+1. **Live XSP condor** (`data/live_condor_ledger.jsonl`, ratios only; first live day Nov 30): trades, skips by reason (range, Fed, thin credit, floor), return on risk vs the backtest (~79% wins, ~+2.3%/trade), fill credit vs the logged natural/mid. Too few trades for a verdict; flag fill-cost problems (XSP spreads looked ~2× SPY's on the indicative feed).
+2. **Shadow #11** only has data from Nov 25 (its crons fired after the close Nov 15–24; now run by the chain logger).
+3. **Chain logger** (`data/chain_log/`): health check (23 snapshots/day, 3 underlyings, OI file daily). No rule changes from it before ~Feb–Mar; pre-register thin-credit, wing-width, dealer-gamma and entry-time tests before looking.
+4. **Pending decisions:** Contract-10 stock book (proposed Nov 24, awaiting Connor's OK); live stack daily churn (band fix proposed Nov 20).
+5. `automation/fed_calendar.py` dates run to Dec 2027 (revised Nov 12, 2026 schedule).
