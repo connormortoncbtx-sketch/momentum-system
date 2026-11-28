@@ -3639,3 +3639,6 @@ Connor chose to collect data instead of a ThetaData month. Every 15 min 10:00–
 - **Found:** shadow #11 recorded nothing Nov 15–24 — its GitHub crons fired 4–8 h late (after the close). The logger now runs it at 12:05 / 14:05 / 15:05 ET.
 - Feed: only Alpaca's free *indicative* option feed is available (no OPRA): good for credit levels, approximate for exact spreads; live fills measure real costs.
 - Enables (pre-register before looking, ~2–3 months of data): thin-credit skip, $1 vs $2/$5 wings, k grid, entry time, XSP vs SPY pricing.
+- Fed-day skip (Connor, Nov 28): the live condor skips FOMC decision days and FOMC-minutes days (both 2:00 pm ET releases, at entry). ~15 days/yr. Insurance rule, not a tested edge (decision-day evidence weak; minutes untested). Calendar in `automation/fed_calendar.py` (revised Nov 12, 2026 schedule: no Oct 2027 decision; Dec 2027 → Nov 17); shadow #11 skipfed books now use it too.
+- Open interest (Nov 28): chain logger saves each same-day contract's open interest daily (`oi_*.csv.gz`) for a dealer-gamma skip test.
+- First chain data (Nov 25, 2pm, k=1, $1 wings): SPY natural/mid credit 0.30/0.34, XSP 0.23/0.30; XSP leg spreads ~2× SPY's share of the credit on the indicative feed. Live fills will show the real gap.
