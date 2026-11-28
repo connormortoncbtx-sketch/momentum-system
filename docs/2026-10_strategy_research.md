@@ -3654,3 +3654,26 @@ Also review at Jan 5 (beyond the original review list):
 ## Contract-10 goes live + news logging (Nov 28, 2026)
 - Connor: "do what's best" → **Contract-10 replaces the four-sleeve stock book from Tue Dec 1** (`automation/live_stack.py`, STACK_BOOK overrides): contract value ≥ 5% of market cap (judge's `dollar_value_usd` / `mcap`), mcap ≥ $100M, held 5 sessions, 1/vol60 weights capped 25% each, ≤ 10 names, rest SGOV (after the condor's cash reserve), no leverage/hedge, existing names re-traded only when > 25% off target. Mon Nov 30's run sends a preview to the phone. On Nov 28 only 1 name qualified (3 excluded as < 5% of mcap, 4 past 5 sessions) → expect long stretches mostly in SGOV. Difference from research: the live judge does not output counterparty type, so the dev "US-federal-government counterparty" filter is not applied.
 - Unscheduled news (Connor: wars, layoffs, CEO news, not only the Fed): the chain logger counts Alpaca/Benzinga headlines every 15 min by theme (geopolitics, trade, Fed/rates, layoffs, CEO/company shocks, crisis words; mega-cap tagged) → `news_*.csv.gz`, counts only. Test a pre-registered news-shock skip with the condor data (~Feb–Mar). News already out by 2pm is largely captured by the range rule; news after entry is not knowable at entry.
+
+## Condor optimization — protocol and pre-registered tests (written Nov 28, 2026, BEFORE any live chain data is analysed)
+Connor: "optimize all components, backed with data, but not overfit to the point of breaking things."
+
+**Protocol (applies to every change to a live component):**
+1. Written down before looking: the rule, the metric, the pass bar, the data window.
+2. A reason it should work (a mechanism, not only a fit). Prefer structural edges (premium, dealer hedging) over patterns.
+3. Few knobs: one parameter at a time, values from a short pre-set list. The pass must also hold at the neighbouring values (no knife-edge optimum).
+4. Two independent windows must both pass (backtest halves, or backtest + live chain data). Beat the random-skip control for any skip rule.
+5. Count trials; the bar rises with the count (≈ 70 trials on the stock side so far; condor-side trials listed below).
+6. Shadow or paper first when the change alters risk; live changes one at a time, with a date, so effects are attributable.
+7. Default is no change. A failed test is a result, recorded here.
+
+**Pre-registered condor tests (run ~Feb–Mar 2027 on `data/chain_log` + backtest; settlement = 4pm close vs strikes):**
+| # | Question | Rule / values | Pass bar |
+|---|---|---|---|
+| C1 | Thin-credit skip | skip when natural credit / width is in the bottom 10% or 20% of the trailing 60 days | Sharpe up in live chain data AND in backtest halves, beats random 10/20% skip |
+| C2 | Wing width | $1 / $2 / $5, hold vs 2× credit stop | per-trade Sharpe; wider+stop must beat $1-hold in chain data AND in both backtest halves |
+| C3 | Dealer gamma | skip when estimated net dealer gamma (OI × Black-Scholes gamma at the straddle IV) is in its most negative 10% | as C1 |
+| C4 | News shock (pre-entry) | skip when crisis+geopolitics headline count 12:00–14:00 ET is in its top 10% (trailing 60 days) | as C1 |
+| C5 | News shock (after entry) | close the condor at the next 15-min mark when crisis+geopolitics headlines in the prior 15 min ≥ the trailing-60-day 98th percentile | Sharpe up vs hold in chain data; closing cost at the logged natural |
+| C6 | Second trade | add the 3pm condor ($1 wings) at half stake each | live/paper 3pm record within its backtest range at the Jan 5 review AND combined Sharpe up in chain data |
+Expected sample by March: ~60–80 trading days of chain data — enough to reject clearly bad rules, not to prove small gains; a C-test that "passes" on chain data alone goes to paper/shadow first. Condor-side trials so far: range skip (passed), CNN/GBM/NN skip, VIX level/term (failed), inverse-CNN (failed), Fed-day (weak; adopted as insurance), = 7; C1–C6 add 6 families.
