@@ -3683,3 +3683,6 @@
 {"timestamp": "2026-11-28T02:11:20.225276+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=exit", "metrics": {}, "errors": []}
 {"timestamp": "2026-11-28T02:11:20.428818+00:00", "workflow": "alpaca_trader", "status": "warning", "message": "Exit: late run, queued for next open", "metrics": {"market_open": false}, "errors": []}
 {"timestamp": "2026-11-28T02:11:20.637360+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Skipped exit: sells already working for all positions", "metrics": {}, "errors": []}
+{"timestamp": "2026-11-28T02:58:25.482105+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Starting alpaca_trader mode=exit", "metrics": {}, "errors": []}
+{"timestamp": "2026-11-28T02:58:25.754636+00:00", "workflow": "alpaca_trader", "status": "warning", "message": "Exit: late run, queued for next open", "metrics": {"market_open": false}, "errors": []}
+{"timestamp": "2026-11-28T02:58:25.854238+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Skipped exit: sells already working for all positions", "metrics": {}, "errors": []}
