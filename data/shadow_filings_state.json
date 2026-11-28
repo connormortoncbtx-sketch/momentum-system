@@ -1,5 +1,5 @@
 {
- "since": "2026-11-27T16:34:33-05:00",
+ "since": "2026-11-27T17:27:09-05:00",
  "open": [
   {
    "book": "short_bad_news",
@@ -5756,6 +5756,16 @@
    "decided": "2026-11-27T16:36:54.726415-05:00",
    "event_type": "equity_financing",
    "summary": "Company established $200M ATM equity offering; proceeds for debt reduction and working capital.",
+   "entry_date": null,
+   "entry": null
+  },
+  {
+   "book": "short_bad_news",
+   "symbol": "IEP",
+   "accession": "0001104659-26-132525",
+   "decided": "2026-11-28T04:05:05.788947-05:00",
+   "event_type": "compensatory_arrangement_change",
+   "summary": "CEO and CFO employment agreements restructured with major salary increases, equity cancellations, and at-will terms.",
    "entry_date": null,
    "entry": null
   }
