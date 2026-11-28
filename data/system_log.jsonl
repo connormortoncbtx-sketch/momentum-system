@@ -3687,3 +3687,4 @@
 {"timestamp": "2026-11-28T02:58:25.754636+00:00", "workflow": "alpaca_trader", "status": "warning", "message": "Exit: late run, queued for next open", "metrics": {"market_open": false}, "errors": []}
 {"timestamp": "2026-11-28T02:58:25.854238+00:00", "workflow": "alpaca_trader", "status": "info", "message": "Skipped exit: sells already working for all positions", "metrics": {}, "errors": []}
 {"timestamp": "2026-11-28T03:27:05.168127+00:00", "workflow": "health_check", "status": "warning", "message": "Weekly health check complete", "metrics": {"entries_reviewed": 116, "workflows_covered": 25, "errors_in_period": 0, "warnings_in_period": 3, "result": "issues_found"}, "errors": []}
+{"timestamp": "2026-11-28T04:02:38.921199+00:00", "workflow": "health_check", "status": "info", "message": "Skipped: already ran 0.6h ago", "metrics": {}, "errors": []}
