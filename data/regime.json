@@ -1,13 +1,13 @@
 {
-  "regime": "choppy_neutral",
-  "description": "No clear trend. Inconsistent breadth. Raise the bar, reduce size.",
-  "composite": -0.1836,
+  "regime": "risk_off_mild",
+  "description": "Defensive rotation underway. Favor quality/defensives. Reduce exposure.",
+  "composite": -0.2422,
   "scores": {
-    "trend": -0.1043,
-    "breadth": -0.3126,
-    "sentiment": 0.0163,
-    "rotation": -0.9281,
-    "safety": 0.5575
+    "trend": -0.3152,
+    "breadth": 0.0384,
+    "sentiment": -0.2478,
+    "rotation": -1.0,
+    "safety": 0.3892
   },
   "weights": {
     "trend": 0.25,
@@ -18,57 +18,57 @@
   },
   "details": {
     "trend": {
-      "spy_ret_5d": 0.0022,
-      "spy_ret_20d": -0.0158,
-      "spy_ret_50d": -0.0181,
+      "spy_ret_5d": 0.0083,
+      "spy_ret_20d": -0.0316,
+      "spy_ret_50d": -0.0584,
       "spy_above_sma50": false,
-      "spy_above_sma200": true,
-      "spy_drawdown": -0.0317
+      "spy_above_sma200": false,
+      "spy_drawdown": -0.0652
     },
     "breadth": {
-      "qqq_ret_5d": 0.0008,
-      "qqq_ret_20d": -0.0536,
-      "iwm_ret_5d": -0.0176,
-      "iwm_ret_20d": 0.0231,
-      "iwm_vs_spy_5d": -0.0198,
-      "iwm_vs_spy_20d": 0.0389,
+      "qqq_ret_5d": -0.0001,
+      "qqq_ret_20d": -0.0442,
+      "iwm_ret_5d": 0.0303,
+      "iwm_ret_20d": -0.0192,
+      "iwm_vs_spy_5d": 0.0219,
+      "iwm_vs_spy_20d": 0.0125,
       "iwm_above_sma50": false
     },
     "sentiment": {
-      "vix": 19.3,
-      "vix_ma20": 19.38,
-      "vix_trend": -0.08,
-      "hyg_vs_spy_5d": -0.0096,
-      "hyg_vs_spy_20d": 0.0224
+      "vix": 23.81,
+      "vix_ma20": 23.82,
+      "vix_trend": -0.01,
+      "hyg_vs_spy_5d": -0.0072,
+      "hyg_vs_spy_20d": 0.028
     },
     "rotation": {
-      "offensive_ret_5d": -0.0014,
-      "defensive_ret_5d": 0.0082,
-      "offensive_ret_20d": -0.0689,
-      "defensive_ret_20d": 0.0663,
-      "rotation_spread_5d": -0.0095,
-      "rotation_spread_20d": -0.1352,
-      "xlk_slope": -0.006702,
-      "xlu_slope": 0.002574
+      "offensive_ret_5d": -0.0069,
+      "defensive_ret_5d": 0.0205,
+      "offensive_ret_20d": -0.0625,
+      "defensive_ret_20d": 0.0065,
+      "rotation_spread_5d": -0.0274,
+      "rotation_spread_20d": -0.069,
+      "xlk_slope": -0.006428,
+      "xlu_slope": -0.000165
     },
     "safety": {
-      "tlt_vs_spy_5d": -0.0337,
-      "tlt_vs_spy_20d": 0.019,
-      "gld_vs_spy_5d": -0.0657,
-      "gld_vs_spy_20d": -0.048
+      "tlt_vs_spy_5d": -0.0135,
+      "tlt_vs_spy_20d": 0.026,
+      "gld_vs_spy_5d": -0.0042,
+      "gld_vs_spy_20d": -0.0437
     }
   },
   "transition": {
-    "transitioning": true,
-    "direction": "strengthening",
-    "composite_delta": 0.4483,
-    "prev_composite": -0.6319,
-    "prev_regime": "risk_off_severe"
+    "transitioning": false,
+    "direction": null,
+    "composite_delta": -0.0586,
+    "prev_composite": -0.1836,
+    "prev_regime": "choppy_neutral"
   },
   "context": {
-    "spy_realized_vol_20d": 0.2207,
-    "vix": 19.3,
-    "as_of": "2026-11-14"
+    "spy_realized_vol_20d": 0.3191,
+    "vix": 23.81,
+    "as_of": "2026-11-28"
   },
   "playbook": {
     "momentum": 1.0,
