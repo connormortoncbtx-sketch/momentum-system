@@ -58,6 +58,19 @@ MIN_TRADE, BAND = 1.0, 0.10      # Alpaca's $1 minimum; then only re-trade a gap
 # T-bill interest; uninvested cash at Alpaca earns nothing. Whatever the sleeves leave unused (up to 95% of equity,
 # after crypto ETFs; never bought with margin) is held in CASH_ETF and sold down first when the sleeves need it.
 CASH_ETF = (os.environ.get("CASH_ETF") or "SGOV").strip().upper()
+# CONTRACT-10 (Connor, Nov 28, 2026: "do what's best" on the Nov 24 proposal): the whole stock book becomes the
+# contract-win book only -- research/contract_pick10.py + the Nov 24 grid, chosen on 2017-23 (dev Sharpe 1.53 with the
+# $100M floor; holdout 0.95): contract value >= 5% of market cap, market cap >= $100M, held 5 sessions, weights 1/vol60
+# capped at 25% each (sum <= 100%), at most 10 names (most recent first), the rest in SGOV, no leverage, no hedge,
+# re-trade an existing name only when > 25% off target. Live from C10_START; the run before sends a preview.
+# STACK_BOOK (GitHub variable) overrides: "contract10" or "mix" (the Oct 25 four-sleeve stack).
+C10_START = dt.date(2026, 12, 1)
+C10_REL, C10_MCAP, C10_HOLD, C10_MAX, C10_CAP, C10_BAND = 0.05, 1e8, 5, 10, 0.25, 0.25
+JUDGE = DATA / "shadow_filings_judgements.jsonl"
+NYSE_HOLIDAYS = [dt.date.fromisoformat(d) for d in (            # full-day closures; extend before 2028
+    "2026-01-01", "2026-01-19", "2026-02-16", "2026-04-03", "2026-05-25", "2026-06-19", "2026-07-03", "2026-09-07",
+    "2026-11-26", "2026-12-25", "2027-01-01", "2027-01-18", "2027-02-15", "2027-03-26", "2027-05-31", "2027-06-18",
+    "2027-07-05", "2027-09-06", "2027-11-25", "2027-12-24")]
 CAP_DIV = 0.25
 # Connor's live account (Texas) can't trade crypto (Alpaca offers it only in approved states; no crypto agreement
 # exists on the account -- Oct 27, 2026). The crypto sleeve is held through US spot ETFs instead: same coin signals
@@ -94,6 +107,57 @@ def contract_weights():
     iv = {o["symbol"]: 1.0 / max(float(o.get("vol60") or 0.8), 0.2) for o in pos}
     tot = sum(iv.values())
     return {k: min(v / tot, CAP_DIV) for k, v in iv.items()}
+
+
+def stack_book(today):
+    b = (os.environ.get("STACK_BOOK") or "").strip().lower()
+    return b if b in ("contract10", "mix") else ("contract10" if today >= C10_START else "mix")
+
+
+def contract10_weights(today):
+    """Contract-10 weights from shadow #6's open long_contract_div entries + the judge's contract value and market cap."""
+    s = json.loads(FILINGS_STATE.read_text()) if FILINGS_STATE.exists() else {}
+    pos = [o for o in s.get("open", []) if o.get("book") == "long_contract_div" and o.get("entry_date")]
+    if not pos:
+        return {}, {}
+    jd = {}
+    if JUDGE.exists():
+        for line in JUDGE.read_text().splitlines():
+            try:
+                j = json.loads(line); jd[j["accession"]] = j
+            except Exception:
+                continue
+    hol = NYSE_HOLIDAYS
+    keep, why = [], {"no judge record": 0, "value < 5% of mcap": 0, "mcap < $100M": 0, "held 5 sessions": 0}
+    for o in pos:
+        j = jd.get(o["accession"])
+        if not j:
+            why["no judge record"] += 1; continue
+        val, mc = float(j.get("dollar_value_usd") or 0), float(j.get("mcap") or 0)
+        if mc < C10_MCAP:
+            why["mcap < $100M"] += 1; continue
+        if mc <= 0 or val / mc < C10_REL:
+            why["value < 5% of mcap"] += 1; continue
+        held = int(np.busday_count(dt.date.fromisoformat(o["entry_date"]), today, holidays=hol))
+        if held >= C10_HOLD:                                   # entered at the open of day 0; out after 5 sessions
+            why["held 5 sessions"] += 1; continue
+        keep.append(o)
+    keep = sorted(keep, key=lambda o: o["entry_date"])[-C10_MAX:]
+    iv = {o["symbol"]: 1.0 / max(float(o.get("vol60") or 0.8), 0.2) for o in keep}
+    tot = sum(iv.values())
+    return {k: min(v / tot, C10_CAP) for k, v in iv.items()}, why
+
+
+def contract10_targets(equity, w):
+    tgt = {k: equity * v for k, v in w.items()}
+    idle = 0.0
+    if CASH_ETF and CASH_ETF != "NONE":
+        idle = max(0.0, 0.95 * equity - sum(tgt.values()))
+        if idle >= 5.0:
+            tgt[CASH_ETF] = tgt.get(CASH_ETF, 0.0) + idle
+        else:
+            idle = 0.0
+    return tgt, dict(lev=1.0, lev_vt=1.0, stock_scale=1.0, hedge=0.0, idle=idle)
 
 
 def etf_weights(px, today):
@@ -190,7 +254,7 @@ def targets(equity, tier, sleeves, lev_vt, multiplier, coin_etf=None):
     return tgt, dict(lev=lev, lev_vt=lev_vt, stock_scale=scale, hedge=hedge * scale, idle=idle)
 
 
-def plan_orders(tgt, cur, px, fractionable):
+def plan_orders(tgt, cur, px, fractionable, band=None):
     """[(symbol, side, kind, amount)] kind 'notional' ($) or 'qty' (shares/coins). cur: {symbol: $ market value}.
     Stocks Alpaca can't fraction trade in whole shares (rounded to the nearest share of the TARGET)."""
     out, skipped = [], []
@@ -215,7 +279,7 @@ def plan_orders(tgt, cur, px, fractionable):
                 out.append((sym, "buy" if tq > cq else "sell", "qty", float(abs(tq - cq))))
             continue
         d = t - c
-        if abs(d) <= max(MIN_TRADE, BAND * max(abs(t), abs(c))) and not (t == 0 and c > 1.0):
+        if abs(d) <= max(MIN_TRADE, (BAND if band is None else band) * max(abs(t), abs(c))) and not (t == 0 and c > 1.0):
             continue
         if d > 0:
             out.append((sym, "buy", "notional", round(d, 2)))
@@ -308,7 +372,16 @@ def main():
               f"({', '.join(sorted(coin_etf.values()))} available); the rest of the sleeve stays in cash")
         if not market_open:
             print("::notice::market closed and no direct crypto -- nothing to trade"); return
-    tgt, info = targets(max(equity - condor_reserve(equity), 0.0), tier, sleeves, lev_vt, mult, coin_etf)
+    book = stack_book(today)
+    eq_inv = max(equity - condor_reserve(equity), 0.0)
+    w10, why10 = contract10_weights(today)
+    print(f"::notice::contract-10: {len(w10)} names qualify (excluded: " + ", ".join(f"{k} {v}" for k, v in why10.items() if v) + ")")
+    if book == "contract10":
+        if not market_open:
+            print("::notice::contract-10: market closed -- nothing to trade"); return
+        tgt, info = contract10_targets(eq_inv, w10)
+    else:
+        tgt, info = targets(eq_inv, tier, sleeves, lev_vt, mult, coin_etf)
     pos = [p for p in tc.get_all_positions() if "option" not in str(p.asset_class).lower()]   # the condor's legs
     norm = lambda p: (p.symbol[:-3] + "/USD") if "crypto" in str(p.asset_class).lower() and "/" not in p.symbol else p.symbol
     cur = {norm(p): float(p.market_value) for p in pos}
@@ -319,7 +392,21 @@ def main():
             frac[s] = bool(tc.get_asset(s).fractionable)
         except Exception:
             frac[s] = False
-    orders, skipped = plan_orders(tgt, cur, px, frac)
+    orders, skipped = plan_orders(tgt, cur, px, frac, band=C10_BAND if book == "contract10" else None)
+    preview = ""
+    if book == "mix" and today < C10_START and market_open:      # the switch's dry run, sent to the phone only
+        t10, _ = contract10_targets(eq_inv, w10)
+        px10 = prices(sorted(set(t10) | set(cur)))
+        fr10 = dict(frac)
+        for s_ in [s_ for s_ in t10 if s_ not in fr10]:
+            try:
+                fr10[s_] = bool(tc.get_asset(s_).fractionable)
+            except Exception:
+                fr10[s_] = False
+        o10, _ = plan_orders(t10, cur, px10, fr10, band=C10_BAND)
+        preview = (f"\n\nCONTRACT-10 PREVIEW (goes live {C10_START}; no orders today): "
+                   + ", ".join(f"{k} {v / max(eq_inv, 1) * 100:.0f}%" for k, v in sorted(t10.items(), key=lambda x: -x[1]))
+                   + f"\nswitch-day orders: {len(o10)} (" + ", ".join(f"{a} {b}" for a, b, *_ in o10[:25]) + ")")
     results = []
     waited = False
     for sym, side, kind, amt in orders:
@@ -342,14 +429,15 @@ def main():
     if tier != st.get("tier") and st.get("tier") is not None:
         notify_alert("Live stack", f"TIER CHANGE {st.get('tier')} -> {tier} (equity ${equity:,.2f}, margin x{mult:g})")
     STATE.write_text(json.dumps({"tier": tier, "last_run": today.isoformat(), "mode": mode}, indent=1))
-    lines = [f"{'LIVE' if live else 'DRY RUN'} {today}: equity ${equity:,.2f}, tier {tier}, leverage {info['lev']:.2f}x"
+    print(f"::notice::stock book: {book}")
+    lines = [f"{'LIVE' if live else 'DRY RUN'} {today} [{book}]: equity ${equity:,.2f}, tier {tier}, leverage {info['lev']:.2f}x"
              + (f", IWM hedge ${info['hedge']:,.0f}" if tier == "FULL" else "")
              + (f", idle cash ${info['idle']:,.2f} -> {CASH_ETF}" if info.get("idle") else "")]
     lines += [f"{s} {sd} {('$' + format(a, ',.2f')) if k == 'notional' else (format(a, 'g') if k == 'qty' else 'ALL')} -> {r}"
               for s, sd, k, a, r in results]
     lines += [f"skipped {s}: {why}" for s, why in skipped]
     lines.append(f"condor: {condor}")
-    msg = "\n".join(lines)
+    msg = "\n".join(lines) + preview
     (notify_alert if any("error" in r[4] for r in results) else notify_success)("Live stack", msg[:3500])
 
 

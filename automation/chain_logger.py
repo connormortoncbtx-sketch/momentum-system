@@ -17,6 +17,10 @@ It also starts shadow #11 (automation/shadow_premium.py) inside its noon / 2pm /
 Output: data/chain_log/YYYY-MM-DD.csv.gz (one row per underlying x time x k x wing).
 Open interest (Nov 28): once a day, each same-day contract's open interest (OCC, as of the prior close) ->
 data/chain_log/oi_YYYY-MM-DD.csv.gz (und, type, strike, open_interest) -- the input for a dealer-gamma estimate.
+News (Nov 28, Connor: market-moving news isn't just the Fed -- wars, layoffs, CEO news...): each snapshot also counts
+Alpaca news headlines (Benzinga) published in the last 15 minutes, in total and by keyword theme (war/geopolitics,
+tariffs/trade, Fed/rates, layoffs, mega-cap CEO/company shocks, crisis words). Counts only (no headline text: vendor
+content, public repo) -> data/chain_log/news_YYYY-MM-DD.csv.gz. For a pre-registered "news-shock skip" test later.
 Keys: ALPACA_API_KEY / ALPACA_SECRET_KEY (data; paper key is enough). `--once` takes a single snapshot now (testing).
 """
 import csv
@@ -183,6 +187,59 @@ def save_oi(day):
     return rows
 
 
+THEMES = {
+    "geopolitics": ("war", "invasion", "missile", "airstrike", "strike on", "military", "troops", "attack", "nuclear",
+                    "ceasefire", "sanction", "conflict", "terror"),
+    "trade": ("tariff", "trade war", "export ban", "import ban", "embargo", "trade deal"),
+    "fed_rates": ("fed ", "federal reserve", "fomc", "powell", "warsh", "rate cut", "rate hike", "treasury yield",
+                  "bond yield", "inflation"),
+    "layoffs": ("layoff", "lay off", "job cuts", "cutting jobs", "workforce reduction"),
+    "ceo_shock": ("ceo resign", "ceo steps down", "ceo departure", "ousted", "fired ceo", "accounting", "fraud",
+                  "investigation", "subpoena", "recall", "guidance cut", "profit warning"),
+    "crisis": ("crash", "plunge", "selloff", "sell-off", "circuit breaker", "halt", "default", "bankruptcy",
+               "shutdown", "emergency", "downgrade", "bank run", "contagion"),
+}
+MEGA = ("AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "GOOG", "META", "TSLA", "AVGO", "BRK.B", "JPM", "SPY", "QQQ")
+
+
+def news_counts(t0, t1):
+    """Headline counts in [t0, t1): total, mega-cap / index tagged, and per theme (headline text is not kept)."""
+    out = {"news_n": 0, "news_mega": 0, **{f"news_{k}": 0 for k in THEMES}}
+    tok = None
+    for _ in range(20):
+        q = dict(start=t0.astimezone(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                 end=t1.astimezone(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), limit=50, include_content="false",
+                 sort="asc")
+        if tok:
+            q["page_token"] = tok
+        js = get(DATA, "/v1beta1/news", **q)
+        for n in js.get("news") or []:
+            h = (n.get("headline") or "").lower()
+            out["news_n"] += 1
+            if set(n.get("symbols") or []) & set(MEGA):
+                out["news_mega"] += 1
+            for k, words in THEMES.items():
+                if any(w in h for w in words):
+                    out[f"news_{k}"] += 1
+        tok = js.get("next_page_token")
+        if not tok:
+            break
+    return out
+
+
+def save_news(row, day):
+    OUT.mkdir(parents=True, exist_ok=True)
+    f = OUT / f"news_{day.isoformat()}.csv.gz"
+    old = gzip.open(f, "rt").read() if f.exists() else ""
+    buf = io.StringIO()
+    w = csv.DictWriter(buf, fieldnames=list(row))
+    if not old:
+        w.writeheader()
+    w.writerow(row)
+    with gzip.open(f, "wt") as fh:
+        fh.write(old + buf.getvalue())
+
+
 def market_open():
     try:
         return bool(get(TRADE, "/v2/clock").get("is_open"))
@@ -202,6 +259,12 @@ def main():
                 day += dt.timedelta(days=1)
         rows, notes = snapshot(now, day)
         oi = save_oi(day)
+        try:
+            t1 = dt.datetime.now(ET)
+            nc = news_counts(t1 - dt.timedelta(hours=24), t1)
+            notes.append("news last 24h: " + ", ".join(f"{k[5:]} {v}" for k, v in nc.items()))
+        except Exception as e:
+            notes.append(f"news error: {str(e)[:120]}")
         print("::notice::chain logger test: " + "; ".join(notes) + f"; open interest rows {len(oi)} "
               f"(non-zero {sum(1 for r in oi if r['open_interest'] > 0)})")
         if rows:
@@ -230,8 +293,15 @@ def main():
             continue
         if not market_open():                                   # early close (e.g. the day after Thanksgiving)
             print(f"{when:%H:%M} market closed -- stopping"); break
-        rows, notes = snapshot(dt.datetime.now(ET))
+        t = dt.datetime.now(ET)
+        rows, notes = snapshot(t)
         save(rows, now.date())
+        try:
+            nc = news_counts(t - dt.timedelta(minutes=15), t)
+            save_news({"date": now.date().isoformat(), "time": f"{t:%H:%M}", **nc}, now.date())
+            notes.append(f"news {nc['news_n']} (themes {sum(v for k, v in nc.items() if k not in ('news_n', 'news_mega'))})")
+        except Exception as e:
+            notes.append(f"news error: {str(e)[:80]}")
         done += 1; total += len(rows)
         print(f"{when:%H:%M} " + "; ".join(notes), flush=True)
     print(f"::notice::chain logger {now.date()}: {done} snapshots, {total} rows")
